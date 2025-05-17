@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme for night mode using Material 3 -->
+    <style name="Theme.RandomSceneApp" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/primary_light</item>
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="colorPrimaryContainer">@color/primary_dark</item>
+        
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryContainer">@color/secondary_dark</item>
+        
+        <!-- Tertiary brand color -->
+        <item name="colorTertiary">@color/tertiary</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">@color/text_primary</item>
+        <item name="colorSurface">@color/text_secondary</item>
+        
+        <!-- Set default text appearance for buttons -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        
+        <!-- Set default card appearance -->
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+    </style>
+</resources>
