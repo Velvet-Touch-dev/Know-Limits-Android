@@ -14,6 +14,9 @@ android {
         versionName "1.0"
         
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Enable multidex
+        multiDexEnabled true
     }
     
     buildTypes {
@@ -29,14 +32,44 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    
+    // Disable duplicate class checking temporarily if needed
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/*.kotlin_module'
+    }
+}
+
+configurations.all {
+    // Force a consistent version of annotations libraries
+    resolutionStrategy {
+        force 'androidx.annotation:annotation:1.7.0'
+        force 'androidx.annotation:annotation-experimental:1.3.0'
+    }
 }
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     
-    // Material Components (Material 3) - Use a version compatible with compileSdk 33
-    implementation 'com.google.android.material:material:1.8.0'
+    // MultiDex support library
+    implementation 'androidx.multidex:multidex:2.0.1'
+    
+    // Material Components (Material 3)
+    implementation('com.google.android.material:material:1.9.0') {
+        exclude group: 'androidx.annotation', module: 'annotation-experimental'
+    }
+    
+    // Explicitly add the latest annotation libraries
+    implementation 'androidx.annotation:annotation:1.7.0'
+    implementation 'androidx.annotation:annotation-experimental:1.3.0'
     
     // Explicitly downgrade the activity dependency
     implementation 'androidx.activity:activity:1.7.2'

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -8,29 +9,30 @@
     <RadioGroup
         android:id="@+id/theme_radio_group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <RadioButton
-            android:id="@+id/theme_light"
+            android:id="@+id/theme_system_radio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/theme_light" />
+            android:text="@string/theme_system"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
 
         <RadioButton
-            android:id="@+id/theme_dark"
+            android:id="@+id/theme_light_radio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/theme_dark" />
+            android:text="@string/theme_light"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
 
         <RadioButton
-            android:id="@+id/theme_system"
+            android:id="@+id/theme_dark_radio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/theme_system" />
-
+            android:text="@string/theme_dark"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
     </RadioGroup>
 </LinearLayout>

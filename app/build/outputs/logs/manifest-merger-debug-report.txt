@@ -1,10 +1,10 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
-MERGED from [com.google.android.material:material:1.8.0] /home/aditya/.gradle/caches/8.12/transforms/4c24f489b145af34a748dd16a8dd9b31/transformed/material-1.8.0/AndroidManifest.xml:17:1-26:12
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
+INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
+INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
+INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
+MERGED from [com.google.android.material:material:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/1a073205fe6e6d6c74d14b0e53d8f5d4/transformed/material-1.9.0/AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/aditya/.gradle/caches/8.12/transforms/b3757d1716190bbf090ee114cfc65d8b/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/aditya/.gradle/caches/8.12/transforms/e2e42573b005f8585df5ca4d3689724a/transformed/appcompat-resources-1.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.appcompat:appcompat:1.6.1] /home/aditya/.gradle/caches/8.12/transforms/dfd718ea9659ae8666d143a68623a7b2/transformed/appcompat-1.6.1/AndroidManifest.xml:17:1-22:12
@@ -37,8 +37,8 @@ MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.6.1] /home/aditya/.gradl
 MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] /home/aditya/.gradle/caches/8.12/transforms/8530af8e15ddb6462066cdf23a5e78e6/transformed/lifecycle-viewmodel-2.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /home/aditya/.gradle/caches/8.12/transforms/5844d127ee9f2d5b97a941624e2c78fe/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /home/aditya/.gradle/caches/8.12/transforms/2ac9f338788b332654999b04479d29af/transformed/lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.multidex:multidex:2.0.1] /home/aditya/.gradle/caches/8.12/transforms/09904353b0cc36f6b875a965fb73d4ef/transformed/multidex-2.0.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cardview:cardview:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/4b913f3fe90f60f77699698c146db7de/transformed/cardview-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/fffc5274273aaa3ecb1822a8ad4c9a45/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/0fcace00c33d5ed8a2e96862df6744ab/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/6c76c2f7a45b5a504809028af8b876e3/transformed/profileinstaller-1.3.0/AndroidManifest.xml:17:1-55:12
 MERGED from [androidx.startup:startup-runtime:1.1.1] /home/aditya/.gradle/caches/8.12/transforms/f117fbaf7ad20775bb1e1ebed9948377/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
@@ -49,27 +49,28 @@ MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/cach
 MERGED from [androidx.documentfile:documentfile:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/d51370a8582aad71fecc310886477e92/transformed/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/0221bccd78f3936aea91755121870687/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/b367f53ab5751d9096910002268dccd0/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
-INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/fffc5274273aaa3ecb1822a8ad4c9a45/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:17:1-22:12
+INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
+INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
+INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
 	package
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:3:5-41
 		INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 		INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
 		INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-22:12
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:1-27:12
 		INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2:11-69
 application
-ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:5:5-20:19
-MERGED from [com.google.android.material:material:1.8.0] /home/aditya/.gradle/caches/8.12/transforms/4c24f489b145af34a748dd16a8dd9b31/transformed/material-1.8.0/AndroidManifest.xml:24:5-20
-MERGED from [com.google.android.material:material:1.8.0] /home/aditya/.gradle/caches/8.12/transforms/4c24f489b145af34a748dd16a8dd9b31/transformed/material-1.8.0/AndroidManifest.xml:24:5-20
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:5:5-25:19
+MERGED from [com.google.android.material:material:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/1a073205fe6e6d6c74d14b0e53d8f5d4/transformed/material-1.9.0/AndroidManifest.xml:24:5-20
+MERGED from [com.google.android.material:material:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/1a073205fe6e6d6c74d14b0e53d8f5d4/transformed/material-1.9.0/AndroidManifest.xml:24:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/aditya/.gradle/caches/8.12/transforms/b3757d1716190bbf090ee114cfc65d8b/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/aditya/.gradle/caches/8.12/transforms/b3757d1716190bbf090ee114cfc65d8b/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
 MERGED from [androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/ab2411b59b344b848943582969e13feb/transformed/emoji2-1.2.0/AndroidManifest.xml:23:5-33:19
@@ -87,39 +88,49 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/adity
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:10:9-35
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:11:9-35
 	android:label
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:8:9-41
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:9:9-41
 	android:roundIcon
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:9:9-61
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:10:9-61
 	android:icon
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:7:9-56
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:8:9-56
 	android:allowBackup
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:6:9-35
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:7:9-35
 	android:theme
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:11:9-52
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:12:9-52
+	android:name
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:6:9-47
 activity#com.example.randomsceneapp.MainActivity
-ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:12:9-19:20
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:13:9-20:20
 	android:exported
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:14:13-36
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:15:13-36
 	android:name
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:13:13-41
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:14:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:15:13-18:29
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:16:13-19:29
 action#android.intent.action.MAIN
-ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:16:17-69
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:17:17-69
 	android:name
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:16:25-66
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:17:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:17:17-77
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:18:17-77
 	android:name
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:17:27-74
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:18:27-74
+activity#com.example.randomsceneapp.SettingsActivity
+ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:21:9-24:58
+	android:parentActivityName
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:24:13-55
+	android:exported
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:23:13-37
+	android:name
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:22:13-45
 uses-sdk
 INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
-MERGED from [com.google.android.material:material:1.8.0] /home/aditya/.gradle/caches/8.12/transforms/4c24f489b145af34a748dd16a8dd9b31/transformed/material-1.8.0/AndroidManifest.xml:20:5-22:41
-MERGED from [com.google.android.material:material:1.8.0] /home/aditya/.gradle/caches/8.12/transforms/4c24f489b145af34a748dd16a8dd9b31/transformed/material-1.8.0/AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.material:material:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/1a073205fe6e6d6c74d14b0e53d8f5d4/transformed/material-1.9.0/AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.material:material:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/1a073205fe6e6d6c74d14b0e53d8f5d4/transformed/material-1.9.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/aditya/.gradle/caches/8.12/transforms/b3757d1716190bbf090ee114cfc65d8b/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/aditya/.gradle/caches/8.12/transforms/b3757d1716190bbf090ee114cfc65d8b/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/aditya/.gradle/caches/8.12/transforms/e2e42573b005f8585df5ca4d3689724a/transformed/appcompat-resources-1.6.1/AndroidManifest.xml:20:5-44
@@ -184,10 +195,10 @@ MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /home/aditya/.gradle/ca
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /home/aditya/.gradle/caches/8.12/transforms/5844d127ee9f2d5b97a941624e2c78fe/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /home/aditya/.gradle/caches/8.12/transforms/2ac9f338788b332654999b04479d29af/transformed/lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /home/aditya/.gradle/caches/8.12/transforms/2ac9f338788b332654999b04479d29af/transformed/lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.multidex:multidex:2.0.1] /home/aditya/.gradle/caches/8.12/transforms/09904353b0cc36f6b875a965fb73d4ef/transformed/multidex-2.0.1/AndroidManifest.xml:20:5-43
+MERGED from [androidx.multidex:multidex:2.0.1] /home/aditya/.gradle/caches/8.12/transforms/09904353b0cc36f6b875a965fb73d4ef/transformed/multidex-2.0.1/AndroidManifest.xml:20:5-43
 MERGED from [androidx.cardview:cardview:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/4b913f3fe90f60f77699698c146db7de/transformed/cardview-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cardview:cardview:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/4b913f3fe90f60f77699698c146db7de/transformed/cardview-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/fffc5274273aaa3ecb1822a8ad4c9a45/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/fffc5274273aaa3ecb1822a8ad4c9a45/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/0fcace00c33d5ed8a2e96862df6744ab/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/0fcace00c33d5ed8a2e96862df6744ab/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/6c76c2f7a45b5a504809028af8b876e3/transformed/profileinstaller-1.3.0/AndroidManifest.xml:21:5-44
@@ -208,6 +219,8 @@ MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/a
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/0221bccd78f3936aea91755121870687/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.print:print:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/b367f53ab5751d9096910002268dccd0/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.print:print:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/b367f53ab5751d9096910002268dccd0/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/fffc5274273aaa3ecb1822a8ad4c9a45/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/fffc5274273aaa3ecb1822a8ad4c9a45/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
 INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 INJECTED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml
 	android:targetSdkVersion

@@ -18,8 +18,28 @@ allprojects {
         google()
         mavenCentral()
     }
+    
+    // Force all modules to use the same version of annotation libraries
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.annotation:annotation:1.7.0'
+            force 'androidx.annotation:annotation-experimental:1.3.0'
+        }
+    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+// Add a deep clean task to completely clean the project
+task deepClean(type: Delete) {
+    dependsOn clean
+    delete "${rootDir}/build"
+    delete "${rootDir}/app/build"
+    delete "${rootDir}/.gradle"
+    delete "${rootDir}/app/.gradle"
+    delete fileTree(dir: "${rootDir}", includes: ["**/*.iml"])
+    delete fileTree(dir: "${rootDir}", includes: ["**/.idea/**"])
+    delete fileTree(dir: "${rootDir}", includes: ["**/.externalNativeBuild/**"])
 }

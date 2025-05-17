@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Use this theme when dynamic colors are not enabled -->
+    <style name="Theme.RandomSceneApp.AppColors" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/dark_primary</item>
+        <item name="colorOnPrimary">@color/dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/dark_onPrimaryContainer</item>
+        
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/dark_secondary</item>
+        <item name="colorOnSecondary">@color/dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/dark_onSecondaryContainer</item>
+        
+        <!-- Tertiary brand color -->
+        <item name="colorTertiary">@color/dark_tertiary</item>
+        <item name="colorOnTertiary">@color/dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/dark_onTertiaryContainer</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/dark_onSurfaceVariant</item>
+        <item name="colorOnBackground">@color/dark_onBackground</item>
+        
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/dark_outline</item>
+        <item name="colorOutlineVariant">@color/dark_outlineVariant</item>
+        
+        <!-- Error color -->
+        <item name="colorError">@color/dark_error</item>
+        <item name="colorOnError">@color/dark_onError</item>
+        <item name="colorErrorContainer">@color/dark_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/dark_onErrorContainer</item>
+    </style>
+</resources>

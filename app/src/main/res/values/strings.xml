@@ -40,4 +40,6 @@
     <string name="theme_system">System default</string>
     <string name="theme_settings">Theme Settings</string>
     <string name="theme">Theme</string>
+    <string name="drawer_open">Open Navigation Drawer</string>
+    <string name="drawer_close">Close Navigation Drawer</string>
 </resources>

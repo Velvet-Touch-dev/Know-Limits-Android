@@ -17,22 +17,26 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.GravityCompat
 import androidx.core.widget.NestedScrollView
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONArray
 import org.json.JSONObject
@@ -52,7 +56,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var shareButton: FloatingActionButton
     private lateinit var addSceneButton: FloatingActionButton
     private lateinit var resetScenesButton: ExtendedFloatingActionButton
-    private lateinit var topAppBar: MaterialToolbar
+    private lateinit var topAppBar: Toolbar
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var randomContent: NestedScrollView
     private lateinit var favoritesContainer: FrameLayout
@@ -101,9 +108,45 @@ class MainActivity : AppCompatActivity() {
         addSceneButton = findViewById(R.id.add_scene_fab)
         resetScenesButton = findViewById(R.id.reset_scenes_button)
         
+        // Get drawer components
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+        
         // Set up the toolbar
         setSupportActionBar(topAppBar)
         
+        // Set up ActionBarDrawerToggle
+        drawerToggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            topAppBar,
+            R.string.drawer_open,
+            R.string.drawer_close
+        )
+        drawerToggle.isDrawerIndicatorEnabled = true
+        drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
+        
+        // Set up navigation view listener
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_scenes -> {
+                    // Already on scenes page, just close drawer
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_settings -> {
+                    // Launch settings activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
+        
+        // Rest of onCreate implementation
         // Enable links in the title and content text views
         titleTextView.movementMethod = LinkMovementMethod.getInstance()
         contentTextView.movementMethod = LinkMovementMethod.getInstance()
@@ -321,6 +364,10 @@ class MainActivity : AppCompatActivity() {
     }
     
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        
         return when (item.itemId) {
             R.id.action_favorite -> {
                 if (currentMode == MODE_RANDOM) {
@@ -332,10 +379,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        // Sync the toggle state after onRestoreInstanceState has occurred
+        drawerToggle.syncState()
+    }
+    
+    override fun onBackPressed() {
+        // Close the drawer if it's open, otherwise proceed with normal back button behavior
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+    
     override fun onPause() {
         // Cancel any showing toast
         currentToast?.cancel()
         super.onPause()
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Update the selected menu item in the drawer
+        navigationView.setCheckedItem(R.id.nav_scenes)
     }
     
     private fun updateUI() {
@@ -349,9 +417,6 @@ class MainActivity : AppCompatActivity() {
                 favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
                 shareButton.show()
-                
-                // Update toolbar actions
-                supportActionBar?.setDisplayHomeAsUpEnabled(false)
             }
             MODE_FAVORITES -> {
                 // Update app bar title
@@ -363,9 +428,6 @@ class MainActivity : AppCompatActivity() {
                 editContainer.visibility = View.GONE
                 updateFavoritesList()
                 shareButton.hide()
-                
-                // Update toolbar actions
-                supportActionBar?.setDisplayHomeAsUpEnabled(false)
             }
             MODE_EDIT -> {
                 // Update app bar title
@@ -377,15 +439,13 @@ class MainActivity : AppCompatActivity() {
                 editContainer.visibility = View.VISIBLE
                 updateEditList()
                 shareButton.hide()
-                
-                // Update toolbar actions
-                supportActionBar?.setDisplayHomeAsUpEnabled(false)
             }
         }
         
         // Recreate options menu to update search visibility
         invalidateOptionsMenu()
     }
+
     
     private fun filterScenes(query: String?) {
         if (query.isNullOrBlank()) {
