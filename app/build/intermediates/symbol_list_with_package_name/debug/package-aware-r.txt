@@ -2745,6 +2745,7 @@ drawable ic_search
 drawable ic_search_black_24
 drawable ic_share
 drawable ic_shuffle
+drawable ic_theme
 drawable m3_appbar_background
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
@@ -3136,6 +3137,7 @@ id mtrl_picker_text_input_range_start
 id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
+id nav_theme
 id navigation_bar_item_active_indicator_view
 id navigation_bar_item_icon_container
 id navigation_bar_item_icon_view
@@ -3301,6 +3303,10 @@ id textinput_helper_text
 id textinput_placeholder
 id textinput_prefix_text
 id textinput_suffix_text
+id theme_dark
+id theme_light
+id theme_radio_group
+id theme_system
 id time
 id title
 id titleDividerNoCustom
@@ -3469,6 +3475,7 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_edit_scene
+layout dialog_theme_settings
 layout fragment_edit
 layout item_edit_scene
 layout item_favorite_scene
@@ -3523,6 +3530,7 @@ layout mtrl_picker_text_input_date
 layout mtrl_picker_text_input_date_range
 layout mtrl_search_bar
 layout mtrl_search_view
+layout nav_header
 layout notification_action
 layout notification_action_tombstone
 layout notification_template_custom_big
@@ -3535,6 +3543,7 @@ layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 layout toast_material_you
 menu bottom_nav_menu
+menu drawer_menu
 menu edit_menu
 menu top_app_bar
 mipmap ic_launcher
@@ -3705,6 +3714,10 @@ string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
+string pref_theme_dark_value
+string pref_theme_key
+string pref_theme_light_value
+string pref_theme_system_value
 string random
 string random_scene
 string reset_confirm
@@ -3729,6 +3742,11 @@ string share_via
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string status_bar_notification_info_overflow
+string theme
+string theme_dark
+string theme_light
+string theme_settings
+string theme_system
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

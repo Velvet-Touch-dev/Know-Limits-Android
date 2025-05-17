@@ -35,4 +35,9 @@
     <string name="search">Search</string>
     <string name="search_scenes">Search scenes</string>
     <string name="scene_selected">Scene selected</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_settings">Theme Settings</string>
+    <string name="theme">Theme</string>
 </resources>
