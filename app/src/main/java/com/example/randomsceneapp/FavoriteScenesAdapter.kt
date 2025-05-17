@@ -1,6 +1,5 @@
 package com.example.randomsceneapp
 
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 
 class FavoriteScenesAdapter(
     private val onItemClick: (Scene) -> Unit
@@ -31,17 +31,26 @@ class FavoriteScenesAdapter(
         
         private val titleTextView: TextView = itemView.findViewById(R.id.favorite_title)
         private val previewTextView: TextView = itemView.findViewById(R.id.favorite_preview)
+        private val cardView: MaterialCardView = itemView as MaterialCardView
         private lateinit var currentScene: Scene
 
         init {
-            // Set click listener for the card
-            itemView.setOnClickListener {
-                onItemClick(currentScene)
+            // Setup click listeners on the entire card view
+            cardView.setOnClickListener {
+                if (::currentScene.isInitialized) {
+                    onItemClick(currentScene)
+                }
             }
             
-            // Enable links in the preview text
-            previewTextView.movementMethod = LinkMovementMethod.getInstance()
-            titleTextView.movementMethod = LinkMovementMethod.getInstance()
+            // We need to disable link movement in the text views to prevent conflict with card clicks
+            previewTextView.movementMethod = null
+            titleTextView.movementMethod = null
+            
+            // Disable clickability of text views
+            previewTextView.isClickable = false
+            titleTextView.isClickable = false
+            previewTextView.isFocusable = false
+            titleTextView.isFocusable = false
         }
 
         fun bind(scene: Scene) {

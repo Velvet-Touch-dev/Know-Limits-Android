@@ -11,6 +11,8 @@
     app:cardElevation="2dp"
     android:clickable="true"
     android:focusable="true"
+    app:rippleColor="?attr/colorControlHighlight"
+    android:stateListAnimator="@animator/card_state_list_anim"
     android:foreground="?android:attr/selectableItemBackground">
 
     <LinearLayout

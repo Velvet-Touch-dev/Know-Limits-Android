@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/app_name"
-            app:menu="@menu/top_app_bar"
             style="@style/Widget.Material3.Toolbar.Surface" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -49,7 +48,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <LinearLayout
+                        <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -138,6 +137,17 @@
                     android:text="@string/add_favorites"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
             </LinearLayout>
+        </FrameLayout>
+        
+        <!-- Edit View -->
+        <FrameLayout
+            android:id="@+id/edit_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <include layout="@layout/fragment_edit" />
+            
         </FrameLayout>
     </FrameLayout>
 

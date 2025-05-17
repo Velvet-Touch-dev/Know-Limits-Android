@@ -13,6 +13,26 @@
     <string name="share_via">Share via</string>
     <string name="random">Random</string>
     <string name="favorites">Favorites</string>
+    <string name="edit">Edit</string>
     <string name="no_favorites">No favorites yet</string>
     <string name="add_favorites">Add scenes to favorites by tapping the heart icon</string>
+    <string name="scene_title">Scene Title</string>
+    <string name="scene_content">Scene Content</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_scene">Edit Scene</string>
+    <string name="scene_saved">Scene saved successfully</string>
+    <string name="new_scene">New Scene</string>
+    <string name="delete">Delete</string>
+    <string name="scene_deleted">Scene deleted</string>
+    <string name="edit_scenes">Edit Scenes</string>
+    <string name="hint_title">Enter scene title...</string>
+    <string name="hint_content">Enter scene content...</string>
+    <string name="reset_to_default">Reset to Default</string>
+    <string name="reset_confirm">Are you sure you want to reset all scenes to default? This will delete any custom scenes you have created.</string>
+    <string name="scenes_reset">Scenes reset to default</string>
+    <string name="favorite_scene">Favorite Scene</string>
+    <string name="search">Search</string>
+    <string name="search_scenes">Search scenes</string>
+    <string name="scene_selected">Scene selected</string>
 </resources>
