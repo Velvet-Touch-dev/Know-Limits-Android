@@ -43,6 +43,7 @@
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
         
         <!-- Set default card appearance -->
-        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+        <item name="materialCardViewStyle">@style/Widget.App.CardView.Dark</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 </resources>

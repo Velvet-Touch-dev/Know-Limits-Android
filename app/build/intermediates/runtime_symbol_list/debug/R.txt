@@ -4365,6 +4365,7 @@ int style RtlOverlay_Widget_AppCompat_Search_DropDown_Text 0x7f12014b
 int style RtlOverlay_Widget_AppCompat_SearchView_MagIcon 0x7f12014c
 int style RtlUnderlay_Widget_AppCompat_ActionButton 0x7f12014d
 int style RtlUnderlay_Widget_AppCompat_ActionButton_Overflow 0x7f12014e
+int style ShapeAppearance_App_SmallComponent 0x7f120451
 int style ShapeAppearance_M3_Comp_Badge_Large_Shape 0x7f12014f
 int style ShapeAppearance_M3_Comp_Badge_Shape 0x7f120150
 int style ShapeAppearance_M3_Comp_BottomAppBar_Container_Shape 0x7f120151
@@ -4761,6 +4762,7 @@ int style ThemeOverlay_MaterialComponents_Toolbar_Primary 0x7f1202d7
 int style ThemeOverlay_MaterialComponents_Toolbar_Surface 0x7f1202d8
 int style Widget_App_Button 0x7f1202d9
 int style Widget_App_CardView 0x7f1202da
+int style Widget_App_CardView_Dark 0x7f120452
 int style Widget_AppCompat_ActionBar 0x7f1202db
 int style Widget_AppCompat_ActionBar_Solid 0x7f1202dc
 int style Widget_AppCompat_ActionBar_TabBar 0x7f1202dd
