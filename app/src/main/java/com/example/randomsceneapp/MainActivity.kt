@@ -417,6 +417,7 @@ class MainActivity : AppCompatActivity() {
                 favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
                 shareButton.visibility = View.VISIBLE
+                randomizeButton.visibility = View.VISIBLE
             }
             MODE_FAVORITES -> {
                 // Update app bar title
@@ -428,6 +429,7 @@ class MainActivity : AppCompatActivity() {
                 editContainer.visibility = View.GONE
                 updateFavoritesList()
                 shareButton.visibility = View.GONE
+                randomizeButton.visibility = View.GONE
             }
             MODE_EDIT -> {
                 // Update app bar title
@@ -439,6 +441,7 @@ class MainActivity : AppCompatActivity() {
                 editContainer.visibility = View.VISIBLE
                 updateEditList()
                 shareButton.visibility = View.GONE
+                randomizeButton.visibility = View.GONE
             }
         }
         
