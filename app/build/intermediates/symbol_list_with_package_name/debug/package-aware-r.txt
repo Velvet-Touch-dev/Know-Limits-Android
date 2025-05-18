@@ -2990,6 +2990,7 @@ drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable ic_refresh
 drawable ic_restore
 drawable ic_search
 drawable ic_search_black_24
@@ -3179,6 +3180,9 @@ id buttonPanel
 id cache_measures
 id callMeasure
 id cancel_button
+id card_content_text_view
+id card_stack_view
+id card_title_text_view
 id carryVelocity
 id center
 id centerCrop
@@ -3457,6 +3461,7 @@ id save_overlay_view
 id sawtooth
 id scale
 id sceneCardView
+id scene_card
 id screen
 id scroll
 id scrollIndicatorDown
@@ -3745,8 +3750,10 @@ layout dialog_edit_scene
 layout dialog_theme_settings
 layout dropdown_item
 layout fragment_edit
+layout fragment_random_card
 layout item_edit_scene
 layout item_favorite_scene
+layout item_scene_card
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

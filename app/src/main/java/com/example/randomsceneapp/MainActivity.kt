@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     
     private lateinit var titleTextView: TextView
     private lateinit var contentTextView: TextView
-    private lateinit var randomizeButton: MaterialButton
+    private lateinit var randomizeButton: FloatingActionButton
     private lateinit var sceneCardView: MaterialCardView
     private lateinit var shareButton: FloatingActionButton
     private lateinit var addSceneButton: FloatingActionButton
