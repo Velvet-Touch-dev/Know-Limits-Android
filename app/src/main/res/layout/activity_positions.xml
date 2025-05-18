@@ -89,12 +89,26 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="8dp">
                 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Min:"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:layout_marginEnd="8dp" />
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Min"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:gravity="center" />
+                        
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Duration:"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:gravity="center" />
+                </LinearLayout>
                     
                 <Spinner
                     android:id="@+id/min_time_spinner"
@@ -102,13 +116,27 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
                     
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Max:"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:orientation="vertical"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Max"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:gravity="center" />
+                        
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Duration:"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:gravity="center" />
+                </LinearLayout>
                     
                 <Spinner
                     android:id="@+id/max_time_spinner"
