@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.randomsceneapp"
+    package="com.velvettouch.nosafeword"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -9,13 +9,13 @@
         android:targetSdkVersion="33" />
 
     <permission
-        android:name="com.example.randomsceneapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.randomsceneapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
-        android:name="com.example.randomsceneapp.RandomSceneApplication"
+        android:name="com.velvettouch.nosafeword.RandomSceneApplication"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
@@ -26,7 +26,7 @@
         android:testOnly="true"
         android:theme="@style/Theme.RandomSceneApp" >
         <activity
-            android:name="com.example.randomsceneapp.MainActivity"
+            android:name="com.velvettouch.nosafeword.MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,21 +35,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.randomsceneapp.SettingsActivity"
+            android:name="com.velvettouch.nosafeword.SettingsActivity"
             android:exported="false"
-            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
         <activity
-            android:name="com.example.randomsceneapp.PositionsActivity"
+            android:name="com.velvettouch.nosafeword.PositionsActivity"
             android:exported="false"
-            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
         <activity
-            android:name="com.example.randomsceneapp.BodyWorshipActivity"
+            android:name="com.velvettouch.nosafeword.BodyWorshipActivity"
             android:exported="false"
-            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.example.randomsceneapp.androidx-startup"
+            android:authorities="com.velvettouch.nosafeword.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.emoji2.text.EmojiCompatInitializer"

@@ -1,0 +1,25 @@
+Categories:
+  - Adult
+  - Lifestyle
+License: GPL-3.0-or-later
+AuthorName: Velvet Touch
+SourceCode: https://github.com/velvettouch/nosafeword
+IssueTracker: https://github.com/velvettouch/nosafeword/issues
+Website: https://github.com/velvettouch/nosafeword
+Changelog: https://github.com/velvettouch/nosafeword/blob/main/CHANGELOG.md
+
+AutoName: No Safe Word
+
+AntiFeatures:
+  - NSFW
+
+RepoType: git
+Repo: https://github.com/velvettouch/nosafeword
+
+Builds:
+  - versionName: '1.0'
+    versionCode: 1
+    commit: v1.0
+    subdir: app
+    gradle:
+      - yes

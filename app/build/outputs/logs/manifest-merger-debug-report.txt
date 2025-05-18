@@ -101,7 +101,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/adity
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:12:9-52
 	android:name
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:6:9-47
-activity#com.example.randomsceneapp.MainActivity
+activity#com.velvettouch.nosafeword.MainActivity
 ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:13:9-20:20
 	android:exported
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:15:13-36
@@ -117,7 +117,7 @@ category#android.intent.category.LAUNCHER
 ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:18:17-77
 	android:name
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:18:27-74
-activity#com.example.randomsceneapp.SettingsActivity
+activity#com.velvettouch.nosafeword.SettingsActivity
 ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:21:9-24:58
 	android:parentActivityName
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:24:13-55
@@ -125,7 +125,7 @@ ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:23:13-37
 	android:name
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:22:13-45
-activity#com.example.randomsceneapp.PositionsActivity
+activity#com.velvettouch.nosafeword.PositionsActivity
 ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:25:9-28:58
 	android:parentActivityName
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:28:13-55
@@ -133,7 +133,7 @@ ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:2
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:27:13-37
 	android:name
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:26:13-46
-activity#com.example.randomsceneapp.BodyWorshipActivity
+activity#com.velvettouch.nosafeword.BodyWorshipActivity
 ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:29:9-32:58
 	android:parentActivityName
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:32:13-55
@@ -275,7 +275,7 @@ ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transform
 		ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
 	android:name
 		ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:23:9-81
-permission#com.example.randomsceneapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+permission#com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:22:5-24:47
 	android:protectionLevel
 		ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
@@ -285,7 +285,7 @@ uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
-uses-permission#com.example.randomsceneapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission#com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:26:22-94

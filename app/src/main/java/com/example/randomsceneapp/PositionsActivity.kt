@@ -1,4 +1,4 @@
-package com.example.randomsceneapp
+package com.velvettouch.nosafeword
 
 import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable

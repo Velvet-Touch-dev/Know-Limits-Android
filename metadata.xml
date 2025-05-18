@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<metadata>
+    <name>No Safe Word</name>
+    <summary>Adult-oriented app with random intimate scene ideas and positions</summary>
+    <description>
+No Safe Word is an adult-oriented app designed to spice up intimate moments with randomly generated scene ideas and positions.
+
+Features:
+• Random Scene Generator: Get creative scene ideas at the tap of a button
+• Favorites: Save your preferred scenes for quick access
+• Positions: Explore various intimate positions with randomization
+• Body Worship: Dedicated section for body worship activities
+• Auto Play: Hands-free mode that automatically changes scenes at your preferred interval
+• Dark Mode: Comfortable viewing in low-light conditions
+• Customization: Create, edit, and share your own scenes
+
+This app contains mature content intended for adults 18+ only.
+    </description>
+    <author>Velvet Touch</author>
+    <website>https://github.com/velvettouch/nosafeword</website>
+    <source-code>https://github.com/velvettouch/nosafeword</source-code>
+    <issue-tracker>https://github.com/velvettouch/nosafeword/issues</issue-tracker>
+    <categories>
+        <category>Adult</category>
+        <category>Lifestyle</category>
+    </categories>
+    <license>GPL-3.0-or-later</license>
+    <content-rating age="adults-only"/>
+</metadata>

@@ -1,4 +1,4 @@
-package com.example.randomsceneapp
+package com.velvettouch.nosafeword
 
 import android.content.Context
 import android.content.Intent

@@ -1,4 +1,4 @@
-package com.example.randomsceneapp.cardstack
+package com.velvettouch.nosafeword.cardstack
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

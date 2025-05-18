@@ -1,4 +1,4 @@
-package com.example.randomsceneapp
+package com.velvettouch.nosafeword
 
 /**
  * Data model for representing a scene from the JSON file

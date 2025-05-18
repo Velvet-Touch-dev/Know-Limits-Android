@@ -1,4 +1,4 @@
-package com.example.randomsceneapp
+package com.velvettouch.nosafeword
 
 import android.view.LayoutInflater
 import android.view.View

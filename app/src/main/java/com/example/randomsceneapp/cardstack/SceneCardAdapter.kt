@@ -1,4 +1,4 @@
-package com.example.randomsceneapp.cardstack
+package com.velvettouch.nosafeword.cardstack
 
 import android.content.Context
 import android.text.method.LinkMovementMethod
@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.randomsceneapp.R
-import com.example.randomsceneapp.Scene
+import com.velvettouch.nosafeword.R
+import com.velvettouch.nosafeword.Scene
 
 class SceneCardAdapter(
     private val context: Context,

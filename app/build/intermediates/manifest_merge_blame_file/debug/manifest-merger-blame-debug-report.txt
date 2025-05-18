@@ -1,6 +1,6 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-3    package="com.example.randomsceneapp"
+3    package="com.velvettouch.nosafeword"
 4    android:versionCode="1"
 5    android:versionName="1.0" >
 6
@@ -12,18 +12,18 @@
 10
 11    <permission
 11-->[androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:22:5-24:47
-12        android:name="com.example.randomsceneapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12        android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 12-->[androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:23:9-81
 13        android:protectionLevel="signature" />
 13-->[androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
 14
-15    <uses-permission android:name="com.example.randomsceneapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15    <uses-permission android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 15-->[androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
 15-->[androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
 16
 17    <application
 17-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:5:5-33:19
-18        android:name="com.example.randomsceneapp.RandomSceneApplication"
+18        android:name="com.velvettouch.nosafeword.RandomSceneApplication"
 18-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:6:9-47
 19        android:allowBackup="true"
 19-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:7:9-35
@@ -43,7 +43,7 @@
 27-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:12:9-52
 28        <activity
 28-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:13:9-20:20
-29            android:name="com.example.randomsceneapp.MainActivity"
+29            android:name="com.velvettouch.nosafeword.MainActivity"
 29-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:14:13-41
 30            android:exported="true" >
 30-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:15:13-36
@@ -60,34 +60,34 @@
 36        </activity>
 37        <activity
 37-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:21:9-24:58
-38            android:name="com.example.randomsceneapp.SettingsActivity"
+38            android:name="com.velvettouch.nosafeword.SettingsActivity"
 38-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:22:13-45
 39            android:exported="false"
 39-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:23:13-37
-40            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+40            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
 40-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:24:13-55
 41        <activity
 41-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:25:9-28:58
-42            android:name="com.example.randomsceneapp.PositionsActivity"
+42            android:name="com.velvettouch.nosafeword.PositionsActivity"
 42-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:26:13-46
 43            android:exported="false"
 43-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:27:13-37
-44            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+44            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
 44-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:28:13-55
 45        <activity
 45-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:29:9-32:58
-46            android:name="com.example.randomsceneapp.BodyWorshipActivity"
+46            android:name="com.velvettouch.nosafeword.BodyWorshipActivity"
 46-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:30:13-48
 47            android:exported="false"
 47-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:31:13-37
-48            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+48            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
 48-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:32:13-55
 49
 50        <provider
 50-->[androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/ab2411b59b344b848943582969e13feb/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
 51            android:name="androidx.startup.InitializationProvider"
 51-->[androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/ab2411b59b344b848943582969e13feb/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
-52            android:authorities="com.example.randomsceneapp.androidx-startup"
+52            android:authorities="com.velvettouch.nosafeword.androidx-startup"
 52-->[androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/ab2411b59b344b848943582969e13feb/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
 53            android:exported="false" >
 53-->[androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/ab2411b59b344b848943582969e13feb/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37

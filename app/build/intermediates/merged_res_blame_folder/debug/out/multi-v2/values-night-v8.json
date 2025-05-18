@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.randomsceneapp-mergeDebugResources-34:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.velvettouch.nosafeword.app-mergeDebugResources-34:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "/home/aditya/Documents/Android App/app/src/main/res/values-night/themes_app_colors.xml",
