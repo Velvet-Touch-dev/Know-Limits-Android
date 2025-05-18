@@ -2185,6 +2185,7 @@ dimen abc_text_size_subtitle_material_toolbar
 dimen abc_text_size_title_material
 dimen abc_text_size_title_material_toolbar
 dimen appcompat_dialog_background_inset
+dimen button_margin
 dimen cardview_compat_inset_shadow
 dimen cardview_default_elevation
 dimen cardview_default_radius
@@ -3195,6 +3196,7 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id buttonPanel
+id buttons_container
 id cache_measures
 id callMeasure
 id cancel_button

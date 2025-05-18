@@ -240,6 +240,9 @@ class PositionsActivity : AppCompatActivity() {
             
             // Show timer
             timerTextView.visibility = View.VISIBLE
+            
+            // Update layout weights to accommodate timer
+            updateButtonLayout()
         } else {
             // Stop auto play
             stopAutoPlay()
@@ -249,6 +252,40 @@ class PositionsActivity : AppCompatActivity() {
             
             // Hide timer
             timerTextView.visibility = View.GONE
+            
+            // Update layout weights for two-button layout
+            updateButtonLayout()
+        }
+    }
+    
+    private fun updateButtonLayout() {
+        val buttonsLayout = findViewById<LinearLayout>(R.id.buttons_container)
+        
+        if (timerTextView.visibility == View.VISIBLE) {
+            // Three-element layout (Play, Timer, Next)
+            for (i in 0 until buttonsLayout.childCount) {
+                val view = buttonsLayout.getChildAt(i)
+                val params = view.layoutParams as LinearLayout.LayoutParams
+                params.weight = 1.0f
+                view.layoutParams = params
+            }
+        } else {
+            // Two-element layout (Play, Next)
+            autoPlayButton.layoutParams = LinearLayout.LayoutParams(
+                0, 
+                LinearLayout.LayoutParams.WRAP_CONTENT, 
+                1.0f
+            ).apply {
+                marginEnd = resources.getDimensionPixelSize(R.dimen.button_margin)
+            }
+            
+            randomizeButton.layoutParams = LinearLayout.LayoutParams(
+                0, 
+                LinearLayout.LayoutParams.WRAP_CONTENT, 
+                1.0f
+            ).apply {
+                marginStart = resources.getDimensionPixelSize(R.dimen.button_margin)
+            }
         }
     }
     
