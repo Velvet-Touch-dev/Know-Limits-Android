@@ -42,4 +42,6 @@
     <string name="theme">Theme</string>
     <string name="drawer_open">Open Navigation Drawer</string>
     <string name="drawer_close">Close Navigation Drawer</string>
+    <string name="positions">Positions</string>
+    <string name="randomize">Randomize</string>
 </resources>

@@ -2981,6 +2981,7 @@ drawable ic_dropdown
 drawable ic_edit
 drawable ic_favorite
 drawable ic_favorite_filled
+drawable ic_image_24
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_background
 drawable ic_launcher_foreground
@@ -2999,6 +3000,7 @@ drawable ic_search_black_24
 drawable ic_settings
 drawable ic_share
 drawable ic_shuffle
+drawable ic_shuffle_24
 drawable ic_theme
 drawable m3_appbar_background
 drawable m3_avd_hide_password
@@ -3397,6 +3399,7 @@ id mtrl_picker_text_input_range_start
 id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
+id nav_positions
 id nav_scenes
 id nav_settings
 id nav_view
@@ -3440,6 +3443,9 @@ id peekHeight
 id percent
 id pin
 id position
+id position_card_view
+id position_image_view
+id position_name_text_view
 id postLayout
 id pressed
 id progress_circular
@@ -3447,6 +3453,7 @@ id progress_horizontal
 id radio
 id random_content
 id randomizeButton
+id randomize_button
 id ratio
 id rectangles
 id report_drawn
@@ -3582,6 +3589,7 @@ id title_template
 id toast_icon
 id toast_text
 id toggle
+id toolbar
 id top
 id topAppBar
 id topPanel
@@ -3731,6 +3739,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_main
+layout activity_positions
 layout activity_settings
 layout custom_dialog
 layout design_bottom_navigation_item
@@ -3998,12 +4007,14 @@ string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
+string positions
 string pref_theme_dark_value
 string pref_theme_key
 string pref_theme_light_value
 string pref_theme_system_value
 string random
 string random_scene
+string randomize
 string reset_confirm
 string reset_to_default
 string save

@@ -2980,6 +2980,7 @@ int drawable ic_dropdown 0x7f08008c
 int drawable ic_edit 0x7f08008d
 int drawable ic_favorite 0x7f08008e
 int drawable ic_favorite_filled 0x7f08008f
+int drawable ic_image_24 0x7f0800ef
 int drawable ic_keyboard_black_24dp 0x7f080090
 int drawable ic_launcher_background 0x7f0800ee
 int drawable ic_launcher_foreground 0x7f080091
@@ -2998,6 +2999,7 @@ int drawable ic_search_black_24 0x7f08009d
 int drawable ic_settings 0x7f08009e
 int drawable ic_share 0x7f08009f
 int drawable ic_shuffle 0x7f0800a0
+int drawable ic_shuffle_24 0x7f0800f0
 int drawable ic_theme 0x7f0800a1
 int drawable m3_appbar_background 0x7f0800a2
 int drawable m3_avd_hide_password 0x7f0800a3
@@ -3396,6 +3398,7 @@ int id mtrl_picker_text_input_range_start 0x7f09013e
 int id mtrl_picker_title_text 0x7f09013f
 int id mtrl_view_tag_bottom_padding 0x7f090140
 int id multiply 0x7f090141
+int id nav_positions 0x7f09021e
 int id nav_scenes 0x7f090142
 int id nav_settings 0x7f090143
 int id nav_view 0x7f090144
@@ -3439,6 +3442,9 @@ int id peekHeight 0x7f090169
 int id percent 0x7f09016a
 int id pin 0x7f09016b
 int id position 0x7f09016c
+int id position_card_view 0x7f09021f
+int id position_image_view 0x7f090220
+int id position_name_text_view 0x7f090221
 int id postLayout 0x7f09016d
 int id pressed 0x7f09016e
 int id progress_circular 0x7f09016f
@@ -3446,6 +3452,7 @@ int id progress_horizontal 0x7f090170
 int id radio 0x7f090171
 int id random_content 0x7f090172
 int id randomizeButton 0x7f090173
+int id randomize_button 0x7f090222
 int id ratio 0x7f090174
 int id rectangles 0x7f090175
 int id report_drawn 0x7f090176
@@ -3581,6 +3588,7 @@ int id title_template 0x7f0901f7
 int id toast_icon 0x7f0901f8
 int id toast_text 0x7f0901f9
 int id toggle 0x7f0901fa
+int id toolbar 0x7f090223
 int id top 0x7f0901fb
 int id topAppBar 0x7f0901fc
 int id topPanel 0x7f0901fd
@@ -3730,6 +3738,7 @@ int layout abc_search_view 0x7f0c0019
 int layout abc_select_dialog_material 0x7f0c001a
 int layout abc_tooltip 0x7f0c001b
 int layout activity_main 0x7f0c001c
+int layout activity_positions 0x7f0c0075
 int layout activity_settings 0x7f0c001d
 int layout custom_dialog 0x7f0c001e
 int layout design_bottom_navigation_item 0x7f0c001f
@@ -3997,12 +4006,14 @@ int string path_password_eye 0x7f1100a7
 int string path_password_eye_mask_strike_through 0x7f1100a8
 int string path_password_eye_mask_visible 0x7f1100a9
 int string path_password_strike_through 0x7f1100aa
+int string positions 0x7f1100cc
 int string pref_theme_dark_value 0x7f1100ab
 int string pref_theme_key 0x7f1100ac
 int string pref_theme_light_value 0x7f1100ad
 int string pref_theme_system_value 0x7f1100ae
 int string random 0x7f1100af
 int string random_scene 0x7f1100b0
+int string randomize 0x7f1100cd
 int string reset_confirm 0x7f1100b1
 int string reset_to_default 0x7f1100b2
 int string save 0x7f1100b3
