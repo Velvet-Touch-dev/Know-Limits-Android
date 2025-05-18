@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var contentTextView: TextView
     private lateinit var randomizeButton: FloatingActionButton
     private lateinit var sceneCardView: MaterialCardView
-    private lateinit var shareButton: FloatingActionButton
+    private lateinit var shareButton: MaterialButton
     private lateinit var addSceneButton: FloatingActionButton
     private lateinit var resetScenesButton: ExtendedFloatingActionButton
     private lateinit var topAppBar: Toolbar
@@ -416,7 +416,7 @@ class MainActivity : AppCompatActivity() {
                 randomContent.visibility = View.VISIBLE
                 favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
-                shareButton.show()
+                shareButton.visibility = View.VISIBLE
             }
             MODE_FAVORITES -> {
                 // Update app bar title
@@ -427,7 +427,7 @@ class MainActivity : AppCompatActivity() {
                 favoritesContainer.visibility = View.VISIBLE
                 editContainer.visibility = View.GONE
                 updateFavoritesList()
-                shareButton.hide()
+                shareButton.visibility = View.GONE
             }
             MODE_EDIT -> {
                 // Update app bar title
@@ -438,7 +438,7 @@ class MainActivity : AppCompatActivity() {
                 favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.VISIBLE
                 updateEditList()
-                shareButton.hide()
+                shareButton.visibility = View.GONE
             }
         }
         
