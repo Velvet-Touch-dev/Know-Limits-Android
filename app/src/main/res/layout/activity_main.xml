@@ -40,6 +40,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:padding="16dp"
+                android:paddingBottom="96dp"
                 android:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -75,21 +76,27 @@
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?attr/textAppearanceBodyMedium"
                                 android:lineSpacingExtra="4dp"
+                                android:paddingBottom="8dp"
                                 tools:text="Scene content goes here..." />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:gravity="end"
-                                android:layout_marginTop="16dp">
+                                android:gravity="start"
+                                android:layout_marginTop="8dp">
                                 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/shareButton"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:minWidth="0dp"
+                                    android:minHeight="36dp"
+                                    android:paddingHorizontal="8dp"
                                     android:text="@string/share"
+                                    android:textSize="12sp"
                                     app:icon="@drawable/ic_share"
+                                    app:iconSize="18dp"
                                     style="@style/Widget.Material3.Button.TextButton.Icon"
                                     android:contentDescription="@string/share_scene" />
                             </LinearLayout>
@@ -172,6 +179,7 @@
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="96dp"
+            android:elevation="8dp"
             app:srcCompat="@drawable/ic_shuffle"
             android:contentDescription="@string/random_scene" />
 
