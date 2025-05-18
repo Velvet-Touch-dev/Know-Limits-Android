@@ -168,15 +168,10 @@ class PositionsActivity : AppCompatActivity() {
             }
         }
         
-        // Set up auto play button
+        // Initialize auto play settings
+        autoPlayButton.text = getString(R.string.auto_play)
         autoPlayButton.setOnClickListener {
             toggleAutoPlay()
-        }
-        
-        // Set long click listener for auto play button to show/hide settings
-        autoPlayButton.setOnLongClickListener {
-            toggleAutoPlaySettings()
-            true
         }
         
         // Load position images
@@ -240,28 +235,20 @@ class PositionsActivity : AppCompatActivity() {
             // Start auto play
             startAutoPlay()
             
-            // Change button icon and shape to pause (square)
-            autoPlayButton.icon = getDrawable(R.drawable.ic_pause_square_24)
-            autoPlayButton.cornerRadius = 12 // More square-like
+            // Change button text to Pause
+            autoPlayButton.text = getString(R.string.pause)
             
             // Show timer
             timerTextView.visibility = View.VISIBLE
-            
-            // Long click to show/hide the time settings
-            Toast.makeText(this, "Long-press the Auto Play button to show timer settings", Toast.LENGTH_LONG).show()
         } else {
             // Stop auto play
             stopAutoPlay()
             
-            // Change button icon and shape to play (circle)
-            autoPlayButton.icon = getDrawable(R.drawable.ic_play_circle_filled_24)
-            autoPlayButton.cornerRadius = 28 // More circular
+            // Change button text to Play
+            autoPlayButton.text = getString(R.string.play)
             
             // Hide timer
             timerTextView.visibility = View.GONE
-            
-            // Show toast message
-            Toast.makeText(this, R.string.auto_play_off, Toast.LENGTH_SHORT).show()
         }
     }
     

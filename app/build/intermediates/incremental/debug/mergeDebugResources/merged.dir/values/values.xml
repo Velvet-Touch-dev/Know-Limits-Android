@@ -2128,6 +2128,8 @@
     <string name="path_password_eye_mask_strike_through" translatable="false">M2,4.27 L19.73,22 L22.27,19.46 L4.54,1.73 L4.54,1 L23,1 L23,23 L1,23 L1,4.27 Z</string>
     <string name="path_password_eye_mask_visible" translatable="false">M2,4.27 L2,4.27 L4.54,1.73 L4.54,1.73 L4.54,1 L23,1 L23,23 L1,23 L1,4.27 Z</string>
     <string name="path_password_strike_through" translatable="false">M3.27,4.27 L19.74,20.74</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
     <string name="positions">Positions</string>
     <string name="pref_theme_dark_value" translatable="false">dark</string>
     <string name="pref_theme_key" translatable="false">theme_preference</string>
@@ -5894,7 +5896,10 @@
   </style>
     <style name="ShapeAppearance.Material3.Corner.ExtraLarge" parent="ShapeAppearance.M3.Sys.Shape.Corner.ExtraLarge"/>
     <style name="ShapeAppearance.Material3.Corner.ExtraSmall" parent="ShapeAppearance.M3.Sys.Shape.Corner.ExtraSmall"/>
-    <style name="ShapeAppearance.Material3.Corner.Full" parent="ShapeAppearance.M3.Sys.Shape.Corner.Full"/>
+    <style name="ShapeAppearance.Material3.Corner.Full" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
     <style name="ShapeAppearance.Material3.Corner.Large" parent="ShapeAppearance.M3.Sys.Shape.Corner.Large"/>
     <style name="ShapeAppearance.Material3.Corner.Medium" parent="ShapeAppearance.M3.Sys.Shape.Corner.Medium"/>
     <style name="ShapeAppearance.Material3.Corner.None" parent="ShapeAppearance.M3.Sys.Shape.Corner.None"/>

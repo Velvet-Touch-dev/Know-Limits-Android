@@ -4029,6 +4029,8 @@ string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
+string pause
+string play
 string positions
 string pref_theme_dark_value
 string pref_theme_key

@@ -4028,6 +4028,8 @@ int string path_password_eye 0x7f1100a7
 int string path_password_eye_mask_strike_through 0x7f1100a8
 int string path_password_eye_mask_visible 0x7f1100a9
 int string path_password_strike_through 0x7f1100aa
+int string pause 0x7f1100d3
+int string play 0x7f1100d4
 int string positions 0x7f1100cc
 int string pref_theme_dark_value 0x7f1100ab
 int string pref_theme_key 0x7f1100ac
