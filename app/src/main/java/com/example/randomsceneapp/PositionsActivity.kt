@@ -99,6 +99,15 @@ class PositionsActivity : AppCompatActivity() {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+                R.id.nav_body_worship -> {
+                    // Launch body worship activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, BodyWorshipActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish() // Close this activity
+                    true
+                }
                 R.id.nav_settings -> {
                     // Launch settings activity
                     drawerLayout.closeDrawer(GravityCompat.START)

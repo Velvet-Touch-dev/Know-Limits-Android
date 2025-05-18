@@ -73,6 +73,13 @@ class SettingsActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_body_worship -> {
+                    // Go to body worship activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, BodyWorshipActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 R.id.nav_settings -> {
                     // Already on settings page, just close drawer
                     drawerLayout.closeDrawer(GravityCompat.START)

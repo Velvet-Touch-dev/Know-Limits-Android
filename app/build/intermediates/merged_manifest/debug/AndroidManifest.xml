@@ -42,6 +42,10 @@
             android:name="com.example.randomsceneapp.PositionsActivity"
             android:exported="false"
             android:parentActivityName="com.example.randomsceneapp.MainActivity" />
+        <activity
+            android:name="com.example.randomsceneapp.BodyWorshipActivity"
+            android:exported="false"
+            android:parentActivityName="com.example.randomsceneapp.MainActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

@@ -2990,6 +2990,7 @@ drawable ic_favorite
 drawable ic_favorite_filled
 drawable ic_image_24
 drawable ic_keyboard_black_24dp
+drawable ic_kneeling_24
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_loop_24
@@ -3190,6 +3191,8 @@ id beginOnFirstDraw
 id beginning
 id bestChoice
 id blocking
+id body_worship_card_view
+id body_worship_text_view
 id bottom
 id bottom_navigation
 id bounce
@@ -3419,6 +3422,7 @@ id mtrl_picker_text_input_range_start
 id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
+id nav_body_worship
 id nav_positions
 id nav_scenes
 id nav_settings
@@ -3759,6 +3763,7 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_body_worship
 layout activity_main
 layout activity_positions
 layout activity_settings
@@ -3891,6 +3896,7 @@ string appbar_scrolling_view_behavior
 string auto_play
 string auto_play_off
 string auto_play_on
+string body_worship
 string bottom_sheet_behavior
 string bottomsheet_action_collapse
 string bottomsheet_action_expand

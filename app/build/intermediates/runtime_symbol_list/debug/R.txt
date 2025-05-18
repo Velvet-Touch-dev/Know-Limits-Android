@@ -2989,6 +2989,7 @@ int drawable ic_favorite 0x7f08008e
 int drawable ic_favorite_filled 0x7f08008f
 int drawable ic_image_24 0x7f0800ef
 int drawable ic_keyboard_black_24dp 0x7f080090
+int drawable ic_kneeling_24 0x7f0800fc
 int drawable ic_launcher_background 0x7f0800ee
 int drawable ic_launcher_foreground 0x7f080091
 int drawable ic_loop_24 0x7f0800fb
@@ -3189,6 +3190,8 @@ int id beginOnFirstDraw 0x7f09005d
 int id beginning 0x7f09005e
 int id bestChoice 0x7f09005f
 int id blocking 0x7f090060
+int id body_worship_card_view 0x7f09022b
+int id body_worship_text_view 0x7f09022c
 int id bottom 0x7f090061
 int id bottom_navigation 0x7f090062
 int id bounce 0x7f090063
@@ -3418,6 +3421,7 @@ int id mtrl_picker_text_input_range_start 0x7f09013e
 int id mtrl_picker_title_text 0x7f09013f
 int id mtrl_view_tag_bottom_padding 0x7f090140
 int id multiply 0x7f090141
+int id nav_body_worship 0x7f09022d
 int id nav_positions 0x7f09021e
 int id nav_scenes 0x7f090142
 int id nav_settings 0x7f090143
@@ -3758,6 +3762,7 @@ int layout abc_search_dropdown_item_icons_2line 0x7f0c0018
 int layout abc_search_view 0x7f0c0019
 int layout abc_select_dialog_material 0x7f0c001a
 int layout abc_tooltip 0x7f0c001b
+int layout activity_body_worship 0x7f0c0076
 int layout activity_main 0x7f0c001c
 int layout activity_positions 0x7f0c0075
 int layout activity_settings 0x7f0c001d
@@ -3890,6 +3895,7 @@ int string appbar_scrolling_view_behavior 0x7f11001e
 int string auto_play 0x7f1100ce
 int string auto_play_off 0x7f1100cf
 int string auto_play_on 0x7f1100d0
+int string body_worship 0x7f1100d5
 int string bottom_sheet_behavior 0x7f11001f
 int string bottomsheet_action_collapse 0x7f110020
 int string bottomsheet_action_expand 0x7f110021
