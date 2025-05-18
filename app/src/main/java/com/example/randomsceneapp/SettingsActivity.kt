@@ -66,6 +66,13 @@ class SettingsActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_positions -> {
+                    // Go to positions activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, PositionsActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 R.id.nav_settings -> {
                     // Already on settings page, just close drawer
                     drawerLayout.closeDrawer(GravityCompat.START)

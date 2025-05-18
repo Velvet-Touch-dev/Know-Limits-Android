@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity() {
                     // Launch positions activity
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, PositionsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
                     true
                 }
@@ -146,6 +147,7 @@ class MainActivity : AppCompatActivity() {
                     // Launch settings activity
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, SettingsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
                     true
                 }
