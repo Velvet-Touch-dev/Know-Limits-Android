@@ -2981,6 +2981,7 @@ int drawable ic_edit 0x7f08008d
 int drawable ic_favorite 0x7f08008e
 int drawable ic_favorite_filled 0x7f08008f
 int drawable ic_keyboard_black_24dp 0x7f080090
+int drawable ic_launcher_background 0x7f0800ee
 int drawable ic_launcher_foreground 0x7f080091
 int drawable ic_m3_chip_check 0x7f080092
 int drawable ic_m3_chip_checked_circle 0x7f080093
@@ -3822,6 +3823,7 @@ int menu drawer_menu 0x7f0e0001
 int menu edit_menu 0x7f0e0002
 int menu top_app_bar 0x7f0e0003
 int mipmap ic_launcher 0x7f0f0000
+int mipmap ic_launcher_foreground 0x7f0f0002
 int mipmap ic_launcher_round 0x7f0f0001
 int plurals mtrl_badge_content_description 0x7f100000
 int string abc_action_bar_home_description 0x7f110000
