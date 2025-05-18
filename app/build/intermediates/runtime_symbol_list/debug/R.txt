@@ -2972,6 +2972,7 @@ int drawable design_snackbar_background 0x7f080085
 int drawable ic_add 0x7f080086
 int drawable ic_arrow_back_black_24 0x7f080087
 int drawable ic_back 0x7f080088
+int drawable ic_bed_24 0x7f0800ed
 int drawable ic_clear_black_24 0x7f080089
 int drawable ic_clock_black_24dp 0x7f08008a
 int drawable ic_delete 0x7f08008b

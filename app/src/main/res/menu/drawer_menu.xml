@@ -3,6 +3,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_scenes"
+            android:icon="@drawable/ic_bed_24"
             android:title="@string/random"
             android:checked="true" />
         <item
