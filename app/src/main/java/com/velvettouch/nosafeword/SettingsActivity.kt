@@ -1,4 +1,4 @@
-package com.velvettouch.nosafeword
+    package com.velvettouch.nosafeword
 
 import android.content.Context
 import android.content.Intent
@@ -104,6 +104,9 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         // Set up theme selection
         setupThemeSelector()
         
+        // Set up voice settings card
+        setupVoiceSettingsCard()
+        
         // Set up voice instructions toggle
         setupVoiceInstructionsToggle()
     }
@@ -176,6 +179,14 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         super.onResume()
         // Update the selected menu item in the drawer
         navigationView.setCheckedItem(R.id.nav_settings)
+        
+        // Update voice settings display
+        try {
+            val voiceSettingsValue = findViewById<TextView>(R.id.voice_settings_value)
+            updateVoiceSettingsDisplay(voiceSettingsValue)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
@@ -280,6 +291,41 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
     
+    private fun setupVoiceSettingsCard() {
+        try {
+            val voiceSettingsCard = findViewById<MaterialCardView>(R.id.voice_settings_card)
+            val voiceSettingsValue = findViewById<TextView>(R.id.voice_settings_value)
+            
+            // Update the display with current settings
+            updateVoiceSettingsDisplay(voiceSettingsValue)
+            
+            // Set click listener to launch voice settings
+            voiceSettingsCard.setOnClickListener {
+                val intent = Intent(this, DeveloperSettingsActivity::class.java)
+                startActivity(intent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    
+    private fun updateVoiceSettingsDisplay(textView: TextView) {
+        try {
+            // Load current voice settings
+            val prefs = getSharedPreferences(DeveloperSettingsActivity.Settings.PREF_VOICE_SETTINGS, Context.MODE_PRIVATE)
+            val pitch = prefs.getFloat(DeveloperSettingsActivity.Settings.PREF_VOICE_PITCH, 
+                                      DeveloperSettingsActivity.Settings.DEFAULT_PITCH)
+            val speed = prefs.getFloat(DeveloperSettingsActivity.Settings.PREF_VOICE_SPEED, 
+                                      DeveloperSettingsActivity.Settings.DEFAULT_SPEED)
+            
+            // Format and display
+            val displayText = String.format("Pitch: %.2f, Speed: %.2f", pitch, speed)
+            textView.text = displayText
+        } catch (e: Exception) {
+            e.printStackTrace()
+            textView.text = "Adjust voice pitch and speed"
+        }
+    }
     private fun setupVoiceInstructionsToggle() {
         // Try to find a card named voice_card and set up toggle
         try {

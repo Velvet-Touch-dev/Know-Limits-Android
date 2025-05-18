@@ -21,7 +21,7 @@ class DeveloperSettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         
         // Default values
         const val DEFAULT_PITCH = 1.0f
-        const val DEFAULT_SPEED = 0.9f
+        const val DEFAULT_SPEED = 0.7f
     }
     
     // UI elements
@@ -31,6 +31,7 @@ class DeveloperSettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListen
     private lateinit var speedValueText: TextView
     private lateinit var testText: EditText
     private lateinit var testButton: Button
+    private lateinit var resetButton: Button
     private lateinit var saveButton: Button
     
     // TTS engine
@@ -55,6 +56,7 @@ class DeveloperSettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         speedValueText = findViewById(R.id.speed_value)
         testText = findViewById(R.id.test_text)
         testButton = findViewById(R.id.test_button)
+        resetButton = findViewById(R.id.reset_button)
         saveButton = findViewById(R.id.save_button)
         
         // Load current settings
@@ -90,6 +92,10 @@ class DeveloperSettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         // Set up button listeners
         testButton.setOnClickListener {
             testVoice()
+        }
+        
+        resetButton.setOnClickListener {
+            resetToDefaults()
         }
         
         saveButton.setOnClickListener {
@@ -196,6 +202,26 @@ class DeveloperSettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListen
         // Set seekbar positions
         pitchSeekbar.progress = ((currentPitch - 0.5f) * 20).toInt()
         speedSeekbar.progress = ((currentSpeed - 0.5f) * 20).toInt()
+    }
+    
+    private fun resetToDefaults() {
+        // Reset to default values
+        currentPitch = Settings.DEFAULT_PITCH
+        currentSpeed = Settings.DEFAULT_SPEED
+        
+        // Update UI
+        pitchSeekbar.progress = ((currentPitch - 0.5f) * 20).toInt()
+        speedSeekbar.progress = ((currentSpeed - 0.5f) * 20).toInt()
+        
+        // Update text display
+        updatePitchText()
+        updateSpeedText()
+        
+        // Apply settings to TTS
+        applyVoiceSettings()
+        
+        // Give feedback
+        Toast.makeText(this, "Reset to default settings", Toast.LENGTH_SHORT).show()
     }
     
     private fun saveSettings() {

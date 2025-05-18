@@ -93,4 +93,12 @@
         android:layout_marginTop="8dp"
         style="@style/Widget.Material3.Button.OutlinedButton" />
         
+    <Button
+        android:id="@+id/reset_button"
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content"
+        android:text="Reset to Default"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Material3.Button.TonalButton" />
+        
 </LinearLayout>

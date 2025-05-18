@@ -79,7 +79,7 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         
         // Default values
         const val DEFAULT_PITCH = 1.0f
-        const val DEFAULT_SPEED = 0.9f
+        const val DEFAULT_SPEED = 0.7f
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {

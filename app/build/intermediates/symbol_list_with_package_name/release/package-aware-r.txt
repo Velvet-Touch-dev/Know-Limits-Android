@@ -3484,6 +3484,7 @@ id randomize_button
 id ratio
 id rectangles
 id report_drawn
+id reset_button
 id reset_scenes_button
 id reverseSawtooth
 id right
@@ -3655,6 +3656,8 @@ id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
 id voice_card
+id voice_settings_card
+id voice_settings_value
 id voice_switch
 id west
 id withText
