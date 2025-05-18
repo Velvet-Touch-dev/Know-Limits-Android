@@ -92,11 +92,13 @@
                                     android:layout_height="wrap_content"
                                     android:minWidth="0dp"
                                     android:minHeight="36dp"
-                                    android:paddingHorizontal="8dp"
+                                    android:paddingStart="0dp"
+                                    android:paddingEnd="8dp"
                                     android:text="@string/share"
                                     android:textSize="12sp"
                                     app:icon="@drawable/ic_share"
                                     app:iconSize="18dp"
+                                    app:iconPadding="4dp"
                                     style="@style/Widget.Material3.Button.TextButton.Icon"
                                     android:contentDescription="@string/share_scene" />
                             </LinearLayout>
