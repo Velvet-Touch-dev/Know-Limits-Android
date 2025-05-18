@@ -54,5 +54,10 @@
     <string name="body_worship">Body Worship</string>
     <string name="tts_enabled">Voice Instructions</string>
     <string name="tts_enabled_summary">Enable voice announcements for tasks</string>
+    <string name="voice_seductiveness">Voice Seductiveness</string>
+    <string name="voice_seductiveness_summary">Adjust how seductive the voice sounds</string>
     <string name="next_task">Next task</string>
+    <string name="seductiveness_level_low">Normal</string>
+    <string name="seductiveness_level_medium">Seductive</string>
+    <string name="seductiveness_level_high">Very Seductive</string>
 </resources>

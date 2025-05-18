@@ -3472,6 +3472,7 @@ id position_image_view
 id position_name_text_view
 id postLayout
 id pressed
+id preview_button
 id progress_circular
 id progress_horizontal
 id radio
@@ -3525,6 +3526,11 @@ id search_view_status_bar_spacer
 id search_view_toolbar
 id search_view_toolbar_container
 id search_voice_btn
+id seductiveness_description
+id seductiveness_high_radio
+id seductiveness_low_radio
+id seductiveness_medium_radio
+id seductiveness_radio_group
 id select_dialog_listview
 id selected
 id selection_type
@@ -3787,6 +3793,7 @@ layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_edit_scene
 layout dialog_theme_settings
+layout dialog_voice_seductiveness
 layout dropdown_item
 layout fragment_edit
 layout fragment_random_card
@@ -4049,6 +4056,7 @@ string pref_theme_key
 string pref_theme_light_value
 string pref_theme_system_value
 string pref_tts_enabled_key
+string pref_voice_seductiveness_key
 string random
 string random_scene
 string randomize
@@ -4068,6 +4076,9 @@ string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
 string seconds
+string seductiveness_level_high
+string seductiveness_level_low
+string seductiveness_level_medium
 string settings
 string share
 string share_scene
@@ -4082,6 +4093,8 @@ string theme_settings
 string theme_system
 string tts_enabled
 string tts_enabled_summary
+string voice_seductiveness
+string voice_seductiveness_summary
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

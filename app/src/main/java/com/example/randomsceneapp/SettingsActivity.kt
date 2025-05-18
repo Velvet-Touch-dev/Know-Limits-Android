@@ -3,9 +3,13 @@ package com.velvettouch.nosafeword
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -15,12 +19,17 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import java.util.Locale
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var drawerToggle: ActionBarDrawerToggle
+    
+    // TTS for previewing voice
+    private lateinit var textToSpeech: TextToSpeech
+    private var isTtsReady = false
 
     companion object {
         // Theme mode constants
@@ -32,6 +41,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        
+        // Initialize TextToSpeech for voice preview
+        textToSpeech = TextToSpeech(this, this)
 
         // Set up toolbar with navigation icon
         val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
@@ -94,6 +106,57 @@ class SettingsActivity : AppCompatActivity() {
         
         // Set up voice instructions toggle
         setupVoiceInstructionsToggle()
+    }
+    
+    override fun onDestroy() {
+        // Clean up TTS resources
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.stop()
+            textToSpeech.shutdown()
+        }
+        super.onDestroy()
+    }
+    
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Set language to US English
+            val result = textToSpeech.setLanguage(Locale.US)
+            
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(this, "Text-to-speech language not supported", Toast.LENGTH_SHORT).show()
+            } else {
+                isTtsReady = true
+                
+                // Try to set a female voice if available
+                val voices = textToSpeech.voices
+                var femaleVoiceFound = false
+                
+                // First, try to find high-quality female voice
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true) && 
+                            (voice.name.contains("premium", ignoreCase = true) || 
+                             voice.name.contains("enhanced", ignoreCase = true))) {
+                            textToSpeech.voice = voice
+                            femaleVoiceFound = true
+                            break
+                        }
+                    }
+                }
+                
+                // If no high-quality female voice, try any female voice
+                if (!femaleVoiceFound) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true)) {
+                            textToSpeech.voice = voice
+                            break
+                        }
+                    }
+                }
+            }
+        } else {
+            Toast.makeText(this, "Failed to initialize text-to-speech", Toast.LENGTH_SHORT).show()
+        }
     }
     
     override fun onPostCreate(savedInstanceState: Bundle?) {

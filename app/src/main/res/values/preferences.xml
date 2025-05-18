@@ -8,4 +8,7 @@
     
     <!-- Voice instructions preference -->
     <string name="pref_tts_enabled_key" translatable="false">tts_enabled</string>
+    
+    <!-- Voice seductiveness preference -->
+    <string name="pref_voice_seductiveness_key" translatable="false">voice_seductiveness</string>
 </resources>

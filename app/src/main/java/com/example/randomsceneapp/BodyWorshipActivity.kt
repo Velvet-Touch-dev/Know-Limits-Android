@@ -423,15 +423,47 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 
                 // Try to set a female voice if available
                 val voices = textToSpeech.voices
-                for (voice in voices) {
-                    if (voice.name.contains("female", ignoreCase = true)) {
-                        textToSpeech.voice = voice
-                        break
+                var femaleVoiceFound = false
+                
+                // First, try to find high-quality female voice that supports SSML
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true) && 
+                            voice.features.contains(TextToSpeech.Engine.KEY_FEATURE_EMBEDDED_SYNTHESIS)) {
+                            textToSpeech.voice = voice
+                            femaleVoiceFound = true
+                            break
+                        }
                     }
                 }
                 
-                // Set speech rate and pitch for a more natural female voice
-                textToSpeech.setPitch(1.1f)  // Slightly higher pitch for female voice
+                // Next, look for premium/enhanced female voices
+                if (!femaleVoiceFound) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true) && 
+                            (voice.name.contains("premium", ignoreCase = true) || 
+                             voice.name.contains("enhanced", ignoreCase = true) || 
+                             voice.name.contains("high", ignoreCase = true))) {
+                            textToSpeech.voice = voice
+                            femaleVoiceFound = true
+                            break
+                        }
+                    }
+                }
+                
+                // If no premium female voice found, try any female voice
+                if (!femaleVoiceFound) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true)) {
+                            textToSpeech.voice = voice
+                            femaleVoiceFound = true
+                            break
+                        }
+                    }
+                }
+                
+                // Set speech parameters to sound natural
+                textToSpeech.setPitch(1.0f)      // Normal pitch
                 textToSpeech.setSpeechRate(0.9f)  // Slightly slower for clearer speech
             }
         } else {
@@ -467,9 +499,11 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 textToSpeech.stop()
             }
             
-            // Say "Next task" followed by the instruction
-            textToSpeech.speak(getString(R.string.next_task), TextToSpeech.QUEUE_FLUSH, null, "next_announcement")
-            textToSpeech.speak(instruction, TextToSpeech.QUEUE_ADD, null, "instruction")
+            // Create a Bundle for speech parameters
+            val params = Bundle()
+            
+            // Simply speak the instruction with a natural voice
+            textToSpeech.speak(instruction, TextToSpeech.QUEUE_FLUSH, params, "instruction")
         }
     }
 }
