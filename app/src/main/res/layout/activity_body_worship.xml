@@ -55,7 +55,7 @@
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                     android:textStyle="italic"
                     android:textSize="28sp"
-                    tools:text="*Kiss her inner thighs*" />
+                    tools:text="Kiss her inner thighs" />
 
             </LinearLayout>
 

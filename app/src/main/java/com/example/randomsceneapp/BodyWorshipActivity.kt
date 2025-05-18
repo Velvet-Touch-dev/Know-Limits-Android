@@ -38,8 +38,8 @@ class BodyWorshipActivity : AppCompatActivity() {
     
     private var isAutoPlayOn = false
     private var autoPlayTimer: CountDownTimer? = null
-    private var minTimeSeconds = 30 // Default minimum time in seconds
-    private var maxTimeSeconds = 60 // Default maximum time in seconds
+    private var minTimeSeconds = 10 // Default minimum time: 10 seconds
+    private var maxTimeSeconds = 20 // Default maximum time: 20 seconds
     private val timeOptions = listOf(10, 15, 20, 30, 45, 60, 90, 120) // Time options in seconds
     
     // Lists for generating body worship instructions
@@ -208,7 +208,7 @@ class BodyWorshipActivity : AppCompatActivity() {
         
         // Set up min time spinner
         minTimeSpinner.adapter = adapter
-        minTimeSpinner.setSelection(timeOptions.indexOf(minTimeSeconds).takeIf { it >= 0 } ?: 3) // Default to 30s
+        minTimeSpinner.setSelection(timeOptions.indexOf(minTimeSeconds).takeIf { it >= 0 } ?: 0) // Default to 10s
         minTimeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 minTimeSeconds = timeOptions[position]
@@ -224,7 +224,7 @@ class BodyWorshipActivity : AppCompatActivity() {
         
         // Set up max time spinner
         maxTimeSpinner.adapter = adapter
-        maxTimeSpinner.setSelection(timeOptions.indexOf(maxTimeSeconds).takeIf { it >= 0 } ?: 5) // Default to 60s
+        maxTimeSpinner.setSelection(timeOptions.indexOf(maxTimeSeconds).takeIf { it >= 0 } ?: 2) // Default to 20s
         maxTimeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 maxTimeSeconds = timeOptions[position]
@@ -392,8 +392,8 @@ class BodyWorshipActivity : AppCompatActivity() {
         val randomAction = actionWords.random()
         val randomBodyPart = bodyParts.random()
         
-        // Format the instruction: "*Kiss her inner thighs*"
-        val instruction = "*$randomAction her $randomBodyPart*"
+        // Format the instruction without asterisks: "Kiss her inner thighs"
+        val instruction = "$randomAction her $randomBodyPart"
         
         // Display the formatted instruction
         bodyWorshipTextView.text = instruction
