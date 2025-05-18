@@ -1,5 +1,8 @@
 package com.velvettouch.nosafeword
 
+import com.velvettouch.nosafeword.DeveloperSettingsActivity.Settings
+
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -44,6 +47,11 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var isTtsReady = false
     private var isTtsEnabled = true // Default value, will be updated from preferences
     
+    // Voice settings
+    private var voicePitch = 1.0f
+    private var voiceSpeed = 0.9f
+    private var gestureCount = 0 // For accessing developer settings
+    
     private var isAutoPlayOn = false
     private var autoPlayTimer: CountDownTimer? = null
     private var minTimeSeconds = 10 // Default minimum time: 10 seconds
@@ -63,6 +71,17 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         "Feet", "Hands", "Fingers", "Calves", "Pussy"
     )
     
+    // Voice settings constants (moved from DeveloperSettingsActivity)
+    companion object VoiceSettings {
+        const val PREF_VOICE_SETTINGS = "voice_settings"
+        const val PREF_VOICE_PITCH = "voice_pitch"
+        const val PREF_VOICE_SPEED = "voice_speed"
+        
+        // Default values
+        const val DEFAULT_PITCH = 1.0f
+        const val DEFAULT_SPEED = 0.9f
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body_worship)
@@ -73,6 +92,9 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         // Load TTS preference
         val sharedPreferences = getSharedPreferences("com.velvettouch.nosafeword_preferences", MODE_PRIVATE)
         isTtsEnabled = sharedPreferences.getBoolean(getString(R.string.pref_tts_enabled_key), true)
+        
+        // Load voice settings from developer settings
+        loadVoiceSettings()
         
         // Initialize views
         bodyWorshipTextView = findViewById(R.id.body_worship_text_view)
@@ -463,8 +485,8 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
                 
                 // Set speech parameters to sound natural
-                textToSpeech.setPitch(1.0f)      // Normal pitch
-                textToSpeech.setSpeechRate(0.9f)  // Slightly slower for clearer speech
+                textToSpeech.setPitch(voicePitch)      // Use saved pitch
+                textToSpeech.setSpeechRate(voiceSpeed)  // Use saved speed
             }
         } else {
             Toast.makeText(this, "Failed to initialize text-to-speech", Toast.LENGTH_SHORT).show()
@@ -488,6 +510,22 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
         bodyWorshipTextView.setTextColor(typedValue.data)
         
+        // Add access to developer settings with triple tap on text
+        bodyWorshipTextView.setOnClickListener {
+            gestureCount++
+            if (gestureCount >= 3) {
+                openDeveloperSettings()
+                gestureCount = 0
+            }
+            
+            // Reset counter after 2 seconds of no clicks
+            android.os.Handler(mainLooper).postDelayed({
+                if (gestureCount > 0) {
+                    gestureCount = 0
+                }
+            }, 2000)
+        }
+        
         // Speak the instruction with TTS
         speakNextTask(instruction)
     }
@@ -505,5 +543,22 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             // Simply speak the instruction with a natural voice
             textToSpeech.speak(instruction, TextToSpeech.QUEUE_FLUSH, params, "instruction")
         }
+    }
+    
+    /**
+     * Load voice settings from shared preferences
+     */
+    private fun loadVoiceSettings() {
+        val prefs = getSharedPreferences(VoiceSettings.PREF_VOICE_SETTINGS, Context.MODE_PRIVATE)
+        voicePitch = prefs.getFloat(VoiceSettings.PREF_VOICE_PITCH, VoiceSettings.DEFAULT_PITCH)
+        voiceSpeed = prefs.getFloat(VoiceSettings.PREF_VOICE_SPEED, VoiceSettings.DEFAULT_SPEED)
+    }
+    
+    /**
+     * Open the developer settings activity
+     */
+    private fun openDeveloperSettings() {
+        val intent = Intent(this, DeveloperSettingsActivity::class.java)
+        startActivity(intent)
     }
 }

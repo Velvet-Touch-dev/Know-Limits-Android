@@ -3465,6 +3465,8 @@ int id pathRelative 0x7f090172
 int id peekHeight 0x7f090173
 int id percent 0x7f090174
 int id pin 0x7f090175
+int id pitch_seekbar 0x7f090238
+int id pitch_value 0x7f090239
 int id position 0x7f090176
 int id position_card_view 0x7f090177
 int id position_image_view 0x7f090178
@@ -3489,6 +3491,7 @@ int id right_icon 0x7f09018a
 int id right_side 0x7f09018b
 int id rounded 0x7f09018c
 int id row_index_key 0x7f09018d
+int id save_button 0x7f09023a
 int id save_non_transition_alpha 0x7f09018e
 int id save_overlay_view 0x7f09018f
 int id sawtooth 0x7f090190
@@ -3552,6 +3555,8 @@ int id snapMargins 0x7f0901cb
 int id south 0x7f0901cc
 int id spacer 0x7f0901cd
 int id special_effects_controller_view_tag 0x7f0901ce
+int id speed_seekbar 0x7f09023b
+int id speed_value 0x7f09023c
 int id spline 0x7f0901cf
 int id split_action_bar 0x7f0901d0
 int id spread 0x7f0901d1
@@ -3587,6 +3592,8 @@ int id tag_transition_group 0x7f0901ee
 int id tag_unhandled_key_event_manager 0x7f0901ef
 int id tag_unhandled_key_listeners 0x7f0901f0
 int id tag_window_insets_animation_callback 0x7f0901f1
+int id test_button 0x7f09023d
+int id test_text 0x7f09023e
 int id text 0x7f0901f2
 int id text2 0x7f0901f3
 int id textEnd 0x7f0901f4
@@ -3771,6 +3778,7 @@ int layout abc_search_view 0x7f0c0019
 int layout abc_select_dialog_material 0x7f0c001a
 int layout abc_tooltip 0x7f0c001b
 int layout activity_body_worship 0x7f0c001c
+int layout activity_developer_settings 0x7f0c0078
 int layout activity_main 0x7f0c001d
 int layout activity_positions 0x7f0c001e
 int layout activity_settings 0x7f0c001f
@@ -3791,6 +3799,7 @@ int layout design_navigation_menu_item 0x7f0c002d
 int layout design_text_input_end_icon 0x7f0c002e
 int layout design_text_input_start_icon 0x7f0c002f
 int layout dialog_edit_scene 0x7f0c0030
+int layout dialog_quick_voice_settings 0x7f0c0079
 int layout dialog_theme_settings 0x7f0c0031
 int layout dialog_voice_seductiveness 0x7f0c0032
 int layout dropdown_item 0x7f0c0033

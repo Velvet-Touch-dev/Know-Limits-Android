@@ -2039,7 +2039,19 @@ com.google.errorprone.annotations.concurrent.GuardedBy
 com.google.errorprone.annotations.concurrent.LazyInit
 com.google.errorprone.annotations.concurrent.LockMethod
 com.google.errorprone.annotations.concurrent.UnlockMethod
+com.velvettouch.nosafeword.BodyWorshipActivity:
+    public static final float DEFAULT_PITCH
+    public static final float DEFAULT_SPEED
+    public static final java.lang.String PREF_VOICE_PITCH
+    public static final java.lang.String PREF_VOICE_SETTINGS
+    public static final java.lang.String PREF_VOICE_SPEED
 com.velvettouch.nosafeword.BuildConfig
+com.velvettouch.nosafeword.DeveloperSettingsActivity:
+    public static final float DEFAULT_PITCH
+    public static final float DEFAULT_SPEED
+    public static final java.lang.String PREF_VOICE_PITCH
+    public static final java.lang.String PREF_VOICE_SETTINGS
+    public static final java.lang.String PREF_VOICE_SPEED
 com.velvettouch.nosafeword.MainActivity:
     private static final int MODE_EDIT
     private static final int MODE_FAVORITES
@@ -11363,7 +11375,12 @@ com.google.android.material.transformation.FabTransformationSheetBehavior:
     public static void updateImportantForAccessibility()
 com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0
 com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$2
+com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$2$67c160fa3b18d8f14d727252656fd7c9502921c51b72d95aff1c2c81c820ed8e$0
+com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$3$08f43c82635d4eeeea3abca02afdedbfce6a1eac1e525852bec111b7891740a8$0
+com.velvettouch.nosafeword.BodyWorshipActivity$VoiceSettings
 com.velvettouch.nosafeword.BodyWorshipActivity:
+    public static final com.velvettouch.nosafeword.BodyWorshipActivity$VoiceSettings VoiceSettings
+    public static void <clinit>()
     public static final synthetic void access$displayRandomInstruction()
     public static final synthetic android.widget.TextView access$getBodyWorshipTextView$p()
     public static final synthetic int access$getMaxTimeSeconds$p()
@@ -11371,11 +11388,21 @@ com.velvettouch.nosafeword.BodyWorshipActivity:
     public static final synthetic java.util.List access$getTimeOptions$p()
     public static final synthetic void access$startAutoPlay()
     public final java.lang.String formatTime()
+    public static void loadVoiceSettings()
+    public static void openDeveloperSettings()
     public final void setupSpinners()
     public static void speakNextTask()
     public final void stopAutoPlay()
     public final void toggleAutoPlay()
     public final void updateButtonLayout()
+com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$1
+com.velvettouch.nosafeword.DeveloperSettingsActivity$Settings
+com.velvettouch.nosafeword.DeveloperSettingsActivity:
+    public static final com.velvettouch.nosafeword.DeveloperSettingsActivity$Settings Settings
+    public static void <clinit>()
+    public static void loadSettings()
+    public static void saveSettings()
+    public static void testVoice()
 com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder$$InternalSyntheticLambda$2$32c6df3fa1fa30f98ab1920f3f08d1c2dd7887f0e137b4485dd8821220820140$1
 com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder:
     public final android.widget.ImageButton deleteButton
@@ -11418,7 +11445,7 @@ com.velvettouch.nosafeword.MainActivity:
     public static void toggleFavorite()
     public static void updateFavoriteIcon()
 com.velvettouch.nosafeword.NoSafeWordApplication:
-    public final void applyThemeMode()
+    public static void applyThemeMode()
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$0
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$2
 com.velvettouch.nosafeword.PositionsActivity:
@@ -11434,8 +11461,6 @@ com.velvettouch.nosafeword.PositionsActivity:
     public final void stopAutoPlay()
     public final void toggleAutoPlay()
     public final void updateButtonLayout()
-com.velvettouch.nosafeword.RandomSceneApplication:
-    public final void applyThemeMode()
 com.velvettouch.nosafeword.Scene:
     public static java.lang.String getContent()
     public static int getId()

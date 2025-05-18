@@ -187,9 +187,10 @@
 -keep class androidx.profileinstaller.ProfileInstallReceiver { <init>(); }
 -keep class androidx.startup.InitializationProvider { <init>(); }
 -keep class com.velvettouch.nosafeword.BodyWorshipActivity { <init>(); }
+-keep class com.velvettouch.nosafeword.DeveloperSettingsActivity { <init>(); }
 -keep class com.velvettouch.nosafeword.MainActivity { <init>(); }
+-keep class com.velvettouch.nosafeword.NoSafeWordApplication { <init>(); }
 -keep class com.velvettouch.nosafeword.PositionsActivity { <init>(); }
--keep class com.velvettouch.nosafeword.RandomSceneApplication { <init>(); }
 -keep class com.velvettouch.nosafeword.SettingsActivity { <init>(); }
 -keep class android.widget.Space { <init>(android.content.Context, android.util.AttributeSet); }
 

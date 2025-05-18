@@ -3466,6 +3466,8 @@ id pathRelative
 id peekHeight
 id percent
 id pin
+id pitch_seekbar
+id pitch_value
 id position
 id position_card_view
 id position_image_view
@@ -3490,6 +3492,7 @@ id right_icon
 id right_side
 id rounded
 id row_index_key
+id save_button
 id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
@@ -3553,6 +3556,8 @@ id snapMargins
 id south
 id spacer
 id special_effects_controller_view_tag
+id speed_seekbar
+id speed_value
 id spline
 id split_action_bar
 id spread
@@ -3588,6 +3593,8 @@ id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
+id test_button
+id test_text
 id text
 id text2
 id textEnd
@@ -3772,6 +3779,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_body_worship
+layout activity_developer_settings
 layout activity_main
 layout activity_positions
 layout activity_settings
@@ -3792,6 +3800,7 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_edit_scene
+layout dialog_quick_voice_settings
 layout dialog_theme_settings
 layout dialog_voice_seductiveness
 layout dropdown_item

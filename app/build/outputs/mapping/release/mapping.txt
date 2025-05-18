@@ -3,8 +3,8 @@
 # min_api: 24
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.1"}
-# pg_map_id: 768ad4b
-# pg_map_hash: SHA-256 768ad4bc297d30fdd1f7782bc7942479cd19736ad3d8f2f0ba51d47c08c41b09
+# pg_map_id: c79f9e7
+# pg_map_hash: SHA-256 c79f9e7bfd53c04bec434cd3e9f73ecda5fae124cdf2dc4647bf5eb17e13ba8a
 android.support.v4.app.INotificationSideChannel -> android.support.v4.app.a:
 android.support.v4.app.INotificationSideChannel$Stub -> android.support.v4.app.a$a:
     70:81:java.lang.Object android.support.v4.app.INotificationSideChannel$_Parcel.readTypedObject(android.os.Parcel,android.os.Parcelable$Creator):0:0 -> onTransact
@@ -1353,32 +1353,37 @@ androidx.constraintlayout.helper.widget.Carousel$$ExternalSyntheticLambda0 -> an
     0:65535:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.<init>(androidx.constraintlayout.helper.widget.Carousel):0:0 -> <init>
     0:65535:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.$r8$init$synthetic(java.lang.Object,int):0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    12:15:void com.google.android.material.textfield.ClearTextEndIconDelegate.lambda$tearDown$2():0:0 -> run
-    12:15:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    13:24:void com.google.android.material.textfield.DropdownMenuEndIconDelegate.lambda$afterEditTextChanged$3():0:0 -> run
+    13:24:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    16:18:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0:0 -> run
+    25:26:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0:0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    19:20:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0:0 -> run
-    19:20:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    27:30:void com.google.android.material.textfield.ClearTextEndIconDelegate.lambda$tearDown$2():0:0 -> run
+    27:30:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    21:26:androidx.customview.widget.ViewDragHelper com.google.android.material.sidesheet.SideSheetBehavior.access$700(com.google.android.material.sidesheet.SideSheetBehavior):0:0 -> run
-    21:26:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0 -> run
-    21:26:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    31:32:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0:0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    27:38:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0:0 -> run
-    27:38:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    33:34:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0:0 -> run
+    33:34:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    39:43:int com.google.android.material.sidesheet.SideSheetBehavior.access$000(com.google.android.material.sidesheet.SideSheetBehavior):0:0 -> run
-    39:43:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0 -> run
-    39:43:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    35:40:androidx.customview.widget.ViewDragHelper com.google.android.material.sidesheet.SideSheetBehavior.access$700(com.google.android.material.sidesheet.SideSheetBehavior):0:0 -> run
+    35:40:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0 -> run
+    35:40:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    44:49:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0:0 -> run
-    44:49:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    41:52:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0:0 -> run
+    41:52:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    50:63:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0:0 -> run
+    53:57:int com.google.android.material.sidesheet.SideSheetBehavior.access$000(com.google.android.material.sidesheet.SideSheetBehavior):0:0 -> run
+    53:57:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0 -> run
+    53:57:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
-    64:76:void com.google.android.material.textfield.DropdownMenuEndIconDelegate.lambda$afterEditTextChanged$3():0:0 -> run
-    64:76:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+    58:63:void com.google.android.material.sidesheet.SideSheetBehavior$StateSettlingTracker.lambda$new$0():0:0 -> run
+    58:63:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
+      # {"id":"com.android.tools.r8.synthesized"}
+    64:81:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0:0 -> run
+      # {"id":"com.android.tools.r8.synthesized"}
+    82:92:void com.velvettouch.nosafeword.BodyWorshipActivity.displayRandomInstruction$lambda$9$lambda$8(com.velvettouch.nosafeword.BodyWorshipActivity):0:0 -> run
+    82:92:void androidx.constraintlayout.helper.widget.Carousel$$InternalSyntheticLambda$1$01d9f2ff7def5a376300402697d9567c98742ac37fcfded995bdf2b5506d0ab1$0.run$bridge():0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
 androidx.constraintlayout.motion.widget.Debug -> androidx.constraintlayout.motion.widget.Debug:
     97:97:void dumpLayoutParams(android.view.ViewGroup,java.lang.String):0:0 -> dumpLayoutParams
@@ -5830,114 +5835,114 @@ com.google.android.material.badge.BadgeDrawable -> com.google.android.material.b
     5:7:int com.google.android.material.badge.BadgeState$State.access$100(com.google.android.material.badge.BadgeState$State):0:0 -> getAlpha
     5:7:int com.google.android.material.badge.BadgeState.getAlpha():0 -> getAlpha
     5:7:int getAlpha():0 -> getAlpha
-    1:1:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0:0 -> h
-    1:1:void updateCenterAndBounds():0 -> h
-    2:2:int getTotalVerticalOffsetForState():0:0 -> h
-    2:2:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    2:2:void updateCenterAndBounds():0 -> h
-    3:3:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1900(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    3:3:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithText():0 -> h
-    3:3:int getTotalVerticalOffsetForState():0 -> h
+    62:155:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0:0 -> h
+    62:155:void updateCenterAndBounds():0 -> h
+    156:161:int getTotalVerticalOffsetForState():0:0 -> h
+    156:161:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    156:161:void updateCenterAndBounds():0 -> h
+    162:163:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1900(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    162:163:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithText():0 -> h
+    162:163:int getTotalVerticalOffsetForState():0 -> h
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(2)"]}
-    3:3:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    3:3:void updateCenterAndBounds():0 -> h
-    4:4:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1900(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    4:4:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithText():0 -> h
-    4:4:int getTotalVerticalOffsetForState():0 -> h
-    4:4:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    4:4:void updateCenterAndBounds():0 -> h
-    5:5:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithText():0:0 -> h
-    5:5:int getTotalVerticalOffsetForState():0 -> h
-    5:5:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    5:5:void updateCenterAndBounds():0 -> h
-    6:6:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1700(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    6:6:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithoutText():0 -> h
-    6:6:int getTotalVerticalOffsetForState():0 -> h
+    162:163:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    162:163:void updateCenterAndBounds():0 -> h
+    164:165:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1900(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    164:165:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithText():0 -> h
+    164:165:int getTotalVerticalOffsetForState():0 -> h
+    164:165:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    164:165:void updateCenterAndBounds():0 -> h
+    166:170:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithText():0:0 -> h
+    166:170:int getTotalVerticalOffsetForState():0 -> h
+    166:170:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    166:170:void updateCenterAndBounds():0 -> h
+    171:172:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1700(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    171:172:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithoutText():0 -> h
+    171:172:int getTotalVerticalOffsetForState():0 -> h
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(2)"]}
-    6:6:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    6:6:void updateCenterAndBounds():0 -> h
-    7:7:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1700(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    7:7:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithoutText():0 -> h
-    7:7:int getTotalVerticalOffsetForState():0 -> h
-    7:7:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    7:7:void updateCenterAndBounds():0 -> h
-    8:8:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithoutText():0:0 -> h
-    8:8:int getTotalVerticalOffsetForState():0 -> h
-    8:8:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    8:8:void updateCenterAndBounds():0 -> h
-    9:9:int getTotalVerticalOffsetForState():0:0 -> h
-    9:9:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    9:9:void updateCenterAndBounds():0 -> h
-    10:10:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$2100(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    10:10:int com.google.android.material.badge.BadgeState.getAdditionalVerticalOffset():0 -> h
-    10:10:int getTotalVerticalOffsetForState():0 -> h
-    10:10:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    10:10:void updateCenterAndBounds():0 -> h
-    11:11:int com.google.android.material.badge.BadgeState.getAdditionalVerticalOffset():0:0 -> h
-    11:11:int getTotalVerticalOffsetForState():0 -> h
-    11:11:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    11:11:void updateCenterAndBounds():0 -> h
-    12:12:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1500(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    12:12:int com.google.android.material.badge.BadgeState.getBadgeGravity():0 -> h
-    12:12:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    12:12:void updateCenterAndBounds():0 -> h
-    13:13:int com.google.android.material.badge.BadgeState.getBadgeGravity():0:0 -> h
-    13:13:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    13:13:void updateCenterAndBounds():0 -> h
-    14:14:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0:0 -> h
-    14:14:void updateCenterAndBounds():0 -> h
-    15:15:int getTotalHorizontalOffsetForState():0:0 -> h
-    15:15:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    15:15:void updateCenterAndBounds():0 -> h
-    16:16:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1800(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    16:16:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithText():0 -> h
-    16:16:int getTotalHorizontalOffsetForState():0 -> h
-    16:16:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    16:16:void updateCenterAndBounds():0 -> h
-    17:17:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithText():0:0 -> h
-    17:17:int getTotalHorizontalOffsetForState():0 -> h
-    17:17:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    17:17:void updateCenterAndBounds():0 -> h
-    18:18:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1600(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    18:18:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithoutText():0 -> h
-    18:18:int getTotalHorizontalOffsetForState():0 -> h
-    18:18:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    18:18:void updateCenterAndBounds():0 -> h
-    19:19:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithoutText():0:0 -> h
-    19:19:int getTotalHorizontalOffsetForState():0 -> h
-    19:19:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    19:19:void updateCenterAndBounds():0 -> h
-    20:20:int getTotalHorizontalOffsetForState():0:0 -> h
-    20:20:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    20:20:void updateCenterAndBounds():0 -> h
-    21:21:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$2000(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    21:21:int com.google.android.material.badge.BadgeState.getAdditionalHorizontalOffset():0 -> h
-    21:21:int getTotalHorizontalOffsetForState():0 -> h
-    21:21:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    21:21:void updateCenterAndBounds():0 -> h
-    22:22:int com.google.android.material.badge.BadgeState.getAdditionalHorizontalOffset():0:0 -> h
-    22:22:int getTotalHorizontalOffsetForState():0 -> h
-    22:22:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    22:22:void updateCenterAndBounds():0 -> h
-    23:23:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1500(com.google.android.material.badge.BadgeState$State):0:0 -> h
-    23:23:int com.google.android.material.badge.BadgeState.getBadgeGravity():0 -> h
-    23:23:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    23:23:void updateCenterAndBounds():0 -> h
-    24:24:int com.google.android.material.badge.BadgeState.getBadgeGravity():0:0 -> h
-    24:24:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
-    24:24:void updateCenterAndBounds():0 -> h
-    25:25:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0:0 -> h
-    25:25:void updateCenterAndBounds():0 -> h
-    26:26:void updateCenterAndBounds():0:0 -> h
-    27:27:void com.google.android.material.badge.BadgeUtils.updateBadgeBounds(android.graphics.Rect,float,float,float,float):0:0 -> h
-    27:27:void updateCenterAndBounds():0 -> h
-    28:28:void updateCenterAndBounds():0:0 -> h
-    29:29:void com.google.android.material.shape.MaterialShapeDrawable.setCornerSize(float):0:0 -> h
-    29:29:void updateCenterAndBounds():0 -> h
+    171:172:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    171:172:void updateCenterAndBounds():0 -> h
+    173:174:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1700(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    173:174:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithoutText():0 -> h
+    173:174:int getTotalVerticalOffsetForState():0 -> h
+    173:174:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    173:174:void updateCenterAndBounds():0 -> h
+    175:178:int com.google.android.material.badge.BadgeState.getVerticalOffsetWithoutText():0:0 -> h
+    175:178:int getTotalVerticalOffsetForState():0 -> h
+    175:178:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    175:178:void updateCenterAndBounds():0 -> h
+    179:189:int getTotalVerticalOffsetForState():0:0 -> h
+    179:189:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    179:189:void updateCenterAndBounds():0 -> h
+    190:193:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$2100(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    190:193:int com.google.android.material.badge.BadgeState.getAdditionalVerticalOffset():0 -> h
+    190:193:int getTotalVerticalOffsetForState():0 -> h
+    190:193:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    190:193:void updateCenterAndBounds():0 -> h
+    194:198:int com.google.android.material.badge.BadgeState.getAdditionalVerticalOffset():0:0 -> h
+    194:198:int getTotalVerticalOffsetForState():0 -> h
+    194:198:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    194:198:void updateCenterAndBounds():0 -> h
+    199:200:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1500(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    199:200:int com.google.android.material.badge.BadgeState.getBadgeGravity():0 -> h
+    199:200:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    199:200:void updateCenterAndBounds():0 -> h
+    201:214:int com.google.android.material.badge.BadgeState.getBadgeGravity():0:0 -> h
+    201:214:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    201:214:void updateCenterAndBounds():0 -> h
+    215:224:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0:0 -> h
+    215:224:void updateCenterAndBounds():0 -> h
+    225:230:int getTotalHorizontalOffsetForState():0:0 -> h
+    225:230:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    225:230:void updateCenterAndBounds():0 -> h
+    231:232:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1800(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    231:232:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithText():0 -> h
+    231:232:int getTotalHorizontalOffsetForState():0 -> h
+    231:232:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    231:232:void updateCenterAndBounds():0 -> h
+    233:237:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithText():0:0 -> h
+    233:237:int getTotalHorizontalOffsetForState():0 -> h
+    233:237:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    233:237:void updateCenterAndBounds():0 -> h
+    238:239:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1600(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    238:239:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithoutText():0 -> h
+    238:239:int getTotalHorizontalOffsetForState():0 -> h
+    238:239:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    238:239:void updateCenterAndBounds():0 -> h
+    240:243:int com.google.android.material.badge.BadgeState.getHorizontalOffsetWithoutText():0:0 -> h
+    240:243:int getTotalHorizontalOffsetForState():0 -> h
+    240:243:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    240:243:void updateCenterAndBounds():0 -> h
+    244:260:int getTotalHorizontalOffsetForState():0:0 -> h
+    244:260:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    244:260:void updateCenterAndBounds():0 -> h
+    261:262:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$2000(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    261:262:int com.google.android.material.badge.BadgeState.getAdditionalHorizontalOffset():0 -> h
+    261:262:int getTotalHorizontalOffsetForState():0 -> h
+    261:262:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    261:262:void updateCenterAndBounds():0 -> h
+    263:267:int com.google.android.material.badge.BadgeState.getAdditionalHorizontalOffset():0:0 -> h
+    263:267:int getTotalHorizontalOffsetForState():0 -> h
+    263:267:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    263:267:void updateCenterAndBounds():0 -> h
+    268:269:java.lang.Integer com.google.android.material.badge.BadgeState$State.access$1500(com.google.android.material.badge.BadgeState$State):0:0 -> h
+    268:269:int com.google.android.material.badge.BadgeState.getBadgeGravity():0 -> h
+    268:269:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    268:269:void updateCenterAndBounds():0 -> h
+    270:280:int com.google.android.material.badge.BadgeState.getBadgeGravity():0:0 -> h
+    270:280:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0 -> h
+    270:280:void updateCenterAndBounds():0 -> h
+    281:312:void calculateCenterAndBounds(android.graphics.Rect,android.view.View):0:0 -> h
+    281:312:void updateCenterAndBounds():0 -> h
+    313:328:void updateCenterAndBounds():0:0 -> h
+    329:331:void com.google.android.material.badge.BadgeUtils.updateBadgeBounds(android.graphics.Rect,float,float,float,float):0:0 -> h
+    329:331:void updateCenterAndBounds():0 -> h
+    332:339:void updateCenterAndBounds():0:0 -> h
+    340:341:void com.google.android.material.shape.MaterialShapeDrawable.setCornerSize(float):0:0 -> h
+    340:341:void updateCenterAndBounds():0 -> h
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    30:30:void com.google.android.material.shape.MaterialShapeDrawable.setCornerSize(float):0:0 -> h
-    30:30:void updateCenterAndBounds():0 -> h
-    31:31:void updateCenterAndBounds():0:0 -> h
+    342:350:void com.google.android.material.shape.MaterialShapeDrawable.setCornerSize(float):0:0 -> h
+    342:350:void updateCenterAndBounds():0 -> h
+    351:360:void updateCenterAndBounds():0:0 -> h
     1:4:int com.google.android.material.badge.BadgeState$State.access$102(com.google.android.material.badge.BadgeState$State,int):0:0 -> setAlpha
     1:4:void com.google.android.material.badge.BadgeState.setAlpha(int):0 -> setAlpha
     1:4:void setAlpha(int):0 -> setAlpha
@@ -17775,46 +17780,52 @@ com.google.android.material.transformation.TransformationChildCard -> b0.b:
 com.google.android.material.transformation.TransformationChildLayout -> b0.c:
 com.google.common.util.concurrent.ListenableFuture -> c0.a:
 com.velvettouch.nosafeword.BodyWorshipActivity -> com.velvettouch.nosafeword.BodyWorshipActivity:
-    android.os.CountDownTimer autoPlayTimer -> s
+    android.widget.Spinner maxTimeSpinner -> j
+    android.os.CountDownTimer autoPlayTimer -> v
+    androidx.appcompat.app.ActionBarDrawerToggle drawerToggle -> n
+    boolean isAutoPlayOn -> u
+    java.util.List actionWords -> z
+    boolean isTtsEnabled -> q
+    androidx.appcompat.widget.Toolbar toolbar -> k
+    com.google.android.material.button.MaterialButton randomizeButton -> e
+    com.google.android.material.navigation.NavigationView navigationView -> m
+    java.util.List bodyParts -> A
+    float voiceSpeed -> s
+    int minTimeSeconds -> w
     android.speech.tts.TextToSpeech textToSpeech -> o
     boolean isTtsReady -> p
     android.widget.Spinner minTimeSpinner -> i
-    java.util.List timeOptions -> v
-    android.widget.Spinner maxTimeSpinner -> j
-    androidx.appcompat.app.ActionBarDrawerToggle drawerToggle -> n
+    java.util.List timeOptions -> y
     android.widget.LinearLayout autoPlaySettings -> h
-    java.util.List bodyParts -> x
-    java.util.List actionWords -> w
-    boolean isTtsEnabled -> q
-    boolean isAutoPlayOn -> r
-    androidx.appcompat.widget.Toolbar toolbar -> k
+    int $r8$clinit -> B
     com.google.android.material.button.MaterialButton autoPlayButton -> f
-    com.google.android.material.button.MaterialButton randomizeButton -> e
-    com.google.android.material.navigation.NavigationView navigationView -> m
     android.widget.TextView bodyWorshipTextView -> c
-    int $r8$clinit -> y
+    int maxTimeSeconds -> x
     android.widget.TextView timerTextView -> g
-    int minTimeSeconds -> t
-    int maxTimeSeconds -> u
+    float voicePitch -> r
+    int gestureCount -> t
     androidx.drawerlayout.widget.DrawerLayout drawerLayout -> l
-    87:143:void speakNextTask(java.lang.String):0:0 -> d
-    87:143:void displayRandomInstruction():0 -> d
-    144:157:void displayRandomInstruction():0:0 -> d
+    100:156:void speakNextTask(java.lang.String):0:0 -> d
+    100:156:void displayRandomInstruction():0 -> d
+    157:174:void displayRandomInstruction():0:0 -> d
     void startAutoPlay() -> e
-    319:322:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
-    319:322:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
+    40:67:void loadVoiceSettings():0:0 -> onCreate
+    40:67:void onCreate(android.os.Bundle):0 -> onCreate
+    68:345:void onCreate(android.os.Bundle):0:0 -> onCreate
+    346:349:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
+    346:349:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    319:322:void onCreate(android.os.Bundle):0 -> onCreate
-    323:326:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
-    323:326:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
-    323:326:void onCreate(android.os.Bundle):0 -> onCreate
-    327:334:void onCreate(android.os.Bundle):0:0 -> onCreate
-    335:536:void setupSpinners():0:0 -> onCreate
-    335:536:void onCreate(android.os.Bundle):0 -> onCreate
-    537:645:void onCreate(android.os.Bundle):0:0 -> onCreate
-    646:669:void setupSpinners():0:0 -> onCreate
-    646:669:void onCreate(android.os.Bundle):0 -> onCreate
-    670:711:void onCreate(android.os.Bundle):0:0 -> onCreate
+    346:349:void onCreate(android.os.Bundle):0 -> onCreate
+    350:353:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
+    350:353:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
+    350:353:void onCreate(android.os.Bundle):0 -> onCreate
+    354:361:void onCreate(android.os.Bundle):0:0 -> onCreate
+    362:563:void setupSpinners():0:0 -> onCreate
+    362:563:void onCreate(android.os.Bundle):0 -> onCreate
+    564:672:void onCreate(android.os.Bundle):0:0 -> onCreate
+    673:696:void setupSpinners():0:0 -> onCreate
+    673:696:void onCreate(android.os.Bundle):0 -> onCreate
+    697:738:void onCreate(android.os.Bundle):0:0 -> onCreate
     8:18:void stopAutoPlay():0:0 -> onPause
     8:18:void onPause():0 -> onPause
     19:53:void onPause():0:0 -> onPause
@@ -17826,35 +17837,47 @@ com.velvettouch.nosafeword.BodyWorshipActivity$$ExternalSyntheticLambda0 -> com.
     0:65535:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.<init>(com.velvettouch.nosafeword.BodyWorshipActivity):0:0 -> <init>
     0:65535:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.$r8$init$synthetic(com.velvettouch.nosafeword.BodyWorshipActivity,int):0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    14:88:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$1(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0:0 -> onClick
-    14:88:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    16:18:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0:0 -> onClick
+    16:18:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    89:90:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0:0 -> onClick
+    19:61:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0:0 -> onClick
+    19:61:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
+    19:61:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    91:93:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0:0 -> onClick
-    91:93:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    62:70:void com.velvettouch.nosafeword.BodyWorshipActivity.stopAutoPlay():0:0 -> onClick
+    62:70:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0 -> onClick
+    62:70:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
+    62:70:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    94:137:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0:0 -> onClick
-    94:137:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
-    94:137:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    71:96:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0:0 -> onClick
+    71:96:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
+    71:96:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    138:146:void com.velvettouch.nosafeword.BodyWorshipActivity.stopAutoPlay():0:0 -> onClick
-    138:146:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0 -> onClick
-    138:146:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
-    138:146:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    97:208:void com.velvettouch.nosafeword.BodyWorshipActivity.updateButtonLayout():0:0 -> onClick
+    97:208:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0 -> onClick
+    97:208:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
+    97:208:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    147:172:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0:0 -> onClick
-    147:172:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
-    147:172:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    209:216:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0:0 -> onClick
+    209:216:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
+    209:216:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    173:284:void com.velvettouch.nosafeword.BodyWorshipActivity.updateButtonLayout():0:0 -> onClick
-    173:284:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0 -> onClick
-    173:284:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
-    173:284:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    217:218:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    285:292:void com.velvettouch.nosafeword.BodyWorshipActivity.toggleAutoPlay():0:0 -> onClick
-    285:292:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$2(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
-    285:292:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+    219:293:void com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$1(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0:0 -> onClick
+    219:293:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    294:295:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0:0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    296:307:void com.velvettouch.nosafeword.BodyWorshipActivity.displayRandomInstruction$lambda$9(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0:0 -> onClick
+    296:307:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    308:317:void com.velvettouch.nosafeword.BodyWorshipActivity.openDeveloperSettings():0:0 -> onClick
+    308:317:void com.velvettouch.nosafeword.BodyWorshipActivity.displayRandomInstruction$lambda$9(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0 -> onClick
+    308:317:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    318:340:void com.velvettouch.nosafeword.BodyWorshipActivity.displayRandomInstruction$lambda$9(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.View):0:0 -> onClick
+    318:340:void com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$1.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.BodyWorshipActivity$onCreate$2$1 -> com.velvettouch.nosafeword.BodyWorshipActivity$a:
     android.view.animation.Animation $fadeIn -> b
@@ -17935,7 +17958,67 @@ com.velvettouch.nosafeword.BodyWorshipActivity$startAutoPlay$1$onFinish$1 -> com
     21:26:void com.velvettouch.nosafeword.BodyWorshipActivity.access$startAutoPlay(com.velvettouch.nosafeword.BodyWorshipActivity):0:0 -> onAnimationEnd
     21:26:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
     27:31:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-com.velvettouch.nosafeword.EditScenesAdapter -> com.velvettouch.nosafeword.e:
+com.velvettouch.nosafeword.DeveloperSettingsActivity -> com.velvettouch.nosafeword.DeveloperSettingsActivity:
+    android.widget.Button testButton -> i
+    int $r8$clinit -> o
+    android.widget.EditText testText -> h
+    android.widget.Button saveButton -> j
+    android.speech.tts.TextToSpeech textToSpeech -> k
+    boolean isTtsReady -> l
+    android.widget.TextView speedValueText -> g
+    android.widget.TextView pitchValueText -> f
+    android.widget.SeekBar speedSeekbar -> e
+    android.widget.SeekBar pitchSeekbar -> c
+    float currentSpeed -> n
+    float currentPitch -> m
+    void applyVoiceSettings() -> d
+    void updatePitchText() -> e
+    void updateSpeedText() -> f
+    132:190:void loadSettings():0:0 -> onCreate
+    132:190:void onCreate(android.os.Bundle):0 -> onCreate
+    191:266:void onCreate(android.os.Bundle):0:0 -> onCreate
+    267:274:void loadSettings():0:0 -> onCreate
+    267:274:void onCreate(android.os.Bundle):0 -> onCreate
+com.velvettouch.nosafeword.DeveloperSettingsActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.d:
+# {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
+# {"id":"com.android.tools.r8.synthesized"}
+    com.velvettouch.nosafeword.DeveloperSettingsActivity com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.f$0 -> e
+    int com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.$r8$classId -> c
+    0:65535:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.<init>(com.velvettouch.nosafeword.DeveloperSettingsActivity):0:0 -> <init>
+    0:65535:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.$r8$init$synthetic(com.velvettouch.nosafeword.DeveloperSettingsActivity,int):0 -> <init>
+      # {"id":"com.android.tools.r8.synthesized"}
+    14:16:void com.velvettouch.nosafeword.DeveloperSettingsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.DeveloperSettingsActivity,android.view.View):0:0 -> onClick
+    14:16:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    17:116:void com.velvettouch.nosafeword.DeveloperSettingsActivity.testVoice():0:0 -> onClick
+    17:116:void com.velvettouch.nosafeword.DeveloperSettingsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.DeveloperSettingsActivity,android.view.View):0 -> onClick
+    17:116:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    117:118:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.onClick$bridge(android.view.View):0:0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    119:123:void com.velvettouch.nosafeword.DeveloperSettingsActivity.onCreate$lambda$1(com.velvettouch.nosafeword.DeveloperSettingsActivity,android.view.View):0:0 -> onClick
+    119:123:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    124:152:void com.velvettouch.nosafeword.DeveloperSettingsActivity.saveSettings():0:0 -> onClick
+    124:152:void com.velvettouch.nosafeword.DeveloperSettingsActivity.onCreate$lambda$1(com.velvettouch.nosafeword.DeveloperSettingsActivity,android.view.View):0 -> onClick
+    124:152:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    153:164:void com.velvettouch.nosafeword.DeveloperSettingsActivity.onCreate$lambda$1(com.velvettouch.nosafeword.DeveloperSettingsActivity,android.view.View):0:0 -> onClick
+    153:164:void com.velvettouch.nosafeword.DeveloperSettingsActivity$$InternalSyntheticLambda$1$75babceb8fb338b239b3456e8706e242eb4100ffbc4639f3287de59cb0c47c2d$0.onClick$bridge(android.view.View):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+com.velvettouch.nosafeword.DeveloperSettingsActivity$onCreate$1 -> com.velvettouch.nosafeword.DeveloperSettingsActivity$a:
+    com.velvettouch.nosafeword.DeveloperSettingsActivity this$0 -> a
+    13:16:void com.velvettouch.nosafeword.DeveloperSettingsActivity.access$setCurrentPitch$p(com.velvettouch.nosafeword.DeveloperSettingsActivity,float):0:0 -> onProgressChanged
+    13:16:void onProgressChanged(android.widget.SeekBar,int,boolean):0 -> onProgressChanged
+    17:20:void com.velvettouch.nosafeword.DeveloperSettingsActivity.access$updatePitchText(com.velvettouch.nosafeword.DeveloperSettingsActivity):0:0 -> onProgressChanged
+    17:20:void onProgressChanged(android.widget.SeekBar,int,boolean):0 -> onProgressChanged
+com.velvettouch.nosafeword.DeveloperSettingsActivity$onCreate$2 -> com.velvettouch.nosafeword.DeveloperSettingsActivity$b:
+    com.velvettouch.nosafeword.DeveloperSettingsActivity this$0 -> a
+    13:16:void com.velvettouch.nosafeword.DeveloperSettingsActivity.access$setCurrentSpeed$p(com.velvettouch.nosafeword.DeveloperSettingsActivity,float):0:0 -> onProgressChanged
+    13:16:void onProgressChanged(android.widget.SeekBar,int,boolean):0 -> onProgressChanged
+    17:20:void com.velvettouch.nosafeword.DeveloperSettingsActivity.access$updateSpeedText(com.velvettouch.nosafeword.DeveloperSettingsActivity):0:0 -> onProgressChanged
+    17:20:void onProgressChanged(android.widget.SeekBar,int,boolean):0 -> onProgressChanged
+com.velvettouch.nosafeword.EditScenesAdapter -> com.velvettouch.nosafeword.f:
     kotlin.jvm.functions.Function1 onDeleteClick -> b
     kotlin.jvm.functions.Function1 onEditClick -> a
     5:18:void onBindViewHolder(com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder,int):0:0 -> onBindViewHolder
@@ -17945,13 +18028,13 @@ com.velvettouch.nosafeword.EditScenesAdapter -> com.velvettouch.nosafeword.e:
     19:74:void onBindViewHolder(androidx.recyclerview.widget.RecyclerView$ViewHolder,int):0 -> onBindViewHolder
     3:36:com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder onCreateViewHolder(android.view.ViewGroup,int):0:0 -> onCreateViewHolder
     3:36:androidx.recyclerview.widget.RecyclerView$ViewHolder onCreateViewHolder(android.view.ViewGroup,int):0 -> onCreateViewHolder
-com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder -> com.velvettouch.nosafeword.e$a:
+com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder -> com.velvettouch.nosafeword.f$a:
     android.widget.TextView titleTextView -> c
     com.velvettouch.nosafeword.Scene currentScene -> e
     android.widget.TextView previewTextView -> d
     kotlin.jvm.functions.Function1 onDeleteClick -> b
     kotlin.jvm.functions.Function1 onEditClick -> a
-com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.d:
+com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.e:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder$$InternalSyntheticLambda$2$32c6df3fa1fa30f98ab1920f3f08d1c2dd7887f0e137b4485dd8821220820140$0.f$0 -> e
@@ -17965,12 +18048,12 @@ com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder$$ExternalSyntheticLa
     31:48:void com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder._init_$lambda$1(com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder,android.view.View):0:0 -> onClick
     31:48:void com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder$$InternalSyntheticLambda$2$32c6df3fa1fa30f98ab1920f3f08d1c2dd7887f0e137b4485dd8821220820140$0.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.EditScenesAdapter$SceneDiffCallback -> com.velvettouch.nosafeword.e$b:
+com.velvettouch.nosafeword.EditScenesAdapter$SceneDiffCallback -> com.velvettouch.nosafeword.f$b:
     7:38:boolean areContentsTheSame(com.velvettouch.nosafeword.Scene,com.velvettouch.nosafeword.Scene):0:0 -> areContentsTheSame
     7:38:boolean areContentsTheSame(java.lang.Object,java.lang.Object):0 -> areContentsTheSame
     7:24:boolean areItemsTheSame(com.velvettouch.nosafeword.Scene,com.velvettouch.nosafeword.Scene):0:0 -> areItemsTheSame
     7:24:boolean areItemsTheSame(java.lang.Object,java.lang.Object):0 -> areItemsTheSame
-com.velvettouch.nosafeword.FavoriteScenesAdapter -> com.velvettouch.nosafeword.f:
+com.velvettouch.nosafeword.FavoriteScenesAdapter -> com.velvettouch.nosafeword.g:
     kotlin.jvm.functions.Function1 onItemClick -> a
     5:18:void onBindViewHolder(com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder,int):0:0 -> onBindViewHolder
     5:18:void onBindViewHolder(androidx.recyclerview.widget.RecyclerView$ViewHolder,int):0 -> onBindViewHolder
@@ -17993,13 +18076,13 @@ com.velvettouch.nosafeword.FavoriteScenesAdapter -> com.velvettouch.nosafeword.f
     88:97:void onBindViewHolder(androidx.recyclerview.widget.RecyclerView$ViewHolder,int):0 -> onBindViewHolder
     3:34:com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder onCreateViewHolder(android.view.ViewGroup,int):0:0 -> onCreateViewHolder
     3:34:androidx.recyclerview.widget.RecyclerView$ViewHolder onCreateViewHolder(android.view.ViewGroup,int):0 -> onCreateViewHolder
-com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder -> com.velvettouch.nosafeword.f$a:
+com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder -> com.velvettouch.nosafeword.g$a:
     android.widget.TextView previewTextView -> c
     android.widget.TextView titleTextView -> b
     com.velvettouch.nosafeword.Scene currentScene -> d
     int $r8$clinit -> e
     kotlin.jvm.functions.Function1 onItemClick -> a
-com.velvettouch.nosafeword.FavoriteScenesAdapter$SceneDiffCallback -> com.velvettouch.nosafeword.f$b:
+com.velvettouch.nosafeword.FavoriteScenesAdapter$SceneDiffCallback -> com.velvettouch.nosafeword.g$b:
     7:19:boolean areContentsTheSame(com.velvettouch.nosafeword.Scene,com.velvettouch.nosafeword.Scene):0:0 -> areContentsTheSame
     7:19:boolean areContentsTheSame(java.lang.Object,java.lang.Object):0 -> areContentsTheSame
     7:24:boolean areItemsTheSame(com.velvettouch.nosafeword.Scene,com.velvettouch.nosafeword.Scene):0:0 -> areItemsTheSame
@@ -18103,7 +18186,7 @@ com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivi
     56:114:void toggleFavorite():0:0 -> onOptionsItemSelected
     56:114:boolean onOptionsItemSelected(android.view.MenuItem):0 -> onOptionsItemSelected
     115:126:boolean onOptionsItemSelected(android.view.MenuItem):0:0 -> onOptionsItemSelected
-com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.g:
+com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.h:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.Scene com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$167e28bbd3eb9cc72909af164d55ba3ec686486833892326e9732c19f3f8e41d$0.f$1 -> e
@@ -18144,7 +18227,7 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda0 -> com.velvett
     161:167:void com.velvettouch.nosafeword.MainActivity.showDeleteConfirmation$lambda$21(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene,android.content.DialogInterface,int):0:0 -> onClick
     161:167:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$167e28bbd3eb9cc72909af164d55ba3ec686486833892326e9732c19f3f8e41d$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda1 -> com.velvettouch.nosafeword.h:
+com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda1 -> com.velvettouch.nosafeword.i:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$810ecdb73dc5a7dffb08c5cba8b59c0748a19d8f9712c0027d53e94b96a8212c$0.<init>() -> <init>
@@ -18152,7 +18235,7 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda1 -> com.velvett
     3:6:void com.velvettouch.nosafeword.MainActivity.showEditDialog$lambda$18(android.content.DialogInterface,int):0:0 -> onClick
     3:6:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$810ecdb73dc5a7dffb08c5cba8b59c0748a19d8f9712c0027d53e94b96a8212c$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda2 -> com.velvettouch.nosafeword.i:
+com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda2 -> com.velvettouch.nosafeword.j:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.google.android.material.textfield.TextInputEditText com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$810ecdb73dc5a7dffb08c5cba8b59c0748a19d8f9712c0027d53e94b96a8212c$1.f$0 -> c
@@ -18173,7 +18256,7 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda2 -> com.velvett
     165:216:void com.velvettouch.nosafeword.MainActivity.showEditDialog$lambda$20(com.google.android.material.textfield.TextInputEditText,com.google.android.material.textfield.TextInputEditText,com.velvettouch.nosafeword.Scene,com.velvettouch.nosafeword.MainActivity,androidx.appcompat.app.AlertDialog,android.view.View):0:0 -> onClick
     165:216:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$810ecdb73dc5a7dffb08c5cba8b59c0748a19d8f9712c0027d53e94b96a8212c$1.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda3 -> com.velvettouch.nosafeword.j:
+com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda3 -> com.velvettouch.nosafeword.k:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.MainActivity com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$0.f$0 -> b
@@ -18189,7 +18272,7 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda3 -> com.velvett
     118:148:boolean com.velvettouch.nosafeword.MainActivity.onCreate$lambda$3(com.velvettouch.nosafeword.MainActivity,android.view.MenuItem):0:0 -> a
     118:148:boolean com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda4 -> com.velvettouch.nosafeword.k:
+com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda4 -> com.velvettouch.nosafeword.l:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.MainActivity com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.f$0 -> e
@@ -18242,7 +18325,7 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda4 -> com.velvett
     167:198:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$7(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
     167:198:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda5 -> com.velvettouch.nosafeword.l:
+com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda5 -> com.velvettouch.nosafeword.m:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.MainActivity com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.f$0 -> c
@@ -18462,7 +18545,7 @@ com.velvettouch.nosafeword.PositionsActivity -> com.velvettouch.nosafeword.Posit
     8:18:void stopAutoPlay():0:0 -> onPause
     8:18:void onPause():0 -> onPause
     19:53:void onPause():0:0 -> onPause
-com.velvettouch.nosafeword.PositionsActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.m:
+com.velvettouch.nosafeword.PositionsActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.n:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.PositionsActivity com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$1.f$0 -> e
@@ -18524,7 +18607,7 @@ com.velvettouch.nosafeword.PositionsActivity$onCreate$2$2 -> com.velvettouch.nos
     8:11:android.widget.ImageView com.velvettouch.nosafeword.PositionsActivity.access$getPositionImageView$p(com.velvettouch.nosafeword.PositionsActivity):0:0 -> onAnimationEnd
     8:11:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
     12:24:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-com.velvettouch.nosafeword.PositionsActivity$setupSpinners$2 -> com.velvettouch.nosafeword.n:
+com.velvettouch.nosafeword.PositionsActivity$setupSpinners$2 -> com.velvettouch.nosafeword.o:
     com.velvettouch.nosafeword.PositionsActivity this$0 -> c
     1:4:java.util.List com.velvettouch.nosafeword.PositionsActivity.access$getTimeOptions$p(com.velvettouch.nosafeword.PositionsActivity):0:0 -> onItemSelected
     1:4:void onItemSelected(android.widget.AdapterView,android.view.View,int,long):0 -> onItemSelected
@@ -18541,7 +18624,7 @@ com.velvettouch.nosafeword.PositionsActivity$setupSpinners$2 -> com.velvettouch.
     59:62:android.widget.Spinner com.velvettouch.nosafeword.PositionsActivity.access$getMaxTimeSpinner$p(com.velvettouch.nosafeword.PositionsActivity):0:0 -> onItemSelected
     59:62:void onItemSelected(android.widget.AdapterView,android.view.View,int,long):0 -> onItemSelected
     63:73:void onItemSelected(android.widget.AdapterView,android.view.View,int,long):0:0 -> onItemSelected
-com.velvettouch.nosafeword.PositionsActivity$setupSpinners$4 -> com.velvettouch.nosafeword.o:
+com.velvettouch.nosafeword.PositionsActivity$setupSpinners$4 -> com.velvettouch.nosafeword.p:
     com.velvettouch.nosafeword.PositionsActivity this$0 -> c
     1:4:java.util.List com.velvettouch.nosafeword.PositionsActivity.access$getTimeOptions$p(com.velvettouch.nosafeword.PositionsActivity):0:0 -> onItemSelected
     1:4:void onItemSelected(android.widget.AdapterView,android.view.View,int,long):0 -> onItemSelected
@@ -18584,10 +18667,7 @@ com.velvettouch.nosafeword.PositionsActivity$startAutoPlay$1$onFinish$1 -> com.v
     21:26:void com.velvettouch.nosafeword.PositionsActivity.access$startAutoPlay(com.velvettouch.nosafeword.PositionsActivity):0:0 -> onAnimationEnd
     21:26:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
     27:31:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-com.velvettouch.nosafeword.RandomSceneApplication -> com.velvettouch.nosafeword.RandomSceneApplication:
-    7:31:void applyThemeMode():0:0 -> onCreate
-    7:31:void onCreate():0 -> onCreate
-com.velvettouch.nosafeword.Scene -> com.velvettouch.nosafeword.p:
+com.velvettouch.nosafeword.Scene -> com.velvettouch.nosafeword.q:
     java.lang.String content -> c
     java.lang.String title -> b
     int id -> a
@@ -18621,7 +18701,7 @@ com.velvettouch.nosafeword.SettingsActivity -> com.velvettouch.nosafeword.Settin
     211:235:void setupVoiceInstructionsToggle():0:0 -> onCreate
     211:235:void onCreate(android.os.Bundle):0 -> onCreate
     236:259:void onCreate(android.os.Bundle):0:0 -> onCreate
-com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.q:
+com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.s:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     androidx.appcompat.widget.SwitchCompat com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0.f$0 -> c
@@ -18635,7 +18715,7 @@ com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda0 -> com.vel
     22:44:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$3(androidx.appcompat.widget.SwitchCompat,com.velvettouch.nosafeword.SettingsActivity,android.view.View):0 -> onClick
     22:44:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda1 -> com.velvettouch.nosafeword.s:
+com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda1 -> com.velvettouch.nosafeword.t:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     com.velvettouch.nosafeword.SettingsActivity com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.f$0 -> c
@@ -18652,7 +18732,7 @@ com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda1 -> com.vel
     64:94:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$2(com.velvettouch.nosafeword.SettingsActivity,int,android.view.View):0:0 -> onClick
     64:94:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda2 -> com.velvettouch.nosafeword.t:
+com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda2 -> com.velvettouch.nosafeword.u:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     int com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$d7e164f76f460cf0d737e4cc37eab31e836daedef08cc1b87eca5f75414d8107$0.f$1 -> e

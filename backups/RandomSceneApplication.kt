@@ -1,4 +1,4 @@
-package com.velvettouch.nosafeword
+package backup.not_for_compilation
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate

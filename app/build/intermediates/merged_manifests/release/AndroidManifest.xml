@@ -22,7 +22,7 @@
     <uses-permission android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
-        android:name="com.velvettouch.nosafeword.RandomSceneApplication"
+        android:name="com.velvettouch.nosafeword.NoSafeWordApplication"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:icon="@mipmap/ic_launcher"
@@ -52,6 +52,11 @@
             android:name="com.velvettouch.nosafeword.BodyWorshipActivity"
             android:exported="false"
             android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
+        <activity
+            android:name="com.velvettouch.nosafeword.DeveloperSettingsActivity"
+            android:exported="false"
+            android:label="Developer Settings"
+            android:parentActivityName="com.velvettouch.nosafeword.BodyWorshipActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
