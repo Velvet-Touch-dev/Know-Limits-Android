@@ -50,7 +50,6 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     // Voice settings
     private var voicePitch = 1.0f
     private var voiceSpeed = 0.9f
-    private var gestureCount = 0 // For accessing developer settings
     
     private var isAutoPlayOn = false
     private var autoPlayTimer: CountDownTimer? = null
@@ -509,22 +508,6 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
         randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
         bodyWorshipTextView.setTextColor(typedValue.data)
-        
-        // Add access to developer settings with triple tap on text
-        bodyWorshipTextView.setOnClickListener {
-            gestureCount++
-            if (gestureCount >= 3) {
-                openDeveloperSettings()
-                gestureCount = 0
-            }
-            
-            // Reset counter after 2 seconds of no clicks
-            android.os.Handler(mainLooper).postDelayed({
-                if (gestureCount > 0) {
-                    gestureCount = 0
-                }
-            }, 2000)
-        }
         
         // Speak the instruction with TTS
         speakNextTask(instruction)
