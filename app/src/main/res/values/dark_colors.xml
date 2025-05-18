@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base color declarations for dark theme colors -->
+    <color name="dark_primary">#FFB4A9</color>
+    <color name="dark_onPrimary">#690002</color>
+    <color name="dark_primaryContainer">#930004</color>
+    <color name="dark_onPrimaryContainer">#FFDAD4</color>
+    
+    <color name="dark_secondary">#E7BDB7</color>
+    <color name="dark_onSecondary">#442925</color>
+    <color name="dark_secondaryContainer">#5D3F3A</color>
+    <color name="dark_onSecondaryContainer">#FFDAD4</color>
+    
+    <color name="dark_tertiary">#D8BE94</color>
+    <color name="dark_onTertiary">#3E2E04</color>
+    <color name="dark_tertiaryContainer">#574419</color>
+    <color name="dark_onTertiaryContainer">#F5DEAE</color>
+    
+    <color name="dark_background">#201A19</color>
+    <color name="dark_onBackground">#EDE0DD</color>
+    <color name="dark_surface">#181211</color>
+    <color name="dark_onSurface">#D0C4C1</color>
+    <color name="dark_surfaceVariant">#534341</color>
+    <color name="dark_onSurfaceVariant">#D8C2BD</color>
+    
+    <color name="dark_outline">#A08C88</color>
+    <color name="dark_outlineVariant">#534341</color>
+    
+    <color name="dark_error">#FFB4AB</color>
+    <color name="dark_onError">#690005</color>
+    <color name="dark_errorContainer">#93000A</color>
+    <color name="dark_onErrorContainer">#FFDAD6</color>
+</resources>
