@@ -2148,6 +2148,7 @@
     <string description="Button text to indicate that the widget will save the user&apos;s selection [CHAR_LIMIT=16]" name="mtrl_timepicker_confirm">OK</string>
     <string name="new_scene">New Scene</string>
     <string name="next">Next</string>
+    <string name="next_task">Next task</string>
     <string name="no_favorites">No favorites yet</string>
     <string name="password_toggle_content_description">Show password</string>
     <string name="path_password_eye" translatable="false">M12,4.5C7,4.5 2.73,7.61 1,12c1.73,4.39 6,7.5 11,7.5s9.27,-3.11 11,-7.5c-1.73,-4.39 -6,-7.5 -11,-7.5zM12,17c-2.76,0 -5,-2.24 -5,-5s2.24,-5 5,-5 5,2.24 5,5 -2.24,5 -5,5zM12,9c-1.66,0 -3,1.34 -3,3s1.34,3 3,3 3,-1.34 3,-3 -1.34,-3 -3,-3z</string>
@@ -2161,6 +2162,7 @@
     <string name="pref_theme_key" translatable="false">theme_preference</string>
     <string name="pref_theme_light_value" translatable="false">light</string>
     <string name="pref_theme_system_value" translatable="false">system</string>
+    <string name="pref_tts_enabled_key" translatable="false">tts_enabled</string>
     <string name="random">Scenes</string>
     <string name="random_scene">Random Scene</string>
     <string name="randomize">Randomize</string>
@@ -2194,6 +2196,8 @@
     <string name="theme_light">Light</string>
     <string name="theme_settings">Theme Settings</string>
     <string name="theme_system">System default</string>
+    <string name="tts_enabled">Voice Instructions</string>
+    <string name="tts_enabled_summary">Enable voice announcements for tasks</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
     <style name="AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat.Light"/>
     <style name="Animation.AppCompat.Dialog" parent="Base.Animation.AppCompat.Dialog"/>

@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.velvettouch.nosafeword">
 
+    <!-- Required for Text-to-Speech functionality -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".RandomSceneApplication"
         android:allowBackup="true"

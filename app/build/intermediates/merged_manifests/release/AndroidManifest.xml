@@ -8,6 +8,13 @@
         android:minSdkVersion="21"
         android:targetSdkVersion="33" />
 
+    <!-- Required for Text-to-Speech functionality -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <permission
         android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />

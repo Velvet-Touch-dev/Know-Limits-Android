@@ -3,6 +3,8 @@ package com.velvettouch.nosafeword
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -20,9 +22,10 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
+import java.util.Locale
 import kotlin.random.Random
 
-class BodyWorshipActivity : AppCompatActivity() {
+class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     
     private lateinit var bodyWorshipTextView: TextView
     private lateinit var randomizeButton: MaterialButton
@@ -35,6 +38,11 @@ class BodyWorshipActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var drawerToggle: ActionBarDrawerToggle
+    
+    // TTS variables
+    private lateinit var textToSpeech: TextToSpeech
+    private var isTtsReady = false
+    private var isTtsEnabled = true // Default value, will be updated from preferences
     
     private var isAutoPlayOn = false
     private var autoPlayTimer: CountDownTimer? = null
@@ -58,6 +66,13 @@ class BodyWorshipActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body_worship)
+        
+        // Initialize TextToSpeech
+        textToSpeech = TextToSpeech(this, this)
+        
+        // Load TTS preference
+        val sharedPreferences = getSharedPreferences("com.velvettouch.nosafeword_preferences", MODE_PRIVATE)
+        isTtsEnabled = sharedPreferences.getBoolean(getString(R.string.pref_tts_enabled_key), true)
         
         // Initialize views
         bodyWorshipTextView = findViewById(R.id.body_worship_text_view)
@@ -387,6 +402,43 @@ class BodyWorshipActivity : AppCompatActivity() {
         }
     }
     
+    override fun onDestroy() {
+        // Shutdown TTS when the activity is destroyed
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.stop()
+            textToSpeech.shutdown()
+        }
+        super.onDestroy()
+    }
+    
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Set language to US English
+            val result = textToSpeech.setLanguage(Locale.US)
+            
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(this, "Text-to-speech language not supported", Toast.LENGTH_SHORT).show()
+            } else {
+                isTtsReady = true
+                
+                // Try to set a female voice if available
+                val voices = textToSpeech.voices
+                for (voice in voices) {
+                    if (voice.name.contains("female", ignoreCase = true)) {
+                        textToSpeech.voice = voice
+                        break
+                    }
+                }
+                
+                // Set speech rate and pitch for a more natural female voice
+                textToSpeech.setPitch(1.1f)  // Slightly higher pitch for female voice
+                textToSpeech.setSpeechRate(0.9f)  // Slightly slower for clearer speech
+            }
+        } else {
+            Toast.makeText(this, "Failed to initialize text-to-speech", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
     private fun displayRandomInstruction() {
         // Select random action word and body part
         val randomAction = actionWords.random()
@@ -403,5 +455,21 @@ class BodyWorshipActivity : AppCompatActivity() {
         theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
         randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
         bodyWorshipTextView.setTextColor(typedValue.data)
+        
+        // Speak the instruction with TTS
+        speakNextTask(instruction)
+    }
+    
+    private fun speakNextTask(instruction: String) {
+        if (isTtsReady && isTtsEnabled) {
+            // Stop any ongoing speech
+            if (textToSpeech.isSpeaking) {
+                textToSpeech.stop()
+            }
+            
+            // Say "Next task" followed by the instruction
+            textToSpeech.speak(getString(R.string.next_task), TextToSpeech.QUEUE_FLUSH, null, "next_announcement")
+            textToSpeech.speak(instruction, TextToSpeech.QUEUE_ADD, null, "instruction")
+        }
     }
 }

@@ -52,4 +52,7 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="body_worship">Body Worship</string>
+    <string name="tts_enabled">Voice Instructions</string>
+    <string name="tts_enabled_summary">Enable voice announcements for tasks</string>
+    <string name="next_task">Next task</string>
 </resources>

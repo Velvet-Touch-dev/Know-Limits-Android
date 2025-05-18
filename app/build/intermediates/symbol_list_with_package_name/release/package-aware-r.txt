@@ -3641,6 +3641,8 @@ id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
+id voice_card
+id voice_switch
 id west
 id withText
 id with_icon
@@ -4032,6 +4034,7 @@ string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string new_scene
 string next
+string next_task
 string no_favorites
 string password_toggle_content_description
 string path_password_eye
@@ -4045,6 +4048,7 @@ string pref_theme_dark_value
 string pref_theme_key
 string pref_theme_light_value
 string pref_theme_system_value
+string pref_tts_enabled_key
 string random
 string random_scene
 string randomize
@@ -4076,6 +4080,8 @@ string theme_dark
 string theme_light
 string theme_settings
 string theme_system
+string tts_enabled
+string tts_enabled_summary
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

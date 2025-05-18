@@ -91,6 +91,9 @@ class SettingsActivity : AppCompatActivity() {
 
         // Set up theme selection
         setupThemeSelector()
+        
+        // Set up voice instructions toggle
+        setupVoiceInstructionsToggle()
     }
     
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -212,5 +215,42 @@ class SettingsActivity : AppCompatActivity() {
             THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
+    }
+    
+    private fun setupVoiceInstructionsToggle() {
+        // Try to find a card named voice_card and set up toggle
+        try {
+            val voiceCard = findViewById<MaterialCardView>(R.id.voice_card)
+            val voiceSwitch = findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.voice_switch)
+            
+            // Get current TTS setting
+            val ttsEnabled = isTtsEnabled()
+            voiceSwitch.isChecked = ttsEnabled
+            
+            // Set up click listener for the card
+            voiceCard.setOnClickListener {
+                voiceSwitch.toggle()
+                saveTtsSetting(voiceSwitch.isChecked)
+            }
+            
+            // Set up listener for the switch
+            voiceSwitch.setOnCheckedChangeListener { _, isChecked ->
+                saveTtsSetting(isChecked)
+            }
+            
+        } catch (e: Exception) {
+            // Just log the exception and continue
+            e.printStackTrace()
+        }
+    }
+    
+    private fun isTtsEnabled(): Boolean {
+        val prefs = getSharedPreferences("com.velvettouch.nosafeword_preferences", Context.MODE_PRIVATE)
+        return prefs.getBoolean(getString(R.string.pref_tts_enabled_key), true) // Default to enabled
+    }
+    
+    private fun saveTtsSetting(enabled: Boolean) {
+        val prefs = getSharedPreferences("com.velvettouch.nosafeword_preferences", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(getString(R.string.pref_tts_enabled_key), enabled).apply()
     }
 }
