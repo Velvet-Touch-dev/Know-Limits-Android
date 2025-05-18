@@ -8,7 +8,7 @@
             android:checked="true" />
         <item
             android:id="@+id/nav_positions"
-            android:icon="@drawable/ic_image_24"
+            android:icon="@drawable/ic_loop_24"
             android:title="@string/positions" />
         <item
             android:id="@+id/nav_settings"
