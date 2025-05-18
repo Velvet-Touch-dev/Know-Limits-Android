@@ -30,12 +30,12 @@
 20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 20-->[androidx.core:core:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/66418c98118b6e31315fddf15db348c5/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
 21        android:debuggable="true"
-22        android:icon="@drawable/ic_launcher_foreground"
-22-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:8:9-56
+22        android:icon="@mipmap/ic_launcher"
+22-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:8:9-43
 23        android:label="@string/app_name"
 23-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:9:9-41
-24        android:roundIcon="@drawable/ic_launcher_foreground"
-24-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:10:9-61
+24        android:roundIcon="@mipmap/ic_launcher_round"
+24-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:10:9-54
 25        android:supportsRtl="true"
 25-->/home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:11:9-35
 26        android:testOnly="true"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Random Scene</string>
+    <string name="app_name">No Safe Word</string>
     <string name="random_scene">Random Scene</string>
     <string name="error_loading">Error loading scenes</string>
     <string name="check_json">Please check your scenes.json file</string>

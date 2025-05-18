@@ -92,9 +92,9 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/adity
 	android:label
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:9:9-41
 	android:roundIcon
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:10:9-61
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:10:9-54
 	android:icon
-		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:8:9-56
+		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:8:9-43
 	android:allowBackup
 		ADDED from /home/aditya/Documents/Android App/app/src/main/AndroidManifest.xml:7:9-35
 	android:theme
