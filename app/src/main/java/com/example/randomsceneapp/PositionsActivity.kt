@@ -32,18 +32,25 @@ class PositionsActivity : AppCompatActivity() {
         randomizeButton = findViewById(R.id.randomize_button)
         toolbar = findViewById(R.id.toolbar)
         
-        // Set up toolbar
+        // Set up toolbar with Material 3 style
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.positions)
         
+        // Apply Material 3 dynamic colors
+        val typedValue = android.util.TypedValue()
+        if (theme.resolveAttribute(com.google.android.material.R.attr.colorPrimaryContainer, typedValue, true)) {
+            randomizeButton.rippleColor = android.content.res.ColorStateList.valueOf(typedValue.data)
+        }
+        
         // Load position images
         loadPositionImages()
         
-        // Set up randomize button
+        // Set up randomize button with Material motion
         randomizeButton.setOnClickListener {
-            val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            // Use Material motion for transitions
+            val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
+            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
             
             positionImageView.startAnimation(fadeOut)
             fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
@@ -116,6 +123,11 @@ class PositionsActivity : AppCompatActivity() {
             // Display the image name without the extension
             val nameWithoutExtension = imageName.substringBeforeLast(".")
             positionNameTextView.text = nameWithoutExtension.replace("_", " ").capitalize()
+            
+            // Apply dynamic tint to the randomize button based on your theme
+            val typedValue = android.util.TypedValue()
+            theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
             
         } catch (e: IOException) {
             e.printStackTrace()
