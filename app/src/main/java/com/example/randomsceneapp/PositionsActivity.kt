@@ -168,8 +168,8 @@ class PositionsActivity : AppCompatActivity() {
             }
         }
         
-        // Initialize auto play settings
-        autoPlayButton.text = getString(R.string.auto_play)
+        // Initialize with consistent Play button text
+        autoPlayButton.text = getString(R.string.play)
         autoPlayButton.setOnClickListener {
             toggleAutoPlay()
         }
