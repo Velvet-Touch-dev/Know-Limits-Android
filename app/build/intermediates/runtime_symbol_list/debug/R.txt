@@ -2956,7 +2956,11 @@ int drawable abc_textfield_search_activated_mtrl_alpha 0x7f080073
 int drawable abc_textfield_search_default_mtrl_alpha 0x7f080074
 int drawable abc_textfield_search_material 0x7f080075
 int drawable abc_vector_test 0x7f080076
+int drawable anim_pause_to_play 0x7f0800f1
+int drawable anim_play_to_pause 0x7f0800f2
 int drawable avd_hide_password 0x7f080077
+int drawable avd_pause_to_play 0x7f0800f3
+int drawable avd_play_to_pause 0x7f0800f4
 int drawable avd_show_password 0x7f080078
 int drawable btn_checkbox_checked_mtrl 0x7f080079
 int drawable btn_checkbox_checked_to_unchecked_mtrl_animation 0x7f08007a
@@ -2994,6 +2998,8 @@ int drawable ic_mtrl_checked_circle 0x7f080096
 int drawable ic_mtrl_chip_checked_black 0x7f080097
 int drawable ic_mtrl_chip_checked_circle 0x7f080098
 int drawable ic_mtrl_chip_close_circle 0x7f080099
+int drawable ic_pause_24 0x7f0800f5
+int drawable ic_play_24 0x7f0800f6
 int drawable ic_refresh 0x7f08009a
 int drawable ic_restore 0x7f08009b
 int drawable ic_search 0x7f08009c
@@ -3169,6 +3175,8 @@ int id auto 0x7f090057
 int id autoComplete 0x7f090058
 int id autoCompleteToEnd 0x7f090059
 int id autoCompleteToStart 0x7f09005a
+int id auto_play_button 0x7f090224
+int id auto_play_settings 0x7f090225
 int id barrier 0x7f09005b
 int id baseline 0x7f09005c
 int id beginOnFirstDraw 0x7f09005d
@@ -3218,6 +3226,7 @@ int id content_container 0x7f090088
 int id content_input_layout 0x7f090089
 int id contiguous 0x7f09008a
 int id continuousVelocity 0x7f09008b
+int id controls_container 0x7f090229
 int id coordinator 0x7f09008c
 int id cos 0x7f09008d
 int id counterclockwise 0x7f09008e
@@ -3366,8 +3375,10 @@ int id material_timepicker_ok_button 0x7f09011c
 int id material_timepicker_view 0x7f09011d
 int id material_value_index 0x7f09011e
 int id matrix 0x7f09011f
+int id max_time_spinner 0x7f090226
 int id message 0x7f090120
 int id middle 0x7f090121
+int id min_time_spinner 0x7f090227
 int id mini 0x7f090122
 int id month_grid 0x7f090123
 int id month_navigation_bar 0x7f090124
@@ -3582,6 +3593,7 @@ int id theme_radio_group 0x7f0901ef
 int id theme_system_radio 0x7f0901f0
 int id theme_value 0x7f0901f1
 int id time 0x7f0901f2
+int id timer_text_view 0x7f090228
 int id title 0x7f0901f3
 int id titleDividerNoCustom 0x7f0901f4
 int id titleTextView 0x7f0901f5
@@ -3868,6 +3880,9 @@ int string add_favorites 0x7f11001b
 int string androidx_startup 0x7f11001c
 int string app_name 0x7f11001d
 int string appbar_scrolling_view_behavior 0x7f11001e
+int string auto_play 0x7f1100ce
+int string auto_play_off 0x7f1100cf
+int string auto_play_on 0x7f1100d0
 int string bottom_sheet_behavior 0x7f11001f
 int string bottomsheet_action_collapse 0x7f110020
 int string bottomsheet_action_expand 0x7f110021
@@ -4031,6 +4046,7 @@ int string search_scenes 0x7f1100bc
 int string searchbar_scrolling_view_behavior 0x7f1100bd
 int string searchview_clear_text_content_description 0x7f1100be
 int string searchview_navigation_content_description 0x7f1100bf
+int string seconds 0x7f1100d1
 int string settings 0x7f1100c0
 int string share 0x7f1100c1
 int string share_scene 0x7f1100c2

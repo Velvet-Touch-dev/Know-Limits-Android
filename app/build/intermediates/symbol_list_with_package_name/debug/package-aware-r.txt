@@ -2957,7 +2957,11 @@ drawable abc_textfield_search_activated_mtrl_alpha
 drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
+drawable anim_pause_to_play
+drawable anim_play_to_pause
 drawable avd_hide_password
+drawable avd_pause_to_play
+drawable avd_play_to_pause
 drawable avd_show_password
 drawable btn_checkbox_checked_mtrl
 drawable btn_checkbox_checked_to_unchecked_mtrl_animation
@@ -2995,6 +2999,8 @@ drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable ic_pause_24
+drawable ic_play_24
 drawable ic_refresh
 drawable ic_restore
 drawable ic_search
@@ -3170,6 +3176,8 @@ id auto
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
+id auto_play_button
+id auto_play_settings
 id barrier
 id baseline
 id beginOnFirstDraw
@@ -3219,6 +3227,7 @@ id content_container
 id content_input_layout
 id contiguous
 id continuousVelocity
+id controls_container
 id coordinator
 id cos
 id counterclockwise
@@ -3367,8 +3376,10 @@ id material_timepicker_ok_button
 id material_timepicker_view
 id material_value_index
 id matrix
+id max_time_spinner
 id message
 id middle
+id min_time_spinner
 id mini
 id month_grid
 id month_navigation_bar
@@ -3583,6 +3594,7 @@ id theme_radio_group
 id theme_system_radio
 id theme_value
 id time
+id timer_text_view
 id title
 id titleDividerNoCustom
 id titleTextView
@@ -3869,6 +3881,9 @@ string add_favorites
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
+string auto_play
+string auto_play_off
+string auto_play_on
 string bottom_sheet_behavior
 string bottomsheet_action_collapse
 string bottomsheet_action_expand
@@ -4032,6 +4047,7 @@ string search_scenes
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
+string seconds
 string settings
 string share
 string share_scene
