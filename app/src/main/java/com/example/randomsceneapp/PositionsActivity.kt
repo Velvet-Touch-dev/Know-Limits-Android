@@ -128,21 +128,44 @@ class PositionsActivity : AppCompatActivity() {
             randomizeButton.rippleColor = android.content.res.ColorStateList.valueOf(typedValue.data)
         }
         
-        // Set up randomize button with Material motion
+        // Set up randomize button (now "Next" button) with Material motion
         randomizeButton.setOnClickListener {
-            // Use Material motion for transitions
-            val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
-            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
-            
-            positionImageView.startAnimation(fadeOut)
-            fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
-                override fun onAnimationStart(animation: android.view.animation.Animation?) {}
-                override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
-                override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                    displayRandomPosition()
-                    positionImageView.startAnimation(fadeIn)
-                }
-            })
+            // If auto play is on, stop current timer and start a new one
+            if (isAutoPlayOn) {
+                // Cancel current timer
+                autoPlayTimer?.cancel()
+                
+                // Use Material motion for transitions
+                val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
+                val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
+                
+                positionImageView.startAnimation(fadeOut)
+                fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                    override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                        displayRandomPosition()
+                        positionImageView.startAnimation(fadeIn)
+                        
+                        // Start new timer
+                        startAutoPlay()
+                    }
+                })
+            } else {
+                // Regular behavior when auto play is off
+                val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
+                val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
+                
+                positionImageView.startAnimation(fadeOut)
+                fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                    override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                        displayRandomPosition()
+                        positionImageView.startAnimation(fadeIn)
+                    }
+                })
+            }
         }
         
         // Set up auto play button
@@ -217,14 +240,9 @@ class PositionsActivity : AppCompatActivity() {
             // Start auto play
             startAutoPlay()
             
-            // Change button icon to pause with animation
-            autoPlayButton.setIconResource(R.drawable.ic_pause_24)
-            try {
-                val drawable = autoPlayButton.icon as? AnimatedVectorDrawable
-                drawable?.start()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            // Change button icon and shape to pause (square)
+            autoPlayButton.icon = getDrawable(R.drawable.ic_pause_square_24)
+            autoPlayButton.cornerRadius = 12 // More square-like
             
             // Show timer
             timerTextView.visibility = View.VISIBLE
@@ -235,14 +253,9 @@ class PositionsActivity : AppCompatActivity() {
             // Stop auto play
             stopAutoPlay()
             
-            // Change button icon to play with animation
-            autoPlayButton.setIconResource(R.drawable.ic_play_24)
-            try {
-                val drawable = autoPlayButton.icon as? AnimatedVectorDrawable
-                drawable?.start()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            // Change button icon and shape to play (circle)
+            autoPlayButton.icon = getDrawable(R.drawable.ic_play_circle_filled_24)
+            autoPlayButton.cornerRadius = 28 // More circular
             
             // Hide timer
             timerTextView.visibility = View.GONE

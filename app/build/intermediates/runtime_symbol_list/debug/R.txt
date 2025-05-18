@@ -2999,7 +2999,10 @@ int drawable ic_mtrl_chip_checked_black 0x7f080097
 int drawable ic_mtrl_chip_checked_circle 0x7f080098
 int drawable ic_mtrl_chip_close_circle 0x7f080099
 int drawable ic_pause_24 0x7f0800f5
+int drawable ic_pause_square_24 0x7f0800f7
 int drawable ic_play_24 0x7f0800f6
+int drawable ic_play_circle_24 0x7f0800f8
+int drawable ic_play_circle_filled_24 0x7f0800f9
 int drawable ic_refresh 0x7f08009a
 int drawable ic_restore 0x7f08009b
 int drawable ic_search 0x7f08009c
@@ -3008,6 +3011,7 @@ int drawable ic_settings 0x7f08009e
 int drawable ic_share 0x7f08009f
 int drawable ic_shuffle 0x7f0800a0
 int drawable ic_shuffle_24 0x7f0800f0
+int drawable ic_skip_next_24 0x7f0800fa
 int drawable ic_theme 0x7f0800a1
 int drawable m3_appbar_background 0x7f0800a2
 int drawable m3_avd_hide_password 0x7f0800a3
@@ -4017,6 +4021,7 @@ int string mtrl_switch_track_path 0x7f1100a1
 int string mtrl_timepicker_cancel 0x7f1100a2
 int string mtrl_timepicker_confirm 0x7f1100a3
 int string new_scene 0x7f1100a4
+int string next 0x7f1100d2
 int string no_favorites 0x7f1100a5
 int string password_toggle_content_description 0x7f1100a6
 int string path_password_eye 0x7f1100a7

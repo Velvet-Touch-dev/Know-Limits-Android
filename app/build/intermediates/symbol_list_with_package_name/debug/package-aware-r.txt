@@ -3000,7 +3000,10 @@ drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable ic_pause_24
+drawable ic_pause_square_24
 drawable ic_play_24
+drawable ic_play_circle_24
+drawable ic_play_circle_filled_24
 drawable ic_refresh
 drawable ic_restore
 drawable ic_search
@@ -3009,6 +3012,7 @@ drawable ic_settings
 drawable ic_share
 drawable ic_shuffle
 drawable ic_shuffle_24
+drawable ic_skip_next_24
 drawable ic_theme
 drawable m3_appbar_background
 drawable m3_avd_hide_password
@@ -4018,6 +4022,7 @@ string mtrl_switch_track_path
 string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string new_scene
+string next
 string no_favorites
 string password_toggle_content_description
 string path_password_eye
