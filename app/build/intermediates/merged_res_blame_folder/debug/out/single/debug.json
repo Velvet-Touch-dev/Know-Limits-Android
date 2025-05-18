@@ -48,16 +48,12 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-main-38:/drawable/ic_share.xml"
     },
     {
-        "merged": "com.example.randomsceneapp-merged_res-36:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.example.randomsceneapp-main-38:/drawable/ic_launcher_foreground.xml"
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-merged_res-36:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-main-38:/drawable/ic_launcher_foreground.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-merged_res-36:/anim_fade_out.xml.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-main-38:/anim/fade_out.xml"
-    },
-    {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-merged_res-36:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-main-38:/drawable/ic_launcher_foreground.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-merged_res-36:/mipmap-hdpi_ic_launcher_round.xml.flat",
@@ -142,6 +138,10 @@
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-merged_res-36:/drawable_ic_restore.xml.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-main-38:/drawable/ic_restore.xml"
+    },
+    {
+        "merged": "com.example.randomsceneapp-merged_res-36:/menu_drawer_menu.xml.flat",
+        "source": "com.example.randomsceneapp-main-38:/menu/drawer_menu.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.example.randomsceneapp-merged_res-36:/mipmap-xhdpi_ic_launcher_round.xml.flat",

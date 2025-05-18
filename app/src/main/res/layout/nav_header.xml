@@ -14,7 +14,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="12dp"
         android:tint="?attr/colorPrimary"
-        android:src="@drawable/ic_shuffle"
+        android:src="@drawable/ic_launcher_foreground"
         android:contentDescription="@string/app_name" />
 
     <TextView
@@ -23,13 +23,5 @@
         android:text="@string/app_name"
         android:textAppearance="?attr/textAppearanceTitleLarge"
         android:textColor="?android:attr/textColorPrimary" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/settings"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?android:attr/textColorSecondary" />
 
 </LinearLayout>
