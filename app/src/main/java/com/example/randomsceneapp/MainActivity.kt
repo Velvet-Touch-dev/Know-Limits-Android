@@ -146,6 +146,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
+        // Remove header view
+        navigationView.removeHeaderView(navigationView.getHeaderView(0))
+        
         // Rest of onCreate implementation
         // Enable links in the title and content text views
         titleTextView.movementMethod = LinkMovementMethod.getInstance()

@@ -53,6 +53,9 @@ class SettingsActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
+        // Remove header view
+        navigationView.removeHeaderView(navigationView.getHeaderView(0))
+
         // Set up navigation view listener
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
