@@ -17,29 +17,30 @@
         tools:listitem="@layout/item_edit_scene" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:orientation="vertical">
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginBottom="30dp"
+        android:paddingHorizontal="16dp">
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/reset_scenes_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:text="@string/reset_to_default"
             app:icon="@drawable/ic_restore"
             android:contentDescription="@string/reset_to_default" />
+            
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_scene_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:contentDescription="@string/new_scene"
             app:srcCompat="@drawable/ic_add" />
     </LinearLayout>
