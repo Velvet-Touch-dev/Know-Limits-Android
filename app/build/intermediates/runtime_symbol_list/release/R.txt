@@ -2987,6 +2987,7 @@ int drawable ic_clock_black_24dp 0x7f08008f
 int drawable ic_delete 0x7f080090
 int drawable ic_dropdown 0x7f080091
 int drawable ic_edit 0x7f080092
+int drawable ic_edit_pencil 0x7f0800ff
 int drawable ic_favorite 0x7f080093
 int drawable ic_favorite_filled 0x7f080094
 int drawable ic_image_24 0x7f080095
@@ -3283,6 +3284,7 @@ int id easeInOut 0x7f0900ba
 int id easeOut 0x7f0900bb
 int id east 0x7f0900bc
 int id edge 0x7f0900bd
+int id editButton 0x7f090242
 int id edit_container 0x7f0900be
 int id edit_content_input 0x7f0900bf
 int id edit_preview 0x7f0900c0

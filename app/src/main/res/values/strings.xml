@@ -13,7 +13,7 @@
     <string name="share_via">Share via</string>
     <string name="random">Scenes</string>
     <string name="favorites">Favorites</string>
-    <string name="edit">Edit</string>
+    <string name="edit">Search</string>
     <string name="no_favorites">No favorites yet</string>
     <string name="add_favorites">Add scenes to favorites by tapping the heart icon</string>
     <string name="scene_title">Scene Title</string>
@@ -25,7 +25,7 @@
     <string name="new_scene">New Scene</string>
     <string name="delete">Delete</string>
     <string name="scene_deleted">Scene deleted</string>
-    <string name="edit_scenes">Edit Scenes</string>
+    <string name="edit_scenes">Search Scenes</string>
     <string name="hint_title">Enter scene title...</string>
     <string name="hint_content">Enter scene content...</string>
     <string name="reset_to_default">Reset to Default</string>

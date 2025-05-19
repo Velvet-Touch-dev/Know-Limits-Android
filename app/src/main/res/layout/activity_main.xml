@@ -40,7 +40,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:padding="16dp"
-                android:paddingBottom="96dp"
+                android:paddingBottom="180dp"
                 android:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -185,6 +185,17 @@
             android:orientation="horizontal"
             android:gravity="center">
             
+            <!-- Edit Button -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/editButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:elevation="8dp"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_edit_pencil"
+                android:contentDescription="@string/edit_scene" />
+                
             <!-- Previous Button -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/previousButton"

@@ -2988,6 +2988,7 @@ drawable ic_clock_black_24dp
 drawable ic_delete
 drawable ic_dropdown
 drawable ic_edit
+drawable ic_edit_pencil
 drawable ic_favorite
 drawable ic_favorite_filled
 drawable ic_image_24
@@ -3284,6 +3285,7 @@ id easeInOut
 id easeOut
 id east
 id edge
+id editButton
 id edit_container
 id edit_content_input
 id edit_preview

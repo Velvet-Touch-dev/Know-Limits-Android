@@ -2020,9 +2020,9 @@
     <string name="delete">Delete</string>
     <string name="drawer_close">Close Navigation Drawer</string>
     <string name="drawer_open">Open Navigation Drawer</string>
-    <string name="edit">Edit</string>
+    <string name="edit">Search</string>
     <string name="edit_scene">Edit Scene</string>
-    <string name="edit_scenes">Edit Scenes</string>
+    <string name="edit_scenes">Search Scenes</string>
     <string description="Screen reader announcement for when a checkbox is on error. [CHAR LIMIT=NONE]" name="error_a11y_label">
     Error: invalid
   </string>
