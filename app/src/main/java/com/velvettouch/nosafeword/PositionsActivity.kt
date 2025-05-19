@@ -561,20 +561,36 @@ class PositionsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             return
         }
         
-        // Find the position by name
-        val normalizedName = positionName.toLowerCase().replace(" ", "_")
-        val position = positionImages.indexOfFirst { 
-            val imageName = it.substringBeforeLast(".")
-            imageName.equals(normalizedName, ignoreCase = true)
+        // Try to find an exact match for the position name
+        for (i in positionImages.indices) {
+            val imageName = positionImages[i]
+            val nameWithoutExtension = imageName.substringBeforeLast(".")
+            val displayName = nameWithoutExtension.replace("_", " ").capitalize()
+            
+            if (displayName.equals(positionName, ignoreCase = true)) {
+                currentPosition = i
+                displayCurrentPosition()
+                return
+            }
         }
         
-        if (position >= 0) {
-            currentPosition = position
-            displayCurrentPosition()
-        } else {
-            // If not found, display random position
-            displayRandomPosition()
+        // If no exact match found, try matching without spaces
+        val normalizedTargetName = positionName.toLowerCase().replace(" ", "")
+        
+        for (i in positionImages.indices) {
+            val imageName = positionImages[i]
+            val nameWithoutExtension = imageName.substringBeforeLast(".")
+            val normalizedName = nameWithoutExtension.toLowerCase().replace("_", "")
+            
+            if (normalizedName == normalizedTargetName) {
+                currentPosition = i
+                displayCurrentPosition()
+                return
+            }
         }
+        
+        // If still not found, display random position
+        displayRandomPosition()
     }
     
     private fun displayRandomPosition() {

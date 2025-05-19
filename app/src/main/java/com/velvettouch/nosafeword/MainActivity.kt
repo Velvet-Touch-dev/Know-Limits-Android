@@ -386,8 +386,29 @@ class MainActivity : AppCompatActivity() {
         sceneHistory.clear()
         historyPosition = -1
 
-        // Display a random scene initially
-        displayRandomScene()
+        // Check for specific scene to display from intent
+        val displaySceneId = intent.getIntExtra("DISPLAY_SCENE_ID", -1)
+        if (displaySceneId != -1) {
+            // Find the scene by ID
+            val sceneIndex = scenes.indexOfFirst { it.id == displaySceneId }
+            if (sceneIndex != -1) {
+                // Update current index
+                currentSceneIndex = sceneIndex
+                
+                // Update history
+                sceneHistory.add(currentSceneIndex)
+                historyPosition = sceneHistory.size - 1
+                
+                // Display the scene
+                displayScene(scenes[currentSceneIndex])
+            } else {
+                // If scene not found, show random scene
+                displayRandomScene()
+            }
+        } else {
+            // Display initial random scene
+            displayRandomScene()
+        }
 
         // Update UI based on initial mode
         updateUI()
