@@ -36,12 +36,12 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/layout/nav_header.xml"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/layout_item_favorite_scene.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/layout/item_favorite_scene.xml"
-    },
-    {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/layout_item_favorite_scene.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/layout/item_favorite_scene.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_shuffle_24.xml.flat",
@@ -146,6 +146,10 @@
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_edit_pencil.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/drawable/ic_edit_pencil.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_bed_24.xml.flat",
@@ -258,10 +262,6 @@
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/menu_top_app_bar.xml.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-37:/menu/top_app_bar.xml"
-    },
-    {
-        "merged": "com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_edit_pencil.xml.flat",
-        "source": "com.velvettouch.nosafeword.app-main-37:/drawable/ic_edit_pencil.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_image_24.xml.flat",

@@ -1,4 +1,4 @@
-#Mon May 19 18:55:51 IST 2025
+#Mon May 19 19:02:30 IST 2025
 base.0=/home/aditya/Documents/Android App/app/build/intermediates/dex/release/minifyReleaseWithR8/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex
