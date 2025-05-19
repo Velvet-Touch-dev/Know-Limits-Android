@@ -159,7 +159,9 @@ class FavoritesActivity : AppCompatActivity() {
             // Handle scene favorite click - switching to random mode and displaying the scene
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("DISPLAY_SCENE_ID", scene.id)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
+            finish() // Close favorites activity to prevent navigation issues
         }
         
         sceneFavoritesRecyclerView.apply {
@@ -172,7 +174,9 @@ class FavoritesActivity : AppCompatActivity() {
             // Handle position favorite click - switching to positions page and displaying the position
             val intent = Intent(this, PositionsActivity::class.java)
             intent.putExtra("DISPLAY_POSITION_NAME", position.name)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
+            finish() // Close favorites activity to prevent navigation issues
         }, { position ->
             // Handle remove position from favorites
             removePositionFromFavorites(position)

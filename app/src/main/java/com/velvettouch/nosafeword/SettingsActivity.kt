@@ -92,6 +92,13 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_favorites -> {
+                    // Go to favorites activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, FavoritesActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 R.id.nav_settings -> {
                     // Already on settings page, just close drawer
                     drawerLayout.closeDrawer(GravityCompat.START)

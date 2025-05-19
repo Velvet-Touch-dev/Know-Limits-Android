@@ -3,8 +3,8 @@
 # min_api: 24
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.1"}
-# pg_map_id: ceab586
-# pg_map_hash: SHA-256 ceab586053eb1e738b8f91bcb32f455675fc0b5063a86fcbc912b03de1e61bd7
+# pg_map_id: f14a39c
+# pg_map_hash: SHA-256 f14a39c090a361c20bac262c83208ee4e2873f4ed19d5705d7c604ea72207f73
 android.support.v4.app.INotificationSideChannel -> android.support.v4.app.a:
 android.support.v4.app.INotificationSideChannel$Stub -> android.support.v4.app.a$a:
     70:81:java.lang.Object android.support.v4.app.INotificationSideChannel$_Parcel.readTypedObject(android.os.Parcel,android.os.Parcelable$Creator):0:0 -> onTransact
@@ -1143,23 +1143,23 @@ androidx.constraintlayout.core.state.Transition$$ExternalSyntheticLambda0 -> and
     0:65535:void androidx.constraintlayout.core.state.Transition$$InternalSyntheticLambda$1$9c2ac366c789eddbe52f4ef43693846ac2c45dccce6a29f88749a4b2b006669c$0.<init>(java.lang.String):0:0 -> <init>
     0:65535:void androidx.constraintlayout.core.state.Transition$$InternalSyntheticLambda$1$9c2ac366c789eddbe52f4ef43693846ac2c45dccce6a29f88749a4b2b006669c$0.$r8$init$synthetic(java.lang.Object,int):0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    42:156:boolean com.velvettouch.nosafeword.PositionsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.PositionsActivity,android.view.MenuItem):0:0 -> a
-    42:156:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
+    43:155:boolean com.velvettouch.nosafeword.PositionsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.PositionsActivity,android.view.MenuItem):0:0 -> a
+    43:155:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    157:160:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
+    156:159:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    161:273:boolean com.velvettouch.nosafeword.FavoritesActivity.onCreate$lambda$0(com.velvettouch.nosafeword.FavoritesActivity,android.view.MenuItem):0:0 -> a
-    161:273:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
+    160:272:boolean com.velvettouch.nosafeword.FavoritesActivity.onCreate$lambda$0(com.velvettouch.nosafeword.FavoritesActivity,android.view.MenuItem):0:0 -> a
+    160:272:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    274:277:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
+    273:276:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    278:372:boolean com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$0(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.MenuItem):0:0 -> a
-    278:372:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
+    277:389:boolean com.velvettouch.nosafeword.BodyWorshipActivity.onCreate$lambda$0(com.velvettouch.nosafeword.BodyWorshipActivity,android.view.MenuItem):0:0 -> a
+    277:389:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    373:376:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
+    390:393:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    377:452:boolean com.velvettouch.nosafeword.SettingsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.SettingsActivity,android.view.MenuItem):0:0 -> a
-    377:452:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
+    394:486:boolean com.velvettouch.nosafeword.SettingsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.SettingsActivity,android.view.MenuItem):0:0 -> a
+    394:486:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
     float androidx.constraintlayout.core.state.Transition$$InternalSyntheticLambda$1$9c2ac366c789eddbe52f4ef43693846ac2c45dccce6a29f88749a4b2b006669c$0.getInterpolation(float) -> getInterpolation
       # {"id":"com.android.tools.r8.synthesized"}
