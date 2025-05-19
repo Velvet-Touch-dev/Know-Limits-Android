@@ -3,8 +3,8 @@
 # min_api: 24
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.1"}
-# pg_map_id: 70aca78
-# pg_map_hash: SHA-256 70aca7848820013bd4080c97fe13bc5c09620de383da66efcceac65fd92ef6f2
+# pg_map_id: df79249
+# pg_map_hash: SHA-256 df79249b6e99bf9d6fdce405a3bfa8765115abd21fc334a980cad71dd15982e0
 android.support.v4.app.INotificationSideChannel -> android.support.v4.app.a:
 android.support.v4.app.INotificationSideChannel$Stub -> android.support.v4.app.a$a:
     70:81:java.lang.Object android.support.v4.app.INotificationSideChannel$_Parcel.readTypedObject(android.os.Parcel,android.os.Parcelable$Creator):0:0 -> onTransact
@@ -18085,39 +18085,40 @@ com.velvettouch.nosafeword.FavoriteScenesAdapter$SceneDiffCallback -> com.velvet
     7:24:boolean areItemsTheSame(com.velvettouch.nosafeword.Scene,com.velvettouch.nosafeword.Scene):0:0 -> areItemsTheSame
     7:24:boolean areItemsTheSame(java.lang.Object,java.lang.Object):0 -> areItemsTheSame
 com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivity:
+    com.velvettouch.nosafeword.EditScenesAdapter editAdapter -> G
+    com.velvettouch.nosafeword.FavoriteScenesAdapter favoritesAdapter -> F
     androidx.recyclerview.widget.RecyclerView favoritesRecyclerView -> t
-    int $r8$clinit -> G
+    java.util.List sceneHistory -> z
     java.util.List originalScenes -> x
-    java.util.Set favorites -> A
+    int nextSceneId -> E
     com.google.android.material.button.MaterialButton shareButton -> i
+    int currentMode -> C
+    int historyPosition -> A
     com.google.android.material.bottomnavigation.BottomNavigationView bottomNavigation -> p
+    android.widget.Toast currentToast -> D
     int currentSceneIndex -> y
     com.google.android.material.floatingactionbutton.FloatingActionButton previousButton -> g
     android.widget.FrameLayout favoritesContainer -> r
     androidx.drawerlayout.widget.DrawerLayout drawerLayout -> m
-    com.velvettouch.nosafeword.EditScenesAdapter editAdapter -> F
-    com.velvettouch.nosafeword.FavoriteScenesAdapter favoritesAdapter -> E
     androidx.appcompat.app.ActionBarDrawerToggle drawerToggle -> o
     androidx.recyclerview.widget.RecyclerView editRecyclerView -> u
+    int $r8$clinit -> H
     com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton resetScenesButton -> k
-    int nextSceneId -> D
     java.util.List scenes -> w
+    java.util.Set favorites -> B
     com.google.android.material.card.MaterialCardView sceneCardView -> h
-    int currentMode -> B
     androidx.appcompat.widget.Toolbar topAppBar -> l
     com.google.android.material.floatingactionbutton.FloatingActionButton randomizeButton -> f
     com.google.android.material.navigation.NavigationView navigationView -> n
-    android.widget.Toast currentToast -> C
     android.widget.TextView titleTextView -> c
     androidx.core.widget.NestedScrollView randomContent -> q
-    int previousSceneIndex -> z
     android.widget.TextView contentTextView -> e
     android.widget.LinearLayout emptyFavoritesView -> v
     com.google.android.material.floatingactionbutton.FloatingActionButton addSceneButton -> j
     android.widget.FrameLayout editContainer -> s
     11:12:java.util.List kotlin.collections.CollectionsKt__CollectionsKt.emptyList():0:0 -> <init>
     11:12:void <init>():0 -> <init>
-    13:30:void <init>():0:0 -> <init>
+    13:37:void <init>():0:0 -> <init>
     void displayRandomScene() -> d
     1:2:java.lang.String com.velvettouch.nosafeword.Scene.getTitle():0:0 -> e
     1:2:void displayScene(com.velvettouch.nosafeword.Scene):0 -> e
@@ -18164,10 +18165,10 @@ com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivi
     518:524:void onCreate(android.os.Bundle):0 -> onCreate
     525:657:void loadScenes():0:0 -> onCreate
     525:657:void onCreate(android.os.Bundle):0 -> onCreate
-    658:783:void onCreate(android.os.Bundle):0:0 -> onCreate
-    784:793:void loadScenes():0:0 -> onCreate
-    784:793:void onCreate(android.os.Bundle):0 -> onCreate
-    794:855:void onCreate(android.os.Bundle):0:0 -> onCreate
+    658:791:void onCreate(android.os.Bundle):0:0 -> onCreate
+    792:801:void loadScenes():0:0 -> onCreate
+    792:801:void onCreate(android.os.Bundle):0 -> onCreate
+    802:863:void onCreate(android.os.Bundle):0:0 -> onCreate
     80:103:void updateFavoriteIcon(android.view.Menu):0:0 -> onCreateOptionsMenu
     80:103:boolean onCreateOptionsMenu(android.view.Menu):0 -> onCreateOptionsMenu
     104:105:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onCreateOptionsMenu
@@ -18394,9 +18395,9 @@ com.velvettouch.nosafeword.MainActivity$onCreate$2 -> com.velvettouch.nosafeword
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     30:47:void com.velvettouch.nosafeword.MainActivity.access$switchToRandomMode(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0 -> invoke
     30:47:void invoke(com.velvettouch.nosafeword.Scene):0 -> invoke
-    48:105:void com.velvettouch.nosafeword.MainActivity.switchToRandomMode(com.velvettouch.nosafeword.Scene):0:0 -> invoke
-    48:105:void com.velvettouch.nosafeword.MainActivity.access$switchToRandomMode(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0 -> invoke
-    48:105:void invoke(com.velvettouch.nosafeword.Scene):0 -> invoke
+    48:143:void com.velvettouch.nosafeword.MainActivity.switchToRandomMode(com.velvettouch.nosafeword.Scene):0:0 -> invoke
+    48:143:void com.velvettouch.nosafeword.MainActivity.access$switchToRandomMode(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0 -> invoke
+    48:143:void invoke(com.velvettouch.nosafeword.Scene):0 -> invoke
 com.velvettouch.nosafeword.MainActivity$onCreate$3$swipeHandler$1 -> com.velvettouch.nosafeword.MainActivity$a:
     com.velvettouch.nosafeword.MainActivity this$0 -> a
     10:15:com.velvettouch.nosafeword.FavoriteScenesAdapter com.velvettouch.nosafeword.MainActivity.access$getFavoritesAdapter$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onSwiped
@@ -18438,49 +18439,46 @@ com.velvettouch.nosafeword.MainActivity$onCreate$5 -> com.velvettouch.nosafeword
 com.velvettouch.nosafeword.MainActivity$onCreate$8$1 -> com.velvettouch.nosafeword.MainActivity$b:
     android.view.animation.Animation $fadeIn -> b
     com.velvettouch.nosafeword.MainActivity this$0 -> a
-    1:4:int com.velvettouch.nosafeword.MainActivity.access$getCurrentSceneIndex$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    1:4:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    5:6:void com.velvettouch.nosafeword.MainActivity.access$setPreviousSceneIndex$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
-    5:6:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    7:8:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
-    7:8:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
+    1:4:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
+    1:4:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    7:8:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    9:97:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
-    9:97:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
-    9:97:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    98:101:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    98:101:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    102:115:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    116:119:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
-    116:119:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
-    116:119:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    1:4:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    5:134:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
+    5:134:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
+    5:134:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    135:138:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    135:138:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    139:152:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    153:156:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
+    153:156:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
+    153:156:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
 com.velvettouch.nosafeword.MainActivity$onCreate$9$1 -> com.velvettouch.nosafeword.MainActivity$c:
     android.view.animation.Animation $fadeIn -> b
     com.velvettouch.nosafeword.MainActivity this$0 -> a
-    1:6:int com.velvettouch.nosafeword.MainActivity.access$getPreviousSceneIndex$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    1:6:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    7:8:java.util.List com.velvettouch.nosafeword.MainActivity.access$getScenes$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    7:8:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    9:14:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    15:16:int com.velvettouch.nosafeword.MainActivity.access$getCurrentSceneIndex$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    15:16:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    17:18:int com.velvettouch.nosafeword.MainActivity.access$getPreviousSceneIndex$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    17:18:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    19:20:void com.velvettouch.nosafeword.MainActivity.access$setCurrentSceneIndex$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
-    19:20:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    21:22:void com.velvettouch.nosafeword.MainActivity.access$setPreviousSceneIndex$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
-    21:22:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    23:24:java.util.List com.velvettouch.nosafeword.MainActivity.access$getScenes$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    23:24:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    25:30:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    31:37:void com.velvettouch.nosafeword.MainActivity.access$displayScene(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0:0 -> onAnimationEnd
-    31:37:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    38:40:void com.velvettouch.nosafeword.MainActivity.access$showMaterialToast(com.velvettouch.nosafeword.MainActivity,java.lang.String,boolean):0:0 -> onAnimationEnd
-    38:40:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    41:44:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    41:44:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    45:57:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    1:10:int com.velvettouch.nosafeword.MainActivity.access$getHistoryPosition$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    1:10:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    11:12:void com.velvettouch.nosafeword.MainActivity.access$setHistoryPosition$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
+    11:12:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    13:14:java.util.List com.velvettouch.nosafeword.MainActivity.access$getSceneHistory$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    13:14:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    15:24:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    25:26:void com.velvettouch.nosafeword.MainActivity.access$setCurrentSceneIndex$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
+    25:26:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    27:28:java.util.List com.velvettouch.nosafeword.MainActivity.access$getScenes$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    27:28:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    29:34:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    35:37:void com.velvettouch.nosafeword.MainActivity.access$displayScene(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0:0 -> onAnimationEnd
+    35:37:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    38:41:com.google.android.material.floatingactionbutton.FloatingActionButton com.velvettouch.nosafeword.MainActivity.access$getPreviousButton$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    38:41:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    42:46:int com.velvettouch.nosafeword.MainActivity.access$getHistoryPosition$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    42:46:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    47:58:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    59:61:void com.velvettouch.nosafeword.MainActivity.access$showMaterialToast(com.velvettouch.nosafeword.MainActivity,java.lang.String,boolean):0:0 -> onAnimationEnd
+    59:61:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    62:65:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    62:65:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    66:77:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
 com.velvettouch.nosafeword.MainActivity$onCreateOptionsMenu$1 -> com.velvettouch.nosafeword.MainActivity$d:
     com.velvettouch.nosafeword.MainActivity this$0 -> a
     4:11:void com.velvettouch.nosafeword.MainActivity.access$filterScenes(com.velvettouch.nosafeword.MainActivity,java.lang.String):0:0 -> onQueryTextChange

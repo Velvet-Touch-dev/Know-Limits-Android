@@ -11433,11 +11433,8 @@ com.velvettouch.nosafeword.MainActivity$Companion
 com.velvettouch.nosafeword.MainActivity:
     public static final com.velvettouch.nosafeword.MainActivity$Companion Companion
     public static void <clinit>()
-    public static final synthetic int access$getCurrentSceneIndex$p()
-    public static final synthetic int access$getPreviousSceneIndex$p()
+    public static final synthetic int access$getHistoryPosition$p()
     public static final synthetic com.google.android.material.card.MaterialCardView access$getSceneCardView$p()
-    public static final synthetic java.util.List access$getScenes$p()
-    public static final synthetic void access$setPreviousSceneIndex$p()
     public static void displayNextScene()
     public static void filterScenes()
     public static java.lang.String formatMarkdownText(java.lang.String)

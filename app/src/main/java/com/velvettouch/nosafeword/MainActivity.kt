@@ -72,7 +72,8 @@ class MainActivity : AppCompatActivity() {
     private var scenes: MutableList<Scene> = mutableListOf()
     private var originalScenes: List<Scene> = listOf() // Keep original scenes for reset
     private var currentSceneIndex: Int = -1
-    private var previousSceneIndex: Int = -1 // Track previous scene index for navigation
+    private var sceneHistory: MutableList<Int> = mutableListOf() // History of visited scenes
+    private var historyPosition: Int = -1 // Current position in history
     private var favorites: MutableSet<String> = mutableSetOf()
     private var currentMode: Int = MODE_RANDOM
     private var currentToast: Toast? = null
@@ -314,9 +315,6 @@ class MainActivity : AppCompatActivity() {
                 override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                 override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                 override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                    // Store the current scene index before moving to the next
-                    previousSceneIndex = currentSceneIndex
-                    
                     // Display next scene
                     displayNextScene()
                     sceneCardView.startAnimation(fadeIn)
@@ -334,15 +332,19 @@ class MainActivity : AppCompatActivity() {
                 override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                 override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                 override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                    // Go to the previous scene if there is one
-                    if (previousSceneIndex >= 0 && previousSceneIndex < scenes.size) {
-                        // Swap current and previous indices
-                        val temp = currentSceneIndex
-                        currentSceneIndex = previousSceneIndex
-                        previousSceneIndex = temp
+                    // Go to the previous scene in history if available
+                    if (historyPosition > 0) {
+                        // Move back in history
+                        historyPosition--
+                        
+                        // Set current index to the previous item in history
+                        currentSceneIndex = sceneHistory[historyPosition]
                         
                         // Display the scene
                         displayScene(scenes[currentSceneIndex])
+                        
+                        // Update button state
+                        previousButton.isEnabled = historyPosition > 0
                     } else {
                         // Show a message if there's no previous scene
                         showMaterialToast("No previous scene available", false)
@@ -366,6 +368,10 @@ class MainActivity : AppCompatActivity() {
         resetScenesButton.setOnClickListener {
             showResetConfirmation()
         }
+        
+        // Initialize the sceneHistory list with the initial scene
+        sceneHistory.clear()
+        historyPosition = -1
         
         // Display a random scene initially
         displayRandomScene()
@@ -472,11 +478,12 @@ class MainActivity : AppCompatActivity() {
                 favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
                 shareButton.visibility = View.VISIBLE
+                // Update button states
                 randomizeButton.visibility = View.VISIBLE
                 previousButton.visibility = View.VISIBLE
                 
-                // If there's no previous scene, disable the previous button
-                previousButton.isEnabled = previousSceneIndex >= 0
+                // Enable/disable previous button based on history
+                previousButton.isEnabled = historyPosition > 0
             }
             MODE_FAVORITES -> {
                 // Update app bar title
@@ -743,6 +750,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
+    // Display a random scene and add it to history
     private fun displayRandomScene() {
         if (scenes.isEmpty()) {
             titleTextView.text = getString(R.string.error_loading)
@@ -756,17 +764,28 @@ class MainActivity : AppCompatActivity() {
             newIndex = Random.nextInt(scenes.size)
         } while (scenes.size > 1 && newIndex == currentSceneIndex)
         
-        // Save previous scene index before changing current
-        previousSceneIndex = currentSceneIndex
+        // Update current index
         currentSceneIndex = newIndex
+        
+        // Update history - remove any forward history and add the new item
+        if (historyPosition < sceneHistory.size - 1) {
+            // Remove forward history if we're not at the end
+            sceneHistory = sceneHistory.subList(0, historyPosition + 1)
+        }
+        
+        // Add new scene to history
+        sceneHistory.add(currentSceneIndex)
+        historyPosition = sceneHistory.size - 1
+        
+        // Display the scene
         displayScene(scenes[currentSceneIndex])
         
         // Update button state
-        previousButton.isEnabled = previousSceneIndex >= 0
+        previousButton.isEnabled = historyPosition > 0
     }
     
     /**
-     * Display the next scene in sequence
+     * Display the next scene in sequence and add it to history
      */
     private fun displayNextScene() {
         if (scenes.isEmpty()) {
@@ -778,24 +797,42 @@ class MainActivity : AppCompatActivity() {
         // Move to the next scene, wrapping around if necessary
         val newIndex = (currentSceneIndex + 1) % scenes.size
         
-        // Save current as previous before updating current
-        previousSceneIndex = currentSceneIndex
+        // Update current index
         currentSceneIndex = newIndex
+        
+        // Update history - remove any forward history and add the new item
+        if (historyPosition < sceneHistory.size - 1) {
+            // Remove forward history if we're not at the end
+            sceneHistory = sceneHistory.subList(0, historyPosition + 1)
+        }
+        
+        // Add new scene to history
+        sceneHistory.add(currentSceneIndex)
+        historyPosition = sceneHistory.size - 1
+        
+        // Display the scene
         displayScene(scenes[currentSceneIndex])
         
         // Update button state
-        previousButton.isEnabled = previousSceneIndex >= 0
+        previousButton.isEnabled = historyPosition > 0
     }
     
     private fun switchToRandomMode(scene: Scene) {
         // Find the scene index in the main list
         val index = scenes.indexOfFirst { it.id == scene.id }
         if (index != -1) {
-            // Store current index as previous before updating
-            previousSceneIndex = currentSceneIndex
-            
             // Update the current index
             currentSceneIndex = index
+            
+            // Update history - remove any forward history and add the new item
+            if (historyPosition < sceneHistory.size - 1) {
+                // Remove forward history if we're not at the end
+                sceneHistory = sceneHistory.subList(0, historyPosition + 1)
+            }
+            
+            // Add new scene to history
+            sceneHistory.add(currentSceneIndex)
+            historyPosition = sceneHistory.size - 1
             
             // Then switch to random mode
             currentMode = MODE_RANDOM
