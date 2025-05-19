@@ -3,8 +3,8 @@
 # min_api: 24
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.1"}
-# pg_map_id: 94d6be5
-# pg_map_hash: SHA-256 94d6be5b827b05c0c28bd8db1e02e61c2a91f5e19981cdbc077cff1eb6900842
+# pg_map_id: 70aca78
+# pg_map_hash: SHA-256 70aca7848820013bd4080c97fe13bc5c09620de383da66efcceac65fd92ef6f2
 android.support.v4.app.INotificationSideChannel -> android.support.v4.app.a:
 android.support.v4.app.INotificationSideChannel$Stub -> android.support.v4.app.a$a:
     70:81:java.lang.Object android.support.v4.app.INotificationSideChannel$_Parcel.readTypedObject(android.os.Parcel,android.os.Parcelable$Creator):0:0 -> onTransact
@@ -18162,12 +18162,12 @@ com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivi
     512:517:void onCreate(android.os.Bundle):0 -> onCreate
     518:524:void loadFavorites():0:0 -> onCreate
     518:524:void onCreate(android.os.Bundle):0 -> onCreate
-    525:654:void loadScenes():0:0 -> onCreate
-    525:654:void onCreate(android.os.Bundle):0 -> onCreate
-    655:780:void onCreate(android.os.Bundle):0:0 -> onCreate
-    781:790:void loadScenes():0:0 -> onCreate
-    781:790:void onCreate(android.os.Bundle):0 -> onCreate
-    791:852:void onCreate(android.os.Bundle):0:0 -> onCreate
+    525:657:void loadScenes():0:0 -> onCreate
+    525:657:void onCreate(android.os.Bundle):0 -> onCreate
+    658:783:void onCreate(android.os.Bundle):0:0 -> onCreate
+    784:793:void loadScenes():0:0 -> onCreate
+    784:793:void onCreate(android.os.Bundle):0 -> onCreate
+    794:855:void onCreate(android.os.Bundle):0:0 -> onCreate
     80:103:void updateFavoriteIcon(android.view.Menu):0:0 -> onCreateOptionsMenu
     80:103:boolean onCreateOptionsMenu(android.view.Menu):0 -> onCreateOptionsMenu
     104:105:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onCreateOptionsMenu
@@ -18338,48 +18338,48 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda5 -> com.velvett
     3:9:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0:0 -> onClick
     3:9:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    10:41:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
-    10:41:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    10:41:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    10:46:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
+    10:46:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    10:46:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    42:43:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onClick
-    42:43:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
+    47:48:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onClick
+    47:48:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    42:43:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    42:43:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    47:48:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    47:48:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    44:59:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
-    44:59:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    44:59:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    49:64:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
+    49:64:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    49:64:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    60:61:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onClick
-    60:61:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
+    65:66:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onClick
+    65:66:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    60:61:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    60:61:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    65:66:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    65:66:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    62:116:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
-    62:116:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    62:116:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    67:121:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
+    67:121:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    67:121:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    117:118:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onClick
-    117:118:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
+    122:123:int com.velvettouch.nosafeword.Scene.getId():0:0 -> onClick
+    122:123:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    117:118:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    117:118:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    122:123:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    122:123:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    119:139:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
-    119:139:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    119:139:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    124:144:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
+    124:144:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    124:144:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    140:145:boolean kotlin.collections.CollectionsKt__MutableCollectionsKt.removeAll(java.lang.Iterable,kotlin.jvm.functions.Function1):0:0 -> onClick
-    140:145:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
-    140:145:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    140:145:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    145:150:boolean kotlin.collections.CollectionsKt__MutableCollectionsKt.removeAll(java.lang.Iterable,kotlin.jvm.functions.Function1):0:0 -> onClick
+    145:150:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0 -> onClick
+    145:150:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    145:150:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    146:174:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
-    146:174:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
-    146:174:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
+    151:179:void com.velvettouch.nosafeword.MainActivity.resetToDefaultScenes():0:0 -> onClick
+    151:179:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation$lambda$23(com.velvettouch.nosafeword.MainActivity,android.content.DialogInterface,int):0 -> onClick
+    151:179:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.MainActivity$onCreate$2 -> com.velvettouch.nosafeword.MainActivity$onCreate$2:
     8:9:void com.velvettouch.nosafeword.MainActivity.switchToRandomMode(com.velvettouch.nosafeword.Scene):0:0 -> invoke

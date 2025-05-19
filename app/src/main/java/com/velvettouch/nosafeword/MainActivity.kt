@@ -658,6 +658,9 @@ class MainActivity : AppCompatActivity() {
                 scenesList.add(scene)
             }
             
+            // Randomize the order of the scenes
+            scenesList.shuffle()
+            
             scenes = scenesList
             nextSceneId = maxId + 1
         } catch (e: Exception) {
@@ -685,6 +688,9 @@ class MainActivity : AppCompatActivity() {
         // Reset to original scenes
         scenes.clear()
         scenes.addAll(originalScenes)
+        
+        // Randomize the order of scenes
+        scenes.shuffle()
         
         // Reset ID counter
         nextSceneId = scenes.maxOfOrNull { it.id }?.plus(1) ?: 1
