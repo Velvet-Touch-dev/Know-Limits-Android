@@ -8,6 +8,13 @@
         android:minSdkVersion="21"
         android:targetSdkVersion="33" />
 
+    <!-- Required for Text-to-Speech functionality -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <permission
         android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
@@ -15,7 +22,7 @@
     <uses-permission android:name="com.velvettouch.nosafeword.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
-        android:name="com.velvettouch.nosafeword.RandomSceneApplication"
+        android:name="com.velvettouch.nosafeword.NoSafeWordApplication"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
@@ -23,6 +30,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/Theme.RandomSceneApp" >
         <activity
             android:name="com.velvettouch.nosafeword.MainActivity"
@@ -45,6 +53,15 @@
             android:name="com.velvettouch.nosafeword.BodyWorshipActivity"
             android:exported="false"
             android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
+        <activity
+            android:name="com.velvettouch.nosafeword.FavoritesActivity"
+            android:exported="false"
+            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
+        <activity
+            android:name="com.velvettouch.nosafeword.DeveloperSettingsActivity"
+            android:exported="false"
+            android:label="Developer Settings"
+            android:parentActivityName="com.velvettouch.nosafeword.BodyWorshipActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

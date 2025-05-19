@@ -395,7 +395,7 @@ class FavoritesActivity : AppCompatActivity() {
     private fun setupSceneSwipeToDelete(recyclerView: RecyclerView) {
         val swipeHandler = object : ItemTouchHelper.SimpleCallback(
             0, // No drag and drop
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // Enable swipe in both directions
+            ItemTouchHelper.RIGHT // Only swipe right to delete
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -500,12 +500,12 @@ class FavoritesActivity : AppCompatActivity() {
                     // Draw the icon
                     deleteIcon?.draw(c)
 
-                    // Add a subtle scale and rotation effect when swiping
+                    // Add a subtle scale effect when swiping
                     if (isCurrentlyActive) {
                         val scaleFactor = 0.95f + (1 - Math.min(1f, Math.abs(dX) / (itemView.width / 3f))) * 0.05f
                         itemView.scaleX = scaleFactor
-                        itemView.scaleY = scaleFactor
-                        itemView.rotation = dX * 0.03f // Subtle rotation based on swipe distance
+                        // Don't change Y scale to avoid wobbling
+                        // Don't add rotation to avoid wobbling
                     } else {
                         itemView.scaleX = 1.0f
                         itemView.scaleY = 1.0f
@@ -526,7 +526,7 @@ class FavoritesActivity : AppCompatActivity() {
     private fun setupPositionSwipeToDelete(recyclerView: RecyclerView) {
         val swipeHandler = object : ItemTouchHelper.SimpleCallback(
             0, // No drag and drop
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // Enable swipe in both directions
+            ItemTouchHelper.RIGHT // Only swipe right to delete
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -559,7 +559,10 @@ class FavoritesActivity : AppCompatActivity() {
                 )?.apply {
                     setTint(Color.WHITE)
                 }
-
+                    
+                // Set the same corner radius as the card
+                val cornerRadius = 16f * resources.displayMetrics.density
+                
                 val iconMargin = (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
                 val iconTop = itemView.top + (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
                 val iconBottom = iconTop + (deleteIcon?.intrinsicHeight ?: 0)
@@ -571,39 +574,74 @@ class FavoritesActivity : AppCompatActivity() {
                         val iconRight = iconLeft + (deleteIcon?.intrinsicWidth ?: 0)
                         deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 
-                        // Draw background
+                        // Draw background with rounded corners
+                        val backgroundPath = android.graphics.Path()
+                        backgroundPath.addRoundRect(
+                            android.graphics.RectF(
+                                itemView.left.toFloat(),
+                                itemView.top.toFloat(),
+                                itemView.left + dX,
+                                itemView.bottom.toFloat()
+                            ),
+                            cornerRadius, cornerRadius,
+                            android.graphics.Path.Direction.CW
+                        )
+                        
+                        // Save canvas state to apply clipping
+                        c.save()
+                        c.clipPath(backgroundPath)
                         background.setBounds(
                             itemView.left, itemView.top,
                             itemView.left + dX.toInt(), itemView.bottom
                         )
+                        background.draw(c)
+                        c.restore()
                     }
                     dX < 0 -> { // Swiping to the left
                         val iconRight = itemView.right - iconMargin
                         val iconLeft = iconRight - (deleteIcon?.intrinsicWidth ?: 0)
                         deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 
-                        // Draw background
+                        // Draw background with rounded corners
+                        val backgroundPath = android.graphics.Path()
+                        backgroundPath.addRoundRect(
+                            android.graphics.RectF(
+                                itemView.right + dX,
+                                itemView.top.toFloat(),
+                                itemView.right.toFloat(),
+                                itemView.bottom.toFloat()
+                            ),
+                            cornerRadius, cornerRadius,
+                            android.graphics.Path.Direction.CW
+                        )
+                        
+                        // Save canvas state to apply clipping
+                        c.save()
+                        c.clipPath(backgroundPath)
                         background.setBounds(
                             itemView.right + dX.toInt(), itemView.top,
                             itemView.right, itemView.bottom
                         )
+                        background.draw(c)
+                        c.restore()
                     }
-                    else -> background.setBounds(0, 0, 0, 0)
+                    else -> {}
                 }
 
-                // Draw the background and icon
-                background.draw(c)
+                // Draw the icon
                 deleteIcon?.draw(c)
 
-                // Add a subtle scale effect when swiping
-                if (isCurrentlyActive) {
-                    val scaleFactor = 0.98f
-                    itemView.scaleX = scaleFactor
-                    itemView.scaleY = scaleFactor
-                } else {
-                    itemView.scaleX = 1.0f
-                    itemView.scaleY = 1.0f
-                }
+                    // Add a subtle scale effect when swiping
+                    if (isCurrentlyActive) {
+                        val scaleFactor = 0.95f + (1 - Math.min(1f, Math.abs(dX) / (itemView.width / 3f))) * 0.05f
+                        itemView.scaleX = scaleFactor
+                        // Don't change Y scale to avoid wobbling
+                        // Don't add rotation to avoid wobbling
+                    } else {
+                        itemView.scaleX = 1.0f
+                        itemView.scaleY = 1.0f
+                        itemView.rotation = 0f
+                    }
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
