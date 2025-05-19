@@ -186,10 +186,13 @@ class MainActivity : AppCompatActivity() {
         contentTextView.movementMethod = LinkMovementMethod.getInstance()
 
         // Set up RecyclerView for favorites
-        favoritesAdapter = FavoriteScenesAdapter { scene ->
+        favoritesAdapter = FavoriteScenesAdapter({ scene ->
             // Handle favorite item click - switching to random mode and displaying the scene
             switchToRandomMode(scene)
-        }
+        }, { scene ->
+            // Handle removal from favorites
+            removeFromFavorites(scene)
+        })
 
         favoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)

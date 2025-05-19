@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 
 class FavoriteScenesAdapter(
-    private val onItemClick: (Scene) -> Unit
+    private val onItemClick: (Scene) -> Unit,
+    private val onItemRemoved: (Scene) -> Unit
 ) : ListAdapter<Scene, FavoriteScenesAdapter.FavoriteViewHolder>(SceneDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
@@ -22,6 +23,11 @@ class FavoriteScenesAdapter(
 
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    fun removeItem(position: Int) {
+        val scene = getItem(position)
+        onItemRemoved(scene)
     }
 
     class FavoriteViewHolder(

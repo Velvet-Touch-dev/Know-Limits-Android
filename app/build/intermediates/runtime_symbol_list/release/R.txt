@@ -3492,7 +3492,6 @@ int id randomizeButton 0x7f090183
 int id randomize_button 0x7f090184
 int id ratio 0x7f090185
 int id rectangles 0x7f090186
-int id remove_favorite_button 0x7f090247
 int id report_drawn 0x7f090187
 int id reset_button 0x7f090188
 int id reset_scenes_button 0x7f090189
@@ -3591,6 +3590,7 @@ int id stretch 0x7f0901e4
 int id submenuarrow 0x7f0901e5
 int id submit_area 0x7f0901e6
 int id supportScrollUp 0x7f0901e7
+int id swipe_hint 0x7f09024b
 int id tabMode 0x7f0901e8
 int id tabs 0x7f090249
 int id tag_accessibility_actions 0x7f0901e9

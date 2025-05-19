@@ -42,17 +42,5 @@
                 tools:text="Position Name" />
 
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/remove_favorite_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/delete"
-            android:paddingStart="8dp"
-            android:paddingEnd="16dp"
-            app:srcCompat="@drawable/ic_delete"
-            app:tint="?attr/colorError" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

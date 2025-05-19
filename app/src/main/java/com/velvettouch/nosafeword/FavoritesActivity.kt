@@ -2,14 +2,20 @@ package com.velvettouch.nosafeword
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
@@ -155,18 +161,24 @@ class FavoritesActivity : AppCompatActivity() {
         })
         
         // Set up RecyclerView for scene favorites
-        sceneFavoritesAdapter = FavoriteScenesAdapter { scene ->
+        sceneFavoritesAdapter = FavoriteScenesAdapter({ scene ->
             // Handle scene favorite click - switching to random mode and displaying the scene
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("DISPLAY_SCENE_ID", scene.id)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish() // Close favorites activity to prevent navigation issues
-        }
+        }, { scene ->
+            // Handle remove scene from favorites
+            removeSceneFromFavorites(scene)
+        })
         
         sceneFavoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@FavoritesActivity)
             adapter = sceneFavoritesAdapter
+            
+            // Set up swipe to delete functionality
+            setupSceneSwipeToDelete(this)
         }
         
         // Set up RecyclerView for position favorites
@@ -185,7 +197,15 @@ class FavoritesActivity : AppCompatActivity() {
         positionFavoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@FavoritesActivity)
             adapter = positionFavoritesAdapter
+            
+            // Set up swipe to delete functionality for position favorites
+            setupPositionSwipeToDelete(this)
+            
+            // Add swipe hint at activity level, not from inside the RecyclerView
         }
+        
+        // Show the swipe hint
+        findViewById<TextView>(R.id.swipe_hint).visibility = View.VISIBLE
         
         // Load favorites
         loadSceneFavorites()
@@ -368,4 +388,228 @@ class FavoritesActivity : AppCompatActivity() {
         val name: String,
         val imagePath: String
     )
+    
+    /**
+     * Sets up swipe-to-delete functionality for the scene favorites recycler view
+     */
+    private fun setupSceneSwipeToDelete(recyclerView: RecyclerView) {
+        val swipeHandler = object : ItemTouchHelper.SimpleCallback(
+            0, // No drag and drop
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // Enable swipe in both directions
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false // We don't support moving items in this list
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                sceneFavoritesAdapter.removeItem(position)
+            }
+
+            // Add visual feedback when swiping
+            override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+            ) {
+            val itemView = viewHolder.itemView
+            val background = ColorDrawable(Color.parseColor("#F44336")) // Red background
+            val deleteIcon = ContextCompat.getDrawable(
+            this@FavoritesActivity,
+            R.drawable.ic_delete
+            )?.apply {
+            setTint(Color.WHITE)
+            }
+                    
+            // Set the same corner radius as the card
+            val cornerRadius = 16f * resources.displayMetrics.density
+            
+                    val iconMargin = (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
+            val iconTop = itemView.top + (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
+            val iconBottom = iconTop + (deleteIcon?.intrinsicHeight ?: 0)
+
+            // Show icon based on swipe direction
+            when {
+            dX > 0 -> { // Swiping to the right
+                            val iconLeft = itemView.left + iconMargin
+            val iconRight = iconLeft + (deleteIcon?.intrinsicWidth ?: 0)
+            deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+
+            // Draw background with rounded corners
+            val backgroundPath = android.graphics.Path()
+                backgroundPath.addRoundRect(
+                    android.graphics.RectF(
+                    itemView.left.toFloat(),
+                    itemView.top.toFloat(),
+                    itemView.left + dX,
+                                    itemView.bottom.toFloat()
+                ),
+                cornerRadius, cornerRadius,
+            android.graphics.Path.Direction.CW
+            )
+            
+                // Save canvas state to apply clipping
+                c.save()
+                    c.clipPath(backgroundPath)
+                            background.setBounds(
+                        itemView.left, itemView.top,
+                        itemView.left + dX.toInt(), itemView.bottom
+                    )
+                            background.draw(c)
+                    c.restore()
+                }
+            dX < 0 -> { // Swiping to the left
+                val iconRight = itemView.right - iconMargin
+                val iconLeft = iconRight - (deleteIcon?.intrinsicWidth ?: 0)
+                    deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+
+                // Draw background with rounded corners
+                    val backgroundPath = android.graphics.Path()
+                            backgroundPath.addRoundRect(
+                        android.graphics.RectF(
+                                itemView.right + dX,
+                                    itemView.top.toFloat(),
+                                    itemView.right.toFloat(),
+                                    itemView.bottom.toFloat()
+                                ),
+                                cornerRadius, cornerRadius,
+                                android.graphics.Path.Direction.CW
+                            )
+                            
+                            // Save canvas state to apply clipping
+                            c.save()
+                            c.clipPath(backgroundPath)
+                            background.setBounds(
+                                itemView.right + dX.toInt(), itemView.top,
+                                itemView.right, itemView.bottom
+                            )
+                            background.draw(c)
+                            c.restore()
+                        }
+                        else -> {}
+                    }
+
+                    // Draw the icon
+                    deleteIcon?.draw(c)
+
+                    // Add a subtle scale and rotation effect when swiping
+                    if (isCurrentlyActive) {
+                        val scaleFactor = 0.95f + (1 - Math.min(1f, Math.abs(dX) / (itemView.width / 3f))) * 0.05f
+                        itemView.scaleX = scaleFactor
+                        itemView.scaleY = scaleFactor
+                        itemView.rotation = dX * 0.03f // Subtle rotation based on swipe distance
+                    } else {
+                        itemView.scaleX = 1.0f
+                        itemView.scaleY = 1.0f
+                        itemView.rotation = 0f
+                    }
+
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                }
+        }
+
+        // Attach the swipe handler to the RecyclerView
+        ItemTouchHelper(swipeHandler).attachToRecyclerView(recyclerView)
+    }
+    
+    /**
+     * Sets up swipe-to-delete functionality for the position favorites recycler view
+     */
+    private fun setupPositionSwipeToDelete(recyclerView: RecyclerView) {
+        val swipeHandler = object : ItemTouchHelper.SimpleCallback(
+            0, // No drag and drop
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // Enable swipe in both directions
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false // We don't support moving items in this list
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                positionFavoritesAdapter.removeItem(position)
+            }
+
+            // Add visual feedback when swiping
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val itemView = viewHolder.itemView
+                val background = ColorDrawable(Color.parseColor("#F44336")) // Red background
+                val deleteIcon = ContextCompat.getDrawable(
+                    this@FavoritesActivity,
+                    R.drawable.ic_delete
+                )?.apply {
+                    setTint(Color.WHITE)
+                }
+
+                val iconMargin = (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
+                val iconTop = itemView.top + (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
+                val iconBottom = iconTop + (deleteIcon?.intrinsicHeight ?: 0)
+
+                // Show icon based on swipe direction
+                when {
+                    dX > 0 -> { // Swiping to the right
+                        val iconLeft = itemView.left + iconMargin
+                        val iconRight = iconLeft + (deleteIcon?.intrinsicWidth ?: 0)
+                        deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+
+                        // Draw background
+                        background.setBounds(
+                            itemView.left, itemView.top,
+                            itemView.left + dX.toInt(), itemView.bottom
+                        )
+                    }
+                    dX < 0 -> { // Swiping to the left
+                        val iconRight = itemView.right - iconMargin
+                        val iconLeft = iconRight - (deleteIcon?.intrinsicWidth ?: 0)
+                        deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+
+                        // Draw background
+                        background.setBounds(
+                            itemView.right + dX.toInt(), itemView.top,
+                            itemView.right, itemView.bottom
+                        )
+                    }
+                    else -> background.setBounds(0, 0, 0, 0)
+                }
+
+                // Draw the background and icon
+                background.draw(c)
+                deleteIcon?.draw(c)
+
+                // Add a subtle scale effect when swiping
+                if (isCurrentlyActive) {
+                    val scaleFactor = 0.98f
+                    itemView.scaleX = scaleFactor
+                    itemView.scaleY = scaleFactor
+                } else {
+                    itemView.scaleX = 1.0f
+                    itemView.scaleY = 1.0f
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        }
+
+        // Attach the swipe handler to the RecyclerView
+        ItemTouchHelper(swipeHandler).attachToRecyclerView(recyclerView)
+    }
 }

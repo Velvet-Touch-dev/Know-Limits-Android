@@ -2102,8 +2102,6 @@ com.velvettouch.nosafeword.FavoritesActivity:
     private static final java.lang.String POSITION_FAVORITES_PREF
     private static final java.lang.String SCENES_FILENAME
     private static final java.lang.String SCENE_FAVORITES_PREF
-    private final void removeSceneFromFavorites(com.velvettouch.nosafeword.Scene)
-    private final void saveSceneFavorites()
 com.velvettouch.nosafeword.MainActivity:
     private static final int MODE_EDIT
     private static final int MODE_FAVORITES
@@ -11554,13 +11552,13 @@ com.velvettouch.nosafeword.EditScenesAdapter:
 com.velvettouch.nosafeword.FavoritePositionsAdapter$PositionDiffCallback:
     public static boolean areContentsTheSame$1()
     public static boolean areItemsTheSame$1()
-com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder$$InternalSyntheticLambda$2$d915e5c6c1d2278da8a1597a425a1ea9a731cfa6eb961a224a5541d84d75e04d$1
+com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder$$InternalSyntheticLambda$2$d915e5c6c1d2278da8a1597a425a1ea9a731cfa6eb961a224a5541d84d75e04d$0
 com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder:
-    public final android.widget.ImageButton removeButton
     public static void bind$1()
 com.velvettouch.nosafeword.FavoritePositionsAdapter:
     public static void onBindViewHolder$4()
     public static com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder onCreateViewHolder()
+    public final void removeItem()
 com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder$$InternalSyntheticLambda$2$8f6f16a3f99fa79e67386a5e7e315dd612ef98fa5c26b9263b2486e64916d74a$0
 com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder:
     public final com.google.android.material.card.MaterialCardView cardView
@@ -11572,6 +11570,7 @@ com.velvettouch.nosafeword.FavoriteScenesAdapter$SceneDiffCallback:
 com.velvettouch.nosafeword.FavoriteScenesAdapter:
     public static void onBindViewHolder$5()
     public static com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder onCreateViewHolder()
+    public final void removeItem()
 com.velvettouch.nosafeword.FavoritesActivity$$InternalSyntheticLambda$1$a62e4242708c1b536ad090211a7ea89935686dbe718fd1397fb3d7d7412cbfdd$0
 com.velvettouch.nosafeword.FavoritesActivity$Companion
 com.velvettouch.nosafeword.FavoritesActivity$Position:
@@ -11588,7 +11587,11 @@ com.velvettouch.nosafeword.FavoritesActivity:
     public static void loadSceneFavorites()
     public final void loadScenes()
     public static void removePositionFromFavorites()
+    public static void removeSceneFromFavorites()
     public final void savePositionFavorites()
+    public static void saveSceneFavorites()
+    public static void setupPositionSwipeToDelete()
+    public static void setupSceneSwipeToDelete()
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$1
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$3
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$4

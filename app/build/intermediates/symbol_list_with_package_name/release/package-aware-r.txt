@@ -3493,7 +3493,6 @@ id randomizeButton
 id randomize_button
 id ratio
 id rectangles
-id remove_favorite_button
 id report_drawn
 id reset_button
 id reset_scenes_button
@@ -3592,6 +3591,7 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id swipe_hint
 id tabMode
 id tabs
 id tag_accessibility_actions

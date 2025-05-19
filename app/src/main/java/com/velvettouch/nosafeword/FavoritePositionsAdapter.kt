@@ -9,12 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.velvettouch.nosafeword.FavoritesActivity.Position
 
 class FavoritePositionsAdapter(
-    private val onPositionClick: (Position) -> Unit,
-    private val onRemoveClick: (Position) -> Unit
-) : ListAdapter<Position, FavoritePositionsAdapter.ViewHolder>(PositionDiffCallback()) {
+    private val onPositionClick: (FavoritesActivity.Position) -> Unit,
+    private val onRemoveClick: (FavoritesActivity.Position) -> Unit
+) : ListAdapter<FavoritesActivity.Position, FavoritePositionsAdapter.ViewHolder>(PositionDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -25,31 +24,32 @@ class FavoritePositionsAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
+    
+    fun removeItem(position: Int) {
+        val favoritePosition = getItem(position)
+        onRemoveClick(favoritePosition)
+    }
 
     class ViewHolder(
         itemView: View,
-        private val onPositionClick: (Position) -> Unit,
-        private val onRemoveClick: (Position) -> Unit
+        private val onPositionClick: (FavoritesActivity.Position) -> Unit,
+        private val onRemoveClick: (FavoritesActivity.Position) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         
         private val positionNameTextView: TextView = itemView.findViewById(R.id.position_name)
         private val positionImageView: ImageView = itemView.findViewById(R.id.position_image)
-        private val removeButton: ImageButton = itemView.findViewById(R.id.remove_favorite_button)
-        private lateinit var currentPosition: Position
+        private lateinit var currentPosition: FavoritesActivity.Position
 
         init {
             // Set click listener for the card
             itemView.setOnClickListener {
-                onPositionClick(currentPosition)
-            }
-            
-            // Set click listener for the remove button
-            removeButton.setOnClickListener {
-                onRemoveClick(currentPosition)
+                if (::currentPosition.isInitialized) {
+                    onPositionClick(currentPosition)
+                }
             }
         }
 
-        fun bind(position: Position) {
+        fun bind(position: FavoritesActivity.Position) {
             currentPosition = position
             
             // Set position name
@@ -69,12 +69,12 @@ class FavoritePositionsAdapter(
         }
     }
 
-    class PositionDiffCallback : DiffUtil.ItemCallback<Position>() {
-        override fun areItemsTheSame(oldItem: Position, newItem: Position): Boolean {
+    class PositionDiffCallback : DiffUtil.ItemCallback<FavoritesActivity.Position>() {
+        override fun areItemsTheSame(oldItem: FavoritesActivity.Position, newItem: FavoritesActivity.Position): Boolean {
             return oldItem.name == newItem.name
         }
 
-        override fun areContentsTheSame(oldItem: Position, newItem: Position): Boolean {
+        override fun areContentsTheSame(oldItem: FavoritesActivity.Position, newItem: FavoritesActivity.Position): Boolean {
             return oldItem.name == newItem.name && oldItem.imagePath == newItem.imagePath
         }
     }

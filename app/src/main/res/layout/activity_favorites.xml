@@ -81,6 +81,21 @@
                     android:paddingBottom="108dp"
                     android:visibility="gone"
                     tools:listitem="@layout/item_favorite_position" />
+                
+                <!-- Swipe hint -->
+                <TextView
+                    android:id="@+id/swipe_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:layout_marginBottom="16dp"
+                    android:background="@android:drawable/toast_frame"
+                    android:padding="8dp"
+                    android:text="Swipe right to delete"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@android:color/white"
+                    android:visibility="invisible"
+                    android:alpha="0.8" />
 
                 <!-- Empty Favorites State -->
                 <LinearLayout
