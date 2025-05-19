@@ -178,24 +178,28 @@
         <!-- Navigation Buttons -->
         <LinearLayout
             android:id="@+id/navigation_buttons"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="16dp"
+            android:layout_gravity="bottom"
             android:layout_marginBottom="96dp"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical">
             
             <!-- Edit Button -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/editButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:elevation="8dp"
                 app:fabSize="mini"
                 app:srcCompat="@drawable/ic_edit_pencil"
                 android:contentDescription="@string/edit_scene" />
+            
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
                 
             <!-- Previous Button -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
