@@ -174,17 +174,37 @@
             </FrameLayout>
         </FrameLayout>
 
-        <!-- Random Scene Floating Action Button -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/randomizeButton"
+        <!-- Navigation Buttons -->
+        <LinearLayout
+            android:id="@+id/navigation_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="96dp"
-            android:elevation="8dp"
-            app:srcCompat="@drawable/ic_shuffle"
-            android:contentDescription="@string/random_scene" />
+            android:orientation="horizontal"
+            android:gravity="center">
+            
+            <!-- Previous Button -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/previousButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:elevation="8dp"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_arrow_back"
+                android:contentDescription="@string/previous" />
+                
+            <!-- Next Button (Previously Randomize Button) -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/randomizeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="8dp"
+                app:srcCompat="@drawable/ic_arrow_forward"
+                android:contentDescription="@string/next" />
+        </LinearLayout>
 
         <!-- Bottom Navigation -->
         <com.google.android.material.bottomnavigation.BottomNavigationView

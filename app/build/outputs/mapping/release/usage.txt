@@ -11428,10 +11428,17 @@ com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$3
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$4
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$5
+com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$6
 com.velvettouch.nosafeword.MainActivity$Companion
 com.velvettouch.nosafeword.MainActivity:
     public static final com.velvettouch.nosafeword.MainActivity$Companion Companion
     public static void <clinit>()
+    public static final synthetic int access$getCurrentSceneIndex$p()
+    public static final synthetic int access$getPreviousSceneIndex$p()
+    public static final synthetic com.google.android.material.card.MaterialCardView access$getSceneCardView$p()
+    public static final synthetic java.util.List access$getScenes$p()
+    public static final synthetic void access$setPreviousSceneIndex$p()
+    public static void displayNextScene()
     public static void filterScenes()
     public static java.lang.String formatMarkdownText(java.lang.String)
     public static void loadFavorites()

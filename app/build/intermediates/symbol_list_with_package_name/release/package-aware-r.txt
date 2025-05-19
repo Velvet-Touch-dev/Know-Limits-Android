@@ -2978,7 +2978,9 @@ drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
 drawable ic_add
+drawable ic_arrow_back
 drawable ic_arrow_back_black_24
+drawable ic_arrow_forward
 drawable ic_back
 drawable ic_bed_24
 drawable ic_clear_black_24
@@ -3433,6 +3435,7 @@ id navigation_bar_item_icon_view
 id navigation_bar_item_labels_group
 id navigation_bar_item_large_label_view
 id navigation_bar_item_small_label_view
+id navigation_buttons
 id navigation_edit
 id navigation_favorites
 id navigation_header_container
@@ -3475,6 +3478,7 @@ id position_name_text_view
 id postLayout
 id pressed
 id preview_button
+id previousButton
 id progress_circular
 id progress_horizontal
 id radio
@@ -4069,6 +4073,7 @@ string pref_theme_light_value
 string pref_theme_system_value
 string pref_tts_enabled_key
 string pref_voice_seductiveness_key
+string previous
 string random
 string random_scene
 string randomize

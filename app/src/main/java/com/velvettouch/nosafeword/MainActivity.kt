@@ -51,7 +51,8 @@ class MainActivity : AppCompatActivity() {
     
     private lateinit var titleTextView: TextView
     private lateinit var contentTextView: TextView
-    private lateinit var randomizeButton: FloatingActionButton
+    private lateinit var randomizeButton: FloatingActionButton // Now acts as next button
+    private lateinit var previousButton: FloatingActionButton
     private lateinit var sceneCardView: MaterialCardView
     private lateinit var shareButton: MaterialButton
     private lateinit var addSceneButton: FloatingActionButton
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private var scenes: MutableList<Scene> = mutableListOf()
     private var originalScenes: List<Scene> = listOf() // Keep original scenes for reset
     private var currentSceneIndex: Int = -1
+    private var previousSceneIndex: Int = -1 // Track previous scene index for navigation
     private var favorites: MutableSet<String> = mutableSetOf()
     private var currentMode: Int = MODE_RANDOM
     private var currentToast: Toast? = null
@@ -94,7 +96,8 @@ class MainActivity : AppCompatActivity() {
         // Initialize views
         titleTextView = findViewById(R.id.titleTextView)
         contentTextView = findViewById(R.id.contentTextView)
-        randomizeButton = findViewById(R.id.randomizeButton)
+        randomizeButton = findViewById(R.id.randomizeButton) // Now next button
+        previousButton = findViewById(R.id.previousButton)
         sceneCardView = findViewById(R.id.sceneCardView)
         shareButton = findViewById(R.id.shareButton)
         topAppBar = findViewById(R.id.topAppBar)
@@ -311,7 +314,39 @@ class MainActivity : AppCompatActivity() {
                 override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                 override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                 override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                    displayRandomScene()
+                    // Store the current scene index before moving to the next
+                    previousSceneIndex = currentSceneIndex
+                    
+                    // Display next scene
+                    displayNextScene()
+                    sceneCardView.startAnimation(fadeIn)
+                }
+            })
+        }
+        
+        // Set previous button click listener
+        previousButton.setOnClickListener {
+            val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            
+            sceneCardView.startAnimation(fadeOut)
+            fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+                override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+                override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                    // Go to the previous scene if there is one
+                    if (previousSceneIndex >= 0 && previousSceneIndex < scenes.size) {
+                        // Swap current and previous indices
+                        val temp = currentSceneIndex
+                        currentSceneIndex = previousSceneIndex
+                        previousSceneIndex = temp
+                        
+                        // Display the scene
+                        displayScene(scenes[currentSceneIndex])
+                    } else {
+                        // Show a message if there's no previous scene
+                        showMaterialToast("No previous scene available", false)
+                    }
                     sceneCardView.startAnimation(fadeIn)
                 }
             })
@@ -438,6 +473,10 @@ class MainActivity : AppCompatActivity() {
                 editContainer.visibility = View.GONE
                 shareButton.visibility = View.VISIBLE
                 randomizeButton.visibility = View.VISIBLE
+                previousButton.visibility = View.VISIBLE
+                
+                // If there's no previous scene, disable the previous button
+                previousButton.isEnabled = previousSceneIndex >= 0
             }
             MODE_FAVORITES -> {
                 // Update app bar title
@@ -450,6 +489,7 @@ class MainActivity : AppCompatActivity() {
                 updateFavoritesList()
                 shareButton.visibility = View.GONE
                 randomizeButton.visibility = View.GONE
+                previousButton.visibility = View.GONE
             }
             MODE_EDIT -> {
                 // Update app bar title
@@ -462,6 +502,7 @@ class MainActivity : AppCompatActivity() {
                 updateEditList()
                 shareButton.visibility = View.GONE
                 randomizeButton.visibility = View.GONE
+                previousButton.visibility = View.GONE
             }
         }
         
@@ -709,15 +750,45 @@ class MainActivity : AppCompatActivity() {
             newIndex = Random.nextInt(scenes.size)
         } while (scenes.size > 1 && newIndex == currentSceneIndex)
         
+        // Save previous scene index before changing current
+        previousSceneIndex = currentSceneIndex
         currentSceneIndex = newIndex
         displayScene(scenes[currentSceneIndex])
+        
+        // Update button state
+        previousButton.isEnabled = previousSceneIndex >= 0
+    }
+    
+    /**
+     * Display the next scene in sequence
+     */
+    private fun displayNextScene() {
+        if (scenes.isEmpty()) {
+            titleTextView.text = getString(R.string.error_loading)
+            contentTextView.text = getString(R.string.check_json)
+            return
+        }
+        
+        // Move to the next scene, wrapping around if necessary
+        val newIndex = (currentSceneIndex + 1) % scenes.size
+        
+        // Save current as previous before updating current
+        previousSceneIndex = currentSceneIndex
+        currentSceneIndex = newIndex
+        displayScene(scenes[currentSceneIndex])
+        
+        // Update button state
+        previousButton.isEnabled = previousSceneIndex >= 0
     }
     
     private fun switchToRandomMode(scene: Scene) {
         // Find the scene index in the main list
         val index = scenes.indexOfFirst { it.id == scene.id }
         if (index != -1) {
-            // First update the current index
+            // Store current index as previous before updating
+            previousSceneIndex = currentSceneIndex
+            
+            // Update the current index
             currentSceneIndex = index
             
             // Then switch to random mode
