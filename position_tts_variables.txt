@@ -1,0 +1,21 @@
+// Add these TTS and voice-related variables to PositionsActivity.kt
+    
+    // TTS variables
+    private lateinit var textToSpeech: TextToSpeech
+    private var isTtsReady = false
+    private var isTtsEnabled = true // Default value, will be updated from preferences
+    
+    // Voice settings
+    private var voicePitch = 1.0f
+    private var voiceSpeed = 0.9f
+    
+    // Voice settings constants
+    companion object VoiceSettings {
+        const val PREF_VOICE_SETTINGS = "voice_settings"
+        const val PREF_VOICE_PITCH = "voice_pitch"
+        const val PREF_VOICE_SPEED = "voice_speed"
+        
+        // Default values
+        const val DEFAULT_PITCH = 1.0f
+        const val DEFAULT_SPEED = 0.7f
+    }

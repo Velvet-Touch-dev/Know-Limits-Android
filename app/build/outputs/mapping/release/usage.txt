@@ -139,7 +139,6 @@ com.google.android.material.badge.BadgeDrawable:
     public static final int TOP_END
     public static final int TOP_START
     public void clearNumber()
-    public static com.google.android.material.badge.BadgeDrawable create(android.content.Context)
     public static com.google.android.material.badge.BadgeDrawable createFromResource(android.content.Context,int)
     int getAdditionalHorizontalOffset()
     int getAdditionalVerticalOffset()
@@ -794,7 +793,6 @@ com.google.android.material.drawable.DrawableUtils:
     public static android.graphics.drawable.Drawable createTintableDrawableIfNeeded(android.graphics.drawable.Drawable,android.content.res.ColorStateList,android.graphics.PorterDuff$Mode)
     public static int[] getUncheckedState(int[])
     public static void setRippleDrawableRadius(android.graphics.drawable.RippleDrawable,int)
-    public static void setTint(android.graphics.drawable.Drawable,int)
 com.google.android.material.elevation.ElevationOverlayProvider:
     private static final float FORMULA_MULTIPLIER
     private static final float FORMULA_OFFSET
@@ -1695,28 +1693,70 @@ com.google.android.material.snackbar.SnackbarManager:
     public boolean isCurrent(com.google.android.material.snackbar.SnackbarManager$Callback)
     public void show(int,com.google.android.material.snackbar.SnackbarManager$Callback)
 com.google.android.material.switchmaterial.SwitchMaterial
-com.google.android.material.tabs.ElasticTabIndicatorInterpolator
-com.google.android.material.tabs.FadeTabIndicatorInterpolator
-com.google.android.material.tabs.TabIndicatorInterpolator
-com.google.android.material.tabs.TabItem
-com.google.android.material.tabs.TabLayout$1
-com.google.android.material.tabs.TabLayout$AdapterChangeListener
-com.google.android.material.tabs.TabLayout$BaseOnTabSelectedListener
+com.google.android.material.tabs.FadeTabIndicatorInterpolator:
+    private static final float FADE_THRESHOLD
+com.google.android.material.tabs.TabIndicatorInterpolator:
+    private static final int MIN_INDICATOR_WIDTH
+com.google.android.material.tabs.TabItem:
+    public void <init>(android.content.Context)
 com.google.android.material.tabs.TabLayout$LabelVisibility
 com.google.android.material.tabs.TabLayout$Mode
-com.google.android.material.tabs.TabLayout$OnTabSelectedListener
-com.google.android.material.tabs.TabLayout$PagerAdapterObserver
-com.google.android.material.tabs.TabLayout$SlidingTabIndicator$1
-com.google.android.material.tabs.TabLayout$SlidingTabIndicator
-com.google.android.material.tabs.TabLayout$Tab
+com.google.android.material.tabs.TabLayout$Tab:
+    public static final int INVALID_POSITION
+    public com.google.android.material.badge.BadgeDrawable getBadge()
+    public java.lang.CharSequence getContentDescription()
+    public int getId()
+    public com.google.android.material.badge.BadgeDrawable getOrCreateBadge()
+    public java.lang.Object getTag()
+    public void removeBadge()
+    public com.google.android.material.tabs.TabLayout$Tab setContentDescription(int)
+    public com.google.android.material.tabs.TabLayout$Tab setIcon(int)
+    public com.google.android.material.tabs.TabLayout$Tab setId(int)
+    public com.google.android.material.tabs.TabLayout$Tab setTabLabelVisibility(int)
+    public com.google.android.material.tabs.TabLayout$Tab setTag(java.lang.Object)
+    public com.google.android.material.tabs.TabLayout$Tab setText(int)
 com.google.android.material.tabs.TabLayout$TabGravity
 com.google.android.material.tabs.TabLayout$TabIndicatorAnimationMode
 com.google.android.material.tabs.TabLayout$TabIndicatorGravity
-com.google.android.material.tabs.TabLayout$TabLayoutOnPageChangeListener
-com.google.android.material.tabs.TabLayout$TabView$1
-com.google.android.material.tabs.TabLayout$TabView
-com.google.android.material.tabs.TabLayout$ViewPagerOnTabSelectedListener
-com.google.android.material.tabs.TabLayout
+com.google.android.material.tabs.TabLayout$TabView:
+    static synthetic com.google.android.material.badge.BadgeDrawable access$1000(com.google.android.material.tabs.TabLayout$TabView)
+    static synthetic com.google.android.material.badge.BadgeDrawable access$800(com.google.android.material.tabs.TabLayout$TabView)
+    static synthetic void access$900(com.google.android.material.tabs.TabLayout$TabView)
+    private void removeBadge()
+com.google.android.material.tabs.TabLayout:
+    private static final int ANIMATION_DURATION
+    static final int DEFAULT_GAP_TEXT_ICON
+    private static final int DEFAULT_HEIGHT
+    private static final int DEFAULT_HEIGHT_WITH_TEXT_ICON
+    static final int FIXED_WRAP_GUTTER_MIN
+    public static final int GRAVITY_CENTER
+    public static final int GRAVITY_FILL
+    public static final int GRAVITY_START
+    public static final int INDICATOR_ANIMATION_MODE_ELASTIC
+    public static final int INDICATOR_ANIMATION_MODE_FADE
+    public static final int INDICATOR_ANIMATION_MODE_LINEAR
+    public static final int INDICATOR_GRAVITY_BOTTOM
+    public static final int INDICATOR_GRAVITY_CENTER
+    public static final int INDICATOR_GRAVITY_STRETCH
+    public static final int INDICATOR_GRAVITY_TOP
+    private static final int INVALID_WIDTH
+    private static final java.lang.String LOG_TAG
+    public static final int MODE_AUTO
+    public static final int MODE_FIXED
+    public static final int MODE_SCROLLABLE
+    private static final int SELECTED_INDICATOR_HEIGHT_DEFAULT
+    public static final int TAB_LABEL_VISIBILITY_LABELED
+    public static final int TAB_LABEL_VISIBILITY_UNLABELED
+    private static final int TAB_MIN_WIDTH_MARGIN
+    public void <init>(android.content.Context)
+    public void addTab(com.google.android.material.tabs.TabLayout$Tab,int)
+    public void clearOnTabSelectedListeners()
+    public boolean hasUnboundedRipple()
+    public boolean isInlineLabel()
+    public void removeOnTabSelectedListener(com.google.android.material.tabs.TabLayout$OnTabSelectedListener)
+    public void removeTab(com.google.android.material.tabs.TabLayout$Tab)
+    public void removeTabAt(int)
+    public void setTabTextColors(int,int)
 com.google.android.material.tabs.TabLayoutMediator$PagerAdapterObserver
 com.google.android.material.tabs.TabLayoutMediator$TabConfigurationStrategy
 com.google.android.material.tabs.TabLayoutMediator$TabLayoutOnPageChangeCallback
@@ -2053,6 +2093,17 @@ com.velvettouch.nosafeword.DeveloperSettingsActivity:
     public static final java.lang.String PREF_VOICE_PITCH
     public static final java.lang.String PREF_VOICE_SETTINGS
     public static final java.lang.String PREF_VOICE_SPEED
+com.velvettouch.nosafeword.FavoritesActivity$Position:
+    public final java.lang.String component1()
+    public final java.lang.String component2()
+    public final com.velvettouch.nosafeword.FavoritesActivity$Position copy(java.lang.String,java.lang.String)
+    public static synthetic com.velvettouch.nosafeword.FavoritesActivity$Position copy$default(com.velvettouch.nosafeword.FavoritesActivity$Position,java.lang.String,java.lang.String,int,java.lang.Object)
+com.velvettouch.nosafeword.FavoritesActivity:
+    private static final java.lang.String POSITION_FAVORITES_PREF
+    private static final java.lang.String SCENES_FILENAME
+    private static final java.lang.String SCENE_FAVORITES_PREF
+    private final void removeSceneFromFavorites(com.velvettouch.nosafeword.Scene)
+    private final void saveSceneFavorites()
 com.velvettouch.nosafeword.MainActivity:
     private static final int MODE_EDIT
     private static final int MODE_FAVORITES
@@ -2060,7 +2111,14 @@ com.velvettouch.nosafeword.MainActivity:
     private static final java.lang.String SCENES_FILENAME
     static synthetic void updateFavoriteIcon$default(com.velvettouch.nosafeword.MainActivity,android.view.Menu,int,java.lang.Object)
 com.velvettouch.nosafeword.PositionsActivity:
+    public static final float DEFAULT_PITCH
+    public static final float DEFAULT_SPEED
+    public static final java.lang.String POSITION_FAVORITES_PREF
+    public static final java.lang.String PREF_VOICE_PITCH
+    public static final java.lang.String PREF_VOICE_SETTINGS
+    public static final java.lang.String PREF_VOICE_SPEED
     private final void toggleAutoPlaySettings()
+    static synthetic void updateFavoriteIcon$default(com.velvettouch.nosafeword.PositionsActivity,android.view.Menu,int,java.lang.Object)
 com.velvettouch.nosafeword.Scene:
     public final int component1()
     public final java.lang.String component2()
@@ -6714,7 +6772,6 @@ kotlin.text.StringsKt__StringsJVMKt:
     public static final byte[] encodeToByteArray(java.lang.String)
     public static final byte[] encodeToByteArray(java.lang.String,int,int,boolean)
     public static synthetic byte[] encodeToByteArray$default(java.lang.String,int,int,boolean,int,java.lang.Object)
-    public static final boolean equals(java.lang.String,java.lang.String,boolean)
     public static synthetic boolean equals$default(java.lang.String,java.lang.String,boolean,int,java.lang.Object)
     private static final synthetic varargs java.lang.String format(java.lang.String,java.util.Locale,java.lang.Object[])
     private static final varargs java.lang.String format(java.lang.String,java.lang.Object[])
@@ -9137,7 +9194,6 @@ androidx.viewpager2.widget.ViewPager2:
     public static void <clinit>()
 com.google.android.material.animation.AnimationUtils:
     public static float lerp()
-    public static int lerp(int,int,float)
 com.google.android.material.animation.ArgbEvaluatorCompat:
     public static java.lang.Integer evaluate()
     public static com.google.android.material.animation.ArgbEvaluatorCompat getInstance()
@@ -9272,7 +9328,6 @@ com.google.android.material.badge.BadgeDrawable$1
 com.google.android.material.badge.BadgeDrawable:
     public static void calculateCenterAndBounds()
     public static void drawText()
-    public static java.lang.CharSequence getContentDescription$1()
     public static int getHorizontalOffset()
     public static int getMaxCharacterCount()
     public static com.google.android.material.badge.BadgeState$State getSavedState()
@@ -10448,12 +10503,12 @@ com.google.android.material.internal.TextScale:
     public static void captureValues$1(androidx.transition.TransitionValues)
 com.google.android.material.internal.ThemeEnforcement:
     public static void checkMaterialTheme()
+    public static boolean isMaterial3Theme(android.content.Context)
 com.google.android.material.internal.ToolbarUtils$1:
     public static int compare()
 com.google.android.material.internal.ViewUtils$RelativePadding:
     public static void applyToView()
 com.google.android.material.internal.ViewUtils:
-    public static float dpToPx(android.content.Context,int)
     public static void requestFocusAndShowKeyboard(android.widget.EditText)
 com.google.android.material.internal.WindowUtils$Api14Impl
 com.google.android.material.internal.WindowUtils$Api17Impl
@@ -10518,6 +10573,7 @@ com.google.android.material.navigation.NavigationBarItemView:
     public final void refreshChecked()
     public abstract void removeBadge()
     public abstract void tryAttachBadgeToAnchor()
+    public final void tryRemoveBadgeFromAnchor(android.widget.ImageView)
     public abstract void tryUpdateBadgeBounds()
     public abstract void updateActiveIndicatorTransform()
 com.google.android.material.navigation.NavigationBarMenuView:
@@ -11025,6 +11081,88 @@ com.google.android.material.stateful.ExtendableSavedState$1:
     public static com.google.android.material.stateful.ExtendableSavedState createFromParcel()
     public static com.google.android.material.stateful.ExtendableSavedState createFromParcel$1()
     public static com.google.android.material.stateful.ExtendableSavedState[] newArray()
+com.google.android.material.tabs.ElasticTabIndicatorInterpolator:
+    public static float accInterp(float)
+    public static float decInterp(float)
+com.google.android.material.tabs.FadeTabIndicatorInterpolator
+com.google.android.material.tabs.TabIndicatorInterpolator:
+    public static void setIndicatorBoundsForTab()
+com.google.android.material.tabs.TabLayout$AdapterChangeListener:
+    public static void setAutoRefresh()
+com.google.android.material.tabs.TabLayout$SlidingTabIndicator:
+    public int layoutDirection
+    public static void animateIndicatorToPosition()
+    public static boolean childrenNeedLayout()
+    public static void jumpIndicatorToIndicatorPosition()
+    public final void jumpIndicatorToSelectedPosition()
+    public static void setIndicatorPositionFromTabPosition()
+com.google.android.material.tabs.TabLayout$Tab:
+    public java.lang.Object tag
+    public static synthetic int access$000()
+    public static synthetic java.lang.CharSequence access$300()
+    public static android.view.View getCustomView()
+    public static android.graphics.drawable.Drawable getIcon()
+    public static int getPosition()
+    public static int getTabLabelVisibility()
+    public static java.lang.CharSequence getText()
+    public static boolean isSelected()
+    public static void reset()
+    public final void select()
+    public static com.google.android.material.tabs.TabLayout$Tab setContentDescription()
+    public static com.google.android.material.tabs.TabLayout$Tab setCustomView()
+    public static com.google.android.material.tabs.TabLayout$Tab setCustomView$1()
+    public static com.google.android.material.tabs.TabLayout$Tab setIcon()
+    public static void setPosition()
+    public final void setText(java.lang.CharSequence)
+    public final void updateView()
+com.google.android.material.tabs.TabLayout$TabLayoutOnPageChangeListener:
+    public static void reset()
+com.google.android.material.tabs.TabLayout$TabView:
+    public static synthetic void access$200()
+    public final void addOnLayoutChangeListener(android.view.View)
+    public static float approximateLineWidth()
+    public final void clipViewToPaddingForBadge(boolean)
+    public static android.widget.FrameLayout createPreApi18BadgeAnchorRoot()
+    public static void drawBackground()
+    public static android.widget.FrameLayout getCustomParentForBadge()
+    public final boolean hasBadgeDrawable()
+    public static void inflateAndAddDefaultIconView()
+    public static void inflateAndAddDefaultTextView()
+    public static void reset()
+    public static void updateOrientation()
+com.google.android.material.tabs.TabLayout:
+    public final float selectedTabTextSize
+    public static synthetic int access$1200()
+    public static synthetic com.google.android.material.tabs.TabIndicatorInterpolator access$1700()
+    public static void addOnTabSelectedListener()
+    public final void addOnTabSelectedListener(com.google.android.material.tabs.TabLayout$BaseOnTabSelectedListener)
+    public static void addTab()
+    public static void addTab$1()
+    public static void addTabFromItemView()
+    public static void addTabView()
+    public static void applyGravityForModeScrollable()
+    public static void configureTab()
+    public static android.content.res.ColorStateList createColorStateList(int,int)
+    public static android.widget.LinearLayout$LayoutParams createLayoutParamsForTabs()
+    public static com.google.android.material.tabs.TabLayout$Tab createTabFromPool()
+    public static com.google.android.material.tabs.TabLayout$TabView createTabView()
+    public static void dispatchTabReselected()
+    public static void dispatchTabSelected()
+    public static void dispatchTabUnselected()
+    public final com.google.android.material.tabs.TabLayout$Tab getTabAt(int)
+    public final boolean isScrollingEnabled()
+    public static boolean isTabIndicatorFullWidth()
+    public static boolean releaseFromTabPool()
+    public static void removeAllTabs()
+    public final void removeOnTabSelectedListener(com.google.android.material.tabs.TabLayout$BaseOnTabSelectedListener)
+    public static void removeTabViewAt()
+    public static void selectTab()
+    public static void setScrollPosition()
+    public final void setScrollPosition(int)
+    public static void setupWithViewPager()
+    public final void updateAllTabs()
+    public final void updateTabViewLayoutParams(android.widget.LinearLayout$LayoutParams)
+    public static void updateViewPagerScrollState()
 com.google.android.material.textfield.ClearTextEndIconDelegate$$InternalSyntheticLambda$2$17ccb35e90256e2a790b98fb0f29fcb9f71fa2758edf36e22295aec0d2f06296$0
 com.google.android.material.textfield.ClearTextEndIconDelegate$$InternalSyntheticLambda$2$88b8d40c43e34dcb614afd396cecd928e90873c960f200febc85ef2ae10b66ab$0
 com.google.android.material.textfield.ClearTextEndIconDelegate$$InternalSyntheticLambda$2$b01fc8933ceb300a93c892a20cf8d831db7c88c6a1b23a8fb1a09bdb1b6fc74c$0
@@ -11387,7 +11525,7 @@ com.velvettouch.nosafeword.BodyWorshipActivity:
     public static final synthetic java.util.List access$getTimeOptions$p()
     public static final synthetic void access$startAutoPlay()
     public final java.lang.String formatTime()
-    public static void loadVoiceSettings()
+    public final void loadVoiceSettings()
     public final void setupSpinners()
     public static void speakNextTask()
     public final void stopAutoPlay()
@@ -11413,6 +11551,16 @@ com.velvettouch.nosafeword.EditScenesAdapter$SceneDiffCallback:
 com.velvettouch.nosafeword.EditScenesAdapter:
     public static void onBindViewHolder$3()
     public static com.velvettouch.nosafeword.EditScenesAdapter$EditViewHolder onCreateViewHolder()
+com.velvettouch.nosafeword.FavoritePositionsAdapter$PositionDiffCallback:
+    public static boolean areContentsTheSame$1()
+    public static boolean areItemsTheSame$1()
+com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder$$InternalSyntheticLambda$2$d915e5c6c1d2278da8a1597a425a1ea9a731cfa6eb961a224a5541d84d75e04d$1
+com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder:
+    public final android.widget.ImageButton removeButton
+    public static void bind$1()
+com.velvettouch.nosafeword.FavoritePositionsAdapter:
+    public static void onBindViewHolder$4()
+    public static com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder onCreateViewHolder()
 com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder$$InternalSyntheticLambda$2$8f6f16a3f99fa79e67386a5e7e315dd612ef98fa5c26b9263b2486e64916d74a$0
 com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder:
     public final com.google.android.material.card.MaterialCardView cardView
@@ -11422,8 +11570,25 @@ com.velvettouch.nosafeword.FavoriteScenesAdapter$SceneDiffCallback:
     public final boolean areContentsTheSame()
     public final boolean areItemsTheSame()
 com.velvettouch.nosafeword.FavoriteScenesAdapter:
-    public static void onBindViewHolder$4()
+    public static void onBindViewHolder$5()
     public static com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder onCreateViewHolder()
+com.velvettouch.nosafeword.FavoritesActivity$$InternalSyntheticLambda$1$a62e4242708c1b536ad090211a7ea89935686dbe718fd1397fb3d7d7412cbfdd$0
+com.velvettouch.nosafeword.FavoritesActivity$Companion
+com.velvettouch.nosafeword.FavoritesActivity$Position:
+    public static java.lang.String getImagePath()
+    public static java.lang.String getName()
+com.velvettouch.nosafeword.FavoritesActivity:
+    public static final com.velvettouch.nosafeword.FavoritesActivity$Companion Companion
+    public static void <clinit>()
+    public static final synthetic androidx.recyclerview.widget.RecyclerView access$getPositionFavoritesRecyclerView$p()
+    public static final synthetic androidx.recyclerview.widget.RecyclerView access$getSceneFavoritesRecyclerView$p()
+    public final java.lang.String capitalize(java.lang.String)
+    public final void loadPositionFavorites()
+    public static void loadPositions()
+    public static void loadSceneFavorites()
+    public final void loadScenes()
+    public static void removePositionFromFavorites()
+    public final void savePositionFavorites()
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$1
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$3
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$4
@@ -11433,6 +11598,7 @@ com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a
 com.velvettouch.nosafeword.MainActivity$Companion
 com.velvettouch.nosafeword.MainActivity:
     public static final com.velvettouch.nosafeword.MainActivity$Companion Companion
+    public android.widget.FrameLayout favoritesContainer
     public static void <clinit>()
     public static final synthetic int access$getHistoryPosition$p()
     public static final synthetic com.google.android.material.card.MaterialCardView access$getSceneCardView$p()
@@ -11440,32 +11606,41 @@ com.velvettouch.nosafeword.MainActivity:
     public static void filterScenes()
     public static java.lang.String formatMarkdownText(java.lang.String)
     public static void loadFavorites()
-    public static void loadScenes()
+    public final void loadScenes()
     public static void removeFromFavorites()
     public static void resetToDefaultScenes()
     public static void shareCurrentScene()
     public static void showDeleteConfirmation()
     public static void showResetConfirmation()
     public static void switchToRandomMode()
-    public static void toggleFavorite()
-    public static void updateFavoriteIcon()
+    public final void toggleFavorite()
+    public final void updateFavoriteIcon()
 com.velvettouch.nosafeword.NoSafeWordApplication:
     public static void applyThemeMode()
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$0
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$2
+com.velvettouch.nosafeword.PositionsActivity$VoiceSettings
 com.velvettouch.nosafeword.PositionsActivity:
+    public static final com.velvettouch.nosafeword.PositionsActivity$VoiceSettings VoiceSettings
+    public static void <clinit>()
     public static final synthetic void access$displayRandomPosition()
     public static final synthetic int access$getMaxTimeSeconds$p$1()
     public static final synthetic int access$getMinTimeSeconds$p$1()
     public static final synthetic android.widget.ImageView access$getPositionImageView$p()
     public static final synthetic java.util.List access$getTimeOptions$p$1()
     public static final synthetic void access$startAutoPlay$1()
+    public static void displayPositionByName()
     public final java.lang.String formatTime()
+    public final void loadPositionFavorites()
     public static void loadPositionImages()
+    public final void loadVoiceSettings()
+    public final void savePositionFavorites()
     public final void setupSpinners()
     public final void stopAutoPlay()
     public final void toggleAutoPlay()
+    public final void toggleFavorite()
     public final void updateButtonLayout()
+    public final void updateFavoriteIcon()
 com.velvettouch.nosafeword.Scene:
     public static java.lang.String getContent()
     public static int getId()
@@ -11607,7 +11782,7 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     public static final java.lang.Object single$1()
     public static final java.util.ArrayList toMutableList(java.util.Collection)
     public static final java.util.List toMutableList$1()
-    public static final java.util.Set toMutableSet()
+    public static final java.util.Set toMutableSet(java.util.Set)
     public static final java.util.List zip()
 kotlin.collections.EmptyIterator:
     public static java.lang.Void next()

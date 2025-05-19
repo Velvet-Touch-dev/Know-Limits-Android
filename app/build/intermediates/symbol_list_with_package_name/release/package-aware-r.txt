@@ -3157,6 +3157,7 @@ id action_container
 id action_context_bar
 id action_divider
 id action_favorite
+id action_favorite_position
 id action_image
 id action_menu_divider
 id action_menu_presenter
@@ -3427,6 +3428,7 @@ id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
 id nav_body_worship
+id nav_favorites
 id nav_positions
 id nav_scenes
 id nav_settings
@@ -3439,7 +3441,6 @@ id navigation_bar_item_large_label_view
 id navigation_bar_item_small_label_view
 id navigation_buttons
 id navigation_edit
-id navigation_favorites
 id navigation_header_container
 id navigation_random
 id never
@@ -3475,7 +3476,10 @@ id pitch_seekbar
 id pitch_value
 id position
 id position_card_view
+id position_favorites_recycler_view
+id position_image
 id position_image_view
+id position_name
 id position_name_text_view
 id postLayout
 id pressed
@@ -3489,6 +3493,7 @@ id randomizeButton
 id randomize_button
 id ratio
 id rectangles
+id remove_favorite_button
 id report_drawn
 id reset_button
 id reset_scenes_button
@@ -3506,6 +3511,7 @@ id sawtooth
 id scale
 id sceneCardView
 id scene_card
+id scene_favorites_recycler_view
 id screen
 id scroll
 id scrollIndicatorDown
@@ -3587,6 +3593,7 @@ id submenuarrow
 id submit_area
 id supportScrollUp
 id tabMode
+id tabs
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
 id tag_accessibility_heading
@@ -3789,6 +3796,7 @@ layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_body_worship
 layout activity_developer_settings
+layout activity_favorites
 layout activity_main
 layout activity_positions
 layout activity_settings
@@ -3816,6 +3824,7 @@ layout dropdown_item
 layout fragment_edit
 layout fragment_random_card
 layout item_edit_scene
+layout item_favorite_position
 layout item_favorite_scene
 layout item_scene_card
 layout m3_alert_dialog
@@ -3884,6 +3893,7 @@ layout toast_material_you
 menu bottom_nav_menu
 menu drawer_menu
 menu edit_menu
+menu position_menu
 menu top_app_bar
 mipmap ic_launcher
 mipmap ic_launcher_foreground

@@ -5,10 +5,6 @@
         android:icon="@drawable/ic_shuffle"
         android:title="@string/random" />
     <item
-        android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_favorite"
-        android:title="@string/favorites" />
-    <item
         android:id="@+id/navigation_edit"
         android:icon="@drawable/ic_search"
         android:title="@string/edit" />

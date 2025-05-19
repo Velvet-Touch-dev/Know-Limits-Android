@@ -38,6 +38,10 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".FavoritesActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".DeveloperSettingsActivity"
             android:exported="false"
             android:label="Developer Settings"

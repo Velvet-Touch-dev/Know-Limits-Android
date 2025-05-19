@@ -1,9 +1,12 @@
 package com.velvettouch.nosafeword
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -17,14 +20,16 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import java.io.IOException
+import java.util.Locale
 import kotlin.random.Random
 
-class PositionsActivity : AppCompatActivity() {
+class PositionsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     
     private lateinit var positionImageView: ImageView
     private lateinit var positionNameTextView: TextView
@@ -39,6 +44,15 @@ class PositionsActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var drawerToggle: ActionBarDrawerToggle
     
+    // TTS variables
+    private lateinit var textToSpeech: TextToSpeech
+    private var isTtsReady = false
+    private var isTtsEnabled = true // Default value, will be updated from preferences
+    
+    // Voice settings
+    private var voicePitch = 1.0f
+    private var voiceSpeed = 0.9f
+    
     private var positionImages: List<String> = emptyList()
     private var currentPosition: Int = -1
     private var isAutoPlayOn = false
@@ -47,9 +61,32 @@ class PositionsActivity : AppCompatActivity() {
     private var maxTimeSeconds = 60 // Default maximum time in seconds
     private val timeOptions = listOf(10, 15, 20, 30, 45, 60, 90, 120) // Time options in seconds
     
+    // Favorites
+    private var positionFavorites: MutableSet<String> = mutableSetOf()
+    
+    // Voice settings constants
+    companion object VoiceSettings {
+        const val PREF_VOICE_SETTINGS = "voice_settings"
+        const val PREF_VOICE_PITCH = "voice_pitch"
+        const val PREF_VOICE_SPEED = "voice_speed"
+        const val POSITION_FAVORITES_PREF = "position_favorites"
+        
+        // Default values
+        const val DEFAULT_PITCH = 1.0f
+        const val DEFAULT_SPEED = 0.7f
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_positions)
+        
+        // Initialize TextToSpeech
+        textToSpeech = TextToSpeech(this, this)
+        
+        // Load TTS preference and voice settings
+        val sharedPreferences = getSharedPreferences("com.velvettouch.nosafeword_preferences", MODE_PRIVATE)
+        isTtsEnabled = sharedPreferences.getBoolean(getString(R.string.pref_tts_enabled_key), true)
+        loadVoiceSettings()
         
         // Initialize views
         positionImageView = findViewById(R.id.position_image_view)
@@ -106,6 +143,14 @@ class PositionsActivity : AppCompatActivity() {
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
                     finish() // Close this activity
+                    true
+                }
+                R.id.nav_favorites -> {
+                    // Navigate to favorites activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, FavoritesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
                     true
                 }
                 R.id.nav_settings -> {
@@ -186,8 +231,96 @@ class PositionsActivity : AppCompatActivity() {
         // Load position images
         loadPositionImages()
         
-        // Display initial random position
-        displayRandomPosition()
+        // Load position favorites
+        loadPositionFavorites()
+        
+        // Check for specific position to display from intent
+        val positionName = intent.getStringExtra("DISPLAY_POSITION_NAME")
+        if (positionName != null) {
+            displayPositionByName(positionName)
+        } else {
+            // Display initial random position
+            displayRandomPosition()
+        }
+    }
+    
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu
+        menuInflater.inflate(R.menu.position_menu, menu)
+        
+        // Update favorite icon
+        updateFavoriteIcon(menu)
+        
+        return true
+    }
+    
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        
+        return when (item.itemId) {
+            R.id.action_favorite_position -> {
+                toggleFavorite()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    
+    private fun loadPositionFavorites() {
+        val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
+        positionFavorites = prefs.getStringSet("favorite_position_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+    }
+    
+    private fun savePositionFavorites() {
+        val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
+        prefs.edit().putStringSet("favorite_position_names", positionFavorites).apply()
+    }
+    
+    private fun toggleFavorite() {
+        if (currentPosition < 0 || currentPosition >= positionImages.size) return
+        
+        val imageName = positionImages[currentPosition]
+        val nameWithoutExtension = imageName.substringBeforeLast(".")
+        val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+        
+        if (positionFavorites.contains(positionName)) {
+            // Remove from favorites
+            positionFavorites.remove(positionName)
+            
+            // Show toast
+            Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show()
+        } else {
+            // Add to favorites
+            positionFavorites.add(positionName)
+            
+            // Show toast
+            Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+        }
+        
+        // Save changes
+        savePositionFavorites()
+        
+        // Update favorite icon
+        invalidateOptionsMenu()
+    }
+    
+    private fun updateFavoriteIcon(menu: Menu? = null) {
+        if (currentPosition < 0 || currentPosition >= positionImages.size) return
+        
+        val imageName = positionImages[currentPosition]
+        val nameWithoutExtension = imageName.substringBeforeLast(".")
+        val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+        
+        val isFavorite = positionFavorites.contains(positionName)
+        
+        // Update the icon in the menu
+        menu?.findItem(R.id.action_favorite_position)?.let { menuItem ->
+            menuItem.setIcon(
+                if (isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite
+            )
+        }
     }
     
     private fun setupSpinners() {
@@ -352,13 +485,6 @@ class PositionsActivity : AppCompatActivity() {
         }
     }
     
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-    
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         // Sync the toggle state after onRestoreInstanceState has occurred
@@ -382,6 +508,21 @@ class PositionsActivity : AppCompatActivity() {
             isAutoPlayOn = false
             autoPlayButton.setIconResource(R.drawable.ic_play_24)
             timerTextView.visibility = View.GONE
+        }
+        
+        // Stop TTS if it's speaking
+        if (::textToSpeech.isInitialized && textToSpeech.isSpeaking) {
+            textToSpeech.stop()
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        
+        // Shutdown TTS when activity is destroyed
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.stop()
+            textToSpeech.shutdown()
         }
     }
     
@@ -414,6 +555,28 @@ class PositionsActivity : AppCompatActivity() {
         }
     }
     
+    private fun displayPositionByName(positionName: String) {
+        if (positionImages.isEmpty()) {
+            positionNameTextView.text = "No position images found"
+            return
+        }
+        
+        // Find the position by name
+        val normalizedName = positionName.toLowerCase().replace(" ", "_")
+        val position = positionImages.indexOfFirst { 
+            val imageName = it.substringBeforeLast(".")
+            imageName.equals(normalizedName, ignoreCase = true)
+        }
+        
+        if (position >= 0) {
+            currentPosition = position
+            displayCurrentPosition()
+        } else {
+            // If not found, display random position
+            displayRandomPosition()
+        }
+    }
+    
     private fun displayRandomPosition() {
         if (positionImages.isEmpty()) {
             positionNameTextView.text = "No position images found"
@@ -427,6 +590,12 @@ class PositionsActivity : AppCompatActivity() {
         } while (positionImages.size > 1 && newIndex == currentPosition)
         
         currentPosition = newIndex
+        displayCurrentPosition()
+    }
+    
+    private fun displayCurrentPosition() {
+        if (currentPosition < 0 || currentPosition >= positionImages.size) return
+        
         val imageName = positionImages[currentPosition]
         
         try {
@@ -437,12 +606,19 @@ class PositionsActivity : AppCompatActivity() {
             
             // Display the image name without the extension
             val nameWithoutExtension = imageName.substringBeforeLast(".")
-            positionNameTextView.text = nameWithoutExtension.replace("_", " ").capitalize()
+            val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+            positionNameTextView.text = positionName
+            
+            // Speak the position name with TTS
+            speakPositionName(positionName)
             
             // Apply dynamic tint to the randomize button based on your theme
             val typedValue = android.util.TypedValue()
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
             randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+            
+            // Update favorite icon
+            invalidateOptionsMenu()
             
         } catch (e: IOException) {
             e.printStackTrace()
@@ -461,5 +637,84 @@ class PositionsActivity : AppCompatActivity() {
                 if (it.isLowerCase()) it.titlecase() else it.toString() 
             }
         }
+    }
+    
+    // TTS initialization callback
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Set language to US English
+            val result = textToSpeech.setLanguage(Locale.US)
+            
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(this, "Text-to-speech language not supported", Toast.LENGTH_SHORT).show()
+            } else {
+                isTtsReady = true
+                
+                // Try to set a female voice if available
+                val voices = textToSpeech.voices
+                var femaleVoiceFound = false
+                
+                // First, try to find high-quality female voice
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true) && 
+                            voice.features.contains(TextToSpeech.Engine.KEY_FEATURE_EMBEDDED_SYNTHESIS)) {
+                            textToSpeech.voice = voice
+                            femaleVoiceFound = true
+                            break
+                        }
+                    }
+                }
+                
+                // If no premium female voice found, try any female voice
+                if (!femaleVoiceFound) {
+                    for (voice in voices) {
+                        if (voice.name.contains("female", ignoreCase = true)) {
+                            textToSpeech.voice = voice
+                            femaleVoiceFound = true
+                            break
+                        }
+                    }
+                }
+                
+                // Set speech parameters
+                textToSpeech.setPitch(voicePitch)
+                textToSpeech.setSpeechRate(voiceSpeed)
+                
+                // If position already displayed, speak it
+                if (currentPosition >= 0 && currentPosition < positionImages.size) {
+                    val imageName = positionImages[currentPosition]
+                    val nameWithoutExtension = imageName.substringBeforeLast(".")
+                    val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+                    speakPositionName(positionName)
+                }
+            }
+        } else {
+            Toast.makeText(this, "Failed to initialize text-to-speech", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun speakPositionName(positionName: String) {
+        if (isTtsReady && isTtsEnabled) {
+            // Stop any ongoing speech
+            if (textToSpeech.isSpeaking) {
+                textToSpeech.stop()
+            }
+            
+            // Create a Bundle for speech parameters
+            val params = Bundle()
+            
+            // Speak the position name
+            textToSpeech.speak(positionName, TextToSpeech.QUEUE_FLUSH, params, "position_name")
+        }
+    }
+    
+    /**
+     * Load voice settings from shared preferences
+     */
+    private fun loadVoiceSettings() {
+        val prefs = getSharedPreferences(VoiceSettings.PREF_VOICE_SETTINGS, Context.MODE_PRIVATE)
+        voicePitch = prefs.getFloat(VoiceSettings.PREF_VOICE_PITCH, VoiceSettings.DEFAULT_PITCH)
+        voiceSpeed = prefs.getFloat(VoiceSettings.PREF_VOICE_SPEED, VoiceSettings.DEFAULT_SPEED)
     }
 }

@@ -15,6 +15,10 @@
             android:icon="@drawable/ic_kneeling_24"
             android:title="@string/body_worship" />
         <item
+            android:id="@+id/nav_favorites"
+            android:icon="@drawable/ic_favorite"
+            android:title="@string/favorites" />
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
             android:title="@string/settings" />

@@ -157,6 +157,14 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_favorites -> {
+                    // Launch favorites activity
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, FavoritesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    true
+                }
                 R.id.nav_settings -> {
                     // Launch settings activity
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -290,11 +298,6 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.navigation_random -> {
                     currentMode = MODE_RANDOM
-                    updateUI()
-                    true
-                }
-                R.id.navigation_favorites -> {
-                    currentMode = MODE_FAVORITES
                     updateUI()
                     true
                 }
@@ -482,41 +485,25 @@ class MainActivity : AppCompatActivity() {
             MODE_RANDOM -> {
                 // Update app bar title
                 topAppBar.title = getString(R.string.app_name)
-
+                
                 // Show random content, hide others
                 randomContent.visibility = View.VISIBLE
-                favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
                 shareButton.visibility = View.VISIBLE
                 // Update button states
                 randomizeButton.visibility = View.VISIBLE
                 previousButton.visibility = View.VISIBLE
                 editButton.visibility = View.VISIBLE
-
+                
                 // Enable/disable previous button based on history
                 previousButton.isEnabled = historyPosition > 0
-            }
-            MODE_FAVORITES -> {
-                // Update app bar title
-                topAppBar.title = getString(R.string.favorites)
-
-                // Hide random content, show favorites
-                randomContent.visibility = View.GONE
-                favoritesContainer.visibility = View.VISIBLE
-                editContainer.visibility = View.GONE
-                updateFavoritesList()
-                shareButton.visibility = View.GONE
-                randomizeButton.visibility = View.GONE
-                previousButton.visibility = View.GONE
-                editButton.visibility = View.GONE
             }
             MODE_EDIT -> {
                 // Update app bar title
                 topAppBar.title = getString(R.string.edit_scenes)
-
+                
                 // Hide random & favorites, show edit
                 randomContent.visibility = View.GONE
-                favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.VISIBLE
                 updateEditList()
                 shareButton.visibility = View.GONE
@@ -525,7 +512,7 @@ class MainActivity : AppCompatActivity() {
                 editButton.visibility = View.GONE
             }
         }
-
+        
         // Recreate options menu to update search visibility
         invalidateOptionsMenu()
     }

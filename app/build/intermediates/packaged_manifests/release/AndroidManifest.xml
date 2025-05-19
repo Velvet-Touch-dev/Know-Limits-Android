@@ -53,6 +53,10 @@
             android:exported="false"
             android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
         <activity
+            android:name="com.velvettouch.nosafeword.FavoritesActivity"
+            android:exported="false"
+            android:parentActivityName="com.velvettouch.nosafeword.MainActivity" />
+        <activity
             android:name="com.velvettouch.nosafeword.DeveloperSettingsActivity"
             android:exported="false"
             android:label="Developer Settings"

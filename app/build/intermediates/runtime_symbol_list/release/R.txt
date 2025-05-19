@@ -3156,6 +3156,7 @@ int id action_container 0x7f09003a
 int id action_context_bar 0x7f09003b
 int id action_divider 0x7f09003c
 int id action_favorite 0x7f09003d
+int id action_favorite_position 0x7f09024a
 int id action_image 0x7f09003e
 int id action_menu_divider 0x7f09003f
 int id action_menu_presenter 0x7f090040
@@ -3426,6 +3427,7 @@ int id mtrl_picker_title_text 0x7f090147
 int id mtrl_view_tag_bottom_padding 0x7f090148
 int id multiply 0x7f090149
 int id nav_body_worship 0x7f09014a
+int id nav_favorites 0x7f090243
 int id nav_positions 0x7f09014b
 int id nav_scenes 0x7f09014c
 int id nav_settings 0x7f09014d
@@ -3438,7 +3440,6 @@ int id navigation_bar_item_large_label_view 0x7f090153
 int id navigation_bar_item_small_label_view 0x7f090154
 int id navigation_buttons 0x7f090240
 int id navigation_edit 0x7f090155
-int id navigation_favorites 0x7f090156
 int id navigation_header_container 0x7f090157
 int id navigation_random 0x7f090158
 int id never 0x7f090159
@@ -3474,7 +3475,10 @@ int id pitch_seekbar 0x7f090176
 int id pitch_value 0x7f090177
 int id position 0x7f090178
 int id position_card_view 0x7f090179
+int id position_favorites_recycler_view 0x7f090244
+int id position_image 0x7f090245
 int id position_image_view 0x7f09017a
+int id position_name 0x7f090246
 int id position_name_text_view 0x7f09017b
 int id postLayout 0x7f09017c
 int id pressed 0x7f09017d
@@ -3488,6 +3492,7 @@ int id randomizeButton 0x7f090183
 int id randomize_button 0x7f090184
 int id ratio 0x7f090185
 int id rectangles 0x7f090186
+int id remove_favorite_button 0x7f090247
 int id report_drawn 0x7f090187
 int id reset_button 0x7f090188
 int id reset_scenes_button 0x7f090189
@@ -3505,6 +3510,7 @@ int id sawtooth 0x7f090194
 int id scale 0x7f090195
 int id sceneCardView 0x7f090196
 int id scene_card 0x7f090197
+int id scene_favorites_recycler_view 0x7f090248
 int id screen 0x7f090198
 int id scroll 0x7f090199
 int id scrollIndicatorDown 0x7f09019a
@@ -3586,6 +3592,7 @@ int id submenuarrow 0x7f0901e5
 int id submit_area 0x7f0901e6
 int id supportScrollUp 0x7f0901e7
 int id tabMode 0x7f0901e8
+int id tabs 0x7f090249
 int id tag_accessibility_actions 0x7f0901e9
 int id tag_accessibility_clickable_spans 0x7f0901ea
 int id tag_accessibility_heading 0x7f0901eb
@@ -3788,6 +3795,7 @@ int layout abc_select_dialog_material 0x7f0c001a
 int layout abc_tooltip 0x7f0c001b
 int layout activity_body_worship 0x7f0c001c
 int layout activity_developer_settings 0x7f0c001d
+int layout activity_favorites 0x7f0c007a
 int layout activity_main 0x7f0c001e
 int layout activity_positions 0x7f0c001f
 int layout activity_settings 0x7f0c0020
@@ -3815,6 +3823,7 @@ int layout dropdown_item 0x7f0c0035
 int layout fragment_edit 0x7f0c0036
 int layout fragment_random_card 0x7f0c0037
 int layout item_edit_scene 0x7f0c0038
+int layout item_favorite_position 0x7f0c007b
 int layout item_favorite_scene 0x7f0c0039
 int layout item_scene_card 0x7f0c003a
 int layout m3_alert_dialog 0x7f0c003b
@@ -3883,6 +3892,7 @@ int layout toast_material_you 0x7f0c0079
 int menu bottom_nav_menu 0x7f0e0000
 int menu drawer_menu 0x7f0e0001
 int menu edit_menu 0x7f0e0002
+int menu position_menu 0x7f0e0004
 int menu top_app_bar 0x7f0e0003
 int mipmap ic_launcher 0x7f0f0000
 int mipmap ic_launcher_foreground 0x7f0f0001
