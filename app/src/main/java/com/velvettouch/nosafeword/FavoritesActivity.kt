@@ -205,7 +205,7 @@ class FavoritesActivity : AppCompatActivity() {
         }
         
         // Show the swipe hint
-        findViewById<TextView>(R.id.swipe_hint).visibility = View.VISIBLE
+        findViewById<androidx.cardview.widget.CardView>(R.id.swipe_hint_container).visibility = View.VISIBLE
         
         // Load favorites
         loadSceneFavorites()

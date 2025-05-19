@@ -3592,6 +3592,7 @@ id submenuarrow
 id submit_area
 id supportScrollUp
 id swipe_hint
+id swipe_hint_container
 id tabMode
 id tabs
 id tag_accessibility_actions

@@ -3591,6 +3591,7 @@ int id submenuarrow 0x7f0901ed
 int id submit_area 0x7f0901ee
 int id supportScrollUp 0x7f0901ef
 int id swipe_hint 0x7f0901f0
+int id swipe_hint_container 0x7f09024a
 int id tabMode 0x7f0901f1
 int id tabs 0x7f0901f2
 int id tag_accessibility_actions 0x7f0901f3

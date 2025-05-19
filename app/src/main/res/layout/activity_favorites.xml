@@ -83,20 +83,29 @@
                     tools:listitem="@layout/item_favorite_position" />
                 
                 <!-- Swipe hint -->
-                <TextView
-                    android:id="@+id/swipe_hint"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/swipe_hint_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|bottom"
                     android:layout_marginBottom="16dp"
-                    android:background="?attr/colorPrimaryContainer"
-                    android:padding="8dp"
-                    android:text="⟩ Swipe right to delete"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnPrimaryContainer"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#55888888"
                     android:visibility="invisible"
-                    android:alpha="0.9"
-                    app:cornerRadius="8dp" />
+                    android:alpha="0.85">
+                
+                    <TextView
+                        android:id="@+id/swipe_hint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:text="⟩ Swipe right to delete"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurface" />
+                </androidx.cardview.widget.CardView>
 
                 <!-- Empty Favorites State -->
                 <LinearLayout
