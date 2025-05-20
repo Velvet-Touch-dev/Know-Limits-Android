@@ -79,7 +79,7 @@ class MainActivity : BaseActivity() {
     private var favorites: MutableSet<String> = mutableSetOf()
     private var currentMode: Int = MODE_RANDOM
     private var currentToast: Toast? = null
-    private var nextSceneId: Int = 1
+    private var nextSceneId: Int = 1 // Re-declare as a member variable, will be updated in loadScenes
 
     private lateinit var favoritesAdapter: FavoriteScenesAdapter
     private lateinit var editAdapter: EditScenesAdapter
@@ -310,7 +310,7 @@ class MainActivity : BaseActivity() {
         loadScenes()
 
         // Save original scenes for reset
-        originalScenes = scenes.toList()
+        // originalScenes = scenes.toList() // This is now handled within loadScenes to always use assets for originalScenes
 
         // Set up bottom navigation
         bottomNavigation.setOnItemSelectedListener { item ->
@@ -684,65 +684,107 @@ class MainActivity : BaseActivity() {
     }
 
     private fun loadScenes() {
+        val internalFile = File(filesDir, SCENES_FILENAME)
+        var scenesLoadedFromFile = false
+
+        if (internalFile.exists()) {
+            try {
+                val jsonString = internalFile.bufferedReader().use { it.readText() }
+                if (jsonString.isNotBlank()) {
+                    val jsonArray = JSONArray(jsonString)
+                    val scenesList = mutableListOf<Scene>()
+                    var maxId = 0
+
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject = jsonArray.getJSONObject(i)
+                        val id = jsonObject.getInt("id")
+                        if (id > maxId) {
+                            maxId = id
+                        }
+                        scenesList.add(Scene(
+                            id = id,
+                            title = jsonObject.getString("title"),
+                            content = jsonObject.getString("content")
+                        ))
+                    }
+                    scenes = scenesList // Do not shuffle here, preserve user's order if loaded from file
+                    nextSceneId = maxId + 1
+                    scenesLoadedFromFile = true
+                }
+            } catch (e: Exception) {
+                e.printStackTrace() // Log error, then fallback to assets
+            }
+        }
+
+        if (!scenesLoadedFromFile) {
+            try {
+                val jsonString = loadJSONFromAsset(SCENES_FILENAME)
+                val jsonArray = JSONArray(jsonString)
+                val scenesList = mutableListOf<Scene>()
+                var maxId = 0
+
+                for (i in 0 until jsonArray.length()) {
+                    val jsonObject = jsonArray.getJSONObject(i)
+                    val id = jsonObject.getInt("id")
+                    if (id > maxId) {
+                        maxId = id
+                    }
+                    scenesList.add(Scene(
+                        id = id,
+                        title = jsonObject.getString("title"),
+                        content = jsonObject.getString("content")
+                    ))
+                }
+                scenesList.shuffle() // Shuffle only if loading from assets
+                scenes = scenesList
+                nextSceneId = maxId + 1
+            } catch (e: Exception) {
+                e.printStackTrace()
+                titleTextView.text = getString(R.string.error_loading)
+                contentTextView.text = "${getString(R.string.check_json)}: ${e.message}"
+            }
+        }
+        
+        // Always load originalScenes from assets for reset functionality
         try {
             val jsonString = loadJSONFromAsset(SCENES_FILENAME)
             val jsonArray = JSONArray(jsonString)
-            val scenesList = mutableListOf<Scene>()
-            var maxId = 0
-
+            val assetScenesList = mutableListOf<Scene>()
             for (i in 0 until jsonArray.length()) {
                 val jsonObject = jsonArray.getJSONObject(i)
-                val id = jsonObject.getInt("id")
-
-                // Keep track of the highest ID for new scene creation
-                if (id > maxId) {
-                    maxId = id
-                }
-
-                val scene = Scene(
-                    id = id,
+                assetScenesList.add(Scene(
+                    id = jsonObject.getInt("id"),
                     title = jsonObject.getString("title"),
                     content = jsonObject.getString("content")
-                )
-                scenesList.add(scene)
+                ))
             }
-
-            // Randomize the order of the scenes
-            scenesList.shuffle()
-
-            scenes = scenesList
-            nextSceneId = maxId + 1
+            originalScenes = assetScenesList.toList() // Keep original scenes for reset
         } catch (e: Exception) {
             e.printStackTrace()
-            titleTextView.text = getString(R.string.error_loading)
-            contentTextView.text = "${getString(R.string.check_json)}: ${e.message}"
+            // Handle error loading original scenes if necessary, though app might be in a bad state
         }
     }
 
     private fun loadJSONFromAsset(fileName: String): String {
-        val inputStream = assets.open(fileName)
-        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-        val stringBuilder = StringBuilder()
-        var line: String?
-
-        while (bufferedReader.readLine().also { line = it } != null) {
-            stringBuilder.append(line)
-        }
-
-        bufferedReader.close()
-        return stringBuilder.toString()
+        return assets.open(fileName).bufferedReader().use { it.readText() }
     }
 
     private fun resetToDefaultScenes() {
-        // Reset to original scenes
+        // Reset to original scenes (which are always loaded from assets)
         scenes.clear()
-        scenes.addAll(originalScenes)
+        scenes.addAll(originalScenes) // originalScenes is now reliably from assets
 
         // Randomize the order of scenes
         scenes.shuffle()
 
         // Reset ID counter
         nextSceneId = scenes.maxOfOrNull { it.id }?.plus(1) ?: 1
+        
+        // Delete the custom scenes file from internal storage
+        val internalFile = File(filesDir, SCENES_FILENAME)
+        if (internalFile.exists()) {
+            internalFile.delete()
+        }
 
         // Update UI
         updateEditList()

@@ -310,26 +310,49 @@ class FavoritesActivity : BaseActivity() {
     }
     
     private fun loadScenes() {
-        try {
-            val jsonString = loadJSONFromAsset(SCENES_FILENAME)
-            val jsonArray = JSONArray(jsonString)
-            val scenesList = mutableListOf<Scene>()
-            
-            for (i in 0 until jsonArray.length()) {
-                val jsonObject = jsonArray.getJSONObject(i)
-                val id = jsonObject.getInt("id")
-                
-                val scene = Scene(
-                    id = id,
-                    title = jsonObject.getString("title"),
-                    content = jsonObject.getString("content")
-                )
-                scenesList.add(scene)
+        val internalFile = File(filesDir, SCENES_FILENAME)
+        var scenesLoadedFromFile = false
+
+        if (internalFile.exists()) {
+            try {
+                val jsonString = internalFile.bufferedReader().use { it.readText() }
+                if (jsonString.isNotBlank()) {
+                    val jsonArray = JSONArray(jsonString)
+                    val scenesList = mutableListOf<Scene>()
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject = jsonArray.getJSONObject(i)
+                        scenesList.add(Scene(
+                            id = jsonObject.getInt("id"),
+                            title = jsonObject.getString("title"),
+                            content = jsonObject.getString("content")
+                        ))
+                    }
+                    scenes = scenesList
+                    scenesLoadedFromFile = true
+                }
+            } catch (e: Exception) {
+                e.printStackTrace() // Log error, then fallback to assets
             }
-            
-            scenes = scenesList
-        } catch (e: Exception) {
-            e.printStackTrace()
+        }
+
+        if (!scenesLoadedFromFile) {
+            try {
+                val jsonString = loadJSONFromAsset(SCENES_FILENAME)
+                val jsonArray = JSONArray(jsonString)
+                val scenesList = mutableListOf<Scene>()
+                for (i in 0 until jsonArray.length()) {
+                    val jsonObject = jsonArray.getJSONObject(i)
+                    scenesList.add(Scene(
+                        id = jsonObject.getInt("id"),
+                        title = jsonObject.getString("title"),
+                        content = jsonObject.getString("content")
+                    ))
+                }
+                scenes = scenesList
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Consider showing an error to the user or logging
+            }
         }
     }
     

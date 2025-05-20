@@ -19,6 +19,7 @@ import com.velvettouch.nosafeword.databinding.DialogAddPlannedItemBinding // Add
 import org.json.JSONArray // Added for loading scenes
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONObject // For parsing single scene JSON object
 import java.io.BufferedReader // Added for loading scenes
 import java.io.File // Added for loading custom items
 import java.io.FileInputStream // Added for loading custom scenes
@@ -74,7 +75,8 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             val sceneJsonArray = JSONArray(sceneJsonString)
             for (i in 0 until sceneJsonArray.length()) {
                 val sceneObject = sceneJsonArray.getJSONObject(i)
-                masterAllItems.add(PlannedItem(name = sceneObject.getString("title"), type = "Scene", details = sceneObject.getString("content")))
+                val sceneId = sceneObject.optInt("id", -1) // Default to -1 if id is not found
+                masterAllItems.add(PlannedItem(id = sceneId.toString(), name = sceneObject.getString("title"), type = "Scene", details = sceneObject.getString("content")))
             }
         } catch (e: Exception) {
             e.printStackTrace() // Handle error loading scenes
@@ -89,8 +91,11 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                     val sceneJsonString = reader.readText()
                     reader.close()
                     fis.close()
-                    val sceneObject = JSONArray(sceneJsonString).getJSONObject(0) // Assuming one scene per file as in MainActivity
-                    masterAllItems.add(PlannedItem(name = sceneObject.getString("title") + " (Custom)", type = "Scene", details = sceneObject.getString("content")))
+                    // Custom scenes are saved as single JSONObjects by MainActivity
+                    val sceneObject = JSONObject(sceneJsonString)
+                    val sceneId = sceneObject.optInt("id", -1) // Default to -1
+                    val sceneTitle = sceneObject.getString("title")
+                    masterAllItems.add(PlannedItem(id = sceneId.toString(), name = sceneTitle, type = "Scene", details = sceneObject.getString("content"))) // Removed (Custom)
                 } catch (e: Exception) {
                     e.printStackTrace() // Handle error loading custom scene
                 }
@@ -117,10 +122,20 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
         val customPositionsDir = getExternalFilesDir("positions")
         if (customPositionsDir != null && customPositionsDir.exists() && customPositionsDir.isDirectory) {
             customPositionsDir.listFiles { _, name -> name.endsWith(".jpg", true) || name.endsWith(".png", true) }?.forEach { file ->
-                val positionName = file.nameWithoutExtension
-                    .replace("_", " ")
-                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                masterAllItems.add(PlannedItem(name = positionName + " (Custom)", type = "Position", details = file.absolutePath))
+                var extractedName = file.nameWithoutExtension
+                // Attempt to reverse the naming convention from PositionsActivity: position_safeName_timestamp.jpg
+                if (extractedName.startsWith("position_")) {
+                    extractedName = extractedName.substringAfter("position_")
+                }
+                // Try to remove a timestamp suffix (e.g., _16273...)
+                val lastUnderscoreIndex = extractedName.lastIndexOf('_')
+                if (lastUnderscoreIndex > 0 && extractedName.substring(lastUnderscoreIndex + 1).all { Character.isDigit(it) }) {
+                    extractedName = extractedName.substring(0, lastUnderscoreIndex)
+                }
+                // General cleanup: replace underscores with spaces and capitalize
+                val positionName = extractedName.replace("_", " ")
+                                           .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                masterAllItems.add(PlannedItem(name = positionName, type = "Position", details = file.absolutePath)) // Removed (Custom)
             }
         }
 
@@ -205,6 +220,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                 itemsToAdd.forEach { item ->
                     if (!plannedItems.any { pi -> pi.name == item.name && pi.type == item.type }) {
                         plannedItems.add(PlannedItem(
+                            id = item.id, // Persist the ID
                             name = item.name,
                             type = item.type,
                             details = item.details,
@@ -240,13 +256,15 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                             // If custom scenes are uniquely named (e.g. "My Scene (Custom)"),
                             // MainActivity's search/load logic might find them.
                             // Otherwise, we might need to pass more specific data or an ID.
-                            // For now, assuming title is enough or MainActivity handles "(Custom)"
-                            putExtra("DISPLAY_SCENE_TITLE", item.name)
-                            // If it's a custom scene and details contain the content:
-                            if (item.name.endsWith("(Custom)")) {
-                                // MainActivity doesn't currently support directly displaying content passed via intent.
-                                // This would require modification in MainActivity.
-                                // For now, we'll rely on MainActivity's existing load logic.
+                            // Pass the scene ID to MainActivity
+                            // Ensure item.id is a valid integer string or handle potential conversion errors.
+                            try {
+                                val sceneId = item.id.toInt()
+                                putExtra("DISPLAY_SCENE_ID", sceneId)
+                            } catch (e: NumberFormatException) {
+                                // Handle cases where ID might not be a valid int (e.g. if it's a placeholder)
+                                // Optionally, fall back to title or show an error
+                                putExtra("DISPLAY_SCENE_TITLE", item.name.removeSuffix(" (Custom)"))
                             }
                         }
                         startActivity(intent)
@@ -255,9 +273,8 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                         val intent = Intent(this, PositionsActivity::class.java).apply {
                             // PositionsActivity uses DISPLAY_POSITION_NAME to find and display.
                             // It checks both assets and custom positions.
-                            // Remove "(Custom)" suffix if present, as PositionsActivity adds it if needed.
-                            val positionNameToDisplay = item.name.removeSuffix(" (Custom)")
-                            putExtra("DISPLAY_POSITION_NAME", positionNameToDisplay)
+                            // PositionsActivity uses DISPLAY_POSITION_NAME to find and display.
+                            putExtra("DISPLAY_POSITION_NAME", item.name) // Pass the name as is
                         }
                         startActivity(intent)
                     }
