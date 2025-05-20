@@ -77,7 +77,8 @@
         <item name="colorOnTertiaryContainer">@color/dark_onTertiaryContainer</item>
         
         
-        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/dark_surface</item>
+        <item name="android:windowLightStatusBar">false</item>
         
         
         <item name="android:windowBackground">@color/dark_background</item>

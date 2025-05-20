@@ -21,8 +21,9 @@
         <item name="colorOnTertiary">@color/onTertiary</item>
         <item name="colorOnTertiaryContainer">@color/onTertiaryContainer</item>
         
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        <!-- Status bar color - match toolbar color exactly -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
         
         <!-- Background colors -->
         <item name="android:windowBackground">@color/background</item>

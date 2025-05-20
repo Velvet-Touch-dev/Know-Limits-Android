@@ -4,7 +4,6 @@ import com.velvettouch.nosafeword.DeveloperSettingsActivity.Settings
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.speech.tts.TextToSpeech
@@ -30,13 +29,6 @@ import java.util.Locale
 import kotlin.random.Random
 
 class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
-    /**
-     * Determine if a color is light or dark to set appropriate status bar icons
-     */
-    private fun isColorLight(color: Int): Boolean {
-        val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-        return darkness < 0.5
-    }
     
     private lateinit var bodyWorshipTextView: TextView
     private lateinit var randomizeButton: MaterialButton
@@ -95,22 +87,6 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body_worship)
-        
-        // Match status bar color with the toolbar color from the theme
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-        window.statusBarColor = typedValue.data
-        
-        // Set status bar icons to be visible based on the background color brightness
-        if (isColorLight(window.statusBarColor)) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
-        } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = 0 // Default (dark icons on light background)
-            }
-        }
         
         // Initialize TextToSpeech
         textToSpeech = TextToSpeech(this, this)
