@@ -409,25 +409,33 @@ class MainActivity : BaseActivity() {
 
         // Check for specific scene to display from intent
         val displaySceneId = intent.getIntExtra("DISPLAY_SCENE_ID", -1)
+        val displaySceneTitle = intent.getStringExtra("DISPLAY_SCENE_TITLE")
+        var sceneFound = false
+
         if (displaySceneId != -1) {
-            // Find the scene by ID
             val sceneIndex = scenes.indexOfFirst { it.id == displaySceneId }
             if (sceneIndex != -1) {
-                // Update current index
                 currentSceneIndex = sceneIndex
-                
-                // Update history
                 sceneHistory.add(currentSceneIndex)
                 historyPosition = sceneHistory.size - 1
-                
-                // Display the scene
                 displayScene(scenes[currentSceneIndex])
-            } else {
-                // If scene not found, show random scene
-                displayRandomScene()
+                sceneFound = true
             }
-        } else {
-            // Display initial random scene
+        }
+
+        if (!sceneFound && displaySceneTitle != null) {
+            val sceneIndex = scenes.indexOfFirst { it.title.equals(displaySceneTitle, ignoreCase = true) }
+            if (sceneIndex != -1) {
+                currentSceneIndex = sceneIndex
+                sceneHistory.add(currentSceneIndex)
+                historyPosition = sceneHistory.size - 1
+                displayScene(scenes[currentSceneIndex])
+                sceneFound = true
+            }
+        }
+
+        if (!sceneFound) {
+            // If no specific scene found by ID or title, display initial random scene
             displayRandomScene()
         }
 

@@ -67,41 +67,45 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val masterAllItems = mutableListOf<PlannedItem>() // Renamed to avoid conflict in lambdas
-        // Load Scenes
-        try {
-            val sceneInputStream = assets.open("scenes.json")
-            val sceneReader = BufferedReader(InputStreamReader(sceneInputStream))
-            val sceneJsonString = sceneReader.readText()
-            val sceneJsonArray = JSONArray(sceneJsonString)
-            for (i in 0 until sceneJsonArray.length()) {
-                val sceneObject = sceneJsonArray.getJSONObject(i)
-                val sceneId = sceneObject.optInt("id", -1) // Default to -1 if id is not found
-                masterAllItems.add(PlannedItem(id = sceneId.toString(), name = sceneObject.getString("title"), type = "Scene", details = sceneObject.getString("content")))
-            }
-        } catch (e: Exception) {
-            e.printStackTrace() // Handle error loading scenes
-        }
-        // Load Custom Scenes (from app's internal files directory)
-        val customScenesDir = File(filesDir, "scenes")
-        if (customScenesDir.exists() && customScenesDir.isDirectory) {
-            customScenesDir.listFiles { _, name -> name.endsWith(".json") }?.forEach { file ->
-                try {
-                    val fis = FileInputStream(file)
-                    val reader = BufferedReader(InputStreamReader(fis))
-                    val sceneJsonString = reader.readText()
-                    reader.close()
-                    fis.close()
-                    // Custom scenes are saved as single JSONObjects by MainActivity
-                    val sceneObject = JSONObject(sceneJsonString)
-                    val sceneId = sceneObject.optInt("id", -1) // Default to -1
-                    val sceneTitle = sceneObject.getString("title")
-                    masterAllItems.add(PlannedItem(id = sceneId.toString(), name = sceneTitle, type = "Scene", details = sceneObject.getString("content"))) // Removed (Custom)
-                } catch (e: Exception) {
-                    e.printStackTrace() // Handle error loading custom scene
-                }
+        // Load Scenes (unified approach)
+        val internalScenesFile = File(filesDir, "scenes.json")
+        var scenesJsonString: String? = null
+
+        if (internalScenesFile.exists()) {
+            try {
+                scenesJsonString = internalScenesFile.bufferedReader().use { it.readText() }
+            } catch (e: Exception) {
+                e.printStackTrace() // Fallback to assets if error reading internal file
             }
         }
 
+        if (scenesJsonString == null || scenesJsonString.isBlank()) {
+            try {
+                val sceneInputStream = assets.open("scenes.json")
+                scenesJsonString = BufferedReader(InputStreamReader(sceneInputStream)).readText()
+            } catch (e: Exception) {
+                e.printStackTrace() // Handle error loading scenes from assets
+                scenesJsonString = "[]" // Default to empty array if all fails
+            }
+        }
+
+        try {
+            val sceneJsonArray = JSONArray(scenesJsonString)
+            for (i in 0 until sceneJsonArray.length()) {
+                val sceneObject = sceneJsonArray.getJSONObject(i)
+                // Try to get ID as a string. If "id" field is missing or null, getString might throw or return "null".
+                // optString can provide a fallback.
+                val sceneIdString = sceneObject.optString("id")
+                val sceneTitle = sceneObject.getString("title")
+                val sceneContent = sceneObject.getString("content")
+                // If sceneIdString is empty (e.g. "id" was missing) or not a valid int for MainActivity,
+                // this will still cause issues later if MainActivity expects an int ID.
+                // However, this will directly use the ID from JSON if it exists.
+                masterAllItems.add(PlannedItem(id = sceneIdString, name = sceneTitle, type = "Scene", details = sceneContent))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace() // Handle JSON parsing error
+        }
 
         // Load Positions (from assets for now, similar to PositionsActivity)
         try {
@@ -250,22 +254,20 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             onItemClick = { item ->
                 when (item.type.lowercase(Locale.getDefault())) {
                     "scene" -> {
-                        val intent = Intent(this, MainActivity::class.java).apply {
-                            // For default scenes, MainActivity can find them by title.
-                            // For custom scenes, MainActivity needs a way to identify them.
-                            // If custom scenes are uniquely named (e.g. "My Scene (Custom)"),
-                            // MainActivity's search/load logic might find them.
-                            // Otherwise, we might need to pass more specific data or an ID.
-                            // Pass the scene ID to MainActivity
-                            // Ensure item.id is a valid integer string or handle potential conversion errors.
+                        val intent = Intent(this, MainActivity::class.java)
+                        val sceneIdString = item.id
+
+                        if (!sceneIdString.isNullOrBlank()) {
                             try {
-                                val sceneId = item.id.toInt()
-                                putExtra("DISPLAY_SCENE_ID", sceneId)
+                                val sceneIdInt = sceneIdString.toInt()
+                                intent.putExtra("DISPLAY_SCENE_ID", sceneIdInt)
                             } catch (e: NumberFormatException) {
-                                // Handle cases where ID might not be a valid int (e.g. if it's a placeholder)
-                                // Optionally, fall back to title or show an error
-                                putExtra("DISPLAY_SCENE_TITLE", item.name.removeSuffix(" (Custom)"))
+                                // ID is not an integer (e.g., UUID), send title instead
+                                intent.putExtra("DISPLAY_SCENE_TITLE", item.name)
                             }
+                        } else {
+                            // ID is null or blank, try sending title as a last resort
+                            intent.putExtra("DISPLAY_SCENE_TITLE", item.name)
                         }
                         startActivity(intent)
                     }
