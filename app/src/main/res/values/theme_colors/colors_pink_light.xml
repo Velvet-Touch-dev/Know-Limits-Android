@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pink Light Theme Colors -->
+    <color name="pink_light_primary">#E91E63</color>
+    <color name="pink_light_onPrimary">#FFFFFF</color>
+    <color name="pink_light_primaryContainer">#FFD9E2</color>
+    <color name="pink_light_onPrimaryContainer">#3B0014</color>
+    
+    <color name="pink_light_secondary">#F48FB1</color>
+    <color name="pink_light_onSecondary">#000000</color>
+    <color name="pink_light_secondaryContainer">#FFDEE7</color>
+    <color name="pink_light_onSecondaryContainer">#3B001B</color>
+    
+    <color name="pink_light_tertiary">#F06292</color>
+    <color name="pink_light_onTertiary">#FFFFFF</color>
+    <color name="pink_light_tertiaryContainer">#FFDAE4</color>
+    <color name="pink_light_onTertiaryContainer">#3B0018</color>
+    
+    <color name="pink_light_background">#FFFBFD</color>
+    <color name="pink_light_onBackground">#1F1A1C</color>
+    <color name="pink_light_surface">#FFFBFD</color>
+    <color name="pink_light_onSurface">#1F1A1C</color>
+    <color name="pink_light_surfaceVariant">#F4DCE1</color>
+    <color name="pink_light_onSurfaceVariant">#534246</color>
+    
+    <color name="pink_light_outline">#857377</color>
+    <color name="pink_light_outlineVariant">#D7C1C5</color>
+    
+    <color name="pink_light_error">#B3261E</color>
+    <color name="pink_light_onError">#FFFFFF</color>
+    <color name="pink_light_errorContainer">#F9DEDC</color>
+    <color name="pink_light_onErrorContainer">#410E0B</color>
+</resources>

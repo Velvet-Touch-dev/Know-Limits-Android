@@ -1,50 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme for night mode using Material 3 -->
-    <style name="Theme.RandomSceneApp" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@color/dark_primary</item>
-        <item name="colorPrimaryDark">@color/primary</item>
-        <item name="colorPrimaryContainer">@color/dark_primaryContainer</item>
-        <item name="colorOnPrimary">@color/dark_onPrimary</item>
-        <item name="colorOnPrimaryContainer">@color/dark_onPrimaryContainer</item>
-        
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/dark_secondary</item>
-        <item name="colorSecondaryContainer">@color/dark_secondaryContainer</item>
-        <item name="colorOnSecondary">@color/dark_onSecondary</item>
-        <item name="colorOnSecondaryContainer">@color/dark_onSecondaryContainer</item>
-        
-        <!-- Tertiary brand color -->
-        <item name="colorTertiary">@color/dark_tertiary</item>
-        <item name="colorTertiaryContainer">@color/dark_tertiaryContainer</item>
-        <item name="colorOnTertiary">@color/dark_onTertiary</item>
-        <item name="colorOnTertiaryContainer">@color/dark_onTertiaryContainer</item>
-        
-        <!-- Status bar color - match toolbar color exactly -->
-        <item name="android:statusBarColor">@color/dark_surface</item>
-        <item name="android:windowLightStatusBar">false</item>
-        
-        <!-- Background colors -->
-        <item name="android:windowBackground">@color/dark_background</item>
-        <item name="colorSurface">@color/dark_surface</item>
-        <item name="colorOnSurface">@color/dark_onSurface</item>
-        <item name="colorSurfaceVariant">@color/dark_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/dark_onSurfaceVariant</item>
-        <item name="colorOutline">@color/dark_outline</item>
-        <item name="colorOutlineVariant">@color/dark_outlineVariant</item>
-        
-        <!-- Error color -->
-        <item name="colorError">@color/dark_error</item>
-        <item name="colorOnError">@color/dark_onError</item>
-        <item name="colorErrorContainer">@color/dark_errorContainer</item>
-        <item name="colorOnErrorContainer">@color/dark_onErrorContainer</item>
-        
+    <style name="Theme.RandomSceneApp" parent="Theme.RandomSceneApp.AppColors">
         <!-- Set default text appearance for buttons -->
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
         
-        <!-- Set default card appearance -->
+        <!-- Set default card appearance - using the style from styles.xml -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView.Dark</item>
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+    </style>
+    
+    <!-- Shape appearance for small components -->
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 </resources>

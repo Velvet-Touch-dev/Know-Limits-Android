@@ -1,54 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme using Material 3 (Material You) -->
-    <style name="Theme.RandomSceneApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorPrimaryContainer">@color/primaryContainer</item>
-        <item name="colorOnPrimary">@color/onPrimary</item>
-        <item name="colorOnPrimaryContainer">@color/onPrimaryContainer</item>
-        
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/secondary</item>
-        <item name="colorSecondaryContainer">@color/secondaryContainer</item>
-        <item name="colorOnSecondary">@color/onSecondary</item>
-        <item name="colorOnSecondaryContainer">@color/onSecondaryContainer</item>
-        
-        <!-- Tertiary brand color -->
-        <item name="colorTertiary">@color/tertiary</item>
-        <item name="colorTertiaryContainer">@color/tertiaryContainer</item>
-        <item name="colorOnTertiary">@color/onTertiary</item>
-        <item name="colorOnTertiaryContainer">@color/onTertiaryContainer</item>
-        
-        <!-- Status bar color - match toolbar color exactly -->
-        <item name="android:statusBarColor">@color/primary_dark</item>
-        <item name="android:windowLightStatusBar">false</item>
-        
-        <!-- Background colors -->
-        <item name="android:windowBackground">@color/background</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorOnSurface">@color/onSurface</item>
-        <item name="colorSurfaceVariant">@color/surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
-        <item name="colorOutline">@color/outline</item>
-        <item name="colorOutlineVariant">@color/outlineVariant</item>
-        
-        <!-- Text colors -->
-        <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
-        
-        <!-- Error color -->
-        <item name="colorError">@color/error</item>
-        <item name="colorOnError">@color/onError</item>
-        <item name="colorErrorContainer">@color/errorContainer</item>
-        <item name="colorOnErrorContainer">@color/onErrorContainer</item>
-        
+    <style name="Theme.RandomSceneApp" parent="Theme.RandomSceneApp.AppColors">
         <!-- Set default text appearance for buttons -->
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
         
         <!-- Set default card appearance -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+        
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>
     
     <!-- Button style -->

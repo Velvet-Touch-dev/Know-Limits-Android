@@ -1,4 +1,4 @@
-    package com.velvettouch.nosafeword
+package com.velvettouch.nosafeword
 
 import android.content.Context
 import android.content.Intent
@@ -11,7 +11,6 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -21,7 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import java.util.Locale
 
-class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -36,6 +35,12 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         const val THEME_LIGHT = 1
         const val THEME_DARK = 2
         const val THEME_SYSTEM = 0
+        
+        // Color palette constants
+        const val COLOR_DEFAULT = 0
+        const val COLOR_PURPLE = 1
+        const val COLOR_PINK = 2
+        const val COLOR_JUST_BLACK = 3
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -209,20 +214,44 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         try {
             val themeCard = findViewById<MaterialCardView>(R.id.theme_card)
             
-            // Get current theme
+            // Get current theme and color settings
             val currentTheme = loadThemeSetting()
+            val currentColor = loadColorSetting()
             
             // Setup theme selector dialog
             themeCard.setOnClickListener {
                 // Inflate the dialog layout
                 val dialogView = layoutInflater.inflate(R.layout.dialog_theme_settings, null)
-                val radioGroup = dialogView.findViewById<RadioGroup>(R.id.theme_radio_group)
+                val themeRadioGroup = dialogView.findViewById<RadioGroup>(R.id.theme_radio_group)
+                val colorRadioGroup = dialogView.findViewById<RadioGroup>(R.id.color_radio_group)
                 
                 // Set the current theme option
                 when (currentTheme) {
-                    THEME_LIGHT -> radioGroup.check(R.id.theme_light_radio)
-                    THEME_DARK -> radioGroup.check(R.id.theme_dark_radio)
-                    THEME_SYSTEM -> radioGroup.check(R.id.theme_system_radio)
+                    THEME_LIGHT -> themeRadioGroup.check(R.id.theme_light_radio)
+                    THEME_DARK -> themeRadioGroup.check(R.id.theme_dark_radio)
+                    THEME_SYSTEM -> themeRadioGroup.check(R.id.theme_system_radio)
+                }
+                
+                // Set the current color palette option
+                when (currentColor) {
+                    COLOR_PURPLE -> colorRadioGroup.check(R.id.color_purple_radio)
+                    COLOR_PINK -> colorRadioGroup.check(R.id.color_pink_radio)
+                    COLOR_JUST_BLACK -> colorRadioGroup.check(R.id.color_just_black_radio)
+                    else -> colorRadioGroup.check(R.id.color_default_radio)
+                }
+                
+                // Show/hide "Just Black" option based on the selected theme
+                val justBlackRadio = dialogView.findViewById<android.widget.RadioButton>(R.id.color_just_black_radio)
+                adjustJustBlackVisibility(justBlackRadio, themeRadioGroup.checkedRadioButtonId)
+                
+                // Listen for theme changes to update Just Black visibility
+                themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+                    adjustJustBlackVisibility(justBlackRadio, checkedId)
+                    
+                    // If switching away from dark mode and Just Black is selected, reset to default
+                    if (checkedId != R.id.theme_dark_radio && colorRadioGroup.checkedRadioButtonId == R.id.color_just_black_radio) {
+                        colorRadioGroup.check(R.id.color_default_radio)
+                    }
                 }
                 
                 // Create and show dialog
@@ -231,18 +260,44 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     .setView(dialogView)
                     .setPositiveButton(R.string.save) { _, _ ->
                         // Get selected theme
-                        val selectedTheme = when (radioGroup.checkedRadioButtonId) {
+                        val selectedTheme = when (themeRadioGroup.checkedRadioButtonId) {
                             R.id.theme_light_radio -> THEME_LIGHT
                             R.id.theme_dark_radio -> THEME_DARK
                             R.id.theme_system_radio -> THEME_SYSTEM
                             else -> THEME_SYSTEM // Default
                         }
                         
-                        // Save and apply theme if changed
-                        if (selectedTheme != currentTheme) {
+                        // Get selected color palette
+                        val selectedColor = when (colorRadioGroup.checkedRadioButtonId) {
+                            R.id.color_purple_radio -> COLOR_PURPLE
+                            R.id.color_pink_radio -> COLOR_PINK
+                            R.id.color_just_black_radio -> COLOR_JUST_BLACK
+                            else -> COLOR_DEFAULT
+                        }
+                        
+                        // Save and apply settings if changed
+                        val themeChanged = selectedTheme != currentTheme
+                        val colorChanged = selectedColor != currentColor
+                        
+                        if (themeChanged) {
                             saveThemeSetting(selectedTheme)
-                            applyTheme(selectedTheme)
-                            updateThemeSelection(selectedTheme)
+                        }
+                        
+                        if (colorChanged) {
+                            saveColorSetting(selectedColor)
+                        }
+                        
+                        if (themeChanged || colorChanged) {
+                            // Apply theme and color changes
+                            applyThemeAndColor(selectedTheme, selectedColor)
+                            
+                            // Update the theme display text
+                            updateThemeSelection(selectedTheme, selectedColor)
+                            
+                            // Show toast if color palette changed
+                            if (colorChanged) {
+                                Toast.makeText(this, R.string.color_palette_changed, Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                     .setNegativeButton(R.string.cancel, null)
@@ -250,22 +305,48 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             }
             
             // Initial update of the theme display
-            updateThemeSelection(currentTheme)
+            updateThemeSelection(currentTheme, currentColor)
         } catch (e: Exception) {
             // Just log the exception and continue
             e.printStackTrace()
         }
     }
+    
+    private fun adjustJustBlackVisibility(justBlackRadio: android.widget.RadioButton, themeRadioId: Int) {
+        // Only show Just Black option for dark mode
+        justBlackRadio.visibility = if (themeRadioId == R.id.theme_dark_radio) {
+            android.view.View.VISIBLE
+        } else {
+            android.view.View.GONE
+        }
+    }
 
-    private fun updateThemeSelection(themeMode: Int) {
+    private fun updateThemeSelection(themeMode: Int, colorMode: Int) {
         try {
             val themeValue = findViewById<TextView>(R.id.theme_value)
-            val themeTextResId = when (themeMode) {
-                THEME_LIGHT -> R.string.theme_light
-                THEME_DARK -> R.string.theme_dark
-                else -> R.string.theme_system
+            
+            // Get the theme mode string
+            val themeModeString = when (themeMode) {
+                THEME_LIGHT -> getString(R.string.theme_light)
+                THEME_DARK -> getString(R.string.theme_dark)
+                else -> getString(R.string.theme_system)
             }
-            themeValue.setText(themeTextResId)
+            
+            // Get the color mode string
+            val colorModeString = when (colorMode) {
+                COLOR_PURPLE -> getString(R.string.color_purple)
+                COLOR_PINK -> getString(R.string.color_pink)
+                COLOR_JUST_BLACK -> getString(R.string.color_just_black)
+                else -> getString(R.string.color_default)
+            }
+            
+            // Combine them
+            if (colorMode == COLOR_DEFAULT) {
+                themeValue.text = themeModeString
+            } else {
+                val coloredThemeText = "$themeModeString - $colorModeString"
+                themeValue.text = coloredThemeText
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -286,16 +367,46 @@ class SettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val prefs = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
         prefs.edit().putInt("theme_mode", themeMode).apply()
     }
+    
+    /**
+     * Load the saved color palette setting from preferences
+     */
+    private fun loadColorSetting(): Int {
+        val prefs = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        return prefs.getInt("color_mode", COLOR_DEFAULT) // Default to default colors
+    }
+    
+    /**
+     * Save the color palette setting to preferences
+     */
+    private fun saveColorSetting(colorMode: Int) {
+        val prefs = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        prefs.edit().putInt("color_mode", colorMode).apply()
+    }
 
     /**
-     * Apply the selected theme
+     * Apply the selected theme and color palette
      */
-    private fun applyTheme(themeMode: Int) {
+    private fun applyThemeAndColor(themeMode: Int, colorMode: Int) {
+        // First apply the theme mode
         when (themeMode) {
             THEME_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
+        
+        // Then save the color mode to be applied after recreating
+        val isCurrentlyDarkMode = resources.configuration.uiMode and 
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK == 
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        
+        // Only apply Just Black theme if in dark mode
+        if (colorMode == COLOR_JUST_BLACK && !isCurrentlyDarkMode) {
+            saveColorSetting(COLOR_DEFAULT)
+        }
+        
+        // Recreate the activity to apply the theme colors
+        recreate()
     }
     
     private fun setupVoiceSettingsCard() {

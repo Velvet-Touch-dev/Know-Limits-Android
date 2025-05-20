@@ -6,10 +6,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_mode"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
+
     <RadioGroup
         android:id="@+id/theme_radio_group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp">
 
         <RadioButton
             android:id="@+id/theme_system_radio"
@@ -17,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="@string/theme_system"
             android:paddingVertical="8dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <RadioButton
             android:id="@+id/theme_light_radio"
@@ -25,7 +34,7 @@
             android:layout_height="wrap_content"
             android:text="@string/theme_light"
             android:paddingVertical="8dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <RadioButton
             android:id="@+id/theme_dark_radio"
@@ -33,6 +42,53 @@
             android:layout_height="wrap_content"
             android:text="@string/theme_dark"
             android:paddingVertical="8dp"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/color_palette"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/color_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/color_default_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/color_default"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <RadioButton
+            android:id="@+id/color_purple_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/color_purple"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <RadioButton
+            android:id="@+id/color_pink_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/color_pink"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <RadioButton
+            android:id="@+id/color_just_black_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/color_just_black"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:visibility="gone" />
     </RadioGroup>
 </LinearLayout>

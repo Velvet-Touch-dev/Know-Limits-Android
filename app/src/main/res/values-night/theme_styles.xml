@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Purple Dark Theme Style -->
+    <style name="Theme.RandomSceneApp.Purple" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/purple_dark_primary</item>
+        <item name="colorOnPrimary">@color/purple_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/purple_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/purple_dark_onPrimaryContainer</item>
+        
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/purple_dark_secondary</item>
+        <item name="colorOnSecondary">@color/purple_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/purple_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/purple_dark_onSecondaryContainer</item>
+        
+        <!-- Tertiary brand color -->
+        <item name="colorTertiary">@color/purple_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/purple_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/purple_dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/purple_dark_onTertiaryContainer</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/purple_dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">@color/purple_dark_background</item>
+        <item name="colorSurface">@color/purple_dark_surface</item>
+        <item name="colorOnSurface">@color/purple_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/purple_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/purple_dark_onSurfaceVariant</item>
+        <item name="colorOnBackground">@color/purple_dark_onBackground</item>
+        
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/purple_dark_outline</item>
+        <item name="colorOutlineVariant">@color/purple_dark_outlineVariant</item>
+        
+        <!-- Error color -->
+        <item name="colorError">@color/purple_dark_error</item>
+        <item name="colorOnError">@color/purple_dark_onError</item>
+        <item name="colorErrorContainer">@color/purple_dark_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/purple_dark_onErrorContainer</item>
+    </style>
+
+    <!-- Pink Dark Theme Style -->
+    <style name="Theme.RandomSceneApp.Pink" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/pink_dark_primary</item>
+        <item name="colorOnPrimary">@color/pink_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/pink_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/pink_dark_onPrimaryContainer</item>
+        
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/pink_dark_secondary</item>
+        <item name="colorOnSecondary">@color/pink_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/pink_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/pink_dark_onSecondaryContainer</item>
+        
+        <!-- Tertiary brand color -->
+        <item name="colorTertiary">@color/pink_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/pink_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/pink_dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/pink_dark_onTertiaryContainer</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/pink_dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">@color/pink_dark_background</item>
+        <item name="colorSurface">@color/pink_dark_surface</item>
+        <item name="colorOnSurface">@color/pink_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/pink_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/pink_dark_onSurfaceVariant</item>
+        <item name="colorOnBackground">@color/pink_dark_onBackground</item>
+        
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/pink_dark_outline</item>
+        <item name="colorOutlineVariant">@color/pink_dark_outlineVariant</item>
+        
+        <!-- Error color -->
+        <item name="colorError">@color/pink_dark_error</item>
+        <item name="colorOnError">@color/pink_dark_onError</item>
+        <item name="colorErrorContainer">@color/pink_dark_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/pink_dark_onErrorContainer</item>
+    </style>
+
+    <!-- Just Black Dark Theme Style -->
+    <style name="Theme.RandomSceneApp.JustBlack" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/just_black_dark_primary</item>
+        <item name="colorOnPrimary">@color/just_black_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/just_black_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/just_black_dark_onPrimaryContainer</item>
+        
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/just_black_dark_secondary</item>
+        <item name="colorOnSecondary">@color/just_black_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/just_black_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/just_black_dark_onSecondaryContainer</item>
+        
+        <!-- Tertiary brand color -->
+        <item name="colorTertiary">@color/just_black_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/just_black_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/just_black_dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/just_black_dark_onTertiaryContainer</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/just_black_dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">@color/just_black_dark_background</item>
+        <item name="colorSurface">@color/just_black_dark_surface</item>
+        <item name="colorOnSurface">@color/just_black_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/just_black_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/just_black_dark_onSurfaceVariant</item>
+        <item name="colorOnBackground">@color/just_black_dark_onBackground</item>
+        
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/just_black_dark_outline</item>
+        <item name="colorOutlineVariant">@color/just_black_dark_outlineVariant</item>
+        
+        <!-- Error color -->
+        <item name="colorError">@color/just_black_dark_error</item>
+        <item name="colorOnError">@color/just_black_dark_onError</item>
+        <item name="colorErrorContainer">@color/just_black_dark_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/just_black_dark_onErrorContainer</item>
+    </style>
+</resources>

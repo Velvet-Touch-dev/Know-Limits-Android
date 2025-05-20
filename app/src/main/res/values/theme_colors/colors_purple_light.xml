@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Purple Light Theme Colors -->
+    <color name="purple_light_primary">#6200EE</color>
+    <color name="purple_light_onPrimary">#FFFFFF</color>
+    <color name="purple_light_primaryContainer">#E9DDFF</color>
+    <color name="purple_light_onPrimaryContainer">#21005E</color>
+    
+    <color name="purple_light_secondary">#7B1FA2</color>
+    <color name="purple_light_onSecondary">#FFFFFF</color>
+    <color name="purple_light_secondaryContainer">#F5DAFF</color>
+    <color name="purple_light_onSecondaryContainer">#370B58</color>
+    
+    <color name="purple_light_tertiary">#9C27B0</color>
+    <color name="purple_light_onTertiary">#FFFFFF</color>
+    <color name="purple_light_tertiaryContainer">#FFDDF6</color>
+    <color name="purple_light_onTertiaryContainer">#37002C</color>
+    
+    <color name="purple_light_background">#FFFBFF</color>
+    <color name="purple_light_onBackground">#1C1B1E</color>
+    <color name="purple_light_surface">#FFFBFF</color>
+    <color name="purple_light_onSurface">#1C1B1E</color>
+    <color name="purple_light_surfaceVariant">#E7E0EB</color>
+    <color name="purple_light_onSurfaceVariant">#49454E</color>
+    
+    <color name="purple_light_outline">#7A747E</color>
+    <color name="purple_light_outlineVariant">#CAC4CF</color>
+    
+    <color name="purple_light_error">#B3261E</color>
+    <color name="purple_light_onError">#FFFFFF</color>
+    <color name="purple_light_errorContainer">#F9DEDC</color>
+    <color name="purple_light_onErrorContainer">#410E0B</color>
+</resources>

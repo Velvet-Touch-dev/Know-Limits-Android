@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Just Black Dark Theme Colors -->
+    <color name="just_black_dark_primary">#BB86FC</color>
+    <color name="just_black_dark_onPrimary">#000000</color>
+    <color name="just_black_dark_primaryContainer">#3700B3</color>
+    <color name="just_black_dark_onPrimaryContainer">#EADDFF</color>
+    
+    <color name="just_black_dark_secondary">#03DAC6</color>
+    <color name="just_black_dark_onSecondary">#000000</color>
+    <color name="just_black_dark_secondaryContainer">#018786</color>
+    <color name="just_black_dark_onSecondaryContainer">#CCFFF9</color>
+    
+    <color name="just_black_dark_tertiary">#CF6679</color>
+    <color name="just_black_dark_onTertiary">#000000</color>
+    <color name="just_black_dark_tertiaryContainer">#933D4A</color>
+    <color name="just_black_dark_onTertiaryContainer">#FFDAD8</color>
+    
+    <color name="just_black_dark_background">#000000</color>
+    <color name="just_black_dark_onBackground">#FFFFFF</color>
+    <color name="just_black_dark_surface">#000000</color>
+    <color name="just_black_dark_onSurface">#FFFFFF</color>
+    <color name="just_black_dark_surfaceVariant">#202020</color>
+    <color name="just_black_dark_onSurfaceVariant">#CCCCCC</color>
+    
+    <color name="just_black_dark_outline">#696969</color>
+    <color name="just_black_dark_outlineVariant">#292929</color>
+    
+    <color name="just_black_dark_error">#CF6679</color>
+    <color name="just_black_dark_onError">#000000</color>
+    <color name="just_black_dark_errorContainer">#8C1D18</color>
+    <color name="just_black_dark_onErrorContainer">#F9DEDC</color>
+</resources>
