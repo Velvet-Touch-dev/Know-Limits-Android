@@ -874,6 +874,11 @@ private fun setupLibraryRecyclerView() {
                 
                 val successfullyRemoved = allPositionItems.remove(positionItem) // Remove from current session's display list
                 if (successfullyRemoved) {
+                    // Remove from favorites if it exists there
+                    if (positionFavorites.contains(positionItem.name)) {
+                        positionFavorites.remove(positionItem.name)
+                        savePositionFavorites()
+                    }
                     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
                     Toast.makeText(this, "'${positionItem.name}' hidden. It will reappear after reset.", Toast.LENGTH_SHORT).show()
                 } else {
@@ -898,6 +903,11 @@ private fun setupLibraryRecyclerView() {
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(this, "Error deleting file for '${positionItem.name}'. Item removed from list.", Toast.LENGTH_SHORT).show()
+                    }
+                    // Remove from favorites if it exists there
+                    if (positionFavorites.contains(positionItem.name)) {
+                        positionFavorites.remove(positionItem.name)
+                        savePositionFavorites()
                     }
                     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
                 } else {
