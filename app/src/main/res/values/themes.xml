@@ -8,6 +8,8 @@
         <!-- Set default card appearance -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
         
+
+        
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
@@ -29,4 +31,6 @@
         <item name="cardCornerRadius">16dp</item>
         <item name="cardElevation">2dp</item>
     </style>
+    
+
 </resources>

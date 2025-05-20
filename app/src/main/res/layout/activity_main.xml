@@ -194,10 +194,11 @@
                 android:id="@+id/editButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:elevation="8dp"
                 app:fabSize="mini"
                 app:srcCompat="@drawable/ic_edit_pencil"
-                android:contentDescription="@string/edit_scene" />
+                android:contentDescription="@string/edit_scene"
+                app:compatShadowEnabled="false"
+                app:elevation="0dp" />
             
             <View
                 android:layout_width="0dp"
@@ -210,19 +211,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:elevation="8dp"
                 app:fabSize="mini"
                 app:srcCompat="@drawable/ic_arrow_back"
-                android:contentDescription="@string/previous" />
+                android:contentDescription="@string/previous"
+                app:compatShadowEnabled="false"
+                app:elevation="0dp" />
                 
             <!-- Next Button (Previously Randomize Button) -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/randomizeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:elevation="8dp"
                 app:srcCompat="@drawable/ic_arrow_forward"
-                android:contentDescription="@string/next" />
+                android:contentDescription="@string/next"
+                app:compatShadowEnabled="false"
+                app:elevation="0dp" />
         </LinearLayout>
 
         <!-- Bottom Navigation -->

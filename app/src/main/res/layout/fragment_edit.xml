@@ -30,7 +30,8 @@
             android:layout_height="wrap_content"
             android:text="@string/reset_to_default"
             app:icon="@drawable/ic_restore"
-            android:contentDescription="@string/reset_to_default" />
+            android:contentDescription="@string/reset_to_default"
+            app:elevation="0dp" />
             
         <View
             android:layout_width="0dp"
@@ -42,7 +43,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/new_scene"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_add"
+            app:compatShadowEnabled="false"
+            app:elevation="0dp" />
     </LinearLayout>
 
 </FrameLayout>
