@@ -250,9 +250,9 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
                     adjustJustBlackVisibility(justBlackRadio, justBlackDivider, checkedId)
                     
-                    // If switching away from dark mode and a black theme is selected, reset to default
-                    if (checkedId != R.id.theme_dark_radio) {
-                        if (colorRadioGroup.checkedRadioButtonId == R.id.color_just_black_radio || 
+                    // If switching to light mode and a black theme is selected, reset to default color
+                    if (checkedId == R.id.theme_light_radio) {
+                        if (colorRadioGroup.checkedRadioButtonId == R.id.color_just_black_radio ||
                             colorRadioGroup.checkedRadioButtonId == R.id.color_pitch_black_radio) {
                             colorRadioGroup.check(R.id.color_default_radio)
                         }
@@ -318,8 +318,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     }
     
     private fun adjustJustBlackVisibility(justBlackRadio: android.widget.RadioButton, justBlackDivider: android.view.View, themeRadioId: Int) {
-        // Only show Just Black option for dark mode
-        val visibility = if (themeRadioId == R.id.theme_dark_radio) {
+        // Show Just Black and Pitch Black options for Dark Mode or System Default
+        val visibility = if (themeRadioId == R.id.theme_dark_radio || themeRadioId == R.id.theme_system_radio) {
             android.view.View.VISIBLE
         } else {
             android.view.View.GONE
@@ -414,24 +414,33 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
      * Apply the selected theme and color palette
      */
     private fun applyThemeAndColor(themeMode: Int, colorMode: Int) {
-        // First apply the theme mode
         when (themeMode) {
-            THEME_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            THEME_LIGHT -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                // If a black theme was selected with light mode, save default color as a safeguard.
+                // This ensures the saved state is consistent.
+                if (colorMode == COLOR_JUST_BLACK || colorMode == COLOR_PITCH_BLACK) {
+                    saveColorSetting(COLOR_DEFAULT) // Override saved color to default
+                }
+            }
+            THEME_DARK -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            THEME_SYSTEM -> {
+                if (colorMode == COLOR_JUST_BLACK || colorMode == COLOR_PITCH_BLACK) {
+                    // If System Default is chosen with a black theme, force Dark Mode
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else {
+                    // Otherwise, follow system for System Default
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
+            }
         }
-        
-        // Then save the color mode to be applied after recreating
-        val isCurrentlyDarkMode = resources.configuration.uiMode and 
-                android.content.res.Configuration.UI_MODE_NIGHT_MASK == 
-                android.content.res.Configuration.UI_MODE_NIGHT_YES
-        
-        // Only apply Just Black theme if in dark mode
-        if (colorMode == COLOR_JUST_BLACK && !isCurrentlyDarkMode) {
-            saveColorSetting(COLOR_DEFAULT)
-        }
-        
-        // Recreate the activity to apply the theme colors
+
+        // Recreate the activity to apply theme and color changes
+        // The color itself is applied via theme attributes (R.style.AppTheme_Purple etc.)
+        // which are selected based on the saved colorMode in BaseActivity or MyApplication.
+        // The saveColorSetting(selectedColor) was already called in setupThemeSelector.
         recreate()
     }
     
