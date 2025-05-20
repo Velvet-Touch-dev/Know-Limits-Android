@@ -176,6 +176,14 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
                     finish() // Close this activity
                     true
                 }
+                R.id.nav_plan_night -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, PlanNightActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
+                    finish() // Close this activity
+                    true
+                }
                 R.id.nav_favorites -> {
                     // Navigate to favorites activity
                     drawerLayout.closeDrawer(GravityCompat.START)

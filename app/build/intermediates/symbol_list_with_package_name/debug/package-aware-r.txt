@@ -3320,6 +3320,7 @@ id animateToStart
 id antiClockwise
 id anticipate
 id appBarLayout
+id appbar_plan_night
 id arc
 id asConfigured
 id async
@@ -3344,7 +3345,10 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id buttonPanel
+id button_add_selected_item
+id button_cancel_add_item
 id button_cancel_add_position
+id button_delete_planned_item
 id button_reset_to_default
 id button_save_position
 id button_select_image
@@ -3417,6 +3421,7 @@ id design_menu_item_action_area_stub
 id design_menu_item_text
 id design_navigation_view
 id dialog_button
+id dialog_title
 id dimensions
 id direct
 id disableHome
@@ -3434,6 +3439,7 @@ id dragStart
 id dragUp
 id drag_handle_icon
 id drawer_layout
+id drawer_layout_plan_night
 id drawer_layout_task_list
 id dropdown_menu
 id easeIn
@@ -3453,6 +3459,7 @@ id edit_title_input
 id elastic
 id embed
 id empty_favorites_view
+id empty_task_list_view
 id end
 id endToStart
 id enterAlways
@@ -3460,6 +3467,7 @@ id enterAlwaysCollapsed
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
+id fab_add_planned_item
 id fab_add_position
 id fab_add_task
 id fade
@@ -3503,6 +3511,7 @@ id ifRoom
 id ignore
 id ignoreRequest
 id image
+id image_view_drag_handle_planned_item
 id immediateStop
 id included
 id indeterminate
@@ -3510,6 +3519,8 @@ id info
 id invisible
 id inward
 id italic
+id item_checkbox
+id item_name_textview
 id item_touch_helper_previous_elevation
 id jumpToEnd
 id jumpToStart
@@ -3590,11 +3601,13 @@ id mtrl_view_tag_bottom_padding
 id multiply
 id nav_body_worship
 id nav_favorites
+id nav_plan_night
 id nav_positions
 id nav_scenes
 id nav_settings
 id nav_task_list
 id nav_view
+id nav_view_plan_night
 id nav_view_task_list
 id navigation_bar_item_active_indicator_view
 id navigation_bar_item_icon_container
@@ -3665,6 +3678,8 @@ id randomize_button
 id randomize_tab_content
 id ratio
 id rectangles
+id recycler_view_planned_items
+id recycler_view_search_results
 id report_drawn
 id reset_button
 id reset_scenes_button
@@ -3706,6 +3721,7 @@ id search_view_divider
 id search_view_dummy_toolbar
 id search_view_edit_text
 id search_view_header_container
+id search_view_planned_item
 id search_view_root
 id search_view_scrim
 id search_view_search_prefix
@@ -3768,6 +3784,7 @@ id supportScrollUp
 id swipe_hint
 id swipe_hint_container
 id tabMode
+id tab_layout_item_type
 id tabs
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -3802,6 +3819,8 @@ id text_input_end_icon
 id text_input_error_icon
 id text_input_layout_position_name
 id text_input_start_icon
+id text_view_planned_item_name
+id text_view_planned_item_type
 id textinput_counter
 id textinput_error
 id textinput_helper_text
@@ -3827,6 +3846,7 @@ id toast_icon
 id toast_text
 id toggle
 id toolbar
+id toolbar_plan_night
 id top
 id topAppBar
 id topPanel
@@ -3983,6 +4003,7 @@ layout activity_body_worship
 layout activity_developer_settings
 layout activity_favorites
 layout activity_main
+layout activity_plan_night
 layout activity_positions
 layout activity_settings
 layout activity_task_list
@@ -4002,6 +4023,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout dialog_add_planned_item
 layout dialog_add_position
 layout dialog_add_task
 layout dialog_edit_scene
@@ -4014,8 +4036,10 @@ layout fragment_random_card
 layout item_edit_scene
 layout item_favorite_position
 layout item_favorite_scene
+layout item_planned_night
 layout item_position_library
 layout item_scene_card
+layout item_search_result
 layout item_task
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
@@ -4116,9 +4140,12 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
+string add
 string add_favorites
 string add_new_position
 string add_new_task
+string add_planned_item
+string add_tasks_prompt
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
@@ -4133,6 +4160,8 @@ string bottomsheet_action_expand_halfway
 string bottomsheet_drag_handle_clicked
 string bottomsheet_drag_handle_content_description
 string cancel
+string cd_delete_item
+string cd_drag_to_reorder
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
@@ -4274,16 +4303,19 @@ string new_scene
 string next
 string next_task
 string no_favorites
+string no_tasks
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
 string pause
+string plan_your_night
 string play
 string position_image_preview
 string position_name
 string positions
+string positions_tab
 string pref_theme_dark_value
 string pref_theme_key
 string pref_theme_light_value
@@ -4305,7 +4337,9 @@ string scene_saved
 string scene_selected
 string scene_title
 string scenes_reset
+string scenes_tab
 string search
+string search_items_hint
 string search_menu_title
 string search_positions
 string search_scenes
@@ -4332,6 +4366,7 @@ string theme_light
 string theme_mode
 string theme_settings
 string theme_system
+string title_plan_night
 string tts_enabled
 string tts_enabled_summary
 string voice_seductiveness

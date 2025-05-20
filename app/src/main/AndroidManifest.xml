@@ -51,6 +51,11 @@
             android:exported="false"
             android:label="Task List"
             android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".PlanNightActivity"
+            android:exported="false"
+            android:label="@string/title_plan_night"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

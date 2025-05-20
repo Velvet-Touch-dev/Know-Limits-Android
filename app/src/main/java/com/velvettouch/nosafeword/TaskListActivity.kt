@@ -45,6 +45,7 @@ class TaskListActivity : BaseActivity() {
     private lateinit var fabAddTask: FloatingActionButton
     private val taskItems = mutableListOf<TaskItem>() // In-memory list for now
     private var itemTouchHelper: ItemTouchHelper? = null
+    private lateinit var emptyTaskListView: View
 
     companion object {
         private const val PREFS_NAME = "TaskListPrefs"
@@ -80,12 +81,14 @@ class TaskListActivity : BaseActivity() {
 
         recyclerView = findViewById(R.id.task_list_recycler_view)
         fabAddTask = findViewById(R.id.fab_add_task)
+        emptyTaskListView = findViewById(R.id.empty_task_list_view)
 
         setupRecyclerView()
         setupFab()
 
         // Load tasks from preferences or sample data if none found
         loadTasks()
+        updateEmptyViewVisibility()
     }
 
     private fun setupRecyclerView() {
@@ -103,6 +106,7 @@ class TaskListActivity : BaseActivity() {
                     }
                 }
                 saveTasksToPreferences()
+                updateEmptyViewVisibility()
             },
             onDeleteClicked = { task ->
                 val index = taskItems.indexOfFirst { it.id == task.id }
@@ -112,6 +116,7 @@ class TaskListActivity : BaseActivity() {
                 }
                 Toast.makeText(this, "Task '${task.title}' deleted", Toast.LENGTH_SHORT).show()
                 saveTasksToPreferences()
+                updateEmptyViewVisibility()
             },
             onDragStarted = { viewHolder ->
                 itemTouchHelper?.startDrag(viewHolder)
@@ -238,6 +243,7 @@ class TaskListActivity : BaseActivity() {
                     taskItems.sortBy { it.order } // Re-sort if order logic is complex
                     recyclerView.post { taskListAdapter.submitList(taskItems.toList()) }
                     saveTasksToPreferences()
+                    updateEmptyViewVisibility()
                     recyclerView.smoothScrollToPosition(taskItems.indexOf(newTask).takeIf { it != -1} ?: taskItems.size -1)
                 } else {
                     Toast.makeText(this, "Task title cannot be empty", Toast.LENGTH_SHORT).show()
@@ -279,6 +285,7 @@ class TaskListActivity : BaseActivity() {
             taskItems.sortBy { it.order }
             taskListAdapter.submitList(taskItems.toList())
         }
+        updateEmptyViewVisibility()
     }
 
     private fun loadSampleTasks() {
@@ -289,6 +296,17 @@ class TaskListActivity : BaseActivity() {
         taskItems.add(TaskItem(title = "Call Mom", order = 3))
         taskListAdapter.submitList(taskItems.toList())
         saveTasksToPreferences() // Save sample tasks if loaded
+        updateEmptyViewVisibility()
+    }
+
+    private fun updateEmptyViewVisibility() {
+        if (taskItems.isEmpty()) {
+            emptyTaskListView.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+        } else {
+            emptyTaskListView.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        }
     }
 
     private fun handleNavigationItemSelected(menuItem: MenuItem) {
@@ -314,6 +332,12 @@ class TaskListActivity : BaseActivity() {
             }
             R.id.nav_task_list -> {
                 // Already on this screen
+            }
+            R.id.nav_plan_night -> {
+                val intent = Intent(this, PlanNightActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intent)
+                finish() // Finish TaskListActivity
             }
             R.id.nav_favorites -> {
                  val intent = Intent(this, FavoritesActivity::class.java)

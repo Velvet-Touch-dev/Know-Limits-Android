@@ -166,6 +166,13 @@ class MainActivity : BaseActivity() {
                     // finish() // Optional: decide if MainActivity should finish
                     true
                 }
+                R.id.nav_plan_night -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, PlanNightActivity::class.java)
+                    // intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Optional
+                    startActivity(intent)
+                    true
+                }
                 R.id.nav_favorites -> {
                     // Launch favorites activity
                     drawerLayout.closeDrawer(GravityCompat.START)
