@@ -80,13 +80,15 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     
     // Favorites
     private var positionFavorites: MutableSet<String> = mutableSetOf()
-    
+    private var hiddenDefaultPositionNames: MutableSet<String> = mutableSetOf() // For session-persistent hiding
+
     // Voice settings constants
     companion object VoiceSettings {
         const val PREF_VOICE_SETTINGS = "voice_settings"
         const val PREF_VOICE_PITCH = "voice_pitch"
         const val PREF_VOICE_SPEED = "voice_speed"
         const val POSITION_FAVORITES_PREF = "position_favorites"
+        const val HIDDEN_DEFAULT_POSITIONS_PREF = "hidden_default_positions" // New pref key
         
         // Default values
         const val DEFAULT_PITCH = 1.0f
@@ -247,7 +249,10 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
 
         // Load all positions (assets and custom) into allPositionItems first.
         // This is crucial for displayPositionByName to find custom positions passed via intent.
-        loadAllPositionsForLibrary() // Ensures allPositionItems is populated.
+        // Load hidden names FIRST, so loadAllPositionsForLibrary can use it.
+        loadHiddenDefaultPositionNames() // Load hidden names
+
+        loadAllPositionsForLibrary() // Ensures allPositionItems is populated, respecting hidden names.
 
         // Load position images (assets only, for the randomize tab's default pool)
         loadPositionImages()
@@ -342,6 +347,11 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     }
 
     private fun resetToDefaultPositions() {
+        // Clear the set of hidden default positions and its SharedPreferences
+        hiddenDefaultPositionNames.clear()
+        val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
+        prefs.edit().remove("hidden_names").commit() // Changed to commit()
+
         // Delete files of custom positions
         val customPositions = allPositionItems.filter { !it.isAsset }
         for (customPosition in customPositions) {
@@ -440,10 +450,20 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
         positionFavorites = prefs.getStringSet("favorite_position_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
     }
-    
+
     private fun savePositionFavorites() {
         val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
         prefs.edit().putStringSet("favorite_position_names", positionFavorites).apply()
+    }
+
+    private fun loadHiddenDefaultPositionNames() {
+        val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
+        hiddenDefaultPositionNames = prefs.getStringSet("hidden_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+    }
+
+    private fun saveHiddenDefaultPositionNames() {
+        val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
+        prefs.edit().putStringSet("hidden_names", hiddenDefaultPositionNames).commit() // Changed to commit()
     }
     
     private fun toggleFavorite() {
@@ -834,41 +854,59 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     }
     
 private fun setupLibraryRecyclerView() {
-        // Ensure positionsLibraryRecyclerView is initialized before use
-        if (!::positionsLibraryRecyclerView.isInitialized) {
-             positionsLibraryRecyclerView = findViewById(R.id.positions_library_recycler_view)
-        }
+    // Ensure positionsLibraryRecyclerView is initialized before use
+    if (!::positionsLibraryRecyclerView.isInitialized) {
+         positionsLibraryRecyclerView = findViewById(R.id.positions_library_recycler_view)
+    }
 
-        positionLibraryAdapter = PositionLibraryAdapter(this, mutableListOf(),
-            onItemClick = { positionItem ->
-                // Handle item click: Display the position in the "Randomize" tab
-                displayPositionByName(positionItem.name) // Use existing function
-                positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
-            },
-            onDeleteClick = { positionItem ->
-                if (positionItem.isAsset) {
-                    Toast.makeText(this, "Cannot delete default positions.", Toast.LENGTH_SHORT).show()
-                    return@PositionLibraryAdapter
-                }
-                // Actual file deletion for non-asset items
-                val fileToDelete = File(positionItem.imageName) // imageName is the absolute path for non-assets
-                if (fileToDelete.exists()) {
-                    if (fileToDelete.delete()) {
-                        allPositionItems.remove(positionItem)
-                        positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-                        Toast.makeText(this, "'${positionItem.name}' deleted.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "Failed to delete '${positionItem.name}'.", Toast.LENGTH_SHORT).show()
-                    }
+    positionLibraryAdapter = PositionLibraryAdapter(this, mutableListOf(), // Initial empty list
+        onItemClick = { positionItem ->
+            // Handle item click: Display the position in the "Randomize" tab
+            displayPositionByName(positionItem.name) // Use existing function
+            positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
+            invalidateOptionsMenu() // Ensure favorite icon updates
+        },
+        onDeleteClick = { positionItem ->
+            if (positionItem.isAsset) {
+                // Default (asset) position: Add to hidden list, save, then remove from current display list
+                hiddenDefaultPositionNames.add(positionItem.name)
+                saveHiddenDefaultPositionNames() // Persist the hidden state
+                
+                val successfullyRemoved = allPositionItems.remove(positionItem) // Remove from current session's display list
+                if (successfullyRemoved) {
+                    positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                    Toast.makeText(this, "'${positionItem.name}' hidden. It will reappear after reset.", Toast.LENGTH_SHORT).show()
                 } else {
-                     Toast.makeText(this, "File not found for '${positionItem.name}'. Could not delete.", Toast.LENGTH_SHORT).show()
-                     // If file is not found, still remove it from the list as it's inconsistent
-                     allPositionItems.remove(positionItem)
-                     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                    // This case should be rare if the item clicked was indeed in allPositionItems
+                    Toast.makeText(this, "Could not remove '${positionItem.name}' from list.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Custom position: delete the file and remove from list
+                val successfullyRemoved = allPositionItems.remove(positionItem)
+                if (successfullyRemoved) {
+                    try {
+                        val fileToDelete = File(positionItem.imageName)
+                        if (fileToDelete.exists()) {
+                            if (fileToDelete.delete()) {
+                                Toast.makeText(this, "'${positionItem.name}' deleted.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this, "Failed to delete file for '${positionItem.name}'. Item removed from list.", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(this, "File for '${positionItem.name}' not found. Removed from list.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(this, "Error deleting file for '${positionItem.name}'. Item removed from list.", Toast.LENGTH_SHORT).show()
+                    }
+                    positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                } else {
+                    Toast.makeText(this, "Could not find '${positionItem.name}' in the list to remove.", Toast.LENGTH_SHORT).show()
                 }
             }
-        )
-        positionsLibraryRecyclerView.adapter = positionLibraryAdapter
+        }
+    )
+    positionsLibraryRecyclerView.adapter = positionLibraryAdapter
         // Use GridLayoutManager for a card-like appearance, adjust spanCount as needed
         positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
     }
