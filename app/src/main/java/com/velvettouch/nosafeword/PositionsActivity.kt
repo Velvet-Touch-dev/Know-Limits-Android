@@ -914,17 +914,14 @@ private fun setupLibraryRecyclerView() {
     private fun loadAllPositionsForLibrary(isReset: Boolean = false) {
         if (isReset) {
             allPositionItems.clear()
-        } else if (allPositionItems.isNotEmpty()) {
-            // If not a reset and list already populated, don't reload everything.
-            // This assumes custom positions are handled (e.g., added dynamically)
-            // and assets are loaded once.
-            if (::positionLibraryAdapter.isInitialized) {
-                 positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-            }
-            return
+            // hiddenDefaultPositionNames is cleared by resetToDefaultPositions before calling this
+        } else {
+            // For a normal load (e.g., onCreate, onResume if activity was destroyed),
+            // always clear to ensure we rebuild respecting hiddenDefaultPositionNames.
+            allPositionItems.clear()
         }
-        // If it's a reset, allPositionItems is now clear.
-        // If it's an initial load, allPositionItems was empty.
+        // Now allPositionItems is definitely empty if it's a normal load,
+        // or empty if it's a reset.
 
         // Load from assets
         try {
@@ -934,7 +931,10 @@ private fun setupLibraryRecyclerView() {
                 if (fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".png", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true)) {
                     val nameWithoutExtension = fileName.substringBeforeLast(".")
                     val positionName = nameWithoutExtension.replace("_", " ").capitalizeWords()
-                    allPositionItems.add(PositionItem(positionName, fileName, true)) // isAsset = true
+                    // Only add asset if it's not in the hidden set
+                    if (!hiddenDefaultPositionNames.contains(positionName)) {
+                        allPositionItems.add(PositionItem(positionName, fileName, true)) // isAsset = true
+                    }
                 }
             }
         } catch (e: IOException) {
