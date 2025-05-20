@@ -25,7 +25,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    
+    private var settingsChanged = false // Flag to track if theme/color settings changed
+
     // TTS for previewing voice
     private lateinit var textToSpeech: TextToSpeech
     private var isTtsReady = false
@@ -42,11 +43,18 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         const val COLOR_PINK = 2
         const val COLOR_JUST_BLACK = 3
         const val COLOR_PITCH_BLACK = 4
+
+        private const val KEY_SETTINGS_CHANGED = "key_settings_changed"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        // Restore settingsChanged state if activity was recreated (e.g., after theme change)
+        savedInstanceState?.let {
+            settingsChanged = it.getBoolean(KEY_SETTINGS_CHANGED, false)
+        }
         
         // Initialize TextToSpeech for voice preview
         textToSpeech = TextToSpeech(this, this)
@@ -180,6 +188,14 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         // Sync the toggle state after onRestoreInstanceState has occurred
         drawerToggle.syncState()
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save the settingsChanged flag if it's true, so it persists across recreation
+        if (settingsChanged) {
+            outState.putBoolean(KEY_SETTINGS_CHANGED, settingsChanged)
+        }
+    }
     
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -203,9 +219,14 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     }
 
     override fun onBackPressed() {
-        // Close the drawer if it's open, otherwise proceed with normal back button behavior
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
+        } else if (settingsChanged) {
+            // Theme or color has changed, go back to MainActivity and ensure it refreshes
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            finish() // Finish SettingsActivity
         } else {
             super.onBackPressed()
         }
@@ -293,6 +314,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                         }
                         
                         if (themeChanged || colorChanged) {
+                            settingsChanged = true // Mark that settings have changed
                             // Apply theme and color changes
                             applyThemeAndColor(selectedTheme, selectedColor)
                             
@@ -437,10 +459,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             }
         }
 
-        // Recreate the activity to apply theme and color changes
-        // The color itself is applied via theme attributes (R.style.AppTheme_Purple etc.)
-        // which are selected based on the saved colorMode in BaseActivity or MyApplication.
-        // The saveColorSetting(selectedColor) was already called in setupThemeSelector.
+        // Recreate the activity to apply theme and color changes immediately for SettingsActivity
+        // The settingsChanged flag will be saved in onSaveInstanceState and restored in onCreate
         recreate()
     }
     
