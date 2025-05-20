@@ -40,12 +40,12 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/circle_purple_color.xml"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/anim_slide_out_left.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/anim/slide_out_left.xml"
-    },
-    {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-mdpi_ic_launcher.webp.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/anim_slide_out_left.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/anim/slide_out_left.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
@@ -168,20 +168,20 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/ic_delete.xml"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_arrow_forward.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/ic_arrow_forward.xml"
-    },
-    {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-xxxhdpi_ic_launcher.webp.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-xxxhdpi/ic_launcher.webp"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_arrow_forward.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/ic_arrow_forward.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_theme_selector_background.xml.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/theme_selector_background.xml"
+    },
+    {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/animator_card_state_list_anim.xml.flat",

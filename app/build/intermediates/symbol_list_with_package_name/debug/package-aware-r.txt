@@ -3508,6 +3508,7 @@ id layout
 id left
 id leftToRight
 id legacy
+id library_fab_container
 id library_tab_content
 id line1
 id line3

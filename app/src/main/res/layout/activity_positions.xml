@@ -230,52 +230,71 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- Content for "Library" tab (initially empty or with a placeholder) -->
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/library_tab_content"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    android:gravity="center">
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.SearchView
                         android:id="@+id/position_search_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
                         android:layout_margin="8dp"
                         app:iconifiedByDefault="false"
                         app:queryHint="@string/search_positions" />
 
-                    <!-- RecyclerView for positions -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/positions_library_recycler_view"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_below="@id/position_search_view"
+                        android:layout_above="@+id/library_fab_container"
                         android:clipToPadding="false"
-                        android:padding="8dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         tools:listitem="@layout/item_position_library" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/button_reset_to_default"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/library_fab_container"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/reset_to_default"
-                        style="@style/Widget.Material3.Button.OutlinedButton" />
+                        android:orientation="horizontal"
+                        android:layout_alignParentBottom="true"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/fab_add_position"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_margin="16dp"
-                        android:contentDescription="@string/add_new_position"
-                        app:srcCompat="@drawable/ic_add" />
+                        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                            android:id="@+id/button_reset_to_default"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/reset_to_default"
+                            app:icon="@drawable/ic_refresh"
+                            android:contentDescription="@string/reset_to_default"
+                            app:backgroundTint="?attr/colorPrimary"
+                            android:textColor="?attr/colorOnPrimary"
+                            app:iconTint="?attr/colorOnPrimary"
+                            app:elevation="0dp" />
 
-                </LinearLayout>
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1" />
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/fab_add_position"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/add_new_position"
+                            app:srcCompat="@drawable/ic_add"
+                            app:backgroundTint="?attr/colorPrimary"
+                            app:tint="?attr/colorOnPrimary"
+                            app:elevation="0dp"/>
+                    </LinearLayout>
+                </RelativeLayout>
             </FrameLayout>
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

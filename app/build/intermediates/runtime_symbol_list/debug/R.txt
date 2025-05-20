@@ -3507,6 +3507,7 @@ int id layout 0x7f090113
 int id left 0x7f090114
 int id leftToRight 0x7f090115
 int id legacy 0x7f090116
+int id library_fab_container 0x7f090267
 int id library_tab_content 0x7f090117
 int id line1 0x7f090118
 int id line3 0x7f090119

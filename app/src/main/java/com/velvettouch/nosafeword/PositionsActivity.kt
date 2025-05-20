@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -59,7 +60,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionLibraryAdapter: PositionLibraryAdapter
     private var allPositionItems: MutableList<PositionItem> = mutableListOf()
     private lateinit var positionSearchView: SearchView
-    private lateinit var resetButton: MaterialButton // Added for Reset to Default
+    private lateinit var resetButton: ExtendedFloatingActionButton // Changed for Reset to Default ExtendedFAB styling
 
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
