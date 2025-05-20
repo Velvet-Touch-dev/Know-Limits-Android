@@ -158,6 +158,14 @@ class MainActivity : BaseActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_task_list -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, TaskListActivity::class.java)
+                    // intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Optional: decide if you want to clear top
+                    startActivity(intent)
+                    // finish() // Optional: decide if MainActivity should finish
+                    true
+                }
                 R.id.nav_favorites -> {
                     // Launch favorites activity
                     drawerLayout.closeDrawer(GravityCompat.START)

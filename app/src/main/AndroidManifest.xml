@@ -46,6 +46,11 @@
             android:exported="false"
             android:label="Developer Settings"
             android:parentActivityName=".BodyWorshipActivity" />
+        <activity
+            android:name=".TaskListActivity"
+            android:exported="false"
+            android:label="Task List"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

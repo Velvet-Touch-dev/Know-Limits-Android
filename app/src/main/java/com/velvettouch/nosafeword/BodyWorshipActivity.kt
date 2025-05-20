@@ -165,6 +165,14 @@ class BodyWorshipActivity : BaseActivity(), TextToSpeech.OnInitListener {
                     finish() // Close this activity
                     true
                 }
+                R.id.nav_task_list -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, TaskListActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish() // Close this activity
+                    true
+                }
                 R.id.nav_settings -> {
                     // Launch settings activity
                     drawerLayout.closeDrawer(GravityCompat.START)

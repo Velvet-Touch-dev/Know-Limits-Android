@@ -3118,9 +3118,12 @@ drawable ic_arrow_back_black_24
 drawable ic_arrow_forward
 drawable ic_back
 drawable ic_bed_24
+drawable ic_calendar_today_24
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
+drawable ic_close_24
 drawable ic_delete
+drawable ic_drag_handle_24
 drawable ic_dropdown
 drawable ic_edit
 drawable ic_edit_pencil
@@ -3154,6 +3157,7 @@ drawable ic_share
 drawable ic_shuffle
 drawable ic_shuffle_24
 drawable ic_skip_next_24
+drawable ic_task_list_placeholder
 drawable ic_theme
 drawable m3_appbar_background
 drawable m3_avd_hide_password
@@ -3364,6 +3368,7 @@ id checkbox
 id checked
 id chronometer
 id circle_center
+id clear_deadline_button
 id clear_text
 id clip_horizontal
 id clip_vertical
@@ -3403,6 +3408,7 @@ id decelerateAndComplete
 id decor_content_parent
 id default_activity_button
 id delete_button
+id delete_task_button
 id deltaRelative
 id dependency_ordering
 id design_bottom_sheet
@@ -3426,7 +3432,9 @@ id dragLeft
 id dragRight
 id dragStart
 id dragUp
+id drag_handle_icon
 id drawer_layout
+id drawer_layout_task_list
 id dropdown_menu
 id easeIn
 id easeInOut
@@ -3453,6 +3461,7 @@ id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
 id fab_add_position
+id fab_add_task
 id fade
 id favorite_preview
 id favorite_title
@@ -3584,7 +3593,9 @@ id nav_favorites
 id nav_positions
 id nav_scenes
 id nav_settings
+id nav_task_list
 id nav_view
+id nav_view_task_list
 id navigation_bar_item_active_indicator_view
 id navigation_bar_item_icon_container
 id navigation_bar_item_icon_view
@@ -3707,8 +3718,10 @@ id seductiveness_high_radio
 id seductiveness_low_radio
 id seductiveness_medium_radio
 id seductiveness_radio_group
+id select_deadline_button
 id select_dialog_listview
 id selected
+id selected_deadline_textview
 id selection_type
 id settings_toolbar
 id shareButton
@@ -3769,6 +3782,12 @@ id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
+id task_checkbox
+id task_deadline_textview
+id task_list_recycler_view
+id task_title_edittext
+id task_title_layout
+id task_title_textview
 id test_button
 id test_text
 id text
@@ -3966,6 +3985,7 @@ layout activity_favorites
 layout activity_main
 layout activity_positions
 layout activity_settings
+layout activity_task_list
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
@@ -3983,6 +4003,7 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_add_position
+layout dialog_add_task
 layout dialog_edit_scene
 layout dialog_quick_voice_settings
 layout dialog_theme_settings
@@ -3995,6 +4016,7 @@ layout item_favorite_position
 layout item_favorite_scene
 layout item_position_library
 layout item_scene_card
+layout item_task
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
@@ -4096,6 +4118,7 @@ string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string add_favorites
 string add_new_position
+string add_new_task
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
@@ -4114,6 +4137,7 @@ string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
 string check_json
+string clear_deadline_desc
 string clear_text_end_icon_content_description
 string color_default
 string color_just_black
@@ -4121,7 +4145,10 @@ string color_palette
 string color_palette_changed
 string color_pink
 string color_purple
+string deadline_optional_label
 string delete
+string delete_task
+string drag_to_reorder
 string drawer_close
 string drawer_open
 string edit
@@ -4289,6 +4316,7 @@ string seconds
 string seductiveness_level_high
 string seductiveness_level_low
 string seductiveness_level_medium
+string select_deadline_button_text
 string select_image
 string settings
 string share
@@ -4297,6 +4325,7 @@ string share_via
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string status_bar_notification_info_overflow
+string task_title_hint
 string theme
 string theme_dark
 string theme_light

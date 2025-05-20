@@ -113,6 +113,14 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                     startActivity(intent)
                     true
                 }
+                R.id.nav_task_list -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, TaskListActivity::class.java)
+                    // intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Optional
+                    startActivity(intent)
+                    // finish() // Optional, settings might not need to be finished
+                    true
+                }
                 R.id.nav_settings -> {
                     // Already on settings page, just close drawer
                     drawerLayout.closeDrawer(GravityCompat.START)

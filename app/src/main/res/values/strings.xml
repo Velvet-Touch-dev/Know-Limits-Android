@@ -69,6 +69,13 @@
     <string name="seductiveness_level_high">Very Seductive</string>
     <string name="reset_positions_confirm_message">Are you sure you want to reset to default positions? This will delete all custom positions and remove any default positions hidden from the list.</string>
     <string name="reset">Reset</string>
+    <string name="add_new_task">Add new task</string>
+    <string name="drag_to_reorder">Drag to reorder</string>
+    <string name="delete_task">Delete task</string>
+    <string name="task_title_hint">Task title</string>
+    <string name="deadline_optional_label">Deadline (Optional)</string>
+    <string name="select_deadline_button_text">Set Deadline</string>
+    <string name="clear_deadline_desc">Clear deadline</string>
 
     <!-- Color palette settings -->
     <string name="theme_mode">Theme Mode</string>
