@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.velvettouch.nosafeword.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -24,7 +25,7 @@ import java.io.File
 import java.io.IOException
 import org.json.JSONArray
 
-class FavoritesActivity : AppCompatActivity() {
+class FavoritesActivity : BaseActivity() {
     
     private lateinit var toolbar: Toolbar
     private lateinit var drawerLayout: DrawerLayout

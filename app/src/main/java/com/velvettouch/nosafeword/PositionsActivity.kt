@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.velvettouch.nosafeword.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -29,7 +30,7 @@ import java.io.IOException
 import java.util.Locale
 import kotlin.random.Random
 
-class PositionsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     
     private lateinit var positionImageView: ImageView
     private lateinit var positionNameTextView: TextView

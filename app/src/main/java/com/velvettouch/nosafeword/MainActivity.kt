@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.velvettouch.nosafeword.BaseActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -47,7 +48,7 @@ import java.io.FileWriter
 import java.io.InputStreamReader
 import kotlin.random.Random
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var titleTextView: TextView
     private lateinit var contentTextView: TextView

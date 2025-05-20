@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.velvettouch.nosafeword.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -28,7 +29,7 @@ import com.google.android.material.navigation.NavigationView
 import java.util.Locale
 import kotlin.random.Random
 
-class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+class BodyWorshipActivity : BaseActivity(), TextToSpeech.OnInitListener {
     
     private lateinit var bodyWorshipTextView: TextView
     private lateinit var randomizeButton: MaterialButton

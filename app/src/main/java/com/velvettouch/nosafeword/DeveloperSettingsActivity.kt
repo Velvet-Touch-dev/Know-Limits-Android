@@ -9,9 +9,10 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.velvettouch.nosafeword.BaseActivity
 import java.util.Locale
 
-class DeveloperSettingsActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+class DeveloperSettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
     companion object Settings {
         // Keys for storing voice settings
