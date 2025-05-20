@@ -27,6 +27,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.SearchView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -62,6 +63,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private var allPositionItems: MutableList<PositionItem> = mutableListOf()
     private lateinit var positionSearchView: SearchView
     private lateinit var resetButton: ExtendedFloatingActionButton // Changed for Reset to Default ExtendedFAB styling
+    private lateinit var libraryFabContainer: LinearLayout
 
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
@@ -278,6 +280,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         libraryTabContent = findViewById(R.id.library_tab_content)
         positionSearchView = findViewById(R.id.position_search_view) // Initialize SearchView here
         resetButton = findViewById(R.id.button_reset_to_default) // Initialize Reset Button
+        libraryFabContainer = findViewById(R.id.library_fab_container) // Initialize FAB container
         // RecyclerView initialization is now inside setupLibraryRecyclerView,
         // but ensure the view ID is correct in your XML (positions_library_recycler_view)
 
@@ -868,56 +871,61 @@ private fun setupLibraryRecyclerView() {
             positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
             invalidateOptionsMenu() // Ensure favorite icon updates
         },
-        onDeleteClick = { positionItem ->
-            if (positionItem.isAsset) {
-                // Default (asset) position: Add to hidden list, save, then remove from current display list
-                hiddenDefaultPositionNames.add(positionItem.name)
-                saveHiddenDefaultPositionNames() // Persist the hidden state
-                
-                val successfullyRemoved = allPositionItems.remove(positionItem) // Remove from current session's display list
-                if (successfullyRemoved) {
-                    // Remove from favorites if it exists there
-                    if (positionFavorites.contains(positionItem.name)) {
-                        positionFavorites.remove(positionItem.name)
-                        savePositionFavorites()
-                    }
+            onDeleteClick = { positionItem ->
+                val originalPosition = allPositionItems.indexOf(positionItem)
+                if (originalPosition != -1) {
+                    // Temporarily remove from list and update adapter
+                    allPositionItems.remove(positionItem)
                     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-                    Toast.makeText(this, "'${positionItem.name}' hidden. It will reappear after reset.", Toast.LENGTH_SHORT).show()
-                } else {
-                    // This case should be rare if the item clicked was indeed in allPositionItems
-                    Toast.makeText(this, "Could not remove '${positionItem.name}' from list.", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                // Custom position: delete the file and remove from list
-                val successfullyRemoved = allPositionItems.remove(positionItem)
-                if (successfullyRemoved) {
-                    try {
-                        val fileToDelete = File(positionItem.imageName)
-                        if (fileToDelete.exists()) {
-                            if (fileToDelete.delete()) {
-                                Toast.makeText(this, "'${positionItem.name}' deleted.", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(this, "Failed to delete file for '${positionItem.name}'. Item removed from list.", Toast.LENGTH_SHORT).show()
+
+                    Snackbar.make(findViewById(android.R.id.content), "'${positionItem.name}' deleted.", Snackbar.LENGTH_LONG)
+                        .setAnchorView(libraryFabContainer)
+                        .setAction("Undo") {
+                            // Add item back to its original position
+                            allPositionItems.add(originalPosition, positionItem)
+                            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                            // If it was a default item that was "hidden", remove from hidden list
+                            if (positionItem.isAsset) {
+                                hiddenDefaultPositionNames.remove(positionItem.name)
+                                saveHiddenDefaultPositionNames()
                             }
-                        } else {
-                            Toast.makeText(this, "File for '${positionItem.name}' not found. Removed from list.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "'${positionItem.name}' restored.", Toast.LENGTH_SHORT).show()
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(this, "Error deleting file for '${positionItem.name}'. Item removed from list.", Toast.LENGTH_SHORT).show()
-                    }
-                    // Remove from favorites if it exists there
-                    if (positionFavorites.contains(positionItem.name)) {
-                        positionFavorites.remove(positionItem.name)
-                        savePositionFavorites()
-                    }
-                    positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                        .addCallback(object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                if (event != DISMISS_EVENT_ACTION) { // If not dismissed by "Undo"
+                                    // Perform actual deletion
+                                    if (!positionItem.isAsset) {
+                                        // This is a custom position, delete its file
+                                        try {
+                                            val file = File(positionItem.imageName)
+                                            if (file.exists()) {
+                                                file.delete()
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            // Consider showing an error to the user if file deletion fails
+                                        }
+                                    } else {
+                                        // This is a default (asset) position, add to hidden list
+                                        hiddenDefaultPositionNames.add(positionItem.name)
+                                        saveHiddenDefaultPositionNames() // Save the updated hidden list
+                                    }
+                                    // Remove from favorites if it exists there (after permanent delete)
+                                    if (positionFavorites.contains(positionItem.name)) {
+                                        positionFavorites.remove(positionItem.name)
+                                        savePositionFavorites()
+                                    }
+                                    // No need to update adapter again as it's already removed visually
+                                }
+                            }
+                        })
+                        .show()
                 } else {
-                    Toast.makeText(this, "Could not find '${positionItem.name}' in the list to remove.", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(this, "Could not find '${positionItem.name}' in the list to remove.", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
-    )
+        )
     positionsLibraryRecyclerView.adapter = positionLibraryAdapter
         // Use GridLayoutManager for a card-like appearance, adjust spanCount as needed
         positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
