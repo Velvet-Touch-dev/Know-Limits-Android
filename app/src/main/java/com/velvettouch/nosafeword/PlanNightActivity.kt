@@ -93,14 +93,9 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             val sceneJsonArray = JSONArray(scenesJsonString)
             for (i in 0 until sceneJsonArray.length()) {
                 val sceneObject = sceneJsonArray.getJSONObject(i)
-                // Try to get ID as a string. If "id" field is missing or null, getString might throw or return "null".
-                // optString can provide a fallback.
                 val sceneIdString = sceneObject.optString("id")
-                val sceneTitle = sceneObject.getString("title")
+                val sceneTitle = sceneObject.getString("title").trim() // Added .trim()
                 val sceneContent = sceneObject.getString("content")
-                // If sceneIdString is empty (e.g. "id" was missing) or not a valid int for MainActivity,
-                // this will still cause issues later if MainActivity expects an int ID.
-                // However, this will directly use the ID from JSON if it exists.
                 masterAllItems.add(PlannedItem(id = sceneIdString, name = sceneTitle, type = "Scene", details = sceneContent))
             }
         } catch (e: Exception) {
@@ -115,8 +110,8 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                 if (fileName.endsWith(".jpg", true) || fileName.endsWith(".png", true)) {
                     val positionName = fileName.substringBeforeLast(".")
                         .replace("_", " ")
-                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                    masterAllItems.add(PlannedItem(name = positionName, type = "Position", details = fileName))
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }.trim() // Added .trim()
+                    masterAllItems.add(PlannedItem(id = "", name = positionName, type = "Position", details = fileName))
                 }
             }
         } catch (e: Exception) {
@@ -138,14 +133,57 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 // General cleanup: replace underscores with spaces and capitalize
                 val positionName = extractedName.replace("_", " ")
-                                           .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                masterAllItems.add(PlannedItem(name = positionName, type = "Position", details = file.absolutePath)) // Removed (Custom)
+                                           .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }.trim() // Added .trim()
+                masterAllItems.add(PlannedItem(id = "", name = positionName, type = "Position", details = file.absolutePath))
             }
         }
 
-        masterAllItems.sortBy { it.name } // Sort all items alphabetically by name
+        // Filter out items that are already in the plannedItems list
+        val availableItems = masterAllItems.filter { masterItem ->
+            val masterItemNameLower = masterItem.name.lowercase(Locale.getDefault())
+            val masterItemTypeLower = masterItem.type.lowercase(Locale.getDefault())
+            val masterItemId = masterItem.id // Could be "" for positions, or int string for scenes
 
-        val searchAdapter = SearchPlannedItemAdapter(masterAllItems.toMutableList()) // Initial full list
+            android.util.Log.v("PlanNightFilter", "--- Checking Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower') ---")
+
+            val isAlreadyPlanned = plannedItems.any { plannedItem ->
+                val plannedItemNameLower = plannedItem.name.lowercase(Locale.getDefault())
+                val plannedItemTypeLower = plannedItem.type.lowercase(Locale.getDefault())
+                val plannedItemId = plannedItem.id
+
+                var itemsMatch = false
+                if (masterItemTypeLower == "scene" && plannedItemTypeLower == "scene") {
+                    // For scenes, match by ID if both are not blank.
+                    // Scene IDs should be reliable integer strings.
+                    if (!masterItemId.isNullOrBlank() && !plannedItemId.isNullOrBlank() && masterItemId == plannedItemId) {
+                        itemsMatch = true
+                    }
+                } else if (masterItemTypeLower == "position" && plannedItemTypeLower == "position") {
+                    // For positions, match by name, as IDs are unreliable (can be "" or old UUIDs).
+                    if (masterItemNameLower == plannedItemNameLower) {
+                        itemsMatch = true
+                    }
+                }
+                // If types don't match, they are different items.
+                
+                if (itemsMatch) {
+                    android.util.Log.d("PlanNightFilter", "  MATCH! Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower') with Planned: '${plannedItem.name}' (ID: '$plannedItemId', Type: '$plannedItemTypeLower')")
+                }
+                itemsMatch
+            }
+
+            if (isAlreadyPlanned) {
+                android.util.Log.d("PlanNightFilter", "FINAL: FILTERING Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower')")
+            } else {
+                android.util.Log.d("PlanNightFilter", "FINAL: KEEPING Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower')")
+            }
+
+            !isAlreadyPlanned
+        }.toMutableList()
+
+        availableItems.sortBy { it.name }
+
+        val searchAdapter = SearchPlannedItemAdapter(availableItems) // Use the filtered list
 
         dialogBinding.recyclerViewSearchResults.apply {
             layoutManager = LinearLayoutManager(this@PlanNightActivity)
@@ -171,7 +209,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
         var currentSearchQuery = ""
 
         fun filterAndDisplayItems() {
-            var tempList = masterAllItems.toList() // Start with a copy of the master list
+            var tempList = availableItems.toList() // Start with the pre-filtered list
             // Filter by type (No "All" option anymore, so always filter by Scene or Position)
             tempList = tempList.filter { it.type.equals(currentFilterType, ignoreCase = true) }
 
