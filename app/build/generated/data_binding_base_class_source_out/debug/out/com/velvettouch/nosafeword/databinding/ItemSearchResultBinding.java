@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.velvettouch.nosafeword.R;
@@ -18,7 +18,7 @@ import java.lang.String;
 
 public final class ItemSearchResultBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ConstraintLayout rootView;
 
   @NonNull
   public final CheckBox itemCheckbox;
@@ -26,8 +26,8 @@ public final class ItemSearchResultBinding implements ViewBinding {
   @NonNull
   public final TextView itemNameTextview;
 
-  private ItemSearchResultBinding(@NonNull LinearLayout rootView, @NonNull CheckBox itemCheckbox,
-      @NonNull TextView itemNameTextview) {
+  private ItemSearchResultBinding(@NonNull ConstraintLayout rootView,
+      @NonNull CheckBox itemCheckbox, @NonNull TextView itemNameTextview) {
     this.rootView = rootView;
     this.itemCheckbox = itemCheckbox;
     this.itemNameTextview = itemNameTextview;
@@ -35,7 +35,7 @@ public final class ItemSearchResultBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ConstraintLayout getRoot() {
     return rootView;
   }
 
@@ -72,7 +72,8 @@ public final class ItemSearchResultBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemSearchResultBinding((LinearLayout) rootView, itemCheckbox, itemNameTextview);
+      return new ItemSearchResultBinding((ConstraintLayout) rootView, itemCheckbox,
+          itemNameTextview);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

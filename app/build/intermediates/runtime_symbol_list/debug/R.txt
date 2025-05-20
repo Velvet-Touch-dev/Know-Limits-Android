@@ -3111,6 +3111,7 @@ int drawable design_ic_visibility_off 0x7f08008f
 int drawable design_password_eye 0x7f080090
 int drawable design_snackbar_background 0x7f080091
 int drawable dialog_background_rounded 0x7f080092
+int drawable dialog_rounded_background 0x7f08010d
 int drawable ic_add 0x7f080093
 int drawable ic_arrow_back 0x7f080094
 int drawable ic_arrow_back_black_24 0x7f080095
@@ -3284,6 +3285,7 @@ int id accessibility_custom_action_9 0x7f09002f
 int id actionDown 0x7f090030
 int id actionDownUp 0x7f090031
 int id actionUp 0x7f090032
+int id action_add_to_plan 0x7f090290
 int id action_bar 0x7f090033
 int id action_bar_activity_content 0x7f090034
 int id action_bar_container 0x7f090035
@@ -4148,6 +4150,7 @@ int string add_new_position 0x7f11001d
 int string add_new_task 0x7f11001e
 int string add_planned_item 0x7f11001f
 int string add_tasks_prompt 0x7f110020
+int string add_to_plan_night 0x7f110105
 int string androidx_startup 0x7f110021
 int string app_name 0x7f110022
 int string appbar_scrolling_view_behavior 0x7f110023

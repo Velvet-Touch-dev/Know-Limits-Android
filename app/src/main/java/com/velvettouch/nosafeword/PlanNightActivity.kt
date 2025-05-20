@@ -1,6 +1,8 @@
 package com.velvettouch.nosafeword
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -156,8 +158,6 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             val masterItemTypeLower = masterItem.type.lowercase(Locale.getDefault())
             val masterItemId = masterItem.id // Could be "" for positions, or int string for scenes
 
-            android.util.Log.v("PlanNightFilter", "--- Checking Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower') ---")
-
             val isAlreadyPlanned = plannedItems.any { plannedItem ->
                 val plannedItemNameLower = plannedItem.name.lowercase(Locale.getDefault())
                 val plannedItemTypeLower = plannedItem.type.lowercase(Locale.getDefault())
@@ -178,16 +178,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 // If types don't match, they are different items.
                 
-                if (itemsMatch) {
-                    android.util.Log.d("PlanNightFilter", "  MATCH! Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower') with Planned: '${plannedItem.name}' (ID: '$plannedItemId', Type: '$plannedItemTypeLower')")
-                }
                 itemsMatch
-            }
-
-            if (isAlreadyPlanned) {
-                android.util.Log.d("PlanNightFilter", "FINAL: FILTERING Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower')")
-            } else {
-                android.util.Log.d("PlanNightFilter", "FINAL: KEEPING Master: '${masterItem.name}' (ID: '$masterItemId', Type: '$masterItemTypeLower')")
             }
 
             !isAlreadyPlanned
@@ -296,7 +287,12 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             alertDialog.dismiss()
         }
         filterAndDisplayItems() // Initial display
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // Make window transparent
         alertDialog.show()
+        // Post a notifyDataSetChanged to run after the dialog is shown and measured
+        dialogBinding.recyclerViewSearchResults.post {
+            searchAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun setupRecyclerView() {

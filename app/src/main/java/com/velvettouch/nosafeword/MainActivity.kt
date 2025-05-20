@@ -39,6 +39,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson // Added for SharedPreferences
+import com.google.gson.reflect.TypeToken // Added for SharedPreferences
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -80,6 +82,10 @@ class MainActivity : BaseActivity() {
     private var currentMode: Int = MODE_RANDOM
     private var currentToast: Toast? = null
     private var nextSceneId: Int = 1 // Re-declare as a member variable, will be updated in loadScenes
+
+    private val gson = Gson() // Added for SharedPreferences
+    private val plannedItemsPrefsName = "PlanNightPrefs"
+    private val plannedItemsKey = "plannedItemsList"
 
     private lateinit var favoritesAdapter: FavoriteScenesAdapter
     private lateinit var editAdapter: EditScenesAdapter
@@ -496,6 +502,18 @@ class MainActivity : BaseActivity() {
             R.id.action_favorite -> {
                 if (currentMode == MODE_RANDOM) {
                     toggleFavorite()
+                }
+                true
+            }
+            R.id.action_add_to_plan -> {
+                if (currentMode == MODE_RANDOM) {
+                    addCurrentSceneToPlan()
+                }
+                true
+            }
+            R.id.action_add_to_plan -> {
+                if (currentMode == MODE_RANDOM) {
+                    addCurrentSceneToPlan()
                 }
                 true
             }
@@ -990,6 +1008,45 @@ class MainActivity : BaseActivity() {
 
         // Start the chooser activity for sharing
         startActivity(Intent.createChooser(intent, getString(R.string.share_via)))
+    }
+
+    private fun addCurrentSceneToPlan() {
+        if (currentSceneIndex < 0 || currentSceneIndex >= scenes.size) {
+            showMaterialToast("No scene selected to add.", false)
+            return
+        }
+        val currentScene = scenes[currentSceneIndex]
+
+        // Load existing planned items
+        val prefs = getSharedPreferences(plannedItemsPrefsName, Context.MODE_PRIVATE)
+        val jsonString = prefs.getString(plannedItemsKey, null)
+        val typeToken = object : TypeToken<MutableList<PlannedItem>>() {}.type
+        val plannedItems: MutableList<PlannedItem> = gson.fromJson(jsonString, typeToken) ?: mutableListOf()
+
+        // Check if scene (by ID) is already planned
+        val sceneIdString = currentScene.id.toString() // Scene ID is Int, convert to String for PlannedItem
+        val alreadyPlanned = plannedItems.any { it.id == sceneIdString && it.type == "Scene" }
+
+        if (alreadyPlanned) {
+            showMaterialToast("'${currentScene.title}' is already in your plan.", false)
+        } else {
+            val newItem = PlannedItem(
+                id = sceneIdString,
+                name = currentScene.title,
+                type = "Scene",
+                details = currentScene.content, // Assuming Scene content can be used as details
+                order = plannedItems.size // Assign next order
+            )
+            plannedItems.add(newItem)
+            // Re-calculate order for all items to ensure consistency if items can be removed/reordered elsewhere
+            plannedItems.forEachIndexed { index, item -> item.order = index }
+            // No need to sort here if PlanNightActivity handles sorting on load/modification
+
+            // Save updated list
+            val updatedJsonString = gson.toJson(plannedItems)
+            prefs.edit().putString(plannedItemsKey, updatedJsonString).apply()
+            showMaterialToast("'${currentScene.title}' added to Plan your Night.", true) // Using true for 'added' style
+        }
     }
 
     private fun showEditDialog(scene: Scene?) {

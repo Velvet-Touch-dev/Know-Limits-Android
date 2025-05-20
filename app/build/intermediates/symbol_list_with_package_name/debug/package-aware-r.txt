@@ -3112,6 +3112,7 @@ drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
 drawable dialog_background_rounded
+drawable dialog_rounded_background
 drawable ic_add
 drawable ic_arrow_back
 drawable ic_arrow_back_black_24
@@ -3285,6 +3286,7 @@ id accessibility_custom_action_9
 id actionDown
 id actionDownUp
 id actionUp
+id action_add_to_plan
 id action_bar
 id action_bar_activity_content
 id action_bar_container
@@ -4149,6 +4151,7 @@ string add_new_position
 string add_new_task
 string add_planned_item
 string add_tasks_prompt
+string add_to_plan_night
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior

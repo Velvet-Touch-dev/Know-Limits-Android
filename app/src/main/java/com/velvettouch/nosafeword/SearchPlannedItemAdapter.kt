@@ -16,12 +16,18 @@ class SearchPlannedItemAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
         val binding = ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        // Explicitly set LayoutParams
+        binding.root.layoutParams = RecyclerView.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         return SearchResultViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
         val item = searchResults[position]
         holder.bind(item, selectedItems.contains(item))
+        // Removed holder.itemView.requestLayout() as it didn't solve the issue
 
         holder.itemView.setOnClickListener {
             if (selectedItems.contains(item)) {

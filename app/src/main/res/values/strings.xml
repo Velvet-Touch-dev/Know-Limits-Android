@@ -92,6 +92,7 @@
     <string name="plan_night_empty_placeholder">Your night is unplanned!\nTap the + button to add scenes or positions.</string>
     <string name="cd_plan_your_night_empty">Empty plan illustration</string>
 
+<string name="add_to_plan_night">Add to Plan</string>
     <!-- Color palette settings -->
     <string name="theme_mode">Theme Mode</string>
     <string name="color_palette">Color Palette</string>
