@@ -3527,6 +3527,7 @@ int id jumpToStart 0x7f090121
 int id just_black_divider 0x7f090122
 int id labeled 0x7f090123
 int id layout 0x7f090124
+int id layout_plan_night_placeholder 0x7f09028f
 int id left 0x7f090125
 int id leftToRight 0x7f090126
 int id legacy 0x7f090127
@@ -4163,6 +4164,7 @@ int string bottomsheet_drag_handle_content_description 0x7f11002d
 int string cancel 0x7f11002e
 int string cd_delete_item 0x7f11002f
 int string cd_drag_to_reorder 0x7f110030
+int string cd_plan_your_night_empty 0x7f110103
 int string character_counter_content_description 0x7f110031
 int string character_counter_overflowed_content_description 0x7f110032
 int string character_counter_pattern 0x7f110033
@@ -4311,6 +4313,7 @@ int string path_password_eye_mask_strike_through 0x7f1100c1
 int string path_password_eye_mask_visible 0x7f1100c2
 int string path_password_strike_through 0x7f1100c3
 int string pause 0x7f1100c4
+int string plan_night_empty_placeholder 0x7f110104
 int string plan_your_night 0x7f1100c5
 int string play 0x7f1100c6
 int string position_image_preview 0x7f1100c7

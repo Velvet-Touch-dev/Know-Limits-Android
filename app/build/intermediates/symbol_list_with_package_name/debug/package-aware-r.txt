@@ -3528,6 +3528,7 @@ id jumpToStart
 id just_black_divider
 id labeled
 id layout
+id layout_plan_night_placeholder
 id left
 id leftToRight
 id legacy
@@ -4164,6 +4165,7 @@ string bottomsheet_drag_handle_content_description
 string cancel
 string cd_delete_item
 string cd_drag_to_reorder
+string cd_plan_your_night_empty
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
@@ -4312,6 +4314,7 @@ string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
 string pause
+string plan_night_empty_placeholder
 string plan_your_night
 string play
 string position_image_preview

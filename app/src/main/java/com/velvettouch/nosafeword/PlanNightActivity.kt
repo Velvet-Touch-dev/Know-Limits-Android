@@ -3,6 +3,7 @@ package com.velvettouch.nosafeword
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -54,6 +55,17 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
 
         binding.fabAddPlannedItem.setOnClickListener {
             showAddPlannedItemDialog()
+        }
+        updatePlaceholderVisibility()
+    }
+
+    private fun updatePlaceholderVisibility() {
+        if (plannedItems.isEmpty()) {
+            binding.recyclerViewPlannedItems.visibility = View.GONE
+            binding.layoutPlanNightPlaceholder.visibility = View.VISIBLE
+        } else {
+            binding.recyclerViewPlannedItems.visibility = View.VISIBLE
+            binding.layoutPlanNightPlaceholder.visibility = View.GONE
         }
     }
 
@@ -278,6 +290,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                     plannedItemsAdapter.notifyItemRangeInserted(startPosition, plannedItems.size - startPosition)
                     binding.recyclerViewPlannedItems.scrollToPosition(plannedItems.size - 1)
                     savePlannedItems() // Save after adding
+                    updatePlaceholderVisibility() // Update placeholder after adding
                 }
             }
             alertDialog.dismiss()
@@ -326,6 +339,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             onItemDismiss = { position ->
                 plannedItemsAdapter.removeItem(position)
                 savePlannedItems() // Save after removing
+                updatePlaceholderVisibility() // Update placeholder after removing
                 // TODO: Add Snackbar with Undo option
             }
         )
@@ -357,6 +371,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                 if (position != RecyclerView.NO_POSITION) {
                     plannedItemsAdapter.removeItem(position)
                     savePlannedItems() // Save after swipe-to-dismiss
+                    updatePlaceholderVisibility() // Update placeholder after swipe-to-dismiss
                     // TODO: Add Snackbar with Undo option for swipe
                 }
             }

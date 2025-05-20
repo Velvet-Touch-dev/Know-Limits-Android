@@ -4,6 +4,7 @@ package com.velvettouch.nosafeword.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -33,6 +34,9 @@ public final class ActivityPlanNightBinding implements ViewBinding {
   public final FloatingActionButton fabAddPlannedItem;
 
   @NonNull
+  public final LinearLayout layoutPlanNightPlaceholder;
+
+  @NonNull
   public final NavigationView navViewPlanNight;
 
   @NonNull
@@ -43,12 +47,14 @@ public final class ActivityPlanNightBinding implements ViewBinding {
 
   private ActivityPlanNightBinding(@NonNull DrawerLayout rootView,
       @NonNull AppBarLayout appbarPlanNight, @NonNull DrawerLayout drawerLayoutPlanNight,
-      @NonNull FloatingActionButton fabAddPlannedItem, @NonNull NavigationView navViewPlanNight,
+      @NonNull FloatingActionButton fabAddPlannedItem,
+      @NonNull LinearLayout layoutPlanNightPlaceholder, @NonNull NavigationView navViewPlanNight,
       @NonNull RecyclerView recyclerViewPlannedItems, @NonNull Toolbar toolbarPlanNight) {
     this.rootView = rootView;
     this.appbarPlanNight = appbarPlanNight;
     this.drawerLayoutPlanNight = drawerLayoutPlanNight;
     this.fabAddPlannedItem = fabAddPlannedItem;
+    this.layoutPlanNightPlaceholder = layoutPlanNightPlaceholder;
     this.navViewPlanNight = navViewPlanNight;
     this.recyclerViewPlannedItems = recyclerViewPlannedItems;
     this.toolbarPlanNight = toolbarPlanNight;
@@ -95,6 +101,12 @@ public final class ActivityPlanNightBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.layout_plan_night_placeholder;
+      LinearLayout layoutPlanNightPlaceholder = ViewBindings.findChildViewById(rootView, id);
+      if (layoutPlanNightPlaceholder == null) {
+        break missingId;
+      }
+
       id = R.id.nav_view_plan_night;
       NavigationView navViewPlanNight = ViewBindings.findChildViewById(rootView, id);
       if (navViewPlanNight == null) {
@@ -114,8 +126,8 @@ public final class ActivityPlanNightBinding implements ViewBinding {
       }
 
       return new ActivityPlanNightBinding((DrawerLayout) rootView, appbarPlanNight,
-          drawerLayoutPlanNight, fabAddPlannedItem, navViewPlanNight, recyclerViewPlannedItems,
-          toolbarPlanNight);
+          drawerLayoutPlanNight, fabAddPlannedItem, layoutPlanNightPlaceholder, navViewPlanNight,
+          recyclerViewPlannedItems, toolbarPlanNight);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

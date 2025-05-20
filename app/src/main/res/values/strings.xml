@@ -89,6 +89,8 @@
     <string name="add">Add</string>
     <string name="scenes_tab">Scenes</string>
     <string name="positions_tab">Positions</string>
+    <string name="plan_night_empty_placeholder">Your night is unplanned!\nTap the + button to add scenes or positions.</string>
+    <string name="cd_plan_your_night_empty">Empty plan illustration</string>
 
     <!-- Color palette settings -->
     <string name="theme_mode">Theme Mode</string>
