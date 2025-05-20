@@ -277,7 +277,8 @@
                             app:backgroundTint="?attr/colorPrimary"
                             android:textColor="?attr/colorOnPrimary"
                             app:iconTint="?attr/colorOnPrimary"
-                            app:elevation="0dp" />
+                            app:elevation="0dp"
+                            android:stateListAnimator="@null" />
 
                         <View
                             android:layout_width="0dp"
