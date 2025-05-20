@@ -4,6 +4,7 @@ import com.velvettouch.nosafeword.DeveloperSettingsActivity.Settings
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.speech.tts.TextToSpeech
@@ -29,6 +30,13 @@ import java.util.Locale
 import kotlin.random.Random
 
 class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+    /**
+     * Determine if a color is light or dark to set appropriate status bar icons
+     */
+    private fun isColorLight(color: Int): Boolean {
+        val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+        return darkness < 0.5
+    }
     
     private lateinit var bodyWorshipTextView: TextView
     private lateinit var randomizeButton: MaterialButton
@@ -57,17 +65,20 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var maxTimeSeconds = 20 // Default maximum time: 20 seconds
     private val timeOptions = listOf(10, 15, 20, 30, 45, 60, 90, 120) // Time options in seconds
     
-    // Lists for generating body worship instructions
-    private val actionWords = listOf(
-        "Kiss", "Lick", "Touch", "Caress", "Nibble", "Stroke", "Massage", "Trace", 
-        "Suck", "Bite", "Adore", "Worship", "Hold", "Gaze at", "Tease", "Play with", 
-        "Rub", "Admire", "Press", "Cup"
-    )
-    
-    private val bodyParts = listOf(
-        "Neck", "Lips", "Collarbones", "Shoulders", "Breasts", "Nipples", "Waist", 
-        "Hips", "Thighs", "Inner thighs", "Back", "Tummy", "Ass", "Cheeks", "Ears", 
-        "Feet", "Hands", "Fingers", "Calves", "Pussy"
+    // Map of body parts to their possible actions
+    private val bodyPartActions = mapOf(
+        "Lips" to listOf("Kiss", "Nibble", "Suck"),
+        "Neck" to listOf("Kiss", "Nibble", "Lick", "Trace"),
+        "Boobs" to listOf("Pinch", "Suck", "Squeeze"),
+        "Waist" to listOf("Kiss", "Trace"),
+        "Back" to listOf("Massage", "Kiss", "Trace"),
+        "Ass" to listOf("Squeeze", "Lick", "Eat"),
+        "Inner thighs" to listOf("Kiss", "Lick", "Nibble", "Trace"),
+        "Feet" to listOf("Massage", "Kiss", "Gag on"),
+        "Fingers" to listOf("Kiss", "Suck"),
+        "Ears" to listOf("Nibble", "Kiss", "Whisper to"),
+        "Pussy" to listOf("Lick", "Finger", "Tease"),
+        "Clit" to listOf("Suck", "Nibble")
     )
     
     // Voice settings constants (moved from DeveloperSettingsActivity)
@@ -84,6 +95,22 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body_worship)
+        
+        // Match status bar color with the toolbar color from the theme
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+        window.statusBarColor = typedValue.data
+        
+        // Set status bar icons to be visible based on the background color brightness
+        if (isColorLight(window.statusBarColor)) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+        } else {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = 0 // Default (dark icons on light background)
+            }
+        }
         
         // Initialize TextToSpeech
         textToSpeech = TextToSpeech(this, this)
@@ -185,11 +212,11 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         setupSpinners()
         
         // Apply Material 3 dynamic colors
-        val typedValue = android.util.TypedValue()
-        if (theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)) {
-            randomizeButton.rippleColor = android.content.res.ColorStateList.valueOf(typedValue.data)
+        val themeTypedValue = android.util.TypedValue()
+        if (theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, themeTypedValue, true)) {
+            randomizeButton.rippleColor = android.content.res.ColorStateList.valueOf(themeTypedValue.data)
             // Set text color to match the button color
-            bodyWorshipTextView.setTextColor(typedValue.data)
+            bodyWorshipTextView.setTextColor(themeTypedValue.data)
         }
         
         // Set up randomize button (now "Next" button) with Material motion
@@ -502,9 +529,11 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
     
     private fun displayRandomInstruction() {
-        // Select random action word and body part
-        val randomAction = actionWords.random()
-        val randomBodyPart = bodyParts.random()
+        // Select random body part from the keys in the map
+        val randomBodyPart = bodyPartActions.keys.random()
+        
+        // Select a random action for the chosen body part
+        val randomAction = bodyPartActions[randomBodyPart]?.random() ?: return
         
         // Format the instruction without asterisks: "Kiss her inner thighs"
         val instruction = "$randomAction her $randomBodyPart"
@@ -513,10 +542,10 @@ class BodyWorshipActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         bodyWorshipTextView.text = instruction
         
         // Apply dynamic tint to the randomize button based on your theme
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-        randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-        bodyWorshipTextView.setTextColor(typedValue.data)
+        val buttonTypedValue = android.util.TypedValue()
+        theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, buttonTypedValue, true)
+        randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(buttonTypedValue.data)
+        bodyWorshipTextView.setTextColor(buttonTypedValue.data)
         
         // Speak the instruction with TTS
         speakNextTask(instruction)
