@@ -3097,6 +3097,7 @@ int drawable circle_default_color 0x7f080086
 int drawable circle_pink_color 0x7f080087
 int drawable circle_pitch_black_color 0x7f080104
 int drawable circle_purple_color 0x7f080088
+int drawable circle_purple_void_color 0x7f080105
 int drawable design_fab_background 0x7f080089
 int drawable design_ic_visibility 0x7f08008a
 int drawable design_ic_visibility_off 0x7f08008b

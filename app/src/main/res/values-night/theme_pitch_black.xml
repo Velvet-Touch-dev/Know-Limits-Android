@@ -42,6 +42,10 @@
         <item name="colorErrorContainer">#1F1F1F</item>
         <item name="colorOnErrorContainer">#CF6679</item>
         
+        <!-- Switch colors - Fix for toggle visibility -->
+        <item name="colorSwitchThumbNormal">#9E9E9E</item>
+        <item name="android:colorForeground">#424242</item>
+        
         <!-- Card customization -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView.PitchBlack</item>
     </style>

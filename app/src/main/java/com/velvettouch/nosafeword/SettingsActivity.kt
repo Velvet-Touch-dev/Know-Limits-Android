@@ -361,7 +361,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             // Get the color mode string
             val colorModeString = when (colorMode) {
                 COLOR_PURPLE -> getString(R.string.color_purple)
-                COLOR_JUST_BLACK -> getString(R.string.color_just_black)
+                COLOR_JUST_BLACK -> "Void Purple"
                 COLOR_PITCH_BLACK -> "Pitch Black"
                 else -> getString(R.string.color_default) // Default is now pink
             }

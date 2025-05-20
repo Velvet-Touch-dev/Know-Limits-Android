@@ -183,44 +183,48 @@
     </style>
     <style name="Theme.RandomSceneApp.JustBlack" parent="Theme.Material3.Dark.NoActionBar">
         
-        <item name="colorPrimary">@color/just_black_dark_primary</item>
-        <item name="colorOnPrimary">@color/just_black_dark_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/just_black_dark_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/just_black_dark_onPrimaryContainer</item>
+        <item name="colorPrimary">#BB86FC</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorPrimaryContainer">#000000</item>
+        <item name="colorOnPrimaryContainer">#D1C4E9</item>
         
         
-        <item name="colorSecondary">@color/just_black_dark_secondary</item>
-        <item name="colorOnSecondary">@color/just_black_dark_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/just_black_dark_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/just_black_dark_onSecondaryContainer</item>
+        <item name="colorSecondary">#9575CD</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="colorSecondaryContainer">#140014</item>
+        <item name="colorOnSecondaryContainer">#D1C4E9</item>
         
         
-        <item name="colorTertiary">@color/just_black_dark_tertiary</item>
-        <item name="colorOnTertiary">@color/just_black_dark_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/just_black_dark_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/just_black_dark_onTertiaryContainer</item>
+        <item name="colorTertiary">#7E57C2</item>
+        <item name="colorOnTertiary">#000000</item>
+        <item name="colorTertiaryContainer">#0E000E</item>
+        <item name="colorOnTertiaryContainer">#D1C4E9</item>
         
         
-        <item name="android:statusBarColor">@color/just_black_dark_background</item>
+        <item name="android:statusBarColor">#000000</item>
         <item name="android:windowLightStatusBar">false</item>
         
         
-        <item name="android:windowBackground">@color/just_black_dark_background</item>
-        <item name="colorSurface">@color/just_black_dark_surface</item>
-        <item name="colorOnSurface">@color/just_black_dark_onSurface</item>
-        <item name="colorSurfaceVariant">@color/just_black_dark_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/just_black_dark_onSurfaceVariant</item>
-        <item name="colorOnBackground">@color/just_black_dark_onBackground</item>
+        <item name="android:windowBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
+        <item name="colorOnSurface">#E0E0E0</item>
+        <item name="colorSurfaceVariant">#120012</item>
+        <item name="colorOnSurfaceVariant">#D1C4E9</item>
+        <item name="colorOnBackground">#E0E0E0</item>
         
         
-        <item name="colorOutline">@color/just_black_dark_outline</item>
-        <item name="colorOutlineVariant">@color/just_black_dark_outlineVariant</item>
+        <item name="colorOutline">#9575CD</item>
+        <item name="colorOutlineVariant">#7E57C2</item>
         
         
-        <item name="colorError">@color/just_black_dark_error</item>
-        <item name="colorOnError">@color/just_black_dark_onError</item>
-        <item name="colorErrorContainer">@color/just_black_dark_errorContainer</item>
-        <item name="colorOnErrorContainer">@color/just_black_dark_onErrorContainer</item>
+        <item name="colorError">#CF6679</item>
+        <item name="colorOnError">#000000</item>
+        <item name="colorErrorContainer">#000000</item>
+        <item name="colorOnErrorContainer">#CF6679</item>
+        
+        
+        <item name="colorSwitchThumbNormal">#9575CD</item>
+        <item name="android:colorForeground">#4A148C</item>
     </style>
     <style name="Theme.RandomSceneApp.Pink" parent="Theme.Material3.Dark.NoActionBar">
         
@@ -303,6 +307,10 @@
         <item name="colorOnError">#000000</item>
         <item name="colorErrorContainer">#1F1F1F</item>
         <item name="colorOnErrorContainer">#CF6679</item>
+        
+        
+        <item name="colorSwitchThumbNormal">#9E9E9E</item>
+        <item name="android:colorForeground">#424242</item>
         
         
         <item name="materialCardViewStyle">@style/Widget.App.CardView.PitchBlack</item>

@@ -11607,44 +11607,48 @@
         <item name="colorOnErrorContainer">@color/pink_dark_onErrorContainer</item>
     </style><style name="Theme.RandomSceneApp.JustBlack" parent="Theme.Material3.Dark.NoActionBar">
         
-        <item name="colorPrimary">@color/just_black_dark_primary</item>
-        <item name="colorOnPrimary">@color/just_black_dark_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/just_black_dark_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/just_black_dark_onPrimaryContainer</item>
+        <item name="colorPrimary">#BB86FC</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorPrimaryContainer">#000000</item>
+        <item name="colorOnPrimaryContainer">#D1C4E9</item>
         
         
-        <item name="colorSecondary">@color/just_black_dark_secondary</item>
-        <item name="colorOnSecondary">@color/just_black_dark_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/just_black_dark_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/just_black_dark_onSecondaryContainer</item>
+        <item name="colorSecondary">#9575CD</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="colorSecondaryContainer">#140014</item>
+        <item name="colorOnSecondaryContainer">#D1C4E9</item>
         
         
-        <item name="colorTertiary">@color/just_black_dark_tertiary</item>
-        <item name="colorOnTertiary">@color/just_black_dark_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/just_black_dark_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/just_black_dark_onTertiaryContainer</item>
+        <item name="colorTertiary">#7E57C2</item>
+        <item name="colorOnTertiary">#000000</item>
+        <item name="colorTertiaryContainer">#0E000E</item>
+        <item name="colorOnTertiaryContainer">#D1C4E9</item>
         
         
-        <item name="android:statusBarColor">@color/just_black_dark_background</item>
+        <item name="android:statusBarColor">#000000</item>
         <item name="android:windowLightStatusBar">false</item>
         
         
-        <item name="android:windowBackground">@color/just_black_dark_background</item>
-        <item name="colorSurface">@color/just_black_dark_surface</item>
-        <item name="colorOnSurface">@color/just_black_dark_onSurface</item>
-        <item name="colorSurfaceVariant">@color/just_black_dark_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/just_black_dark_onSurfaceVariant</item>
-        <item name="colorOnBackground">@color/just_black_dark_onBackground</item>
+        <item name="android:windowBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
+        <item name="colorOnSurface">#E0E0E0</item>
+        <item name="colorSurfaceVariant">#120012</item>
+        <item name="colorOnSurfaceVariant">#D1C4E9</item>
+        <item name="colorOnBackground">#E0E0E0</item>
         
         
-        <item name="colorOutline">@color/just_black_dark_outline</item>
-        <item name="colorOutlineVariant">@color/just_black_dark_outlineVariant</item>
+        <item name="colorOutline">#9575CD</item>
+        <item name="colorOutlineVariant">#7E57C2</item>
         
         
-        <item name="colorError">@color/just_black_dark_error</item>
-        <item name="colorOnError">@color/just_black_dark_onError</item>
-        <item name="colorErrorContainer">@color/just_black_dark_errorContainer</item>
-        <item name="colorOnErrorContainer">@color/just_black_dark_onErrorContainer</item>
+        <item name="colorError">#CF6679</item>
+        <item name="colorOnError">#000000</item>
+        <item name="colorErrorContainer">#000000</item>
+        <item name="colorOnErrorContainer">#CF6679</item>
+        
+        
+        <item name="colorSwitchThumbNormal">#9575CD</item>
+        <item name="android:colorForeground">#4A148C</item>
     </style></file><file path="/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml" qualifiers="night-v8"><color name="just_black_dark_primary">#BB86FC</color><color name="just_black_dark_onPrimary">#000000</color><color name="just_black_dark_primaryContainer">#3700B3</color><color name="just_black_dark_onPrimaryContainer">#EADDFF</color><color name="just_black_dark_secondary">#9C27B0</color><color name="just_black_dark_onSecondary">#000000</color><color name="just_black_dark_secondaryContainer">#7B1FA2</color><color name="just_black_dark_onSecondaryContainer">#F3E5F5</color><color name="just_black_dark_tertiary">#CF6679</color><color name="just_black_dark_onTertiary">#000000</color><color name="just_black_dark_tertiaryContainer">#933D4A</color><color name="just_black_dark_onTertiaryContainer">#FFDAD8</color><color name="just_black_dark_background">#000000</color><color name="just_black_dark_onBackground">#FFFFFF</color><color name="just_black_dark_surface">#000000</color><color name="just_black_dark_onSurface">#FFFFFF</color><color name="just_black_dark_surfaceVariant">#202020</color><color name="just_black_dark_onSurfaceVariant">#CCCCCC</color><color name="just_black_dark_outline">#696969</color><color name="just_black_dark_outlineVariant">#292929</color><color name="just_black_dark_error">#CF6679</color><color name="just_black_dark_onError">#000000</color><color name="just_black_dark_errorContainer">#8C1D18</color><color name="just_black_dark_onErrorContainer">#F9DEDC</color></file><file path="/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml" qualifiers="night-v8"><color name="purple_dark_primary">#D0BCFF</color><color name="purple_dark_onPrimary">#381E72</color><color name="purple_dark_primaryContainer">#4F378B</color><color name="purple_dark_onPrimaryContainer">#EADDFF</color><color name="purple_dark_secondary">#CCC2DC</color><color name="purple_dark_onSecondary">#332D41</color><color name="purple_dark_secondaryContainer">#4A4458</color><color name="purple_dark_onSecondaryContainer">#E8DEF8</color><color name="purple_dark_tertiary">#EFB8C8</color><color name="purple_dark_onTertiary">#492532</color><color name="purple_dark_tertiaryContainer">#633B48</color><color name="purple_dark_onTertiaryContainer">#FFD8E4</color><color name="purple_dark_background">#1C1B1F</color><color name="purple_dark_onBackground">#E6E1E5</color><color name="purple_dark_surface">#1C1B1F</color><color name="purple_dark_onSurface">#E6E1E5</color><color name="purple_dark_surfaceVariant">#49454F</color><color name="purple_dark_onSurfaceVariant">#CAC4D0</color><color name="purple_dark_outline">#938F99</color><color name="purple_dark_outlineVariant">#49454F</color><color name="purple_dark_error">#F2B8B5</color><color name="purple_dark_onError">#601410</color><color name="purple_dark_errorContainer">#8C1D18</color><color name="purple_dark_onErrorContainer">#F9DEDC</color></file><file path="/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml" qualifiers="night-v8"><color name="pink_dark_primary">#FFB1C8</color><color name="pink_dark_onPrimary">#650033</color><color name="pink_dark_primaryContainer">#8E0046</color><color name="pink_dark_onPrimaryContainer">#FFD9E3</color><color name="pink_dark_secondary">#FFB1CC</color><color name="pink_dark_onSecondary">#5E1133</color><color name="pink_dark_secondaryContainer">#7B2949</color><color name="pink_dark_onSecondaryContainer">#FFD9E4</color><color name="pink_dark_tertiary">#EFB8C8</color><color name="pink_dark_onTertiary">#5E2536</color><color name="pink_dark_tertiaryContainer">#74394C</color><color name="pink_dark_onTertiaryContainer">#FFD8E4</color><color name="pink_dark_background">#201A1C</color><color name="pink_dark_onBackground">#EBE0E3</color><color name="pink_dark_surface">#201A1C</color><color name="pink_dark_onSurface">#EBE0E3</color><color name="pink_dark_surfaceVariant">#514347</color><color name="pink_dark_onSurfaceVariant">#D7C1C5</color><color name="pink_dark_outline">#A08D91</color><color name="pink_dark_outlineVariant">#514347</color><color name="pink_dark_error">#F2B8B5</color><color name="pink_dark_onError">#601410</color><color name="pink_dark_errorContainer">#8C1D18</color><color name="pink_dark_onErrorContainer">#F9DEDC</color></file><file path="/home/aditya/Documents/Android App/app/src/main/res/values-night/theme_pitch_black.xml" qualifiers="night-v8"><style name="Theme.RandomSceneApp.PitchBlack" parent="Theme.Material3.Dark.NoActionBar">
         
         <item name="colorPrimary">#9E9E9E</item>
@@ -11687,12 +11691,16 @@
         <item name="colorOnErrorContainer">#CF6679</item>
         
         
+        <item name="colorSwitchThumbNormal">#9E9E9E</item>
+        <item name="android:colorForeground">#424242</item>
+        
+        
         <item name="materialCardViewStyle">@style/Widget.App.CardView.PitchBlack</item>
     </style><style name="Widget.App.CardView.PitchBlack" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">16dp</item>
         <item name="cardElevation">2dp</item>
         <item name="cardBackgroundColor">#121212</item>
-    </style></file><file name="card_state_list_anim" path="/home/aditya/Documents/Android App/app/src/main/res/animator/card_state_list_anim.xml" qualifiers="" type="animator"/><file name="no_shadow" path="/home/aditya/Documents/Android App/app/src/main/res/animator/no_shadow.xml" qualifiers="" type="animator"/><file name="circle_default_color" path="/home/aditya/Documents/Android App/app/src/main/res/drawable-night/circle_default_color.xml" qualifiers="night-v8" type="drawable"/></source><source path="/home/aditya/Documents/Android App/app/build/generated/res/rs/debug"/><source path="/home/aditya/Documents/Android App/app/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/home/aditya/Documents/Android App/app/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/home/aditya/Documents/Android App/app/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><mergedItems><configuration qualifiers=""><declare-styleable name="AlertDialog">
+    </style></file><file name="card_state_list_anim" path="/home/aditya/Documents/Android App/app/src/main/res/animator/card_state_list_anim.xml" qualifiers="" type="animator"/><file name="no_shadow" path="/home/aditya/Documents/Android App/app/src/main/res/animator/no_shadow.xml" qualifiers="" type="animator"/><file name="circle_default_color" path="/home/aditya/Documents/Android App/app/src/main/res/drawable-night/circle_default_color.xml" qualifiers="night-v8" type="drawable"/><file name="circle_purple_void_color" path="/home/aditya/Documents/Android App/app/src/main/res/drawable/circle_purple_void_color.xml" qualifiers="" type="drawable"/></source><source path="/home/aditya/Documents/Android App/app/build/generated/res/rs/debug"/><source path="/home/aditya/Documents/Android App/app/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/home/aditya/Documents/Android App/app/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/home/aditya/Documents/Android App/app/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><mergedItems><configuration qualifiers=""><declare-styleable name="AlertDialog">
         <attr name="android:layout"/>
         <attr format="reference" name="buttonPanelSideLayout"/>
         <attr format="reference" name="listLayout"/>

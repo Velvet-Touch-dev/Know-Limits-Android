@@ -149,10 +149,10 @@
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:button="@null"
                 android:background="?attr/selectableItemBackground"
-                android:drawableStart="@drawable/circle_black_color"
+                android:drawableStart="@drawable/circle_purple_void_color"
                 android:drawablePadding="16dp"
                 android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
-                android:text="@string/color_just_black"
+                android:text="Void Purple"
                 android:visibility="gone" />
                 
             <View

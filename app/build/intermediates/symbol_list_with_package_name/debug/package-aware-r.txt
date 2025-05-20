@@ -3098,6 +3098,7 @@ drawable circle_default_color
 drawable circle_pink_color
 drawable circle_pitch_black_color
 drawable circle_purple_color
+drawable circle_purple_void_color
 drawable design_fab_background
 drawable design_ic_visibility
 drawable design_ic_visibility_off
