@@ -3359,7 +3359,6 @@ id color_default_radio
 id color_just_black_radio
 id color_options_card
 id color_palette_title
-id color_pink_radio
 id color_purple_radio
 id color_radio_group
 id compress

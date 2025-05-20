@@ -15,15 +15,13 @@ abstract class BaseActivity : AppCompatActivity() {
         // Theme resource map
         private val THEME_MAP = mapOf(
             // Light mode themes
-            Pair(Pair(SettingsActivity.THEME_LIGHT, SettingsActivity.COLOR_DEFAULT), R.style.Theme_RandomSceneApp_AppColors),
+            Pair(Pair(SettingsActivity.THEME_LIGHT, SettingsActivity.COLOR_DEFAULT), R.style.Theme_RandomSceneApp_Pink),
             Pair(Pair(SettingsActivity.THEME_LIGHT, SettingsActivity.COLOR_PURPLE), R.style.Theme_RandomSceneApp_Purple),
-            Pair(Pair(SettingsActivity.THEME_LIGHT, SettingsActivity.COLOR_PINK), R.style.Theme_RandomSceneApp_Pink),
             // Just Black is only for dark mode
             
             // Dark mode themes
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_DEFAULT), R.style.Theme_RandomSceneApp_AppColors),
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_PURPLE), R.style.Theme_RandomSceneApp_Purple),
-            Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_PINK), R.style.Theme_RandomSceneApp_Pink),
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_JUST_BLACK), R.style.Theme_RandomSceneApp_JustBlack)
         )
     }

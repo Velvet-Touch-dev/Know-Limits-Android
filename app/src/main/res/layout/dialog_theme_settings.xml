@@ -102,6 +102,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- Pink is now the default -->
             <RadioButton
                 android:id="@+id/color_default_radio"
                 android:layout_width="match_parent"
@@ -132,24 +133,6 @@
                 android:drawablePadding="16dp"
                 android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                 android:text="@string/color_purple" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
-            <RadioButton
-                android:id="@+id/color_pink_radio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:button="@null"
-                android:background="?attr/selectableItemBackground"
-                android:drawableStart="@drawable/circle_pink_color"
-                android:drawablePadding="16dp"
-                android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
-                android:text="@string/color_pink" />
 
             <View
                 android:id="@+id/just_black_divider"

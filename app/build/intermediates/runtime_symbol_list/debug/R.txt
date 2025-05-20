@@ -3358,7 +3358,6 @@ int id color_default_radio 0x7f090087
 int id color_just_black_radio 0x7f090088
 int id color_options_card 0x7f090089
 int id color_palette_title 0x7f09008a
-int id color_pink_radio 0x7f09008b
 int id color_purple_radio 0x7f09008c
 int id color_radio_group 0x7f09008d
 int id compress 0x7f09008e

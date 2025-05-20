@@ -235,9 +235,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 // Set the current color palette option
                 when (currentColor) {
                     COLOR_PURPLE -> colorRadioGroup.check(R.id.color_purple_radio)
-                    COLOR_PINK -> colorRadioGroup.check(R.id.color_pink_radio)
                     COLOR_JUST_BLACK -> colorRadioGroup.check(R.id.color_just_black_radio)
-                    else -> colorRadioGroup.check(R.id.color_default_radio)
+                    else -> colorRadioGroup.check(R.id.color_default_radio) // Default is now pink
                 }
                 
                 // Show/hide "Just Black" option based on the selected theme
@@ -271,7 +270,6 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                         // Get selected color palette
                         val selectedColor = when (colorRadioGroup.checkedRadioButtonId) {
                             R.id.color_purple_radio -> COLOR_PURPLE
-                            R.id.color_pink_radio -> COLOR_PINK
                             R.id.color_just_black_radio -> COLOR_JUST_BLACK
                             else -> COLOR_DEFAULT
                         }
@@ -323,6 +321,11 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         
         justBlackRadio.visibility = visibility
         justBlackDivider.visibility = visibility
+        
+        // Clear the checked state when hiding - fixes the selection issue
+        if (visibility == android.view.View.GONE && justBlackRadio.isChecked) {
+            justBlackRadio.isChecked = false
+        }
     }
 
     private fun updateThemeSelection(themeMode: Int, colorMode: Int) {
@@ -339,9 +342,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             // Get the color mode string
             val colorModeString = when (colorMode) {
                 COLOR_PURPLE -> getString(R.string.color_purple)
-                COLOR_PINK -> getString(R.string.color_pink)
                 COLOR_JUST_BLACK -> getString(R.string.color_just_black)
-                else -> getString(R.string.color_default)
+                else -> getString(R.string.color_default) // Default is now pink
             }
             
             // Combine them
