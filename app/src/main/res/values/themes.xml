@@ -7,8 +7,10 @@
         
         <!-- Set default card appearance -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
-        
 
+        <!-- Material 3 Dialog Theme -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+        
         
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>

@@ -11331,8 +11331,10 @@
         
         
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
-        
 
+        
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+        
         
         
         <item name="android:textColorPrimary">@color/text_primary</item>

@@ -337,7 +337,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private fun showResetConfirmationDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.reset_to_default))
-            .setMessage(getString(R.string.reset_positions_confirm_message))
+            .setMessage("Are you sure you want to reset to default positions? This will delete custom positions and restore default positions.")
             .setPositiveButton(getString(R.string.reset)) { dialog, _ ->
                 resetToDefaultPositions()
                 dialog.dismiss()
