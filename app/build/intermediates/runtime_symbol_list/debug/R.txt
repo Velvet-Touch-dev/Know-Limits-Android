@@ -2217,6 +2217,7 @@ int color switch_thumb_material_dark 0x7f060388
 int color switch_thumb_material_light 0x7f060389
 int color switch_thumb_normal_material_dark 0x7f06038a
 int color switch_thumb_normal_material_light 0x7f06038b
+int color switch_track_tint_pitch_black 0x7f060392
 int color tertiary 0x7f06038c
 int color tertiaryContainer 0x7f06038d
 int color text_primary 0x7f06038e
@@ -5007,6 +5008,7 @@ int style Widget_App_Button 0x7f1202de
 int style Widget_App_CardView 0x7f1202df
 int style Widget_App_CardView_Dark 0x7f1202e0
 int style Widget_App_CardView_PitchBlack 0x7f1202e1
+int style Widget_App_Switch_PitchBlack 0x7f120458
 int style Widget_AppCompat_ActionBar 0x7f1202e2
 int style Widget_AppCompat_ActionBar_Solid 0x7f1202e3
 int style Widget_AppCompat_ActionBar_TabBar 0x7f1202e4

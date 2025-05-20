@@ -2218,6 +2218,7 @@ color switch_thumb_material_dark
 color switch_thumb_material_light
 color switch_thumb_normal_material_dark
 color switch_thumb_normal_material_light
+color switch_track_tint_pitch_black
 color tertiary
 color tertiaryContainer
 color text_primary
@@ -5008,6 +5009,7 @@ style Widget_App_Button
 style Widget_App_CardView
 style Widget_App_CardView_Dark
 style Widget_App_CardView_PitchBlack
+style Widget_App_Switch_PitchBlack
 style Widget_AppCompat_ActionBar
 style Widget_AppCompat_ActionBar_Solid
 style Widget_AppCompat_ActionBar_TabBar

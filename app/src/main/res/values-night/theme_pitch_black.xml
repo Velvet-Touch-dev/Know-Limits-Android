@@ -44,10 +44,21 @@
         
         <!-- Switch colors - Fix for toggle visibility -->
         <item name="colorSwitchThumbNormal">#9E9E9E</item>
-        <item name="android:colorForeground">#424242</item>
+        <item name="android:colorForeground">#424242</item> <!-- Original Track color for OFF state, now handled by selector -->
+        <item name="colorControlActivated">#757575</item> <!-- Original Track and Thumb color for ON state, now handled by selector -->
+
+        <!-- Custom Switch style for Pitch Black theme -->
+        <item name="switchStyle">@style/Widget.App.Switch.PitchBlack</item>
         
         <!-- Card customization -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView.PitchBlack</item>
+    </style>
+
+    <!-- Switch style for Pitch Black theme -->
+    <style name="Widget.App.Switch.PitchBlack" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:trackTint">@color/switch_track_tint_pitch_black</item>
+        <!-- You can also add thumbTint here if needed:
+        <item name="thumbTint">@color/your_thumb_tint_selector</item> -->
     </style>
     
     <!-- Card style for Pitch Black theme -->
