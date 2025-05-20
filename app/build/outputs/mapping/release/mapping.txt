@@ -3,8 +3,8 @@
 # min_api: 21
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.1"}
-# pg_map_id: 69c4cdc
-# pg_map_hash: SHA-256 69c4cdc4164f5f9e9db3f52d6cd17b71cc77482661b016d4693e8189fd4eaf5f
+# pg_map_id: fd2279f
+# pg_map_hash: SHA-256 fd2279f1c621e5623398c6a27ef7524d1f3e11f70e220cc89ccaeb5c0a7ae2cb
 android.support.v4.app.INotificationSideChannel -> android.support.v4.app.a:
 android.support.v4.app.INotificationSideChannel$Stub -> android.support.v4.app.a$a:
     70:81:java.lang.Object android.support.v4.app.INotificationSideChannel$_Parcel.readTypedObject(android.os.Parcel,android.os.Parcelable$Creator):0:0 -> onTransact
@@ -1397,7 +1397,7 @@ androidx.constraintlayout.core.state.Transition$$ExternalSyntheticLambda0 -> and
       # {"id":"com.android.tools.r8.synthesized"}
     385:388:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0:0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    389:480:boolean com.velvettouch.nosafeword.SettingsActivity.onCreate$lambda$0(com.velvettouch.nosafeword.SettingsActivity,android.view.MenuItem):0:0 -> a
+    389:480:boolean com.velvettouch.nosafeword.SettingsActivity.onCreate$lambda$1(com.velvettouch.nosafeword.SettingsActivity,android.view.MenuItem):0:0 -> a
     389:480:boolean com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0.onNavigationItemSelected$bridge(android.view.MenuItem):0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
     float androidx.constraintlayout.core.state.Transition$$InternalSyntheticLambda$1$9c2ac366c789eddbe52f4ef43693846ac2c45dccce6a29f88749a4b2b006669c$0.getInterpolation(float) -> getInterpolation
@@ -9828,11 +9828,11 @@ com.google.android.material.chip.Chip$$ExternalSyntheticLambda1 -> j.a:
       # {"id":"com.android.tools.r8.synthesized"}
     19:24:void com.google.android.material.chip.Chip$$InternalSyntheticLambda$1$860a95f2ba16f11470ac682f45bacaa4f73f666c1689a0905cdb57dc12e2eff5$0.onCheckedChanged$bridge(android.widget.CompoundButton,boolean):0:0 -> onCheckedChanged
       # {"id":"com.android.tools.r8.synthesized"}
-    25:30:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$6(com.velvettouch.nosafeword.SettingsActivity,android.widget.CompoundButton,boolean):0:0 -> onCheckedChanged
+    25:30:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$7(com.velvettouch.nosafeword.SettingsActivity,android.widget.CompoundButton,boolean):0:0 -> onCheckedChanged
     25:30:void com.google.android.material.chip.Chip$$InternalSyntheticLambda$1$860a95f2ba16f11470ac682f45bacaa4f73f666c1689a0905cdb57dc12e2eff5$0.onCheckedChanged$bridge(android.widget.CompoundButton,boolean):0 -> onCheckedChanged
       # {"id":"com.android.tools.r8.synthesized"}
     31:54:void com.velvettouch.nosafeword.SettingsActivity.saveTtsSetting(boolean):0:0 -> onCheckedChanged
-    31:54:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$6(com.velvettouch.nosafeword.SettingsActivity,android.widget.CompoundButton,boolean):0 -> onCheckedChanged
+    31:54:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$7(com.velvettouch.nosafeword.SettingsActivity,android.widget.CompoundButton,boolean):0 -> onCheckedChanged
     31:54:void com.google.android.material.chip.Chip$$InternalSyntheticLambda$1$860a95f2ba16f11470ac682f45bacaa4f73f666c1689a0905cdb57dc12e2eff5$0.onCheckedChanged$bridge(android.widget.CompoundButton,boolean):0 -> onCheckedChanged
       # {"id":"com.android.tools.r8.synthesized"}
 com.google.android.material.chip.Chip$1 -> com.google.android.material.chip.Chip$a:
@@ -14370,7 +14370,7 @@ com.google.android.material.search.SearchView$$ExternalSyntheticLambda0 -> com.g
       # {"id":"com.android.tools.r8.synthesized"}
     124:127:void com.google.android.material.search.SearchView$$InternalSyntheticLambda$1$af79fbd4ce5fe3e5e4a0f6d3df8c2bbbfbad0b5e03b9e486382a21e33f1675e7$0.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    128:142:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceSettingsCard$lambda$4(com.velvettouch.nosafeword.SettingsActivity,android.view.View):0:0 -> onClick
+    128:142:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceSettingsCard$lambda$5(com.velvettouch.nosafeword.SettingsActivity,android.view.View):0:0 -> onClick
     128:142:void com.google.android.material.search.SearchView$$InternalSyntheticLambda$1$af79fbd4ce5fe3e5e4a0f6d3df8c2bbbfbad0b5e03b9e486382a21e33f1675e7$0.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.google.android.material.search.SearchView$Behavior -> com.google.android.material.search.SearchView$Behavior:
@@ -19793,7 +19793,7 @@ com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivi
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     3:38:java.lang.String formatMarkdownText(java.lang.String):0:0 -> g
     3:38:void displayScene(com.velvettouch.nosafeword.Scene):0 -> g
-    39:79:void displayScene(com.velvettouch.nosafeword.Scene):0:0 -> g
+    39:82:void displayScene(com.velvettouch.nosafeword.Scene):0:0 -> g
     java.lang.String loadJSONFromAsset(java.lang.String) -> h
     void saveFavorites() -> i
     31:32:int com.velvettouch.nosafeword.Scene.getId():0:0 -> j
@@ -19815,7 +19815,7 @@ com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivi
     27:28:void updateFavoritesList():0 -> n
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     29:126:void updateFavoritesList():0:0 -> n
-    void updateUI() -> o
+    void updatePreviousButtonState() -> o
     390:393:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
     390:393:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
@@ -19858,6 +19858,7 @@ com.velvettouch.nosafeword.MainActivity -> com.velvettouch.nosafeword.MainActivi
     56:114:void toggleFavorite():0:0 -> onOptionsItemSelected
     56:114:boolean onOptionsItemSelected(android.view.MenuItem):0 -> onOptionsItemSelected
     115:126:boolean onOptionsItemSelected(android.view.MenuItem):0:0 -> onOptionsItemSelected
+    void updateUI() -> p
 com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.l:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
@@ -19923,60 +19924,60 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda2 -> com.velvett
     0:65535:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.<init>(com.velvettouch.nosafeword.MainActivity):0:0 -> <init>
     0:65535:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.$r8$init$synthetic(com.velvettouch.nosafeword.MainActivity,int):0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    23:29:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$8(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
-    23:29:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    17:23:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$8(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
+    17:23:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    30:31:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
+    24:25:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    32:60:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$7(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
-    32:60:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    26:54:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$7(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
+    26:54:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    61:62:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
+    55:56:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    63:65:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
-    63:65:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    57:59:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
+    57:59:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    66:93:void com.velvettouch.nosafeword.MainActivity.shareCurrentScene():0:0 -> onClick
-    66:93:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
-    66:93:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    60:87:void com.velvettouch.nosafeword.MainActivity.shareCurrentScene():0:0 -> onClick
+    60:87:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
+    60:87:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    94:95:java.lang.String com.velvettouch.nosafeword.Scene.getTitle():0:0 -> onClick
-    94:95:void com.velvettouch.nosafeword.MainActivity.shareCurrentScene():0 -> onClick
+    88:89:java.lang.String com.velvettouch.nosafeword.Scene.getTitle():0:0 -> onClick
+    88:89:void com.velvettouch.nosafeword.MainActivity.shareCurrentScene():0 -> onClick
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    94:95:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
-    94:95:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    88:89:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
+    88:89:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    96:151:void com.velvettouch.nosafeword.MainActivity.shareCurrentScene():0:0 -> onClick
-    96:151:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
-    96:151:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    90:145:void com.velvettouch.nosafeword.MainActivity.shareCurrentScene():0:0 -> onClick
+    90:145:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$6(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
+    90:145:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    152:153:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
+    146:147:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    154:184:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$5(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
-    154:184:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    148:184:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$5(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
+    148:184:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
     185:186:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    187:217:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$4(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
-    187:217:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    187:223:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$4(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
+    187:223:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    218:219:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
+    224:225:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0:0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    220:222:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
-    220:222:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    226:228:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0:0 -> onClick
+    226:228:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    223:224:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation():0:0 -> onClick
-    223:224:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
-    223:224:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    229:230:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation():0:0 -> onClick
+    229:230:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
+    229:230:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    225:230:void com.google.android.material.dialog.MaterialAlertDialogBuilder.<init>(android.content.Context):0:0 -> onClick
-    225:230:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation():0 -> onClick
-    225:230:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
-    225:230:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    231:236:void com.google.android.material.dialog.MaterialAlertDialogBuilder.<init>(android.content.Context):0:0 -> onClick
+    231:236:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation():0 -> onClick
+    231:236:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
+    231:236:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    231:262:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation():0:0 -> onClick
-    231:262:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
-    231:262:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
+    237:268:void com.velvettouch.nosafeword.MainActivity.showResetConfirmation():0:0 -> onClick
+    237:268:void com.velvettouch.nosafeword.MainActivity.onCreate$lambda$9(com.velvettouch.nosafeword.MainActivity,android.view.View):0 -> onClick
+    237:268:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$2.onClick$bridge(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda3 -> com.velvettouch.nosafeword.o:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
@@ -20060,32 +20061,29 @@ com.velvettouch.nosafeword.MainActivity$$ExternalSyntheticLambda5 -> com.velvett
     151:179:void com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$2$f82067ab5cc3b25bf7f3b7c9286328beed51c0dd337f18a3387dc48ec6e6f96f$0.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.MainActivity$onCreate$10$1 -> com.velvettouch.nosafeword.MainActivity$a:
-    android.view.animation.Animation $fadeIn -> b
+    android.view.animation.Animation $slideIn -> b
     com.velvettouch.nosafeword.MainActivity this$0 -> a
-    1:10:int com.velvettouch.nosafeword.MainActivity.access$getHistoryPosition$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    1:10:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    11:12:void com.velvettouch.nosafeword.MainActivity.access$setHistoryPosition$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
+    1:8:int com.velvettouch.nosafeword.MainActivity.access$getHistoryPosition$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    1:8:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    9:10:void com.velvettouch.nosafeword.MainActivity.access$setHistoryPosition$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
+    9:10:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    11:12:java.util.List com.velvettouch.nosafeword.MainActivity.access$getSceneHistory$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
     11:12:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    13:14:java.util.List com.velvettouch.nosafeword.MainActivity.access$getSceneHistory$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    13:14:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    15:24:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    25:26:void com.velvettouch.nosafeword.MainActivity.access$setCurrentSceneIndex$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
+    13:22:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    23:24:void com.velvettouch.nosafeword.MainActivity.access$setCurrentSceneIndex$p(com.velvettouch.nosafeword.MainActivity,int):0:0 -> onAnimationEnd
+    23:24:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    25:26:java.util.List com.velvettouch.nosafeword.MainActivity.access$getScenes$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
     25:26:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    27:28:java.util.List com.velvettouch.nosafeword.MainActivity.access$getScenes$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    27:28:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    29:34:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    35:37:void com.velvettouch.nosafeword.MainActivity.access$displayScene(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0:0 -> onAnimationEnd
-    35:37:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    38:41:com.google.android.material.floatingactionbutton.FloatingActionButton com.velvettouch.nosafeword.MainActivity.access$getPreviousButton$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    38:41:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    42:46:int com.velvettouch.nosafeword.MainActivity.access$getHistoryPosition$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    42:46:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    47:58:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    59:61:void com.velvettouch.nosafeword.MainActivity.access$showMaterialToast(com.velvettouch.nosafeword.MainActivity,java.lang.String,boolean):0:0 -> onAnimationEnd
-    59:61:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    62:65:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    62:65:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    66:77:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    27:32:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    33:39:void com.velvettouch.nosafeword.MainActivity.access$displayScene(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0:0 -> onAnimationEnd
+    33:39:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    40:42:void com.velvettouch.nosafeword.MainActivity.access$showMaterialToast(com.velvettouch.nosafeword.MainActivity,java.lang.String,boolean):0:0 -> onAnimationEnd
+    40:42:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    43:45:void com.velvettouch.nosafeword.MainActivity.access$updatePreviousButtonState(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    43:45:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    46:49:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    46:49:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    50:62:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
 com.velvettouch.nosafeword.MainActivity$onCreate$4$swipeHandler$1 -> com.velvettouch.nosafeword.MainActivity$b:
     com.velvettouch.nosafeword.MainActivity this$0 -> a
     10:15:com.velvettouch.nosafeword.FavoriteScenesAdapter com.velvettouch.nosafeword.MainActivity.access$getFavoritesAdapter$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onSwiped
@@ -20113,21 +20111,21 @@ com.velvettouch.nosafeword.MainActivity$onCreate$6 -> com.velvettouch.nosafeword
     34:70:void com.velvettouch.nosafeword.MainActivity.access$showDeleteConfirmation(com.velvettouch.nosafeword.MainActivity,com.velvettouch.nosafeword.Scene):0 -> invoke
     34:70:void invoke(com.velvettouch.nosafeword.Scene):0 -> invoke
 com.velvettouch.nosafeword.MainActivity$onCreate$9$1 -> com.velvettouch.nosafeword.MainActivity$c:
-    android.view.animation.Animation $fadeIn -> b
+    android.view.animation.Animation $slideIn -> b
     com.velvettouch.nosafeword.MainActivity this$0 -> a
     1:4:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
     1:4:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     1:4:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    5:134:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
-    5:134:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
-    5:134:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    135:138:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
-    135:138:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
-    139:152:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
-    153:156:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
-    153:156:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
-    153:156:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    5:137:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
+    5:137:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
+    5:137:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    138:141:com.google.android.material.card.MaterialCardView com.velvettouch.nosafeword.MainActivity.access$getSceneCardView$p(com.velvettouch.nosafeword.MainActivity):0:0 -> onAnimationEnd
+    138:141:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
+    142:155:void onAnimationEnd(android.view.animation.Animation):0:0 -> onAnimationEnd
+    156:159:void com.velvettouch.nosafeword.MainActivity.displayNextScene():0:0 -> onAnimationEnd
+    156:159:void com.velvettouch.nosafeword.MainActivity.access$displayNextScene(com.velvettouch.nosafeword.MainActivity):0 -> onAnimationEnd
+    156:159:void onAnimationEnd(android.view.animation.Animation):0 -> onAnimationEnd
 com.velvettouch.nosafeword.MainActivity$onCreateOptionsMenu$1 -> com.velvettouch.nosafeword.MainActivity$d:
     com.velvettouch.nosafeword.MainActivity this$0 -> a
     5:11:void com.velvettouch.nosafeword.MainActivity.access$filterScenes(com.velvettouch.nosafeword.MainActivity,java.lang.String):0:0 -> onQueryTextChange
@@ -20373,42 +20371,43 @@ com.velvettouch.nosafeword.Scene -> com.velvettouch.nosafeword.v:
     java.lang.String title -> b
     int id -> a
 com.velvettouch.nosafeword.SettingsActivity -> com.velvettouch.nosafeword.SettingsActivity:
+    int $r8$clinit -> j
     androidx.drawerlayout.widget.DrawerLayout drawerLayout -> e
-    int $r8$clinit -> i
+    android.speech.tts.TextToSpeech textToSpeech -> i
     com.google.android.material.navigation.NavigationView navigationView -> f
-    android.speech.tts.TextToSpeech textToSpeech -> h
+    boolean settingsChanged -> h
     androidx.appcompat.app.ActionBarDrawerToggle drawerToggle -> g
     void adjustJustBlackVisibility(android.widget.RadioButton,android.view.View,int) -> d
     void updateThemeSelection(int,int) -> e
     void updateVoiceSettingsDisplay(android.widget.TextView) -> f
-    114:118:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
-    114:118:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
+    125:128:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
+    125:128:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    114:118:void onCreate(android.os.Bundle):0 -> onCreate
-    119:122:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
-    119:122:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
-    119:122:void onCreate(android.os.Bundle):0 -> onCreate
-    123:143:void onCreate(android.os.Bundle):0:0 -> onCreate
-    144:149:void setupThemeSelector():0:0 -> onCreate
-    144:149:void onCreate(android.os.Bundle):0 -> onCreate
-    150:159:int loadThemeSetting():0:0 -> onCreate
-    150:159:void setupThemeSelector():0 -> onCreate
-    150:159:void onCreate(android.os.Bundle):0 -> onCreate
-    160:169:int loadColorSetting():0:0 -> onCreate
+    125:128:void onCreate(android.os.Bundle):0 -> onCreate
+    129:132:android.view.View com.google.android.material.internal.NavigationMenuPresenter.getHeaderView(int):0:0 -> onCreate
+    129:132:android.view.View com.google.android.material.navigation.NavigationView.getHeaderView(int):0 -> onCreate
+    129:132:void onCreate(android.os.Bundle):0 -> onCreate
+    133:153:void onCreate(android.os.Bundle):0:0 -> onCreate
+    154:159:void setupThemeSelector():0:0 -> onCreate
+    154:159:void onCreate(android.os.Bundle):0 -> onCreate
+    160:169:int loadThemeSetting():0:0 -> onCreate
     160:169:void setupThemeSelector():0 -> onCreate
     160:169:void onCreate(android.os.Bundle):0 -> onCreate
-    170:188:void setupThemeSelector():0:0 -> onCreate
-    170:188:void onCreate(android.os.Bundle):0 -> onCreate
-    189:227:void setupVoiceSettingsCard():0:0 -> onCreate
-    189:227:void onCreate(android.os.Bundle):0 -> onCreate
-    228:244:void setupVoiceInstructionsToggle():0:0 -> onCreate
-    228:244:void onCreate(android.os.Bundle):0 -> onCreate
-    245:259:boolean isTtsEnabled():0:0 -> onCreate
-    245:259:void setupVoiceInstructionsToggle():0 -> onCreate
-    245:259:void onCreate(android.os.Bundle):0 -> onCreate
-    260:284:void setupVoiceInstructionsToggle():0:0 -> onCreate
-    260:284:void onCreate(android.os.Bundle):0 -> onCreate
-    285:308:void onCreate(android.os.Bundle):0:0 -> onCreate
+    170:179:int loadColorSetting():0:0 -> onCreate
+    170:179:void setupThemeSelector():0 -> onCreate
+    170:179:void onCreate(android.os.Bundle):0 -> onCreate
+    180:198:void setupThemeSelector():0:0 -> onCreate
+    180:198:void onCreate(android.os.Bundle):0 -> onCreate
+    199:237:void setupVoiceSettingsCard():0:0 -> onCreate
+    199:237:void onCreate(android.os.Bundle):0 -> onCreate
+    238:254:void setupVoiceInstructionsToggle():0:0 -> onCreate
+    238:254:void onCreate(android.os.Bundle):0 -> onCreate
+    255:269:boolean isTtsEnabled():0:0 -> onCreate
+    255:269:void setupVoiceInstructionsToggle():0 -> onCreate
+    255:269:void onCreate(android.os.Bundle):0 -> onCreate
+    270:294:void setupVoiceInstructionsToggle():0:0 -> onCreate
+    270:294:void onCreate(android.os.Bundle):0 -> onCreate
+    295:318:void onCreate(android.os.Bundle):0:0 -> onCreate
 com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda0 -> com.velvettouch.nosafeword.w:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
@@ -20416,11 +20415,11 @@ com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda0 -> com.vel
     com.velvettouch.nosafeword.SettingsActivity com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0.f$1 -> e
     void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0.<init>(androidx.appcompat.widget.SwitchCompat,com.velvettouch.nosafeword.SettingsActivity) -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    3:21:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$5(androidx.appcompat.widget.SwitchCompat,com.velvettouch.nosafeword.SettingsActivity,android.view.View):0:0 -> onClick
+    3:21:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$6(androidx.appcompat.widget.SwitchCompat,com.velvettouch.nosafeword.SettingsActivity,android.view.View):0:0 -> onClick
     3:21:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
     22:44:void com.velvettouch.nosafeword.SettingsActivity.saveTtsSetting(boolean):0:0 -> onClick
-    22:44:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$5(androidx.appcompat.widget.SwitchCompat,com.velvettouch.nosafeword.SettingsActivity,android.view.View):0 -> onClick
+    22:44:void com.velvettouch.nosafeword.SettingsActivity.setupVoiceInstructionsToggle$lambda$6(androidx.appcompat.widget.SwitchCompat,com.velvettouch.nosafeword.SettingsActivity,android.view.View):0 -> onClick
     22:44:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda1 -> com.velvettouch.nosafeword.x:
@@ -20431,64 +20430,67 @@ com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda1 -> com.vel
     int com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.f$1 -> e
     void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.<init>(com.velvettouch.nosafeword.SettingsActivity,int,int) -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    7:137:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3(com.velvettouch.nosafeword.SettingsActivity,int,int,android.view.View):0:0 -> onClick
+    7:137:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4(com.velvettouch.nosafeword.SettingsActivity,int,int,android.view.View):0:0 -> onClick
     7:137:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
     138:143:void com.google.android.material.dialog.MaterialAlertDialogBuilder.<init>(android.content.Context):0:0 -> onClick
-    138:143:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3(com.velvettouch.nosafeword.SettingsActivity,int,int,android.view.View):0 -> onClick
+    138:143:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4(com.velvettouch.nosafeword.SettingsActivity,int,int,android.view.View):0 -> onClick
     138:143:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    144:175:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3(com.velvettouch.nosafeword.SettingsActivity,int,int,android.view.View):0:0 -> onClick
+    144:175:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4(com.velvettouch.nosafeword.SettingsActivity,int,int,android.view.View):0:0 -> onClick
     144:175:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$ab1b1f19e4ac4677ba4d8723b5105e419ea02427aaab497cdb935ae4e47cf379$0.onClick(android.view.View):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda2 -> com.velvettouch.nosafeword.y:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
-    com.velvettouch.nosafeword.SettingsActivity com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$0.f$0 -> a
-    android.widget.RadioGroup com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$0.f$3 -> d
-    android.widget.RadioButton com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$0.f$1 -> b
-    android.view.View com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$0.f$2 -> c
-    void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$0.<init>(com.velvettouch.nosafeword.SettingsActivity,android.widget.RadioButton,android.view.View,android.widget.RadioGroup) -> <init>
+    com.velvettouch.nosafeword.SettingsActivity com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$0.f$0 -> a
+    android.widget.RadioGroup com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$0.f$3 -> d
+    android.widget.RadioButton com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$0.f$1 -> b
+    android.view.View com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$0.f$2 -> c
+    void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$0.<init>(com.velvettouch.nosafeword.SettingsActivity,android.widget.RadioButton,android.view.View,android.widget.RadioGroup) -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    5:58:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$1(com.velvettouch.nosafeword.SettingsActivity,android.widget.RadioButton,android.view.View,android.widget.RadioGroup,android.widget.RadioGroup,int):0:0 -> onCheckedChanged
-    5:58:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$0.onCheckedChanged(android.widget.RadioGroup,int):0 -> onCheckedChanged
+    5:58:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$2(com.velvettouch.nosafeword.SettingsActivity,android.widget.RadioButton,android.view.View,android.widget.RadioGroup,android.widget.RadioGroup,int):0:0 -> onCheckedChanged
+    5:58:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$0.onCheckedChanged(android.widget.RadioGroup,int):0 -> onCheckedChanged
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.SettingsActivity$$ExternalSyntheticLambda3 -> com.velvettouch.nosafeword.z:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
-    android.widget.RadioGroup com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.f$1 -> e
-    int com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.f$2 -> f
-    int com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.f$3 -> g
-    com.velvettouch.nosafeword.SettingsActivity com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.f$4 -> h
-    android.widget.RadioGroup com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.f$0 -> c
-    void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.<init>(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity) -> <init>
+    android.widget.RadioGroup com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.f$1 -> e
+    int com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.f$2 -> f
+    int com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.f$3 -> g
+    com.velvettouch.nosafeword.SettingsActivity com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.f$4 -> h
+    android.widget.RadioGroup com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.f$0 -> c
+    void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.<init>(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity) -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    3:61:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0:0 -> onClick
-    3:61:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    3:62:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0:0 -> onClick
+    3:62:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    62:82:void com.velvettouch.nosafeword.SettingsActivity.saveThemeSetting(int):0:0 -> onClick
-    62:82:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
-    62:82:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    63:83:void com.velvettouch.nosafeword.SettingsActivity.saveThemeSetting(int):0:0 -> onClick
+    63:83:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
+    63:83:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    83:108:void com.velvettouch.nosafeword.SettingsActivity.saveColorSetting(int):0:0 -> onClick
-    83:108:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
-    83:108:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    84:102:void com.velvettouch.nosafeword.SettingsActivity.saveColorSetting(int):0:0 -> onClick
+    84:102:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
+    84:102:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    109:138:void com.velvettouch.nosafeword.SettingsActivity.applyThemeAndColor(int,int):0:0 -> onClick
-    109:138:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
-    109:138:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    103:111:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0:0 -> onClick
+    103:111:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    139:153:void com.velvettouch.nosafeword.SettingsActivity.saveColorSetting(int):0:0 -> onClick
-    139:153:void com.velvettouch.nosafeword.SettingsActivity.applyThemeAndColor(int,int):0 -> onClick
-    139:153:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
-    139:153:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    112:119:void com.velvettouch.nosafeword.SettingsActivity.applyThemeAndColor(int,int):0:0 -> onClick
+    112:119:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
+    112:119:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    154:156:void com.velvettouch.nosafeword.SettingsActivity.applyThemeAndColor(int,int):0:0 -> onClick
-    154:156:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
-    154:156:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    120:140:void com.velvettouch.nosafeword.SettingsActivity.saveColorSetting(int):0:0 -> onClick
+    120:140:void com.velvettouch.nosafeword.SettingsActivity.applyThemeAndColor(int,int):0 -> onClick
+    120:140:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
+    120:140:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
-    157:172:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$3$lambda$2(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0:0 -> onClick
-    157:172:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$a5edf03149ef0339729a9bf5ea936bda9b79252e6532969d7558ad511d92af69$1.onClick(android.content.DialogInterface,int):0 -> onClick
+    141:146:void com.velvettouch.nosafeword.SettingsActivity.applyThemeAndColor(int,int):0:0 -> onClick
+    141:146:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0 -> onClick
+    141:146:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
+      # {"id":"com.android.tools.r8.synthesized"}
+    147:162:void com.velvettouch.nosafeword.SettingsActivity.setupThemeSelector$lambda$4$lambda$3(android.widget.RadioGroup,android.widget.RadioGroup,int,int,com.velvettouch.nosafeword.SettingsActivity,android.content.DialogInterface,int):0:0 -> onClick
+    147:162:void com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$3$c36d3cf57c68f45462a45feb4f15ac10364364caeb13f3da68e685a041abd097$1.onClick(android.content.DialogInterface,int):0 -> onClick
       # {"id":"com.android.tools.r8.synthesized"}
 com.velvettouch.nosafeword.cardstack.CardStackView -> com.velvettouch.nosafeword.cardstack.CardStackView:
     float scaleDecrement -> k

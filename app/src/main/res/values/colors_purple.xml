@@ -30,4 +30,30 @@
     <color name="purple_light_onError">#FFFFFF</color>
     <color name="purple_light_errorContainer">#F9DEDC</color>
     <color name="purple_light_onErrorContainer">#410E0B</color>
+
+    <!-- Fallbacks for dark purple colors (using light values as default) -->
+    <color name="purple_dark_primary">@color/purple_light_primary</color>
+    <color name="purple_dark_onPrimary">@color/purple_light_onPrimary</color>
+    <color name="purple_dark_primaryContainer">@color/purple_light_primaryContainer</color>
+    <color name="purple_dark_onPrimaryContainer">@color/purple_light_onPrimaryContainer</color>
+    <color name="purple_dark_secondary">@color/purple_light_secondary</color>
+    <color name="purple_dark_onSecondary">@color/purple_light_onSecondary</color>
+    <color name="purple_dark_secondaryContainer">@color/purple_light_secondaryContainer</color>
+    <color name="purple_dark_onSecondaryContainer">@color/purple_light_onSecondaryContainer</color>
+    <color name="purple_dark_tertiary">@color/purple_light_tertiary</color>
+    <color name="purple_dark_onTertiary">@color/purple_light_onTertiary</color>
+    <color name="purple_dark_tertiaryContainer">@color/purple_light_tertiaryContainer</color>
+    <color name="purple_dark_onTertiaryContainer">@color/purple_light_onTertiaryContainer</color>
+    <color name="purple_dark_background">@color/purple_light_background</color>
+    <color name="purple_dark_onBackground">@color/purple_light_onBackground</color>
+    <color name="purple_dark_surface">@color/purple_light_surface</color>
+    <color name="purple_dark_onSurface">@color/purple_light_onSurface</color>
+    <color name="purple_dark_surfaceVariant">@color/purple_light_surfaceVariant</color>
+    <color name="purple_dark_onSurfaceVariant">@color/purple_light_onSurfaceVariant</color>
+    <color name="purple_dark_outline">@color/purple_light_outline</color>
+    <color name="purple_dark_outlineVariant">@color/purple_light_outlineVariant</color>
+    <color name="purple_dark_error">@color/purple_light_error</color>
+    <color name="purple_dark_onError">@color/purple_light_onError</color>
+    <color name="purple_dark_errorContainer">@color/purple_light_errorContainer</color>
+    <color name="purple_dark_onErrorContainer">@color/purple_light_onErrorContainer</color>
 </resources>

@@ -2131,6 +2131,7 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static final int COLOR_PINK
     public static final int COLOR_PITCH_BLACK
     public static final int COLOR_PURPLE
+    private static final java.lang.String KEY_SETTINGS_CHANGED
     public static final int THEME_DARK
     public static final int THEME_LIGHT
     public static final int THEME_SYSTEM
@@ -11628,6 +11629,7 @@ com.velvettouch.nosafeword.MainActivity:
     public static void <clinit>()
     public static final synthetic int access$getHistoryPosition$p()
     public static final synthetic com.google.android.material.card.MaterialCardView access$getSceneCardView$p()
+    public static final synthetic void access$updatePreviousButtonState()
     public static void displayNextScene()
     public static void filterScenes()
     public static java.lang.String formatMarkdownText(java.lang.String)

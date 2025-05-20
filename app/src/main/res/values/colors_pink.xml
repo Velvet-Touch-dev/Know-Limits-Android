@@ -30,4 +30,30 @@
     <color name="pink_light_onError">#FFFFFF</color>
     <color name="pink_light_errorContainer">#F9DEDC</color>
     <color name="pink_light_onErrorContainer">#410E0B</color>
+
+    <!-- Fallbacks for dark pink colors (using light values as default) -->
+    <color name="pink_dark_primary">@color/pink_light_primary</color>
+    <color name="pink_dark_onPrimary">@color/pink_light_onPrimary</color>
+    <color name="pink_dark_primaryContainer">@color/pink_light_primaryContainer</color>
+    <color name="pink_dark_onPrimaryContainer">@color/pink_light_onPrimaryContainer</color>
+    <color name="pink_dark_secondary">@color/pink_light_secondary</color>
+    <color name="pink_dark_onSecondary">@color/pink_light_onSecondary</color>
+    <color name="pink_dark_secondaryContainer">@color/pink_light_secondaryContainer</color>
+    <color name="pink_dark_onSecondaryContainer">@color/pink_light_onSecondaryContainer</color>
+    <color name="pink_dark_tertiary">@color/pink_light_tertiary</color>
+    <color name="pink_dark_onTertiary">@color/pink_light_onTertiary</color>
+    <color name="pink_dark_tertiaryContainer">@color/pink_light_tertiaryContainer</color>
+    <color name="pink_dark_onTertiaryContainer">@color/pink_light_onTertiaryContainer</color>
+    <color name="pink_dark_background">@color/pink_light_background</color>
+    <color name="pink_dark_onBackground">@color/pink_light_onBackground</color>
+    <color name="pink_dark_surface">@color/pink_light_surface</color>
+    <color name="pink_dark_onSurface">@color/pink_light_onSurface</color>
+    <color name="pink_dark_surfaceVariant">@color/pink_light_surfaceVariant</color>
+    <color name="pink_dark_onSurfaceVariant">@color/pink_light_onSurfaceVariant</color>
+    <color name="pink_dark_outline">@color/pink_light_outline</color>
+    <color name="pink_dark_outlineVariant">@color/pink_light_outlineVariant</color>
+    <color name="pink_dark_error">@color/pink_light_error</color>
+    <color name="pink_dark_onError">@color/pink_light_onError</color>
+    <color name="pink_dark_errorContainer">@color/pink_light_errorContainer</color>
+    <color name="pink_dark_onErrorContainer">@color/pink_light_onErrorContainer</color>
 </resources>

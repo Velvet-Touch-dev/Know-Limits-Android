@@ -45,6 +45,10 @@ anim m3_side_sheet_slide_out
 anim mtrl_bottom_sheet_slide_in
 anim mtrl_bottom_sheet_slide_out
 anim mtrl_card_lowers_interpolator
+anim slide_in_left
+anim slide_in_right
+anim slide_out_left
+anim slide_out_right
 animator card_state_list_anim
 animator design_appbar_state_list_animator
 animator design_fab_hide_motion_spec
@@ -2218,6 +2222,7 @@ color switch_thumb_material_dark
 color switch_thumb_material_light
 color switch_thumb_normal_material_dark
 color switch_thumb_normal_material_light
+color switch_track_tint_pitch_black
 color tertiary
 color tertiaryContainer
 color text_primary
@@ -5008,6 +5013,7 @@ style Widget_App_Button
 style Widget_App_CardView
 style Widget_App_CardView_Dark
 style Widget_App_CardView_PitchBlack
+style Widget_App_Switch_PitchBlack
 style Widget_AppCompat_ActionBar
 style Widget_AppCompat_ActionBar_Solid
 style Widget_AppCompat_ActionBar_TabBar

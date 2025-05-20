@@ -316,28 +316,28 @@ class MainActivity : BaseActivity() {
 
         // Set button click listeners
         randomizeButton.setOnClickListener {
-            val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            val slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out_left)
+            val slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_right)
 
-            sceneCardView.startAnimation(fadeOut)
-            fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+            sceneCardView.startAnimation(slideOut)
+            slideOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
                 override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                 override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                 override fun onAnimationEnd(animation: android.view.animation.Animation?) {
                     // Display next scene
                     displayNextScene()
-                    sceneCardView.startAnimation(fadeIn)
+                    sceneCardView.startAnimation(slideIn)
                 }
             })
         }
 
         // Set previous button click listener
         previousButton.setOnClickListener {
-            val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            val slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out_right)
+            val slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_left)
 
-            sceneCardView.startAnimation(fadeOut)
-            fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+            sceneCardView.startAnimation(slideOut)
+            slideOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
                 override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                 override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                 override fun onAnimationEnd(animation: android.view.animation.Animation?) {
@@ -360,7 +360,7 @@ class MainActivity : BaseActivity() {
                         showMaterialToast("No previous scene available", false)
                         updatePreviousButtonState() // Ensure button is visually disabled
                     }
-                    sceneCardView.startAnimation(fadeIn)
+                    sceneCardView.startAnimation(slideIn)
                 }
             })
         }

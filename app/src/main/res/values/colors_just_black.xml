@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fallbacks for Just Black dark theme colors -->
+    <!-- Using placeholder light theme equivalents -->
+    <color name="just_black_dark_primary">#6200EE</color> <!-- Example: Purple -->
+    <color name="just_black_dark_onPrimary">#FFFFFF</color>
+    <color name="just_black_dark_primaryContainer">#E9DDFF</color>
+    <color name="just_black_dark_onPrimaryContainer">#21005E</color>
+    
+    <color name="just_black_dark_secondary">#03DAC6</color> <!-- Example: Teal -->
+    <color name="just_black_dark_onSecondary">#000000</color>
+    <color name="just_black_dark_secondaryContainer">#A7FFEB</color>
+    <color name="just_black_dark_onSecondaryContainer">#004D40</color>
+    
+    <color name="just_black_dark_tertiary">#03DAC6</color> <!-- Example: Teal -->
+    <color name="just_black_dark_onTertiary">#000000</color>
+    <color name="just_black_dark_tertiaryContainer">#A7FFEB</color>
+    <color name="just_black_dark_onTertiaryContainer">#004D40</color>
+    
+    <color name="just_black_dark_background">#FFFFFF</color>
+    <color name="just_black_dark_onBackground">#000000</color>
+    <color name="just_black_dark_surface">#FFFFFF</color>
+    <color name="just_black_dark_onSurface">#000000</color>
+    <color name="just_black_dark_surfaceVariant">#F5F5F5</color> <!-- Light Grey -->
+    <color name="just_black_dark_onSurfaceVariant">#000000</color>
+    
+    <color name="just_black_dark_outline">#BDBDBD</color> <!-- Medium Grey -->
+    <color name="just_black_dark_outlineVariant">#E0E0E0</color> <!-- Lighter Grey -->
+    
+    <color name="just_black_dark_error">#B00020</color> <!-- Standard Error Red -->
+    <color name="just_black_dark_onError">#FFFFFF</color>
+    <color name="just_black_dark_errorContainer">#FDECEA</color>
+    <color name="just_black_dark_onErrorContainer">#B00020</color>
+</resources>
