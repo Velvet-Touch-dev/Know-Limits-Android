@@ -59,7 +59,8 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionLibraryAdapter: PositionLibraryAdapter
     private var allPositionItems: MutableList<PositionItem> = mutableListOf()
     private lateinit var positionSearchView: SearchView
-    
+    private lateinit var resetButton: MaterialButton // Added for Reset to Default
+
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
     private var isTtsReady = false
@@ -243,19 +244,23 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         autoPlayButton.setOnClickListener {
             toggleAutoPlay()
         }
-        
-        // Load position images
+
+        // Load all positions (assets and custom) into allPositionItems first.
+        // This is crucial for displayPositionByName to find custom positions passed via intent.
+        loadAllPositionsForLibrary() // Ensures allPositionItems is populated.
+
+        // Load position images (assets only, for the randomize tab's default pool)
         loadPositionImages()
         
         // Load position favorites
         loadPositionFavorites()
         
-        // Check for specific position to display from intent
-        val positionName = intent.getStringExtra("DISPLAY_POSITION_NAME")
-        if (positionName != null) {
-            displayPositionByName(positionName)
+        // Check for specific position to display from intent AFTER allPositionItems is populated
+        val positionNameFromIntent = intent.getStringExtra("DISPLAY_POSITION_NAME")
+        if (positionNameFromIntent != null) {
+            displayPositionByName(positionNameFromIntent)
         } else {
-            // Display initial random position
+            // Display initial random position if no specific one is requested
             displayRandomPosition()
         }
         
@@ -265,6 +270,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         randomizeTabContent = findViewById(R.id.randomize_tab_content)
         libraryTabContent = findViewById(R.id.library_tab_content)
         positionSearchView = findViewById(R.id.position_search_view) // Initialize SearchView here
+        resetButton = findViewById(R.id.button_reset_to_default) // Initialize Reset Button
         // RecyclerView initialization is now inside setupLibraryRecyclerView,
         // but ensure the view ID is correct in your XML (positions_library_recycler_view)
 
@@ -303,12 +309,60 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
             randomizeTabContent.visibility = View.GONE
             libraryTabContent.visibility = View.VISIBLE
         }
-
-        setupLibraryRecyclerView() // Call to setup RecyclerView
-        loadAllPositionsForLibrary() // Call to load data into RecyclerView
+ 
+        setupLibraryRecyclerView() // Call to setup RecyclerView, adapter will use allPositionItems
+        // loadAllPositionsForLibrary() was called earlier and populated allPositionItems.
+        // Now that the adapter is initialized, update it with the loaded items.
+        if (::positionLibraryAdapter.isInitialized) {
+            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+        }
         setupSearch()
         setupFab()
+        setupResetButton() // Call setup for reset button
     }
+
+    private fun setupResetButton() {
+        resetButton.setOnClickListener {
+            showResetConfirmationDialog()
+        }
+    }
+
+    private fun showResetConfirmationDialog() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.reset_to_default))
+            .setMessage(getString(R.string.reset_positions_confirm_message))
+            .setPositiveButton(getString(R.string.reset)) { dialog, _ ->
+                resetToDefaultPositions()
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun resetToDefaultPositions() {
+        // Delete files of custom positions
+        val customPositions = allPositionItems.filter { !it.isAsset }
+        for (customPosition in customPositions) {
+            try {
+                val file = File(customPosition.imageName)
+                if (file.exists()) {
+                    file.delete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Error deleting file for ${customPosition.name}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Clear current list and reload only defaults
+        allPositionItems.clear()
+        loadAllPositionsForLibrary(true) // Pass a flag to indicate reset
+
+        Toast.makeText(this, "Positions reset to default.", Toast.LENGTH_SHORT).show()
+    }
+
 
     override fun onPositionAdded(name: String, imageUri: Uri?) {
         if (imageUri == null) {
@@ -393,21 +447,25 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     }
     
     private fun toggleFavorite() {
-        if (currentPosition < 0 || currentPosition >= positionImages.size) return
-        
-        val imageName = positionImages[currentPosition]
-        val nameWithoutExtension = imageName.substringBeforeLast(".")
-        val positionName = nameWithoutExtension.replace("_", " ").capitalize()
-        
-        if (positionFavorites.contains(positionName)) {
+        val currentDisplayedName = positionNameTextView.text.toString()
+        if (currentDisplayedName.isBlank() || currentDisplayedName == "No position images found") {
+            Toast.makeText(this, "No position selected to favorite.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Use currentDisplayedName for favoriting, as it's reliable for both assets and custom items.
+        // The name is already capitalized correctly by displayPositionByName or displayCurrentPosition.
+        val positionNameToFavorite = currentDisplayedName
+
+        if (positionFavorites.contains(positionNameToFavorite)) {
             // Remove from favorites
-            positionFavorites.remove(positionName)
+            positionFavorites.remove(positionNameToFavorite)
             
             // Show toast
             Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show()
         } else {
             // Add to favorites
-            positionFavorites.add(positionName)
+            positionFavorites.add(positionNameToFavorite)
             
             // Show toast
             Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
@@ -421,14 +479,19 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     }
     
     private fun updateFavoriteIcon(menu: Menu? = null) {
-        if (currentPosition < 0 || currentPosition >= positionImages.size) return
-        
-        val imageName = positionImages[currentPosition]
-        val nameWithoutExtension = imageName.substringBeforeLast(".")
-        val positionName = nameWithoutExtension.replace("_", " ").capitalize()
-        
-        val isFavorite = positionFavorites.contains(positionName)
-        
+        val currentDisplayedName = positionNameTextView.text.toString()
+        if (currentDisplayedName.isBlank() || currentDisplayedName == "No position images found") {
+            // No specific position is displayed, or it's a placeholder.
+            // Ensure the favorite icon is in its default (empty) state.
+            menu?.findItem(R.id.action_favorite_position)?.setIcon(R.drawable.ic_favorite)
+            return
+        }
+
+        // Use currentDisplayedName to check favorite status.
+        // This name should be the one displayed and correctly formatted.
+        val positionNameToCheck = currentDisplayedName
+        val isFavorite = positionFavorites.contains(positionNameToCheck)
+
         // Update the icon in the menu
         menu?.findItem(R.id.action_favorite_position)?.let { menuItem ->
             menuItem.setIcon(
@@ -669,44 +732,54 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         }
     }
     
-    private fun displayPositionByName(positionName: String) {
-        if (positionImages.isEmpty()) {
-            positionNameTextView.text = "No position images found"
-            return
-        }
-        
-        // Try to find an exact match for the position name
-        for (i in positionImages.indices) {
-            val imageName = positionImages[i]
-            val nameWithoutExtension = imageName.substringBeforeLast(".")
-            val displayName = nameWithoutExtension.replace("_", " ").capitalize()
-            
-            if (displayName.equals(positionName, ignoreCase = true)) {
-                currentPosition = i
-                displayCurrentPosition()
-                return
+    private fun displayPositionByName(targetPositionName: String) {
+        val positionItem = allPositionItems.find { it.name.equals(targetPositionName, ignoreCase = true) }
+
+        if (positionItem != null) {
+            positionNameTextView.text = positionItem.name
+            try {
+                if (positionItem.isAsset) {
+                    // Find the asset in positionImages and call displayCurrentPosition
+                    val assetIndex = positionImages.indexOfFirst { assetFilename ->
+                        assetFilename.equals(positionItem.imageName, ignoreCase = true)
+                    }
+                    if (assetIndex != -1) {
+                        currentPosition = assetIndex
+                        displayCurrentPosition() // Handles image loading, TTS, and invalidateOptionsMenu
+                    } else {
+                        // Asset item from allPositionItems not found in positionImages list, this is an inconsistency
+                        Toast.makeText(this, "Asset '${positionItem.name}' not found in preloaded assets.", Toast.LENGTH_SHORT).show()
+                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                        currentPosition = -1
+                        invalidateOptionsMenu()
+                    }
+                } else {
+                    // Custom position (not an asset)
+                    val imageFile = File(positionItem.imageName) // imageName is absolute path
+                    if (imageFile.exists()) {
+                        positionImageView.setImageURI(Uri.fromFile(imageFile))
+                    } else {
+                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                        Toast.makeText(this, "Image file not found for ${positionItem.name}", Toast.LENGTH_SHORT).show()
+                    }
+                    currentPosition = -1 // Indicate it's not a default asset for favoriting via currentPosition
+                    speakPositionName(positionItem.name)
+                    invalidateOptionsMenu() // Update favorite icon status
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                Toast.makeText(this, "Error loading image for ${positionItem.name}", Toast.LENGTH_SHORT).show()
+                currentPosition = -1
+                invalidateOptionsMenu()
             }
+        } else {
+            Toast.makeText(this, "Position '$targetPositionName' not found.", Toast.LENGTH_SHORT).show()
+            // Fallback to a random position if the named position isn't found in allPositionItems
+            displayRandomPosition()
         }
-        
-        // If no exact match found, try matching without spaces
-        val normalizedTargetName = positionName.toLowerCase().replace(" ", "")
-        
-        for (i in positionImages.indices) {
-            val imageName = positionImages[i]
-            val nameWithoutExtension = imageName.substringBeforeLast(".")
-            val normalizedName = nameWithoutExtension.toLowerCase().replace("_", "")
-            
-            if (normalizedName == normalizedTargetName) {
-                currentPosition = i
-                displayCurrentPosition()
-                return
-            }
-        }
-        
-        // If still not found, display random position
-        displayRandomPosition()
     }
-    
+
     private fun displayRandomPosition() {
         if (positionImages.isEmpty()) {
             positionNameTextView.text = "No position images found"
@@ -800,8 +873,21 @@ private fun setupLibraryRecyclerView() {
         positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
     }
 
-    private fun loadAllPositionsForLibrary() {
-        allPositionItems.clear()
+    private fun loadAllPositionsForLibrary(isReset: Boolean = false) {
+        if (isReset) {
+            allPositionItems.clear()
+        } else if (allPositionItems.isNotEmpty()) {
+            // If not a reset and list already populated, don't reload everything.
+            // This assumes custom positions are handled (e.g., added dynamically)
+            // and assets are loaded once.
+            if (::positionLibraryAdapter.isInitialized) {
+                 positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+            }
+            return
+        }
+        // If it's a reset, allPositionItems is now clear.
+        // If it's an initial load, allPositionItems was empty.
+
         // Load from assets
         try {
             val assetManager = assets
@@ -809,7 +895,7 @@ private fun setupLibraryRecyclerView() {
             assetFiles?.forEach { fileName ->
                 if (fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".png", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true)) {
                     val nameWithoutExtension = fileName.substringBeforeLast(".")
-                    val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+                    val positionName = nameWithoutExtension.replace("_", " ").capitalizeWords()
                     allPositionItems.add(PositionItem(positionName, fileName, true)) // isAsset = true
                 }
             }
@@ -818,19 +904,23 @@ private fun setupLibraryRecyclerView() {
             Toast.makeText(this, "Error loading asset positions", Toast.LENGTH_SHORT).show()
         }
 
-        // Load from app's external files directory
-        val customPositionsDir = getExternalFilesDir("positions")
-        if (customPositionsDir != null && customPositionsDir.exists()) {
-            customPositionsDir.listFiles()?.forEach { file ->
-                if (file.isFile && (file.name.endsWith(".jpg", ignoreCase = true) || file.name.endsWith(".png", ignoreCase = true) || file.name.endsWith(".jpeg", ignoreCase = true))) {
-                    // Assuming filename format: position_ActualName_timestamp.jpg
-                    val parts = file.nameWithoutExtension.split("_")
-                    val positionName = if (parts.size > 2) {
-                        parts.subList(1, parts.size -1).joinToString(" ").capitalize()
-                    } else {
-                        file.nameWithoutExtension.replace("_", " ").capitalize()
+        // Load from app's external files directory only if not a reset
+        if (!isReset) {
+            val customPositionsDir = getExternalFilesDir("positions")
+            if (customPositionsDir != null && customPositionsDir.exists()) {
+                customPositionsDir.listFiles()?.forEach { file ->
+                    if (file.isFile && (file.name.endsWith(".jpg", ignoreCase = true) || file.name.endsWith(".png", ignoreCase = true) || file.name.endsWith(".jpeg", ignoreCase = true))) {
+                        val parts = file.nameWithoutExtension.split("_")
+                        val positionName = if (parts.size > 2 && parts.first() == "position" && parts.last().toLongOrNull() != null) {
+                            parts.drop(1).dropLast(1).joinToString(" ").capitalizeWords()
+                        } else {
+                            file.nameWithoutExtension.replace("_", " ").capitalizeWords()
+                        }
+                        // Add custom position only if it's not already in the list (e.g. from assets if names collide)
+                        if (allPositionItems.none { it.name.equals(positionName, ignoreCase = true) }) {
+                            allPositionItems.add(PositionItem(positionName, file.absolutePath, false)) // isAsset = false
+                        }
                     }
-                    allPositionItems.add(PositionItem(positionName, file.absolutePath, false)) // isAsset = false
                 }
             }
         }
@@ -840,13 +930,10 @@ private fun setupLibraryRecyclerView() {
             positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
         }
     }
+
     // Helper function to capitalize first letter of each word
-    private fun String.capitalize(): String {
-        return this.split(" ").joinToString(" ") { word ->
-            word.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase() else it.toString()
-            }
-        }
+    fun String.capitalizeWords(): String = split(" ").joinToString(" ") { word ->
+        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
     private fun setupSearch() {

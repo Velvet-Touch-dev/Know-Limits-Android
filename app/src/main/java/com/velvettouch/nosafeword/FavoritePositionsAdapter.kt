@@ -58,9 +58,20 @@ class FavoritePositionsAdapter(
             // Load position image
             try {
                 val context = itemView.context
-                val inputStream = context.assets.open(position.imagePath)
-                val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
-                positionImageView.setImageDrawable(drawable)
+                if (position.isAsset) {
+                    val inputStream = context.assets.open(position.imagePath) // imagePath is "positions/asset.webp"
+                    val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
+                    positionImageView.setImageDrawable(drawable)
+                    inputStream.close()
+                } else {
+                    // imagePath is an absolute file path for custom positions
+                    val imageFile = java.io.File(position.imagePath)
+                    if (imageFile.exists()) {
+                        positionImageView.setImageURI(android.net.Uri.fromFile(imageFile))
+                    } else {
+                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Set placeholder if image loading fails
@@ -75,7 +86,7 @@ class FavoritePositionsAdapter(
         }
 
         override fun areContentsTheSame(oldItem: FavoritesActivity.Position, newItem: FavoritesActivity.Position): Boolean {
-            return oldItem.name == newItem.name && oldItem.imagePath == newItem.imagePath
+            return oldItem == newItem // Since Position is a data class, this checks all properties
         }
     }
 }

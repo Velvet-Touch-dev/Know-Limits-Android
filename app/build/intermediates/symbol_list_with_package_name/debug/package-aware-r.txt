@@ -3339,6 +3339,7 @@ id bounceEnd
 id bounceStart
 id buttonPanel
 id button_cancel_add_position
+id button_reset_to_default
 id button_save_position
 id button_select_image
 id buttons_container
@@ -4262,7 +4263,9 @@ string previous
 string random
 string random_scene
 string randomize
+string reset
 string reset_confirm
+string reset_positions_confirm_message
 string reset_to_default
 string save
 string scene_content

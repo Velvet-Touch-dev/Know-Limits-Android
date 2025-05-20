@@ -3338,6 +3338,7 @@ int id bounceEnd 0x7f09006b
 int id bounceStart 0x7f09006c
 int id buttonPanel 0x7f09006d
 int id button_cancel_add_position 0x7f09006e
+int id button_reset_to_default 0x7f090266
 int id button_save_position 0x7f09006f
 int id button_select_image 0x7f090070
 int id buttons_container 0x7f090071
@@ -4261,7 +4262,9 @@ int string previous 0x7f1100c4
 int string random 0x7f1100c5
 int string random_scene 0x7f1100c6
 int string randomize 0x7f1100c7
+int string reset 0x7f1100ee
 int string reset_confirm 0x7f1100c8
+int string reset_positions_confirm_message 0x7f1100ef
 int string reset_to_default 0x7f1100c9
 int string save 0x7f1100ca
 int string scene_content 0x7f1100cb

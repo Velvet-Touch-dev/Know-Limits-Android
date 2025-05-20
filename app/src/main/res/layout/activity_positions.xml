@@ -256,6 +256,16 @@
                         android:padding="8dp"
                         tools:listitem="@layout/item_position_library" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_reset_to_default"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/reset_to_default"
+                        style="@style/Widget.Material3.Button.OutlinedButton" />
+
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/fab_add_position"
                         android:layout_width="wrap_content"

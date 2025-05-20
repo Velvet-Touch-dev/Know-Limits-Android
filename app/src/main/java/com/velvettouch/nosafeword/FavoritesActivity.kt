@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
+import java.util.Locale
 import java.io.File
 import java.io.IOException
 import org.json.JSONArray
@@ -317,28 +318,49 @@ class FavoritesActivity : BaseActivity() {
     }
     
     private fun loadPositions() {
+        val loadedPositions = mutableListOf<Position>()
+        // Load from assets
         try {
-            val positionImages = assets.list("positions")?.filter { 
-                it.endsWith(".jpg", ignoreCase = true) || 
-                it.endsWith(".jpeg", ignoreCase = true) 
-            } ?: emptyList()
-            
-            val positionsList = positionImages.map { imageName ->
-                val nameWithoutExtension = imageName.substringBeforeLast(".")
-                val displayName = nameWithoutExtension.replace("_", " ").capitalize()
-                
-                Position(
-                    name = displayName,
-                    imagePath = "positions/$imageName"
-                )
+            val assetManager = assets
+            val assetFiles = assetManager.list("positions")
+            assetFiles?.forEach { fileName ->
+                if (fileName.endsWith(".webp", ignoreCase = true) || fileName.endsWith(".png", ignoreCase = true) || fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true)) {
+                    val nameWithoutExtension = fileName.substringBeforeLast(".")
+                    // Ensure consistent capitalization with how names are stored in favorites
+                    val displayName = nameWithoutExtension.replace("_", " ").split(" ").joinToString(" ") { word ->
+                        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                    }
+                    loadedPositions.add(Position(displayName, "positions/$fileName", true))
+                }
             }
-            
-            positions = positionsList.toMutableList()
         } catch (e: IOException) {
             e.printStackTrace()
+            // Handle error, e.g., show a toast
         }
+
+        // Load custom positions from app's external files directory
+        val customPositionsDir = getExternalFilesDir("positions")
+        if (customPositionsDir != null && customPositionsDir.exists()) {
+            customPositionsDir.listFiles()?.forEach { file ->
+                if (file.isFile && (file.name.endsWith(".jpg", ignoreCase = true) || file.name.endsWith(".png", ignoreCase = true) || file.name.endsWith(".webp", ignoreCase = true) || file.name.endsWith(".jpeg", ignoreCase = true))) {
+                    val parts = file.nameWithoutExtension.split("_")
+                    // Ensure consistent capitalization
+                    val displayName = if (parts.size > 2 && parts.first() == "position" && parts.last().toLongOrNull() != null) {
+                        parts.drop(1).dropLast(1).joinToString(" ").split(" ").joinToString(" ") { word ->
+                           word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                        }
+                    } else {
+                        file.nameWithoutExtension.replace("_", " ").split(" ").joinToString(" ") { word ->
+                            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                        }
+                    }
+                    loadedPositions.add(Position(displayName, file.absolutePath, false))
+                }
+            }
+        }
+        positions = loadedPositions // Assign the combined list
     }
-    
+
     private fun loadJSONFromAsset(fileName: String): String {
         val inputStream = assets.open(fileName)
         val bufferedReader = java.io.BufferedReader(java.io.InputStreamReader(inputStream))
@@ -387,9 +409,10 @@ class FavoritesActivity : BaseActivity() {
     // Data class for Position items
     data class Position(
         val name: String,
-        val imagePath: String
+        val imagePath: String,
+        val isAsset: Boolean // Added to distinguish asset from file path
     )
-    
+
     /**
      * Sets up swipe-to-delete functionality for the scene favorites recycler view
      */

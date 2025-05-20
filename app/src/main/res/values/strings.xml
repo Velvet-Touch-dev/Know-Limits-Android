@@ -67,7 +67,9 @@
     <string name="seductiveness_level_low">Normal</string>
     <string name="seductiveness_level_medium">Seductive</string>
     <string name="seductiveness_level_high">Very Seductive</string>
-    
+    <string name="reset_positions_confirm_message">Are you sure you want to reset to default positions? This will delete all custom positions and remove any default positions hidden from the list.</string>
+    <string name="reset">Reset</string>
+
     <!-- Color palette settings -->
     <string name="theme_mode">Theme Mode</string>
     <string name="color_palette">Color Palette</string>
