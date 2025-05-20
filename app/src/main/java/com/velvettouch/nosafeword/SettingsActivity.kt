@@ -242,11 +242,12 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 
                 // Show/hide "Just Black" option based on the selected theme
                 val justBlackRadio = dialogView.findViewById<android.widget.RadioButton>(R.id.color_just_black_radio)
-                adjustJustBlackVisibility(justBlackRadio, themeRadioGroup.checkedRadioButtonId)
+                val justBlackDivider = dialogView.findViewById<android.view.View>(R.id.just_black_divider)
+                adjustJustBlackVisibility(justBlackRadio, justBlackDivider, themeRadioGroup.checkedRadioButtonId)
                 
                 // Listen for theme changes to update Just Black visibility
                 themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-                    adjustJustBlackVisibility(justBlackRadio, checkedId)
+                    adjustJustBlackVisibility(justBlackRadio, justBlackDivider, checkedId)
                     
                     // If switching away from dark mode and Just Black is selected, reset to default
                     if (checkedId != R.id.theme_dark_radio && colorRadioGroup.checkedRadioButtonId == R.id.color_just_black_radio) {
@@ -312,13 +313,16 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         }
     }
     
-    private fun adjustJustBlackVisibility(justBlackRadio: android.widget.RadioButton, themeRadioId: Int) {
+    private fun adjustJustBlackVisibility(justBlackRadio: android.widget.RadioButton, justBlackDivider: android.view.View, themeRadioId: Int) {
         // Only show Just Black option for dark mode
-        justBlackRadio.visibility = if (themeRadioId == R.id.theme_dark_radio) {
+        val visibility = if (themeRadioId == R.id.theme_dark_radio) {
             android.view.View.VISIBLE
         } else {
             android.view.View.GONE
         }
+        
+        justBlackRadio.visibility = visibility
+        justBlackDivider.visibility = visibility
     }
 
     private fun updateThemeSelection(themeMode: Int, colorMode: Int) {

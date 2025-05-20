@@ -3093,6 +3093,10 @@ drawable btn_radio_off_mtrl
 drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
+drawable circle_black_color
+drawable circle_default_color
+drawable circle_pink_color
+drawable circle_purple_color
 drawable design_fab_background
 drawable design_ic_visibility
 drawable design_ic_visibility_off
@@ -3353,6 +3357,8 @@ id closest
 id collapseActionView
 id color_default_radio
 id color_just_black_radio
+id color_options_card
+id color_palette_title
 id color_pink_radio
 id color_purple_radio
 id color_radio_group
@@ -3481,6 +3487,7 @@ id italic
 id item_touch_helper_previous_elevation
 id jumpToEnd
 id jumpToStart
+id just_black_divider
 id labeled
 id layout
 id left
@@ -3755,6 +3762,8 @@ id textinput_suffix_text
 id theme_card
 id theme_dark_radio
 id theme_light_radio
+id theme_mode_title
+id theme_options_card
 id theme_radio_group
 id theme_system_radio
 id theme_value
