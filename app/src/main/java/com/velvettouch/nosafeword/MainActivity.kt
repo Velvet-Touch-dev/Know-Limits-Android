@@ -353,10 +353,12 @@ class MainActivity : BaseActivity() {
                         displayScene(scenes[currentSceneIndex])
 
                         // Update button state
-                        previousButton.isEnabled = historyPosition > 0
+                        // previousButton.isEnabled = historyPosition > 0 // Now handled by updatePreviousButtonState
+                        updatePreviousButtonState()
                     } else {
                         // Show a message if there's no previous scene
                         showMaterialToast("No previous scene available", false)
+                        updatePreviousButtonState() // Ensure button is visually disabled
                     }
                     sceneCardView.startAnimation(fadeIn)
                 }
@@ -806,7 +808,8 @@ class MainActivity : BaseActivity() {
         displayScene(scenes[currentSceneIndex])
 
         // Update button state
-        previousButton.isEnabled = historyPosition > 0
+        // previousButton.isEnabled = historyPosition > 0 // Now handled by updatePreviousButtonState
+        updatePreviousButtonState()
     }
 
     /**
@@ -839,6 +842,8 @@ class MainActivity : BaseActivity() {
         displayScene(scenes[currentSceneIndex])
 
         // Update button state
+        // previousButton.isEnabled = historyPosition > 0 // Now handled by updatePreviousButtonState
+        updatePreviousButtonState()
         previousButton.isEnabled = historyPosition > 0
     }
 
@@ -885,6 +890,15 @@ class MainActivity : BaseActivity() {
 
         // Refresh the options menu to update the favorite icon
         invalidateOptionsMenu()
+
+        // Update the state of the previous button
+        updatePreviousButtonState()
+    }
+
+    private fun updatePreviousButtonState() {
+        val isFirstSceneInHistory = historyPosition <= 0
+        previousButton.isEnabled = !isFirstSceneInHistory
+        previousButton.alpha = if (isFirstSceneInHistory) 0.5f else 1.0f
     }
 
     private fun formatMarkdownText(text: String): String {
