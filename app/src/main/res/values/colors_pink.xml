@@ -8,7 +8,7 @@
     
     <color name="pink_light_secondary">#F48FB1</color>
     <color name="pink_light_onSecondary">#000000</color>
-    <color name="pink_light_secondaryContainer">#FFDEE7</color>
+    <color name="pink_light_secondaryContainer">#FFC1D3</color>
     <color name="pink_light_onSecondaryContainer">#3B001B</color>
     
     <color name="pink_light_tertiary">#F06292</color>
