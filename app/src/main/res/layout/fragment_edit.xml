@@ -32,7 +32,10 @@
             app:icon="@drawable/ic_restore"
             android:contentDescription="@string/reset_to_default"
             android:stateListAnimator="@animator/no_shadow"
-            app:elevation="0dp" />
+            app:elevation="0dp"
+            app:backgroundTint="?attr/colorPrimary"
+            app:iconTint="?attr/colorOnPrimary"
+            android:textColor="?attr/colorOnPrimary" />
             
         <View
             android:layout_width="0dp"
@@ -46,7 +49,9 @@
             android:contentDescription="@string/new_scene"
             app:srcCompat="@drawable/ic_add"
             app:compatShadowEnabled="false"
-            app:elevation="0dp" />
+            app:elevation="0dp"
+            app:backgroundTint="?attr/colorPrimary"
+            app:tint="?attr/colorOnPrimary" />
     </LinearLayout>
 
 </FrameLayout>
