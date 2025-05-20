@@ -79,6 +79,7 @@ int animator mtrl_fab_hide_motion_spec 0x7f02001f
 int animator mtrl_fab_show_motion_spec 0x7f020020
 int animator mtrl_fab_transformation_sheet_collapse_spec 0x7f020021
 int animator mtrl_fab_transformation_sheet_expand_spec 0x7f020022
+int animator no_shadow 0x7f020023
 int array theme_options 0x7f030000
 int attr SharedValue 0x7f040000
 int attr SharedValueId 0x7f040001
