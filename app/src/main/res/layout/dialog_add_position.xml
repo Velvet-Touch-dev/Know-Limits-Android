@@ -13,15 +13,22 @@
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
         android:layout_marginBottom="16dp"/>
 
-    <ImageView
-        android:id="@+id/add_position_image_preview"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_image_24"
-        android:background="?attr/colorSurfaceVariant"
-        android:contentDescription="@string/position_image_preview"
-        android:layout_marginBottom="16dp"/>
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:id="@+id/add_position_image_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_image_24"
+            android:contentDescription="@string/position_image_preview"/>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_select_image"

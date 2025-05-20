@@ -3105,6 +3105,7 @@ drawable circle_pink_color
 drawable circle_pitch_black_color
 drawable circle_purple_color
 drawable circle_purple_void_color
+drawable delete_button_background
 drawable design_fab_background
 drawable design_ic_visibility
 drawable design_ic_visibility_off
@@ -3777,6 +3778,7 @@ id textSpacerNoButtons
 id textSpacerNoTitle
 id textStart
 id textTop
+id text_content_area
 id text_input_end_icon
 id text_input_error_icon
 id text_input_layout_position_name
