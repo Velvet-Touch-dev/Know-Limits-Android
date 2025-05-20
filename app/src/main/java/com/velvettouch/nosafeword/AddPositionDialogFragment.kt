@@ -36,6 +36,11 @@ class AddPositionDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.App_Material3_DialogFragment)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_add_position, container, false)
     }

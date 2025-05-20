@@ -3109,6 +3109,7 @@ int drawable design_ic_visibility 0x7f08008d
 int drawable design_ic_visibility_off 0x7f08008e
 int drawable design_password_eye 0x7f08008f
 int drawable design_snackbar_background 0x7f080090
+int drawable dialog_background_rounded 0x7f080107
 int drawable ic_add 0x7f080091
 int drawable ic_arrow_back 0x7f080092
 int drawable ic_arrow_back_black_24 0x7f080093
@@ -4312,6 +4313,7 @@ int style Animation_Design_BottomSheetDialog 0x7f120005
 int style Animation_Material3_BottomSheetDialog 0x7f120006
 int style Animation_Material3_SideSheetDialog 0x7f120007
 int style Animation_MaterialComponents_BottomSheetDialog 0x7f120008
+int style App_Material3_DialogFragment 0x7f120459
 int style Base_AlertDialog_AppCompat 0x7f120009
 int style Base_AlertDialog_AppCompat_Light 0x7f12000a
 int style Base_Animation_AppCompat_Dialog 0x7f12000b
@@ -4587,6 +4589,8 @@ int style Base_Widget_MaterialComponents_TextView 0x7f120118
 int style CardView 0x7f120119
 int style CardView_Dark 0x7f12011a
 int style CardView_Light 0x7f12011b
+int style MaterialAlertDialog_App_Body_Text 0x7f12045a
+int style MaterialAlertDialog_App_Title_Text 0x7f12045b
 int style MaterialAlertDialog_Material3 0x7f12011c
 int style MaterialAlertDialog_Material3_Animation 0x7f12011d
 int style MaterialAlertDialog_Material3_Body_Text 0x7f12011e
@@ -5041,6 +5045,8 @@ int style Widget_App_Button 0x7f1202de
 int style Widget_App_CardView 0x7f1202df
 int style Widget_App_CardView_Dark 0x7f1202e0
 int style Widget_App_CardView_PitchBlack 0x7f1202e1
+int style Widget_App_DialogButton 0x7f12045c
+int style Widget_App_DialogButton_Text 0x7f12045d
 int style Widget_App_Switch_PitchBlack 0x7f1202e2
 int style Widget_AppCompat_ActionBar 0x7f1202e3
 int style Widget_AppCompat_ActionBar_Solid 0x7f1202e4

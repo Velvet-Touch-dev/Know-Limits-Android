@@ -2361,6 +2361,23 @@
     <item name="android:windowEnterAnimation">@anim/mtrl_bottom_sheet_slide_in</item>
     <item name="android:windowExitAnimation">@anim/mtrl_bottom_sheet_slide_out</item>
   </style>
+    <style name="App.Material3.DialogFragment" parent="ThemeOverlay.Material3.Dialog.Alert">
+        
+        <item name="android:windowBackground">@drawable/dialog_background_rounded</item>
+        
+        
+        
+         
+
+        
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text</item>
+        
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButton.Text</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.DialogButton.Text</item>
+    </style>
     <style name="Base.AlertDialog.AppCompat" parent="android:Widget">
         <item name="android:layout">@layout/abc_alert_dialog_material</item>
         <item name="listLayout">@layout/abc_select_dialog_material</item>
@@ -5708,6 +5725,12 @@
     <style name="CardView.Light">
         <item name="cardBackgroundColor">@color/cardview_light_background</item>
     </style>
+    <style name="MaterialAlertDialog.App.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
     <style name="MaterialAlertDialog.Material3" parent="MaterialAlertDialog.MaterialComponents">
     <item name="enforceMaterialTheme">true</item>
     <item name="android:layout">@layout/m3_alert_dialog</item>
@@ -6707,9 +6730,7 @@
         
         
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
-
         
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         
         
         
@@ -7394,6 +7415,13 @@
     <style name="Widget.App.CardView" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">16dp</item>
         <item name="cardElevation">2dp</item>
+    </style>
+    <style name="Widget.App.DialogButton" parent="Widget.Material3.Button">
+        <item name="android:textColor">?attr/colorPrimary</item> 
+        
+    </style>
+    <style name="Widget.App.DialogButton.Text" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
     <style name="Widget.AppCompat.ActionBar" parent="Base.Widget.AppCompat.ActionBar">
     </style>

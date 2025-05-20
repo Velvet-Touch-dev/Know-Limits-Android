@@ -7,9 +7,7 @@
         
         <!-- Set default card appearance -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
-
-        <!-- Material 3 Dialog Theme -->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+        
         
         
         <!-- Text colors -->
@@ -33,6 +31,45 @@
         <item name="cardCornerRadius">16dp</item>
         <item name="cardElevation">2dp</item>
     </style>
-    
+
+    <!-- Custom DialogFragment Theme for Material 3 -->
+    <style name="App.Material3.DialogFragment" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <!-- Background of the dialog window -->
+        <item name="android:windowBackground">@drawable/dialog_background_rounded</item>
+        <!-- You might need to define dialog_background_rounded.xml in res/drawable -->
+        <!-- Or, for simpler color background with M3 shape: -->
+        <!-- <item name="android:background">?attr/colorSurfaceContainerHigh</item> -->
+        <!-- <item name="dialogCornerRadius">28dp</item> --> <!-- M3 default, might need to be applied differently -->
+
+        <!-- Title text appearance -->
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <!-- Body text appearance -->
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.App.Body.Text</item>
+        <!-- Button styles -->
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.DialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.DialogButton.Text</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.DialogButton.Text</item>
+    </style>
+
+    <!-- Dialog Title Text Style -->
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Dialog Body Text Style -->
+    <style name="MaterialAlertDialog.App.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Dialog Button Style (Filled) -->
+    <style name="Widget.App.DialogButton" parent="Widget.Material3.Button">
+        <item name="android:textColor">?attr/colorPrimary</item> <!-- Or colorOnPrimary if background is primary -->
+        <!-- Add other button attributes if needed -->
+    </style>
+
+    <!-- Dialog Button Style (Text) -->
+    <style name="Widget.App.DialogButton.Text" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 
 </resources>
