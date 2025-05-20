@@ -3511,6 +3511,7 @@ int id ignore 0x7f090112
 int id ignoreRequest 0x7f090113
 int id image 0x7f090114
 int id image_view_drag_handle_planned_item 0x7f090115
+int id image_view_planned_item_position_preview 0x7f09028d
 int id immediateStop 0x7f090116
 int id included 0x7f090117
 int id indeterminate 0x7f090118
@@ -3819,6 +3820,7 @@ int id text_input_error_icon 0x7f090245
 int id text_input_layout_position_name 0x7f090246
 int id text_input_start_icon 0x7f090247
 int id text_view_planned_item_name 0x7f090248
+int id text_view_planned_item_scene_preview 0x7f09028e
 int id text_view_planned_item_type 0x7f090249
 int id textinput_counter 0x7f09024a
 int id textinput_error 0x7f09024b

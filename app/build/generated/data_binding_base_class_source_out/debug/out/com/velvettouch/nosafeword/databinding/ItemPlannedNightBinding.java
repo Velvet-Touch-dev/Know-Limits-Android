@@ -28,19 +28,29 @@ public final class ItemPlannedNightBinding implements ViewBinding {
   public final ImageView imageViewDragHandlePlannedItem;
 
   @NonNull
+  public final ImageView imageViewPlannedItemPositionPreview;
+
+  @NonNull
   public final TextView textViewPlannedItemName;
+
+  @NonNull
+  public final TextView textViewPlannedItemScenePreview;
 
   @NonNull
   public final TextView textViewPlannedItemType;
 
   private ItemPlannedNightBinding(@NonNull MaterialCardView rootView,
       @NonNull ImageButton buttonDeletePlannedItem,
-      @NonNull ImageView imageViewDragHandlePlannedItem, @NonNull TextView textViewPlannedItemName,
+      @NonNull ImageView imageViewDragHandlePlannedItem,
+      @NonNull ImageView imageViewPlannedItemPositionPreview,
+      @NonNull TextView textViewPlannedItemName, @NonNull TextView textViewPlannedItemScenePreview,
       @NonNull TextView textViewPlannedItemType) {
     this.rootView = rootView;
     this.buttonDeletePlannedItem = buttonDeletePlannedItem;
     this.imageViewDragHandlePlannedItem = imageViewDragHandlePlannedItem;
+    this.imageViewPlannedItemPositionPreview = imageViewPlannedItemPositionPreview;
     this.textViewPlannedItemName = textViewPlannedItemName;
+    this.textViewPlannedItemScenePreview = textViewPlannedItemScenePreview;
     this.textViewPlannedItemType = textViewPlannedItemType;
   }
 
@@ -83,9 +93,21 @@ public final class ItemPlannedNightBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.image_view_planned_item_position_preview;
+      ImageView imageViewPlannedItemPositionPreview = ViewBindings.findChildViewById(rootView, id);
+      if (imageViewPlannedItemPositionPreview == null) {
+        break missingId;
+      }
+
       id = R.id.text_view_planned_item_name;
       TextView textViewPlannedItemName = ViewBindings.findChildViewById(rootView, id);
       if (textViewPlannedItemName == null) {
+        break missingId;
+      }
+
+      id = R.id.text_view_planned_item_scene_preview;
+      TextView textViewPlannedItemScenePreview = ViewBindings.findChildViewById(rootView, id);
+      if (textViewPlannedItemScenePreview == null) {
         break missingId;
       }
 
@@ -96,7 +118,8 @@ public final class ItemPlannedNightBinding implements ViewBinding {
       }
 
       return new ItemPlannedNightBinding((MaterialCardView) rootView, buttonDeletePlannedItem,
-          imageViewDragHandlePlannedItem, textViewPlannedItemName, textViewPlannedItemType);
+          imageViewDragHandlePlannedItem, imageViewPlannedItemPositionPreview,
+          textViewPlannedItemName, textViewPlannedItemScenePreview, textViewPlannedItemType);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

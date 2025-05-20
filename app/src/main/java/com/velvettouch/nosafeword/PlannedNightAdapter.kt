@@ -1,14 +1,17 @@
 package com.velvettouch.nosafeword
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.velvettouch.nosafeword.databinding.ItemPlannedNightBinding
+import java.io.File
+import java.io.IOException
 import java.util.Collections
+import java.util.Locale
 
 class PlannedNightAdapter(
     private val plannedItems: MutableList<PlannedItem>,
@@ -70,7 +73,45 @@ class PlannedNightAdapter(
         fun bind(item: PlannedItem) {
             binding.textViewPlannedItemName.text = item.name
             binding.textViewPlannedItemType.text = item.type
-            // Potentially load an image or set an icon based on type
+
+            if (item.type.lowercase(Locale.getDefault()) == "scene") {
+                binding.textViewPlannedItemScenePreview.visibility = View.VISIBLE
+                binding.imageViewPlannedItemPositionPreview.visibility = View.GONE
+                
+                // Remove Markdown links and then truncate
+                val textWithoutMarkdownLinks = item.details?.replace(Regex("\\[([^\\]]+)\\]\\(([^)]+)\\)"), "$1") ?: ""
+                val words = textWithoutMarkdownLinks.split(Regex("\\s+")).filter { it.isNotEmpty() }
+                val previewText = words.take(100).joinToString(" ")
+                binding.textViewPlannedItemScenePreview.text = if (words.size > 100) "$previewText..." else previewText
+
+            } else if (item.type.lowercase(Locale.getDefault()) == "position") {
+                binding.textViewPlannedItemScenePreview.visibility = View.GONE
+                binding.imageViewPlannedItemPositionPreview.visibility = View.VISIBLE
+
+                val context = binding.root.context
+                try {
+                    val imagePath = item.details // This should be the filename or full path
+                    if (imagePath != null) {
+                        val inputStream = if (File(imagePath).exists()) {
+                            // It's a custom position with a full path
+                            BitmapFactory.decodeFile(imagePath)
+                        } else {
+                            // It's an asset position (filename only)
+                            val assetManager = context.assets
+                            BitmapFactory.decodeStream(assetManager.open("positions/$imagePath"))
+                        }
+                        binding.imageViewPlannedItemPositionPreview.setImageBitmap(inputStream)
+                    } else {
+                        binding.imageViewPlannedItemPositionPreview.setImageResource(R.drawable.ic_image_24) // Placeholder
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    binding.imageViewPlannedItemPositionPreview.setImageResource(R.drawable.ic_image_24) // Placeholder on error
+                }
+            } else {
+                binding.textViewPlannedItemScenePreview.visibility = View.GONE
+                binding.imageViewPlannedItemPositionPreview.visibility = View.GONE
+            }
         }
     }
 }

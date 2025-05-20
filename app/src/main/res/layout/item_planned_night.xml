@@ -51,6 +51,37 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"/>
 
+        <ImageView
+            android:id="@+id/image_view_planned_item_position_preview"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            tools:srcCompat="@tools:sample/avatars"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/text_view_planned_item_type"
+            app:layout_constraintStart_toEndOf="@id/image_view_drag_handle_planned_item"
+            app:layout_constraintEnd_toStartOf="@+id/button_delete_planned_item"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/text_view_planned_item_scene_preview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textSize="14sp"
+            tools:text="This is a preview of the scene, it could be up to 100 words long and give a good idea of what the scene is about."
+            android:visibility="gone"
+            android:maxLines="5"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/image_view_planned_item_position_preview"
+            app:layout_constraintStart_toEndOf="@id/image_view_drag_handle_planned_item"
+            app:layout_constraintEnd_toStartOf="@+id/button_delete_planned_item"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"/>
+
         <ImageButton
             android:id="@+id/button_delete_planned_item"
             android:layout_width="wrap_content"

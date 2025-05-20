@@ -3512,6 +3512,7 @@ id ignore
 id ignoreRequest
 id image
 id image_view_drag_handle_planned_item
+id image_view_planned_item_position_preview
 id immediateStop
 id included
 id indeterminate
@@ -3820,6 +3821,7 @@ id text_input_error_icon
 id text_input_layout_position_name
 id text_input_start_icon
 id text_view_planned_item_name
+id text_view_planned_item_scene_preview
 id text_view_planned_item_type
 id textinput_counter
 id textinput_error
