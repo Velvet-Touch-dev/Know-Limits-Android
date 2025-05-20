@@ -1,1 +1,243 @@
-No issues found.
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:4: Error: The color "just_black_dark_primary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_primary">#BB86FC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:5: Error: The color "just_black_dark_onPrimary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onPrimary">#000000</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:6: Error: The color "just_black_dark_primaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_primaryContainer">#3700B3</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:7: Error: The color "just_black_dark_onPrimaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onPrimaryContainer">#EADDFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:9: Error: The color "just_black_dark_secondary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_secondary">#9C27B0</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:10: Error: The color "just_black_dark_onSecondary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onSecondary">#000000</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:11: Error: The color "just_black_dark_secondaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_secondaryContainer">#7B1FA2</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:12: Error: The color "just_black_dark_onSecondaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onSecondaryContainer">#F3E5F5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:14: Error: The color "just_black_dark_tertiary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_tertiary">#CF6679</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:15: Error: The color "just_black_dark_onTertiary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onTertiary">#000000</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:16: Error: The color "just_black_dark_tertiaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_tertiaryContainer">#933D4A</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:17: Error: The color "just_black_dark_onTertiaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onTertiaryContainer">#FFDAD8</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:19: Error: The color "just_black_dark_background" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_background">#000000</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:20: Error: The color "just_black_dark_onBackground" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onBackground">#FFFFFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:21: Error: The color "just_black_dark_surface" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_surface">#000000</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:22: Error: The color "just_black_dark_onSurface" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onSurface">#FFFFFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:23: Error: The color "just_black_dark_surfaceVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_surfaceVariant">#202020</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:24: Error: The color "just_black_dark_onSurfaceVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onSurfaceVariant">#CCCCCC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:26: Error: The color "just_black_dark_outline" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_outline">#696969</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:27: Error: The color "just_black_dark_outlineVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_outlineVariant">#292929</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:29: Error: The color "just_black_dark_error" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_error">#CF6679</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:30: Error: The color "just_black_dark_onError" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onError">#000000</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:31: Error: The color "just_black_dark_errorContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_errorContainer">#8C1D18</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_just_black.xml:32: Error: The color "just_black_dark_onErrorContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="just_black_dark_onErrorContainer">#F9DEDC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:4: Error: The color "pink_dark_primary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_primary">#FFB1C8</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:5: Error: The color "pink_dark_onPrimary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onPrimary">#650033</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:6: Error: The color "pink_dark_primaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_primaryContainer">#8E0046</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:7: Error: The color "pink_dark_onPrimaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onPrimaryContainer">#FFD9E3</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:9: Error: The color "pink_dark_secondary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_secondary">#FFB1CC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:10: Error: The color "pink_dark_onSecondary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onSecondary">#5E1133</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:11: Error: The color "pink_dark_secondaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_secondaryContainer">#7B2949</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:12: Error: The color "pink_dark_onSecondaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onSecondaryContainer">#FFD9E4</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:14: Error: The color "pink_dark_tertiary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_tertiary">#EFB8C8</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:15: Error: The color "pink_dark_onTertiary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onTertiary">#5E2536</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:16: Error: The color "pink_dark_tertiaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_tertiaryContainer">#74394C</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:17: Error: The color "pink_dark_onTertiaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onTertiaryContainer">#FFD8E4</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:19: Error: The color "pink_dark_background" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_background">#201A1C</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:20: Error: The color "pink_dark_onBackground" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onBackground">#EBE0E3</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:21: Error: The color "pink_dark_surface" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_surface">#201A1C</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:22: Error: The color "pink_dark_onSurface" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onSurface">#EBE0E3</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:23: Error: The color "pink_dark_surfaceVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_surfaceVariant">#514347</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:24: Error: The color "pink_dark_onSurfaceVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onSurfaceVariant">#D7C1C5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:26: Error: The color "pink_dark_outline" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_outline">#A08D91</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:27: Error: The color "pink_dark_outlineVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_outlineVariant">#514347</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:29: Error: The color "pink_dark_error" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_error">#F2B8B5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:30: Error: The color "pink_dark_onError" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onError">#601410</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:31: Error: The color "pink_dark_errorContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_errorContainer">#8C1D18</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_pink.xml:32: Error: The color "pink_dark_onErrorContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="pink_dark_onErrorContainer">#F9DEDC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:4: Error: The color "purple_dark_primary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_primary">#D0BCFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:5: Error: The color "purple_dark_onPrimary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onPrimary">#381E72</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:6: Error: The color "purple_dark_primaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_primaryContainer">#4F378B</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:7: Error: The color "purple_dark_onPrimaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onPrimaryContainer">#EADDFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:9: Error: The color "purple_dark_secondary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_secondary">#CCC2DC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:10: Error: The color "purple_dark_onSecondary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onSecondary">#332D41</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:11: Error: The color "purple_dark_secondaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_secondaryContainer">#4A4458</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:12: Error: The color "purple_dark_onSecondaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onSecondaryContainer">#E8DEF8</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:14: Error: The color "purple_dark_tertiary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_tertiary">#EFB8C8</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:15: Error: The color "purple_dark_onTertiary" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onTertiary">#492532</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:16: Error: The color "purple_dark_tertiaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_tertiaryContainer">#633B48</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:17: Error: The color "purple_dark_onTertiaryContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onTertiaryContainer">#FFD8E4</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:19: Error: The color "purple_dark_background" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_background">#1C1B1F</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:20: Error: The color "purple_dark_onBackground" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onBackground">#E6E1E5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:21: Error: The color "purple_dark_surface" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_surface">#1C1B1F</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:22: Error: The color "purple_dark_onSurface" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onSurface">#E6E1E5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:23: Error: The color "purple_dark_surfaceVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_surfaceVariant">#49454F</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:24: Error: The color "purple_dark_onSurfaceVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onSurfaceVariant">#CAC4D0</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:26: Error: The color "purple_dark_outline" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_outline">#938F99</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:27: Error: The color "purple_dark_outlineVariant" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_outlineVariant">#49454F</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:29: Error: The color "purple_dark_error" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_error">#F2B8B5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:30: Error: The color "purple_dark_onError" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onError">#601410</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:31: Error: The color "purple_dark_errorContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_errorContainer">#8C1D18</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/aditya/Documents/Android App/app/src/main/res/values-night/colors_purple.xml:32: Error: The color "purple_dark_onErrorContainer" in values-night has no declaration in the base values folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier [MissingDefaultResource]
+    <color name="purple_dark_onErrorContainer">#F9DEDC</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "MissingDefaultResource":
+   If a resource is only defined in folders with qualifiers like -land or -en,
+   and there is no default declaration in the base folder (layout or values
+   etc), then the app will crash if that resource is accessed on a device
+   where the device is in a configuration missing the given qualifier.
+
+   As a special case, drawables do not have to be specified in the base
+   folder; if there is a match in a density folder (such as drawable-mdpi)
+   that image will be used and scaled. Note however that if you  only specify
+   a drawable in a folder like drawable-en-hdpi, the app will crash in
+   non-English locales.
+
+   There may be scenarios where you have a resource, such as a -fr drawable,
+   which is only referenced from some other resource with the same qualifiers
+   (such as a -fr style), which itself has safe fallbacks. However, this still
+   makes it possible for somebody to accidentally reference the drawable and
+   crash, so it is safer to create a default fallback in the base folder.
+   Alternatively, you can suppress the issue by adding
+   tools:ignore="MissingDefaultResource" on the element.
+
+   (This scenario frequently happens with string translations, where you might
+   delete code and the corresponding resources, but forget to delete a
+   translation. There is a dedicated issue id for that scenario, with the id
+   ExtraTranslation.)
+
+72 errors, 0 warnings

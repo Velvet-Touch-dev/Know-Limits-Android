@@ -2108,6 +2108,8 @@ com.velvettouch.nosafeword.MainActivity:
     private static final int MODE_RANDOM
     private static final java.lang.String SCENES_FILENAME
     static synthetic void updateFavoriteIcon$default(com.velvettouch.nosafeword.MainActivity,android.view.Menu,int,java.lang.Object)
+com.velvettouch.nosafeword.MyApplication$Companion
+com.velvettouch.nosafeword.MyApplication
 com.velvettouch.nosafeword.PositionsActivity:
     public static final float DEFAULT_PITCH
     public static final float DEFAULT_SPEED
@@ -2124,6 +2126,11 @@ com.velvettouch.nosafeword.Scene:
     public final com.velvettouch.nosafeword.Scene copy(int,java.lang.String,java.lang.String)
     public static synthetic com.velvettouch.nosafeword.Scene copy$default(com.velvettouch.nosafeword.Scene,int,java.lang.String,java.lang.String,int,java.lang.Object)
 com.velvettouch.nosafeword.SettingsActivity:
+    public static final int COLOR_DEFAULT
+    public static final int COLOR_JUST_BLACK
+    public static final int COLOR_PINK
+    public static final int COLOR_PITCH_BLACK
+    public static final int COLOR_PURPLE
     public static final int THEME_DARK
     public static final int THEME_LIGHT
     public static final int THEME_SYSTEM
@@ -5132,7 +5139,6 @@ kotlin.collections.MapsKt__MapsKt:
     public static final java.util.Map mapKeys(java.util.Map,kotlin.jvm.functions.Function1)
     public static final java.util.Map mapKeysTo(java.util.Map,java.util.Map,kotlin.jvm.functions.Function1)
     private static final java.util.Map mapOf()
-    public static final varargs java.util.Map mapOf(kotlin.Pair[])
     public static final java.util.Map mapValues(java.util.Map,kotlin.jvm.functions.Function1)
     public static final java.util.Map mapValuesTo(java.util.Map,java.util.Map,kotlin.jvm.functions.Function1)
     public static final java.util.Map minus(java.util.Map,java.lang.Iterable)
@@ -5158,14 +5164,12 @@ kotlin.collections.MapsKt__MapsKt:
     private static final void plusAssign(java.util.Map,kotlin.sequences.Sequence)
     private static final void plusAssign(java.util.Map,kotlin.Pair[])
     public static final void putAll(java.util.Map,kotlin.sequences.Sequence)
-    public static final void putAll(java.util.Map,kotlin.Pair[])
     private static final java.lang.Object remove(java.util.Map,java.lang.Object)
     private static final void set(java.util.Map,java.lang.Object,java.lang.Object)
     public static final java.util.Map toMap(java.util.Map,java.util.Map)
     public static final java.util.Map toMap(kotlin.sequences.Sequence)
     public static final java.util.Map toMap(kotlin.sequences.Sequence,java.util.Map)
     public static final java.util.Map toMap(kotlin.Pair[])
-    public static final java.util.Map toMap(kotlin.Pair[],java.util.Map)
     private static final kotlin.Pair toPair(java.util.Map$Entry)
 kotlin.collections.MapsKt___MapsJvmKt:
     public void <init>()
@@ -8958,6 +8962,22 @@ androidx.constraintlayout.core.motion.utils.Oscillator:
     public static void <clinit>()
 androidx.constraintlayout.core.motion.utils.TimeCycleSplineSet:
     public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$AttributesType$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$Custom$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$CycleType$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$MotionScene$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$MotionType$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$PositionType$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$TransitionType$-CC:
+    public static void <clinit>()
+androidx.constraintlayout.core.motion.utils.TypedValues$TriggerType$-CC:
+    public static void <clinit>()
 androidx.constraintlayout.core.motion.utils.VelocityMatrix:
     public static void <clinit>()
 androidx.constraintlayout.core.parser.CLElement:
@@ -9019,13 +9039,22 @@ androidx.core.app.NotificationCompat$BubbleMetadata$Api30Impl$$InternalSynthetic
 androidx.core.app.NotificationCompat$BubbleMetadata$Api30Impl$$InternalSyntheticApiModelOutline$1$8970c2cc2d805df4eec8a892aa14314be612b4b30e7572399a41bf2529d9108e$5
 androidx.core.app.NotificationCompat$MessagingStyle$$InternalSyntheticApiModelOutline$1$8fafe37e0e408f8ef0a40bf36279eb979ba7d4bf063eae6d45a5448f71b1858d$0
 androidx.core.app.NotificationCompat$MessagingStyle$$InternalSyntheticApiModelOutline$1$8fafe37e0e408f8ef0a40bf36279eb979ba7d4bf063eae6d45a5448f71b1858d$1
+androidx.core.app.NotificationCompat$MessagingStyle$$InternalSyntheticApiModelOutline$1$8fafe37e0e408f8ef0a40bf36279eb979ba7d4bf063eae6d45a5448f71b1858d$2
+androidx.core.app.NotificationCompat$MessagingStyle$$InternalSyntheticApiModelOutline$1$8fafe37e0e408f8ef0a40bf36279eb979ba7d4bf063eae6d45a5448f71b1858d$3
+androidx.core.app.NotificationCompat$MessagingStyle$$InternalSyntheticApiModelOutline$1$8fafe37e0e408f8ef0a40bf36279eb979ba7d4bf063eae6d45a5448f71b1858d$4
+androidx.core.app.NotificationCompat$MessagingStyle$Message$$InternalSyntheticApiModelOutline$1$d998a7ce4c3446d44f9a11dbbe6bcf1e6bcc8137d9b0d21ce63c984d75207723$0
 androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$0
-androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$11
+androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$10
+androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$16
 androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$1
 androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$2
 androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$3
 androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$4
 androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$5
+androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$6
+androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$7
+androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$8
+androidx.core.app.NotificationCompatBuilder$$InternalSyntheticApiModelOutline$1$73cb8751ab51b21ad35dca8bb429f18dd92b113dd98fb852fe30e6efdb45c21f$9
 androidx.core.app.Person$Api28Impl$$InternalSyntheticApiModelOutline$1$caa726a2d834a81fed73d348c63b9653896526b51ba389bb65d00787ce559d55$0
 androidx.core.app.Person$Api28Impl$$InternalSyntheticApiModelOutline$1$caa726a2d834a81fed73d348c63b9653896526b51ba389bb65d00787ce559d55$1
 androidx.core.app.Person$Api28Impl$$InternalSyntheticApiModelOutline$1$caa726a2d834a81fed73d348c63b9653896526b51ba389bb65d00787ce559d55$2
@@ -9102,7 +9131,6 @@ androidx.core.graphics.TypefaceCompatApi29Impl$$InternalSyntheticApiModelOutline
 androidx.core.graphics.TypefaceCompatApi29Impl$$InternalSyntheticApiModelOutline$1$dd52a403cd49551673381fe418fff37cac0be352735691924f0eb5637753630f$2
 androidx.core.graphics.TypefaceCompatApi29Impl$$InternalSyntheticApiModelOutline$1$dd52a403cd49551673381fe418fff37cac0be352735691924f0eb5637753630f$3
 androidx.core.graphics.TypefaceCompatApi29Impl$$InternalSyntheticApiModelOutline$1$dd52a403cd49551673381fe418fff37cac0be352735691924f0eb5637753630f$4
-androidx.core.location.LocationManagerCompat$$InternalSyntheticLambda$1$196e0315f48caa68131c5d4d780ff53e9618a06658f902ea94f753d0df163305$0
 androidx.core.location.LocationManagerCompat$$InternalSyntheticLambda$1$4b686989cc5201bebc2616b016e9de639ff469afea1271914c5205eef1c15cba$0
 androidx.core.location.LocationManagerCompat$GpsStatusTransport$$InternalSyntheticLambda$1$71fbd7573f6d22c7f37038e43187f10ca326b1863a8f750c3871c160d4bd4632$1
 androidx.core.location.LocationManagerCompat$LocationListenerTransport$$InternalSyntheticLambda$1$a1215584c05a8a906ecf33703577a40283aa2fa74d1d8925cf09c5f83217558c$0
@@ -9110,8 +9138,6 @@ androidx.core.location.LocationManagerCompat$LocationListenerTransport$$Internal
 androidx.core.location.LocationManagerCompat$PreRGnssStatusTransport$$InternalSyntheticLambda$1$5ffc7e3fe90a841ea14a779ee0b62820aa912b5775fe6b829249516110ff85e2$0
 androidx.core.location.LocationManagerCompat$PreRGnssStatusTransport$$InternalSyntheticLambda$1$63da51862172ef85dde6fa8cfef64fabeee2db74bcafe61bb5e0ace911a908e6$0
 androidx.core.location.LocationManagerCompat$PreRGnssStatusTransport$$InternalSyntheticLambda$1$f600033d009c7c55db12dda4a5a7bd0a2eea73faff2e631405f4c14d1ffb80d0$0
-androidx.core.location.LocationManagerCompat:
-    public static synthetic java.lang.Boolean $r8$lambda$JLIcm4BkQpukCiUbhX4BKZUICt4()
 androidx.core.location.LocationRequestCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$84d71ded9383957732cda3998c2061dee7011b7e6d81b885003de19dfb530978$0
 androidx.core.location.LocationRequestCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$84d71ded9383957732cda3998c2061dee7011b7e6d81b885003de19dfb530978$1
 androidx.core.location.LocationRequestCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$84d71ded9383957732cda3998c2061dee7011b7e6d81b885003de19dfb530978$2
@@ -9121,22 +9147,22 @@ androidx.core.location.LocationRequestCompat$Api31Impl$$InternalSyntheticApiMode
 androidx.core.location.LocationRequestCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$84d71ded9383957732cda3998c2061dee7011b7e6d81b885003de19dfb530978$6
 androidx.core.os.MessageCompat:
     public static void <clinit>()
-androidx.core.text.ICUCompat:
-    public static void <clinit>()
 androidx.core.text.PrecomputedTextCompat$Params$$InternalSyntheticApiModelOutline$1$d539f91e740aecc14230a6be59093fa1df0850e96c3d5ef7514b1176d74b662e$0
 androidx.core.text.PrecomputedTextCompat$Params$$InternalSyntheticApiModelOutline$1$d539f91e740aecc14230a6be59093fa1df0850e96c3d5ef7514b1176d74b662e$1
 androidx.core.text.PrecomputedTextCompat$Params$$InternalSyntheticApiModelOutline$1$d539f91e740aecc14230a6be59093fa1df0850e96c3d5ef7514b1176d74b662e$2
 androidx.core.text.PrecomputedTextCompat$Params$$InternalSyntheticApiModelOutline$1$d539f91e740aecc14230a6be59093fa1df0850e96c3d5ef7514b1176d74b662e$3
+androidx.core.util.Predicate$$InternalSyntheticBackport$1$e73610860034f0114ddf9ca4e89a52d9921492a0f656fd7998303d117fbcf390$0
 androidx.core.util.Predicate$$InternalSyntheticLambda$1$10311a921db29db4980593dc16c4a372247ca771a1a2724db76f3df6ba1da32a$0:
     private static synthetic void $r8$constructor$androidx$core$content$IntentSanitizer$Builder$$InternalSyntheticLambda$1$7d9644adee1ace72db72759bae3e30a2d9f0692307de0097e7908bbeab2f4e39$0()
 androidx.core.util.Predicate$$InternalSyntheticLambda$1$55683e14d6b27789ec9f301c95fe6a7a23b82c2acead0969f64d0458cd705860$0
 androidx.core.util.Predicate$$InternalSyntheticLambda$1$7592f8cc08ad9a58231c1edce4e9ccecc20357d85880d2bdb5fbf73cbe2068f4$0
 androidx.core.util.Predicate$$InternalSyntheticLambda$1$a67f0abc015fdc258cb6cf3977a7c97d9151bf4e2f0904c020d2ef6e67ee9a62$0
 androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$0
-androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$2
-androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$3
+androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$1
 androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$4
 androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$5
+androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$6
+androidx.core.view.ContentInfoCompat$Api31Impl$$InternalSyntheticApiModelOutline$1$d176996ff060e1441b68769ec4c701a12a573ee58dda2aacd7c07492032cdeda$7
 androidx.core.view.KeyEventDispatcher:
     public static void <clinit>()
 androidx.core.view.ViewKt$$InternalSyntheticLambda$1$eaeec230ad18322270ddc31a5b44e9b72eb4a48998d18487c3168283ce7da220$0
@@ -9566,9 +9592,6 @@ com.google.android.material.button.MaterialButton:
     public final boolean isIconTop()
     public static boolean isLayoutRTL()
 com.google.android.material.button.MaterialButtonHelper:
-    public static final boolean IS_LOLLIPOP
-    public static final boolean IS_MIN_LOLLIPOP
-    public static void <clinit>()
     public static android.graphics.drawable.Drawable createBackground()
     public static int getCornerRadius()
     public static int getInsetBottom()
@@ -9941,11 +9964,12 @@ com.google.android.material.datepicker.CompositeDateValidator$3:
 com.google.android.material.datepicker.CompositeDateValidator:
     public static synthetic com.google.android.material.datepicker.CompositeDateValidator$Operator access$000()
     public static synthetic com.google.android.material.datepicker.CompositeDateValidator$Operator access$100()
-com.google.android.material.datepicker.DateFormatTextWatcher$$InternalSyntheticLambda$1$09d591b553e0b91fd38a140b583055e4c3bd38134df8b0dff6a8c7adc6e4aa2e$0
+com.google.android.material.datepicker.DateFormatTextWatcher$$InternalSyntheticLambda$2$09d591b553e0b91fd38a140b583055e4c3bd38134df8b0dff6a8c7adc6e4aa2e$0
 com.google.android.material.datepicker.DateFormatTextWatcher:
     public abstract java.lang.Runnable createRangeErrorCallback()
     public static void runValidation(com.google.android.material.textfield.TextInputLayout,java.lang.Runnable)
     public static java.lang.String sanitizeDateString(java.lang.String)
+com.google.android.material.datepicker.DateSelector$-CC
 com.google.android.material.datepicker.DateStrings:
     public static androidx.core.util.Pair getDateRangeString()
     public static java.lang.String getDateString()
@@ -10087,8 +10111,6 @@ com.google.android.material.datepicker.TimeSource:
     public static java.util.Calendar now$1()
     public static com.google.android.material.datepicker.TimeSource system()
 com.google.android.material.datepicker.UtcDates:
-    public static int findCharactersInDateFormatPattern(int,java.lang.String,java.lang.String,int)
-    public static java.text.DateFormat getFormat()
     public static java.text.DateFormat getFullFormat()
     public static java.text.DateFormat getMediumFormat()
     public static java.util.TimeZone getTimeZone()
@@ -10131,7 +10153,9 @@ com.google.android.material.dialog.MaterialAlertDialogBuilder:
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setSingleChoiceItems$3()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setView()
 com.google.android.material.dialog.MaterialDialogs
-com.google.android.material.drawable.DrawableUtils
+com.google.android.material.drawable.DrawableUtils:
+    public static void setOutlineToPath(android.graphics.Outline,android.graphics.Path)
+    public static android.graphics.PorterDuffColorFilter updateTintFilter(android.graphics.drawable.Drawable,android.content.res.ColorStateList,android.graphics.PorterDuff$Mode)
 com.google.android.material.elevation.ElevationOverlayProvider:
     public static float calculateOverlayAlphaFraction()
     public final int compositeOverlayIfNeeded(float,int)
@@ -10469,13 +10493,8 @@ com.google.android.material.internal.StateListAnimator:
     public static void setState()
     public static void start()
 com.google.android.material.internal.StaticLayoutBuilderCompat:
-    public static final int DEFAULT_HYPHENATION_FREQUENCY
-    public static java.lang.reflect.Constructor constructor
-    public static boolean initialized
     public final int start
     public com.google.android.material.internal.StaticLayoutBuilderConfigurer staticLayoutBuilderConfigurer
-    public static android.text.TextDirectionHeuristic textDirection
-    public static void <clinit>()
     public static void createConstructorWithReflection()
     public static com.google.android.material.internal.StaticLayoutBuilderCompat setAlignment()
     public static com.google.android.material.internal.StaticLayoutBuilderCompat setEllipsize()
@@ -10562,7 +10581,6 @@ com.google.android.material.navigation.NavigationBarItemView$ActiveIndicatorTran
     public static void updateForProgress()
 com.google.android.material.navigation.NavigationBarItemView:
     public static synthetic android.widget.ImageView access$200()
-    public final void calculateTextScaleFactors(float,float)
     public abstract void clear()
     public abstract android.widget.FrameLayout getCustomParentForBadge()
     public final boolean hasBadge()
@@ -10646,9 +10664,10 @@ com.google.android.material.resources.TextAppearance:
     public final boolean shouldLoadFontSynchronously(android.content.Context)
 com.google.android.material.resources.TextAppearanceConfig
 com.google.android.material.ripple.RippleDrawableCompat$1
-com.google.android.material.ripple.RippleDrawableCompat$RippleDrawableCompatState
-com.google.android.material.ripple.RippleDrawableCompat
-com.google.android.material.ripple.RippleUtils$RippleUtilsLollipop
+com.google.android.material.ripple.RippleDrawableCompat$RippleDrawableCompatState:
+    public static com.google.android.material.ripple.RippleDrawableCompat newDrawable()
+com.google.android.material.ripple.RippleDrawableCompat:
+    public static com.google.android.material.ripple.RippleDrawableCompat mutate()
 com.google.android.material.ripple.RippleUtils:
     public static final int[] HOVERED_FOCUSED_STATE_SET
     public static final int[] HOVERED_STATE_SET
@@ -11072,7 +11091,6 @@ com.google.android.material.snackbar.SnackbarManager:
     public static void onDismissed()
     public static void onShown()
     public final void pauseTimeout()
-    public final void restoreTimeoutIfPaused()
     public static void scheduleTimeoutLocked()
     public static void showNextSnackbarLocked()
 com.google.android.material.stateful.ExtendableSavedState$1:
@@ -11088,7 +11106,6 @@ com.google.android.material.tabs.TabIndicatorInterpolator:
 com.google.android.material.tabs.TabLayout$AdapterChangeListener:
     public static void setAutoRefresh()
 com.google.android.material.tabs.TabLayout$SlidingTabIndicator:
-    public int layoutDirection
     public static void animateIndicatorToPosition()
     public static boolean childrenNeedLayout()
     public static void jumpIndicatorToIndicatorPosition()
@@ -11261,7 +11278,6 @@ com.google.android.material.textfield.EndIconDelegate:
     public abstract boolean shouldTintIconOnError()
 com.google.android.material.textfield.IconHelper:
     public static int[] mergeIconState(com.google.android.material.textfield.TextInputLayout,com.google.android.material.internal.CheckableImageButton)
-    public static void setCompatRippleBackgroundIfNeeded()
     public static void setIconMinSize(com.google.android.material.internal.CheckableImageButton,int)
     public static void setIconOnClickListener(com.google.android.material.internal.CheckableImageButton,android.view.View$OnClickListener,android.view.View$OnLongClickListener)
     public static void setIconOnLongClickListener(com.google.android.material.internal.CheckableImageButton,android.view.View$OnLongClickListener)
@@ -11347,6 +11363,9 @@ com.google.android.material.textfield.TextInputEditText:
     public final boolean shouldUseTextInputLayoutFocusedRect(com.google.android.material.textfield.TextInputLayout)
 com.google.android.material.textfield.TextInputLayout$$InternalSyntheticApiModelOutline$1$210c7beff28088e63fa64bf9b17c0261d59c8af6f2ebf8dd5c9590290991e314$0
 com.google.android.material.textfield.TextInputLayout$$InternalSyntheticApiModelOutline$1$210c7beff28088e63fa64bf9b17c0261d59c8af6f2ebf8dd5c9590290991e314$1
+com.google.android.material.textfield.TextInputLayout$$InternalSyntheticApiModelOutline$1$210c7beff28088e63fa64bf9b17c0261d59c8af6f2ebf8dd5c9590290991e314$2
+com.google.android.material.textfield.TextInputLayout$$InternalSyntheticApiModelOutline$1$210c7beff28088e63fa64bf9b17c0261d59c8af6f2ebf8dd5c9590290991e314$3
+com.google.android.material.textfield.TextInputLayout$$InternalSyntheticApiModelOutline$1$210c7beff28088e63fa64bf9b17c0261d59c8af6f2ebf8dd5c9590290991e314$4
 com.google.android.material.textfield.TextInputLayout$$InternalSyntheticLambda$1$c731f40b0043b1db8be68c13833421f1a22aba3e352b73c80e80778290593594$0
 com.google.android.material.textfield.TextInputLayout$LengthCounter:
     public abstract int countLength(android.text.Editable)
@@ -11510,6 +11529,10 @@ com.google.android.material.transformation.FabTransformationScrimBehavior:
     public static void createScrimAnimation()
 com.google.android.material.transformation.FabTransformationSheetBehavior:
     public static void updateImportantForAccessibility()
+com.velvettouch.nosafeword.BaseActivity$Companion
+com.velvettouch.nosafeword.BaseActivity:
+    public static final com.velvettouch.nosafeword.BaseActivity$Companion Companion
+    public abstract void applyTheme()
 com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0
 com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$2
 com.velvettouch.nosafeword.BodyWorshipActivity$VoiceSettings
@@ -11618,8 +11641,10 @@ com.velvettouch.nosafeword.MainActivity:
     public static void switchToRandomMode()
     public final void toggleFavorite()
     public final void updateFavoriteIcon()
+com.velvettouch.nosafeword.NoSafeWordApplication$Companion
 com.velvettouch.nosafeword.NoSafeWordApplication:
-    public static void applyThemeMode()
+    public static final com.velvettouch.nosafeword.NoSafeWordApplication$Companion Companion
+    public static void applyThemeSettings()
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$0
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$2
 com.velvettouch.nosafeword.PositionsActivity$VoiceSettings
@@ -11656,9 +11681,11 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static final com.velvettouch.nosafeword.SettingsActivity$Companion Companion
     public boolean isTtsReady
     public static void <clinit>()
-    public static void applyTheme()
+    public static void applyThemeAndColor()
     public static boolean isTtsEnabled()
+    public static int loadColorSetting()
     public static int loadThemeSetting()
+    public final void saveColorSetting(int)
     public static void saveThemeSetting()
     public final void saveTtsSetting(boolean)
     public static void setupThemeSelector()
@@ -11700,6 +11727,7 @@ kotlin.UInt:
 kotlin.UIntArray$Iterator:
     public static int next-pVg5ArA()
 kotlin.UIntArray
+kotlin.ULong$$InternalSyntheticBackport$1$e15d3503916cc1972c7106d018ec0a8ac0634588a4c03f967f28eaae265a45cc$0
 kotlin.ULong$Companion
 kotlin.ULong:
     public static final kotlin.ULong$Companion Companion
@@ -12161,6 +12189,7 @@ kotlin.text.StringsKt__StringsKt:
     public static java.lang.String substringAfter$default(java.lang.String,java.lang.String)
 kotlin.text.StringsKt___StringsJvmKt
 kotlin.text._OneToManyTitlecaseMappingsKt
+kotlin.time.Duration$$InternalSyntheticBackport$1$aa05760c2a1c30df271e26da0b9d452ed91a3ca68f29483162a334351c641ba3$0
 kotlin.time.Duration$Companion
 kotlin.time.Duration:
     public static final kotlin.time.Duration$Companion Companion
@@ -12242,6 +12271,7 @@ kotlinx.coroutines.CoroutineExceptionHandler:
     public static final kotlinx.coroutines.CoroutineExceptionHandler$Key Key
     static void <clinit>()
 kotlinx.coroutines.CoroutineExceptionHandlerKt
+kotlinx.coroutines.CoroutineId$$InternalSyntheticBackport$1$88b55f898e619a095cc84362698f8c48db09cb4c6a8de7e7316829eafb79037d$0
 kotlinx.coroutines.CoroutineId:
     public final long id
     public static long getId()
@@ -12289,8 +12319,6 @@ kotlinx.coroutines.EventLoopImplBase$$InternalSyntheticBackportWithForwarding$1$
 kotlinx.coroutines.EventLoopImplBase$$InternalSyntheticBackportWithForwarding$1$aeab95763291ac38bb3cbaf97795d70e7a4357755f96c1d37ffb9daf08f53eb2$2
 kotlinx.coroutines.EventLoopImplBase$DelayedTask:
     public abstract int compareTo()
-    public final kotlinx.coroutines.internal.ThreadSafeHeap getHeap()
-    public final int getIndex()
     public abstract boolean timeToExecute()
 kotlinx.coroutines.EventLoopImplBase:
     public abstract void closeQueue()
@@ -12925,14 +12953,9 @@ kotlinx.coroutines.internal.SystemPropsKt__SystemProps_commonKt
 kotlinx.coroutines.internal.ThreadSafeHeap:
     public final kotlinx.coroutines.internal.ThreadSafeHeapNode firstImpl()
     public static int getSize()
-    public final kotlinx.coroutines.internal.ThreadSafeHeapNode peek()
     public static kotlinx.coroutines.internal.ThreadSafeHeapNode[] realloc()
-    public static boolean remove()
     public static void setSize()
     public static void siftDownFrom()
-kotlinx.coroutines.internal.ThreadSafeHeapNode:
-    public abstract kotlinx.coroutines.internal.ThreadSafeHeap getHeap()
-    public abstract int getIndex()
 kotlinx.coroutines.internal.ThreadState:
     public static void append()
     public static void restore()
