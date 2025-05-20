@@ -3095,6 +3095,7 @@ int drawable btn_radio_on_to_off_mtrl_animation 0x7f080084
 int drawable circle_black_color 0x7f080085
 int drawable circle_default_color 0x7f080086
 int drawable circle_pink_color 0x7f080087
+int drawable circle_pitch_black_color 0x7f080104
 int drawable circle_purple_color 0x7f080088
 int drawable design_fab_background 0x7f080089
 int drawable design_ic_visibility 0x7f08008a
@@ -3358,6 +3359,7 @@ int id color_default_radio 0x7f090087
 int id color_just_black_radio 0x7f090088
 int id color_options_card 0x7f090089
 int id color_palette_title 0x7f09008a
+int id color_pitch_black_radio 0x7f090255
 int id color_purple_radio 0x7f09008c
 int id color_radio_group 0x7f09008d
 int id compress 0x7f09008e
@@ -3603,6 +3605,7 @@ int id pathRelative 0x7f09017d
 int id peekHeight 0x7f09017e
 int id percent 0x7f09017f
 int id pin 0x7f090180
+int id pitch_black_divider 0x7f090256
 int id pitch_seekbar 0x7f090181
 int id pitch_value 0x7f090182
 int id position 0x7f090183
@@ -4886,6 +4889,7 @@ int style Theme_RandomSceneApp 0x7f120269
 int style Theme_RandomSceneApp_AppColors 0x7f12026a
 int style Theme_RandomSceneApp_JustBlack 0x7f12026b
 int style Theme_RandomSceneApp_Pink 0x7f12026c
+int style Theme_RandomSceneApp_PitchBlack 0x7f120456
 int style Theme_RandomSceneApp_Purple 0x7f12026d
 int style ThemeOverlay_AppCompat 0x7f12026e
 int style ThemeOverlay_AppCompat_ActionBar 0x7f12026f
@@ -5001,6 +5005,7 @@ int style ThemeOverlay_MaterialComponents_Toolbar_Surface 0x7f1202dc
 int style Widget_App_Button 0x7f1202dd
 int style Widget_App_CardView 0x7f1202de
 int style Widget_App_CardView_Dark 0x7f1202df
+int style Widget_App_CardView_PitchBlack 0x7f120457
 int style Widget_AppCompat_ActionBar 0x7f1202e0
 int style Widget_AppCompat_ActionBar_Solid 0x7f1202e1
 int style Widget_AppCompat_ActionBar_TabBar 0x7f1202e2

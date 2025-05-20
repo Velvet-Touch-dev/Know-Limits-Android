@@ -3096,6 +3096,7 @@ drawable btn_radio_on_to_off_mtrl_animation
 drawable circle_black_color
 drawable circle_default_color
 drawable circle_pink_color
+drawable circle_pitch_black_color
 drawable circle_purple_color
 drawable design_fab_background
 drawable design_ic_visibility
@@ -3359,6 +3360,7 @@ id color_default_radio
 id color_just_black_radio
 id color_options_card
 id color_palette_title
+id color_pitch_black_radio
 id color_purple_radio
 id color_radio_group
 id compress
@@ -3604,6 +3606,7 @@ id pathRelative
 id peekHeight
 id percent
 id pin
+id pitch_black_divider
 id pitch_seekbar
 id pitch_value
 id position
@@ -4887,6 +4890,7 @@ style Theme_RandomSceneApp
 style Theme_RandomSceneApp_AppColors
 style Theme_RandomSceneApp_JustBlack
 style Theme_RandomSceneApp_Pink
+style Theme_RandomSceneApp_PitchBlack
 style Theme_RandomSceneApp_Purple
 style ThemeOverlay_AppCompat
 style ThemeOverlay_AppCompat_ActionBar
@@ -5002,6 +5006,7 @@ style ThemeOverlay_MaterialComponents_Toolbar_Surface
 style Widget_App_Button
 style Widget_App_CardView
 style Widget_App_CardView_Dark
+style Widget_App_CardView_PitchBlack
 style Widget_AppCompat_ActionBar
 style Widget_AppCompat_ActionBar_Solid
 style Widget_AppCompat_ActionBar_TabBar

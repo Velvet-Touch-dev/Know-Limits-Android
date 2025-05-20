@@ -22,7 +22,8 @@ abstract class BaseActivity : AppCompatActivity() {
             // Dark mode themes
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_DEFAULT), R.style.Theme_RandomSceneApp_AppColors),
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_PURPLE), R.style.Theme_RandomSceneApp_Purple),
-            Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_JUST_BLACK), R.style.Theme_RandomSceneApp_JustBlack)
+            Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_JUST_BLACK), R.style.Theme_RandomSceneApp_JustBlack),
+            Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_PITCH_BLACK), R.style.Theme_RandomSceneApp_PitchBlack)
         )
     }
 

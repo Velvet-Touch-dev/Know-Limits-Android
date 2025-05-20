@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pitch Black theme - pure black background with gray accents -->
+    <style name="Theme.RandomSceneApp.PitchBlack" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary brand color - subtle gray -->
+        <item name="colorPrimary">#9E9E9E</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorPrimaryContainer">#121212</item>
+        <item name="colorOnPrimaryContainer">#E0E0E0</item>
+        
+        <!-- Secondary brand color - darker gray -->
+        <item name="colorSecondary">#757575</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="colorSecondaryContainer">#1E1E1E</item>
+        <item name="colorOnSecondaryContainer">#BDBDBD</item>
+        
+        <!-- Tertiary brand color - darker accent -->
+        <item name="colorTertiary">#616161</item>
+        <item name="colorOnTertiary">#000000</item>
+        <item name="colorTertiaryContainer">#121212</item>
+        <item name="colorOnTertiaryContainer">#9E9E9E</item>
+        
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Background colors -->
+        <item name="android:windowBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
+        <item name="colorOnSurface">#BDBDBD</item>
+        <item name="colorSurfaceVariant">#121212</item>
+        <item name="colorOnSurfaceVariant">#9E9E9E</item>
+        <item name="colorOnBackground">#BDBDBD</item>
+        
+        <!-- Outline colors -->
+        <item name="colorOutline">#757575</item>
+        <item name="colorOutlineVariant">#424242</item>
+        
+        <!-- Error color -->
+        <item name="colorError">#CF6679</item>
+        <item name="colorOnError">#000000</item>
+        <item name="colorErrorContainer">#1F1F1F</item>
+        <item name="colorOnErrorContainer">#CF6679</item>
+        
+        <!-- Card customization -->
+        <item name="materialCardViewStyle">@style/Widget.App.CardView.PitchBlack</item>
+    </style>
+    
+    <!-- Card style for Pitch Black theme -->
+    <style name="Widget.App.CardView.PitchBlack" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">#121212</item>
+    </style>
+</resources>

@@ -41,6 +41,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         const val COLOR_PURPLE = 1
         const val COLOR_PINK = 2
         const val COLOR_JUST_BLACK = 3
+        const val COLOR_PITCH_BLACK = 4
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -236,6 +237,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 when (currentColor) {
                     COLOR_PURPLE -> colorRadioGroup.check(R.id.color_purple_radio)
                     COLOR_JUST_BLACK -> colorRadioGroup.check(R.id.color_just_black_radio)
+                    COLOR_PITCH_BLACK -> colorRadioGroup.check(R.id.color_pitch_black_radio)
                     else -> colorRadioGroup.check(R.id.color_default_radio) // Default is now pink
                 }
                 
@@ -248,9 +250,12 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
                     adjustJustBlackVisibility(justBlackRadio, justBlackDivider, checkedId)
                     
-                    // If switching away from dark mode and Just Black is selected, reset to default
-                    if (checkedId != R.id.theme_dark_radio && colorRadioGroup.checkedRadioButtonId == R.id.color_just_black_radio) {
-                        colorRadioGroup.check(R.id.color_default_radio)
+                    // If switching away from dark mode and a black theme is selected, reset to default
+                    if (checkedId != R.id.theme_dark_radio) {
+                        if (colorRadioGroup.checkedRadioButtonId == R.id.color_just_black_radio || 
+                            colorRadioGroup.checkedRadioButtonId == R.id.color_pitch_black_radio) {
+                            colorRadioGroup.check(R.id.color_default_radio)
+                        }
                     }
                 }
                 
@@ -271,6 +276,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                         val selectedColor = when (colorRadioGroup.checkedRadioButtonId) {
                             R.id.color_purple_radio -> COLOR_PURPLE
                             R.id.color_just_black_radio -> COLOR_JUST_BLACK
+                            R.id.color_pitch_black_radio -> COLOR_PITCH_BLACK
                             else -> COLOR_DEFAULT
                         }
                         
@@ -322,9 +328,22 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         justBlackRadio.visibility = visibility
         justBlackDivider.visibility = visibility
         
+        // Get the Pitch Black options too
+        val pitchBlackRadio = (justBlackRadio.parent as RadioGroup).findViewById<android.widget.RadioButton>(R.id.color_pitch_black_radio)
+        val pitchBlackDivider = (justBlackDivider.parent as android.view.ViewGroup).findViewById<android.view.View>(R.id.pitch_black_divider)
+        
+        // Also control visibility of Pitch Black option
+        pitchBlackRadio.visibility = visibility
+        pitchBlackDivider.visibility = visibility
+        
         // Clear the checked state when hiding - fixes the selection issue
-        if (visibility == android.view.View.GONE && justBlackRadio.isChecked) {
-            justBlackRadio.isChecked = false
+        if (visibility == android.view.View.GONE) {
+            if (justBlackRadio.isChecked) {
+                justBlackRadio.isChecked = false
+            }
+            if (pitchBlackRadio.isChecked) {
+                pitchBlackRadio.isChecked = false
+            }
         }
     }
 
@@ -343,6 +362,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             val colorModeString = when (colorMode) {
                 COLOR_PURPLE -> getString(R.string.color_purple)
                 COLOR_JUST_BLACK -> getString(R.string.color_just_black)
+                COLOR_PITCH_BLACK -> "Pitch Black"
                 else -> getString(R.string.color_default) // Default is now pink
             }
             

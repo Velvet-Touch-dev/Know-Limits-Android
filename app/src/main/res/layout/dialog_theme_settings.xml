@@ -154,6 +154,27 @@
                 android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
                 android:text="@string/color_just_black"
                 android:visibility="gone" />
+                
+            <View
+                android:id="@+id/pitch_black_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:visibility="gone" />
+
+            <RadioButton
+                android:id="@+id/color_pitch_black_radio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:button="@null"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/circle_pitch_black_color"
+                android:drawablePadding="16dp"
+                android:drawableEnd="?android:attr/listChoiceIndicatorSingle"
+                android:text="Pitch Black"
+                android:visibility="gone" />
         </RadioGroup>
     </com.google.android.material.card.MaterialCardView>
 
