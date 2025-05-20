@@ -3099,6 +3099,7 @@ drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
 drawable circle_black_color
+drawable circle_black_transparent_background
 drawable circle_default_color
 drawable circle_pink_color
 drawable circle_pitch_black_color
@@ -3301,6 +3302,7 @@ id action_text
 id actions
 id activity_chooser_view_content
 id add
+id add_position_image_preview
 id add_scene_fab
 id alertTitle
 id aligned
@@ -3336,6 +3338,9 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id buttonPanel
+id button_cancel_add_position
+id button_save_position
+id button_select_image
 id buttons_container
 id cache_measures
 id callMeasure
@@ -3431,6 +3436,7 @@ id edit_content_input
 id edit_preview
 id edit_query
 id edit_recycler_view
+id edit_text_position_name
 id edit_title
 id edit_title_input
 id elastic
@@ -3443,6 +3449,7 @@ id enterAlwaysCollapsed
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
+id fab_add_position
 id fade
 id favorite_preview
 id favorite_title
@@ -3500,6 +3507,7 @@ id layout
 id left
 id leftToRight
 id legacy
+id library_tab_content
 id line1
 id line3
 id linear
@@ -3620,8 +3628,15 @@ id position_card_view
 id position_favorites_recycler_view
 id position_image
 id position_image_view
+id position_library_delete_button
+id position_library_image
+id position_library_name
 id position_name
 id position_name_text_view
+id position_search_view
+id positions_content_container
+id positions_library_recycler_view
+id positions_tabs
 id postLayout
 id pressed
 id preview_button
@@ -3632,6 +3647,7 @@ id radio
 id random_content
 id randomizeButton
 id randomize_button
+id randomize_tab_content
 id ratio
 id rectangles
 id report_drawn
@@ -3760,6 +3776,7 @@ id textStart
 id textTop
 id text_input_end_icon
 id text_input_error_icon
+id text_input_layout_position_name
 id text_input_start_icon
 id textinput_counter
 id textinput_error
@@ -3960,6 +3977,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout dialog_add_position
 layout dialog_edit_scene
 layout dialog_quick_voice_settings
 layout dialog_theme_settings
@@ -3970,6 +3988,7 @@ layout fragment_random_card
 layout item_edit_scene
 layout item_favorite_position
 layout item_favorite_scene
+layout item_position_library
 layout item_scene_card
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
@@ -4071,6 +4090,7 @@ string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string add_favorites
+string add_new_position
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
@@ -4118,6 +4138,7 @@ string hint_content
 string hint_title
 string icon_content_description
 string item_view_role_description
+string library
 string m3_ref_typeface_brand_medium
 string m3_ref_typeface_brand_regular
 string m3_ref_typeface_plain_medium
@@ -4228,6 +4249,8 @@ string path_password_eye_mask_visible
 string path_password_strike_through
 string pause
 string play
+string position_image_preview
+string position_name
 string positions
 string pref_theme_dark_value
 string pref_theme_key
@@ -4250,6 +4273,7 @@ string scene_title
 string scenes_reset
 string search
 string search_menu_title
+string search_positions
 string search_scenes
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
@@ -4258,6 +4282,7 @@ string seconds
 string seductiveness_level_high
 string seductiveness_level_low
 string seductiveness_level_medium
+string select_image
 string settings
 string share
 string share_scene

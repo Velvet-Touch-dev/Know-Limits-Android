@@ -44,6 +44,12 @@
     <string name="drawer_close">Close Navigation Drawer</string>
     <string name="positions">Positions</string>
     <string name="randomize">Randomize</string>
+    <string name="library">Library</string>
+    <string name="add_new_position">Add new position</string>
+    <string name="search_positions">Search positions...</string>
+    <string name="position_image_preview">Position image preview</string>
+    <string name="select_image">Select Image</string>
+    <string name="position_name">Position Name</string>
     <string name="auto_play">Auto Play</string>
     <string name="auto_play_on">Auto Play is On</string>
     <string name="auto_play_off">Auto Play is Off</string>

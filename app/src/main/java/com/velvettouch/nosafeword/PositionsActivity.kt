@@ -24,13 +24,21 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.SearchView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.net.Uri
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Locale
 import kotlin.random.Random
 
-class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener {
+class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositionDialogFragment.AddPositionDialogListener {
     
     private lateinit var positionImageView: ImageView
     private lateinit var positionNameTextView: TextView
@@ -44,6 +52,13 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var drawerToggle: ActionBarDrawerToggle
+    private lateinit var positionsTabs: TabLayout
+    private lateinit var randomizeTabContent: View
+    private lateinit var libraryTabContent: View
+    private lateinit var positionsLibraryRecyclerView: RecyclerView
+    private lateinit var positionLibraryAdapter: PositionLibraryAdapter
+    private var allPositionItems: MutableList<PositionItem> = mutableListOf()
+    private lateinit var positionSearchView: SearchView
     
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
@@ -243,14 +258,109 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             // Display initial random position
             displayRandomPosition()
         }
+        
+        // Initialize Tab Content Views if not already done (should be done after setContentView)
+        // Ensure these IDs match your activity_positions.xml
+        positionsTabs = findViewById(R.id.positions_tabs)
+        randomizeTabContent = findViewById(R.id.randomize_tab_content)
+        libraryTabContent = findViewById(R.id.library_tab_content)
+        positionSearchView = findViewById(R.id.position_search_view) // Initialize SearchView here
+        // RecyclerView initialization is now inside setupLibraryRecyclerView,
+        // but ensure the view ID is correct in your XML (positions_library_recycler_view)
+
+        // Setup Tab Layout
+        positionsTabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> { // Randomize
+                        randomizeTabContent.visibility = View.VISIBLE
+                        libraryTabContent.visibility = View.GONE
+                        invalidateOptionsMenu() // Re-draw options menu for this tab
+                    }
+                    1 -> { // Library
+                        randomizeTabContent.visibility = View.GONE
+                        libraryTabContent.visibility = View.VISIBLE
+                        invalidateOptionsMenu() // Re-draw options menu for this tab
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // No action needed
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // No action needed
+            }
+        })
+
+        // Set initial tab visibility correctly
+        // Assuming the first tab (Randomize) should be visible by default.
+        if (positionsTabs.selectedTabPosition == 0) {
+            randomizeTabContent.visibility = View.VISIBLE
+            libraryTabContent.visibility = View.GONE
+        } else {
+            randomizeTabContent.visibility = View.GONE
+            libraryTabContent.visibility = View.VISIBLE
+        }
+
+        setupLibraryRecyclerView() // Call to setup RecyclerView
+        loadAllPositionsForLibrary() // Call to load data into RecyclerView
+        setupSearch()
+        setupFab()
+    }
+
+    override fun onPositionAdded(name: String, imageUri: Uri?) {
+        if (imageUri == null) {
+            Toast.makeText(this, "Image URI is null, cannot save.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Create a more robust unique filename
+        val timestamp = System.currentTimeMillis()
+        val safeName = name.replace("\\s+".toRegex(), "_").replace("[^a-zA-Z0-9_\\-]".toRegex(), "")
+        val fileName = "position_${safeName}_${timestamp}.jpg"
+
+        val newPositionFile = File(getExternalFilesDir("positions"), fileName)
+        try {
+            contentResolver.openInputStream(imageUri)?.use { inputStream ->
+                FileOutputStream(newPositionFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+            // Add to the list and update adapter
+            val newPositionItem = PositionItem(name, newPositionFile.absolutePath, false) // isAsset = false
+            allPositionItems.add(newPositionItem)
+            allPositionItems.sortBy { it.name } // Keep it sorted
+            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+            Toast.makeText(this, "Position '$name' added.", Toast.LENGTH_SHORT).show()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error saving image: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setupFab() {
+        val fab: FloatingActionButton = findViewById(R.id.fab_add_position)
+        fab.setOnClickListener {
+            val dialog = AddPositionDialogFragment()
+            dialog.listener = this
+            dialog.show(supportFragmentManager, "AddPositionDialogFragment")
+        }
     }
     
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu
         menuInflater.inflate(R.menu.position_menu, menu)
         
-        // Update favorite icon
-        updateFavoriteIcon(menu)
+        // Update favorite icon visibility based on the selected tab
+        val favoriteItem = menu.findItem(R.id.action_favorite_position)
+        if (positionsTabs.selectedTabPosition == 0) {
+            updateFavoriteIcon(menu) // Update icon state (filled/empty)
+            favoriteItem?.isVisible = true
+        } else {
+            favoriteItem?.isVisible = false
+        }
         
         return true
     }
@@ -262,7 +372,10 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         
         return when (item.itemId) {
             R.id.action_favorite_position -> {
-                toggleFavorite()
+                // Only allow favorite if on randomize tab and the item is visible
+                if (positionsTabs.selectedTabPosition == 0 && item.isVisible) {
+                    toggleFavorite()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -647,15 +760,119 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         }
     }
     
+private fun setupLibraryRecyclerView() {
+        // Ensure positionsLibraryRecyclerView is initialized before use
+        if (!::positionsLibraryRecyclerView.isInitialized) {
+             positionsLibraryRecyclerView = findViewById(R.id.positions_library_recycler_view)
+        }
+
+        positionLibraryAdapter = PositionLibraryAdapter(this, mutableListOf(),
+            onItemClick = { positionItem ->
+                // Handle item click: Display the position in the "Randomize" tab
+                displayPositionByName(positionItem.name) // Use existing function
+                positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
+            },
+            onDeleteClick = { positionItem ->
+                if (positionItem.isAsset) {
+                    Toast.makeText(this, "Cannot delete default positions.", Toast.LENGTH_SHORT).show()
+                    return@PositionLibraryAdapter
+                }
+                // Actual file deletion for non-asset items
+                val fileToDelete = File(positionItem.imageName) // imageName is the absolute path for non-assets
+                if (fileToDelete.exists()) {
+                    if (fileToDelete.delete()) {
+                        allPositionItems.remove(positionItem)
+                        positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                        Toast.makeText(this, "'${positionItem.name}' deleted.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Failed to delete '${positionItem.name}'.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                     Toast.makeText(this, "File not found for '${positionItem.name}'. Could not delete.", Toast.LENGTH_SHORT).show()
+                     // If file is not found, still remove it from the list as it's inconsistent
+                     allPositionItems.remove(positionItem)
+                     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+                }
+            }
+        )
+        positionsLibraryRecyclerView.adapter = positionLibraryAdapter
+        // Use GridLayoutManager for a card-like appearance, adjust spanCount as needed
+        positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
+    }
+
+    private fun loadAllPositionsForLibrary() {
+        allPositionItems.clear()
+        // Load from assets
+        try {
+            val assetManager = assets
+            val assetFiles = assetManager.list("positions")
+            assetFiles?.forEach { fileName ->
+                if (fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".png", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true)) {
+                    val nameWithoutExtension = fileName.substringBeforeLast(".")
+                    val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+                    allPositionItems.add(PositionItem(positionName, fileName, true)) // isAsset = true
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error loading asset positions", Toast.LENGTH_SHORT).show()
+        }
+
+        // Load from app's external files directory
+        val customPositionsDir = getExternalFilesDir("positions")
+        if (customPositionsDir != null && customPositionsDir.exists()) {
+            customPositionsDir.listFiles()?.forEach { file ->
+                if (file.isFile && (file.name.endsWith(".jpg", ignoreCase = true) || file.name.endsWith(".png", ignoreCase = true) || file.name.endsWith(".jpeg", ignoreCase = true))) {
+                    // Assuming filename format: position_ActualName_timestamp.jpg
+                    val parts = file.nameWithoutExtension.split("_")
+                    val positionName = if (parts.size > 2) {
+                        parts.subList(1, parts.size -1).joinToString(" ").capitalize()
+                    } else {
+                        file.nameWithoutExtension.replace("_", " ").capitalize()
+                    }
+                    allPositionItems.add(PositionItem(positionName, file.absolutePath, false)) // isAsset = false
+                }
+            }
+        }
+
+        allPositionItems.sortBy { it.name }
+        if (::positionLibraryAdapter.isInitialized) {
+            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+        }
+    }
     // Helper function to capitalize first letter of each word
     private fun String.capitalize(): String {
         return this.split(" ").joinToString(" ") { word ->
-            word.replaceFirstChar { 
-                if (it.isLowerCase()) it.titlecase() else it.toString() 
+            word.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
             }
         }
     }
-    
+
+    private fun setupSearch() {
+        positionSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterPositions(newText)
+                return true
+            }
+        })
+    }
+
+    private fun filterPositions(query: String?) {
+        val filteredList = if (query.isNullOrEmpty()) {
+            allPositionItems
+        } else {
+            allPositionItems.filter {
+                it.name.contains(query, ignoreCase = true)
+            }
+        }
+        positionLibraryAdapter.updatePositions(filteredList)
+    }
+
     // TTS initialization callback
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
