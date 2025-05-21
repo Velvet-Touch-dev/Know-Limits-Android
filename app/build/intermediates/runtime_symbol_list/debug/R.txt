@@ -3137,6 +3137,7 @@ int drawable ic_keyboard_black_24dp 0x7f0800a6
 int drawable ic_kneeling_24 0x7f0800a7
 int drawable ic_launcher_background 0x7f0800a8
 int drawable ic_launcher_foreground 0x7f0800a9
+int drawable ic_library_books 0x7f08010e
 int drawable ic_loop_24 0x7f0800aa
 int drawable ic_m3_chip_check 0x7f0800ab
 int drawable ic_m3_chip_checked_circle 0x7f0800ac
@@ -4045,7 +4046,7 @@ int layout dialog_quick_voice_settings 0x7f0c0038
 int layout dialog_theme_settings 0x7f0c0039
 int layout dialog_voice_seductiveness 0x7f0c003a
 int layout dropdown_item 0x7f0c003b
-int layout fragment_edit 0x7f0c003c
+int layout fragment_library 0x7f0c003c
 int layout fragment_random_card 0x7f0c003d
 int layout item_edit_scene 0x7f0c003e
 int layout item_favorite_position 0x7f0c003f

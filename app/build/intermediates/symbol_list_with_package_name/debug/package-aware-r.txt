@@ -3138,6 +3138,7 @@ drawable ic_keyboard_black_24dp
 drawable ic_kneeling_24
 drawable ic_launcher_background
 drawable ic_launcher_foreground
+drawable ic_library_books
 drawable ic_loop_24
 drawable ic_m3_chip_check
 drawable ic_m3_chip_checked_circle
@@ -4046,7 +4047,7 @@ layout dialog_quick_voice_settings
 layout dialog_theme_settings
 layout dialog_voice_seductiveness
 layout dropdown_item
-layout fragment_edit
+layout fragment_library
 layout fragment_random_card
 layout item_edit_scene
 layout item_favorite_position

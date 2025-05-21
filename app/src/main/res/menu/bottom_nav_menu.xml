@@ -6,6 +6,6 @@
         android:title="@string/random" />
     <item
         android:id="@+id/navigation_edit"
-        android:icon="@drawable/ic_search"
+        android:icon="@drawable/ic_library_books"
         android:title="@string/edit" />
 </menu>
