@@ -290,12 +290,13 @@ class TaskListActivity : BaseActivity() {
 
     private fun loadSampleTasks() {
         taskItems.clear()
-        taskItems.add(TaskItem(title = "Grocery Shopping", deadline = System.currentTimeMillis() + (2 * 86400000), order = 0)) // 2 days
-        taskItems.add(TaskItem(title = "Book Doctor Appointment", isCompleted = true, order = 1))
-        taskItems.add(TaskItem(title = "Finish Project Report", deadline = System.currentTimeMillis() + (5 * 86400000), order = 2)) // 5 days
-        taskItems.add(TaskItem(title = "Call Mom", order = 3))
+        // No sample tasks will be added
         taskListAdapter.submitList(taskItems.toList())
-        saveTasksToPreferences() // Save sample tasks if loaded
+        // It's important to save the empty list to preferences if we want the list to remain empty on next launch
+        // Otherwise, if the app is launched and there are no tasks in prefs, it might call loadSampleTasks again.
+        // However, the current logic in loadTasks() calls loadSampleTasks() only if taskItems is empty *after* trying to load from prefs.
+        // So, if we save an empty list here, it should correctly reflect an empty state.
+        saveTasksToPreferences()
         updateEmptyViewVisibility()
     }
 
