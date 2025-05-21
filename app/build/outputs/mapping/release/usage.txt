@@ -394,7 +394,6 @@ com.google.android.material.button.MaterialButton:
 com.google.android.material.button.MaterialButtonToggleGroup:
     private static final java.lang.String LOG_TAG
     public void <init>(android.content.Context)
-    public void check(int)
     public void clearOnButtonCheckedListeners()
     public boolean isSelectionRequired()
     public void removeOnButtonCheckedListener(com.google.android.material.button.MaterialButtonToggleGroup$OnButtonCheckedListener)
@@ -492,27 +491,10 @@ com.google.android.material.chip.ChipDrawable:
     public void setTextColor(int)
     public void setTextColor(android.content.res.ColorStateList)
     public void setTextResource(int)
-com.google.android.material.chip.ChipGroup$1
-com.google.android.material.chip.ChipGroup$2:
-    public void onCheckedChanged(com.google.android.material.chip.ChipGroup,java.util.List)
 com.google.android.material.chip.ChipGroup$LayoutParams:
     public void <init>(android.view.ViewGroup$MarginLayoutParams)
-com.google.android.material.chip.ChipGroup$OnCheckedChangeListener:
-    public abstract void onCheckedChanged(com.google.android.material.chip.ChipGroup,int)
-com.google.android.material.chip.ChipGroup$OnCheckedStateChangeListener:
-    public abstract void onCheckedChanged(com.google.android.material.chip.ChipGroup,java.util.List)
-com.google.android.material.chip.ChipGroup$PassThroughHierarchyChangeListener:
-    final synthetic com.google.android.material.chip.ChipGroup this$0
-    private void <init>(com.google.android.material.chip.ChipGroup)
-    synthetic void <init>(com.google.android.material.chip.ChipGroup,com.google.android.material.chip.ChipGroup$1)
-    public void onChildViewAdded(android.view.View,android.view.View)
-    public void onChildViewRemoved(android.view.View,android.view.View)
 com.google.android.material.chip.ChipGroup:
     public void <init>(android.content.Context)
-    public void <init>(android.content.Context,android.util.AttributeSet)
-    public void <init>(android.content.Context,android.util.AttributeSet,int)
-    static synthetic com.google.android.material.chip.ChipGroup$OnCheckedStateChangeListener access$100(com.google.android.material.chip.ChipGroup)
-    static synthetic com.google.android.material.internal.CheckableGroup access$200(com.google.android.material.chip.ChipGroup)
     public void check(int)
     public void clearCheck()
     public boolean isSelectionRequired()
@@ -668,7 +650,6 @@ com.google.android.material.color.utilities.ToneDeltaConstraint
 com.google.android.material.color.utilities.ViewingConditions
 com.google.android.material.datepicker.CalendarConstraints$Builder:
     private static final java.lang.String DEEP_COPY_VALIDATOR_KEY
-    public void <init>()
     public com.google.android.material.datepicker.CalendarConstraints$Builder setEnd(long)
     public com.google.android.material.datepicker.CalendarConstraints$Builder setFirstDayOfWeek(int)
     public com.google.android.material.datepicker.CalendarConstraints$Builder setStart(long)
@@ -677,7 +658,6 @@ com.google.android.material.datepicker.CalendarConstraints:
     public long getEndMs()
     public java.lang.Long getOpenAtMs()
     public long getStartMs()
-    void setOpenAt(com.google.android.material.datepicker.Month)
 com.google.android.material.datepicker.CalendarItemStyle:
     int getLeftInset()
     int getRightInset()
@@ -689,8 +669,6 @@ com.google.android.material.datepicker.CompositeDateValidator:
 com.google.android.material.datepicker.DateFormatTextWatcher:
     private static final int VALIDATION_DELAY
 com.google.android.material.datepicker.DateSelector:
-    public abstract int getDefaultTitleResId()
-    public abstract void setSelection(java.lang.Object)
     public abstract void setTextInputFormat(java.text.SimpleDateFormat)
 com.google.android.material.datepicker.DateStrings:
     private void <init>()
@@ -711,7 +689,19 @@ com.google.android.material.datepicker.MaterialCalendar:
     public static com.google.android.material.datepicker.MaterialCalendar newInstance(com.google.android.material.datepicker.DateSelector,int,com.google.android.material.datepicker.CalendarConstraints)
 com.google.android.material.datepicker.MaterialCalendarGridView:
     public void <init>(android.content.Context)
-com.google.android.material.datepicker.MaterialDatePicker$Builder
+com.google.android.material.datepicker.MaterialDatePicker$Builder:
+    public static com.google.android.material.datepicker.MaterialDatePicker$Builder customDatePicker(com.google.android.material.datepicker.DateSelector)
+    public static com.google.android.material.datepicker.MaterialDatePicker$Builder dateRangePicker()
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setCalendarConstraints(com.google.android.material.datepicker.CalendarConstraints)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setDayViewDecorator(com.google.android.material.datepicker.DayViewDecorator)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setInputMode(int)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setNegativeButtonText(int)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setNegativeButtonText(java.lang.CharSequence)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setPositiveButtonText(int)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setPositiveButtonText(java.lang.CharSequence)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setTextInputFormat(java.text.SimpleDateFormat)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setTheme(int)
+    public com.google.android.material.datepicker.MaterialDatePicker$Builder setTitleText(int)
 com.google.android.material.datepicker.MaterialDatePicker$InputMode
 com.google.android.material.datepicker.MaterialDatePicker:
     private static final java.lang.String CALENDAR_CONSTRAINTS_KEY
@@ -730,18 +720,15 @@ com.google.android.material.datepicker.MaterialDatePicker:
     public boolean addOnCancelListener(android.content.DialogInterface$OnCancelListener)
     public boolean addOnDismissListener(android.content.DialogInterface$OnDismissListener)
     public boolean addOnNegativeButtonClickListener(android.view.View$OnClickListener)
-    public boolean addOnPositiveButtonClickListener(com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener)
     public void clearOnCancelListeners()
     public void clearOnDismissListeners()
     public void clearOnNegativeButtonClickListeners()
     public void clearOnPositiveButtonClickListeners()
-    static com.google.android.material.datepicker.MaterialDatePicker newInstance(com.google.android.material.datepicker.MaterialDatePicker$Builder)
     public boolean removeOnCancelListener(android.content.DialogInterface$OnCancelListener)
     public boolean removeOnDismissListener(android.content.DialogInterface$OnDismissListener)
     public boolean removeOnNegativeButtonClickListener(android.view.View$OnClickListener)
     public boolean removeOnPositiveButtonClickListener(com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener)
     public static long thisMonthInUtcMilliseconds()
-    public static long todayInUtcMilliseconds()
 com.google.android.material.datepicker.MaterialStyledDatePickerDialog
 com.google.android.material.datepicker.MaterialTextInputPicker:
     private static final java.lang.String CALENDAR_CONSTRAINTS_KEY
@@ -754,14 +741,8 @@ com.google.android.material.datepicker.PickerFragment:
     abstract com.google.android.material.datepicker.DateSelector getDateSelector()
     boolean removeOnSelectionChangedListener(com.google.android.material.datepicker.OnSelectionChangedListener)
 com.google.android.material.datepicker.RangeDateSelector:
-    public int getDefaultTitleResId()
-    public void setSelection(androidx.core.util.Pair)
-    public synthetic bridge void setSelection(java.lang.Object)
     public void setTextInputFormat(java.text.SimpleDateFormat)
 com.google.android.material.datepicker.SingleDateSelector:
-    public int getDefaultTitleResId()
-    public void setSelection(java.lang.Long)
-    public synthetic bridge void setSelection(java.lang.Object)
     public void setTextInputFormat(java.text.SimpleDateFormat)
 com.google.android.material.datepicker.SmoothCalendarLayoutManager:
     private static final float MILLISECONDS_PER_INCH
@@ -910,29 +891,9 @@ com.google.android.material.imageview.ShapeableImageView
 com.google.android.material.internal.BaselineLayout:
     public void <init>(android.content.Context)
     public void <init>(android.content.Context,android.util.AttributeSet,int)
-com.google.android.material.internal.CheckableGroup$1
-com.google.android.material.internal.CheckableGroup$OnCheckedStateChangeListener
 com.google.android.material.internal.CheckableGroup:
-    private final java.util.Map checkables
-    private final java.util.Set checkedIds
-    private com.google.android.material.internal.CheckableGroup$OnCheckedStateChangeListener onCheckedStateChangeListener
-    private boolean selectionRequired
-    private boolean singleSelection
-    public void <init>()
-    static synthetic boolean access$000(com.google.android.material.internal.CheckableGroup,com.google.android.material.internal.MaterialCheckable)
-    static synthetic boolean access$100(com.google.android.material.internal.CheckableGroup)
-    static synthetic boolean access$200(com.google.android.material.internal.CheckableGroup,com.google.android.material.internal.MaterialCheckable,boolean)
-    static synthetic void access$300(com.google.android.material.internal.CheckableGroup)
-    public void addCheckable(com.google.android.material.internal.MaterialCheckable)
-    private boolean checkInternal(com.google.android.material.internal.MaterialCheckable)
-    public void clearCheck()
-    public java.util.Set getCheckedIds()
     public boolean isSelectionRequired()
-    private void onCheckedStateChanged()
-    public void removeCheckable(com.google.android.material.internal.MaterialCheckable)
-    public void setOnCheckedStateChangeListener(com.google.android.material.internal.CheckableGroup$OnCheckedStateChangeListener)
     public void uncheck(int)
-    private boolean uncheckInternal(com.google.android.material.internal.MaterialCheckable,boolean)
 com.google.android.material.internal.CheckableImageButton:
     public void <init>(android.content.Context)
     public boolean isPressable()
@@ -1000,10 +961,7 @@ com.google.android.material.internal.FadeThroughUtils:
     private void <init>()
 com.google.android.material.internal.FlowLayout:
     public void <init>(android.content.Context)
-    public void <init>(android.content.Context,android.util.AttributeSet)
-    public void <init>(android.content.Context,android.util.AttributeSet,int)
     public void <init>(android.content.Context,android.util.AttributeSet,int,int)
-    private void loadFromAttributes(android.content.Context,android.util.AttributeSet)
 com.google.android.material.internal.ForegroundLinearLayout:
     public void <init>(android.content.Context)
 com.google.android.material.internal.ManufacturerUtils:
@@ -1011,7 +969,6 @@ com.google.android.material.internal.ManufacturerUtils:
     private static final java.lang.String MEIZU
     private static final java.lang.String SAMSUNG
     private void <init>()
-com.google.android.material.internal.MaterialCheckable
 com.google.android.material.internal.MultiViewUpdateListener$Listener
 com.google.android.material.internal.MultiViewUpdateListener
 com.google.android.material.internal.NavigationMenuItemView:
@@ -1077,7 +1034,6 @@ com.google.android.material.internal.ViewUtils$2
 com.google.android.material.internal.ViewUtils:
     public static final int EDGE_TO_EDGE_FLAGS
     private void <init>()
-    public static void addOnGlobalLayoutListener(android.view.View,android.view.ViewTreeObserver$OnGlobalLayoutListener)
     public static android.graphics.Rect calculateRectFromBounds(android.view.View)
     public static android.graphics.Rect calculateRectFromBounds(android.view.View,int)
     public static void doOnApplyWindowInsets(android.view.View,android.util.AttributeSet,int,int)
@@ -1086,8 +1042,6 @@ com.google.android.material.internal.ViewUtils:
     public static android.view.ViewGroup getContentView(android.view.View)
     public static com.google.android.material.internal.ViewOverlayImpl getContentViewOverlay(android.view.View)
     public static com.google.android.material.internal.ViewOverlayImpl getOverlay(android.view.View)
-    public static void removeOnGlobalLayoutListener(android.view.View,android.view.ViewTreeObserver$OnGlobalLayoutListener)
-    public static void removeOnGlobalLayoutListener(android.view.ViewTreeObserver,android.view.ViewTreeObserver$OnGlobalLayoutListener)
     public static void setBoundsFromRect(android.view.View,android.graphics.Rect)
     public static void showKeyboard(android.view.View)
     public static void showKeyboard(android.view.View,boolean)
@@ -1600,20 +1554,6 @@ com.google.android.material.slider.RangeSlider
 com.google.android.material.slider.Slider$OnChangeListener
 com.google.android.material.slider.Slider$OnSliderTouchListener
 com.google.android.material.slider.Slider
-com.google.android.material.snackbar.BaseTransientBottomBar$2
-com.google.android.material.snackbar.BaseTransientBottomBar$3
-com.google.android.material.snackbar.BaseTransientBottomBar$4
-com.google.android.material.snackbar.BaseTransientBottomBar$5
-com.google.android.material.snackbar.BaseTransientBottomBar$Anchor:
-    private final java.lang.ref.WeakReference anchorView
-    private final java.lang.ref.WeakReference transientBottomBar
-    private void <init>(com.google.android.material.snackbar.BaseTransientBottomBar,android.view.View)
-    static com.google.android.material.snackbar.BaseTransientBottomBar$Anchor anchor(com.google.android.material.snackbar.BaseTransientBottomBar,android.view.View)
-    public void onGlobalLayout()
-    public void onViewAttachedToWindow(android.view.View)
-    public void onViewDetachedFromWindow(android.view.View)
-    void unanchor()
-    private boolean unanchorIfNoTransientBottomBar()
 com.google.android.material.snackbar.BaseTransientBottomBar$AnimationMode
 com.google.android.material.snackbar.BaseTransientBottomBar$BaseCallback$DismissEvent
 com.google.android.material.snackbar.BaseTransientBottomBar$BaseCallback:
@@ -1626,7 +1566,6 @@ com.google.android.material.snackbar.BaseTransientBottomBar$ContentViewCallback
 com.google.android.material.snackbar.BaseTransientBottomBar$Duration
 com.google.android.material.snackbar.BaseTransientBottomBar$SnackbarBaseLayout:
     protected void <init>(android.content.Context)
-    static synthetic void access$500(com.google.android.material.snackbar.BaseTransientBottomBar$SnackbarBaseLayout,com.google.android.material.snackbar.BaseTransientBottomBar)
 com.google.android.material.snackbar.BaseTransientBottomBar:
     public static final int ANIMATION_MODE_FADE
     public static final int ANIMATION_MODE_SLIDE
@@ -1640,58 +1579,55 @@ com.google.android.material.snackbar.BaseTransientBottomBar:
     public static final int LENGTH_SHORT
     static final int MSG_DISMISS
     static final int MSG_SHOW
-    private boolean anchorViewLayoutListenerEnabled
-    private final android.content.Context context
-    private int duration
-    protected void <init>(android.content.Context,android.view.ViewGroup,android.view.View,com.google.android.material.snackbar.ContentViewCallback)
     protected void <init>(android.view.ViewGroup,android.view.View,com.google.android.material.snackbar.ContentViewCallback)
-    static synthetic android.content.Context access$000(com.google.android.material.snackbar.BaseTransientBottomBar)
-    static synthetic int access$100(com.google.android.material.snackbar.BaseTransientBottomBar)
-    static synthetic int access$200(com.google.android.material.snackbar.BaseTransientBottomBar)
-    static synthetic boolean access$2100(com.google.android.material.snackbar.BaseTransientBottomBar)
-    static synthetic void access$2200(com.google.android.material.snackbar.BaseTransientBottomBar)
-    static synthetic int access$302(com.google.android.material.snackbar.BaseTransientBottomBar,int)
-    static synthetic java.lang.String access$400()
-    static synthetic int access$602(com.google.android.material.snackbar.BaseTransientBottomBar,int)
-    static synthetic int access$702(com.google.android.material.snackbar.BaseTransientBottomBar,int)
-    static synthetic int access$802(com.google.android.material.snackbar.BaseTransientBottomBar,int)
-    public com.google.android.material.snackbar.BaseTransientBottomBar addCallback(com.google.android.material.snackbar.BaseTransientBottomBar$BaseCallback)
-    public void dismiss()
     public int getAnimationMode()
     public com.google.android.material.snackbar.BaseTransientBottomBar$Behavior getBehavior()
     public android.content.Context getContext()
-    public int getDuration()
-    protected int getSnackbarBaseLayoutResId()
     public android.view.View getView()
-    private int getViewAbsoluteBottom()
-    protected boolean hasSnackbarStyleAttr()
     public boolean isAnchorViewLayoutListenerEnabled()
     public boolean isGestureInsetBottomIgnored()
     public boolean isShown()
     public com.google.android.material.snackbar.BaseTransientBottomBar removeCallback(com.google.android.material.snackbar.BaseTransientBottomBar$BaseCallback)
     public com.google.android.material.snackbar.BaseTransientBottomBar setAnchorView(int)
-    public com.google.android.material.snackbar.BaseTransientBottomBar setAnchorView(android.view.View)
     public void setAnchorViewLayoutListenerEnabled(boolean)
     public com.google.android.material.snackbar.BaseTransientBottomBar setAnimationMode(int)
     public com.google.android.material.snackbar.BaseTransientBottomBar setBehavior(com.google.android.material.snackbar.BaseTransientBottomBar$Behavior)
-    public com.google.android.material.snackbar.BaseTransientBottomBar setDuration(int)
     public com.google.android.material.snackbar.BaseTransientBottomBar setGestureInsetBottomIgnored(boolean)
-    public void show()
-com.google.android.material.snackbar.Snackbar$Callback
+com.google.android.material.snackbar.Snackbar$Callback:
+    public static final int DISMISS_EVENT_ACTION
+    public static final int DISMISS_EVENT_CONSECUTIVE
+    public static final int DISMISS_EVENT_MANUAL
+    public static final int DISMISS_EVENT_SWIPE
+    public static final int DISMISS_EVENT_TIMEOUT
+    public void onDismissed(com.google.android.material.snackbar.Snackbar,int)
+    public synthetic bridge void onDismissed(java.lang.Object,int)
 com.google.android.material.snackbar.Snackbar$SnackbarLayout:
     public void <init>(android.content.Context)
-com.google.android.material.snackbar.Snackbar
+com.google.android.material.snackbar.Snackbar:
+    private com.google.android.material.snackbar.BaseTransientBottomBar$BaseCallback callback
+    protected static boolean hasSnackbarButtonStyleAttr(android.content.Context)
+    public boolean isShown()
+    public static com.google.android.material.snackbar.Snackbar make(android.content.Context,android.view.View,java.lang.CharSequence,int)
+    public static com.google.android.material.snackbar.Snackbar make(android.view.View,int,int)
+    public com.google.android.material.snackbar.Snackbar setAction(int,android.view.View$OnClickListener)
+    public com.google.android.material.snackbar.Snackbar setActionTextColor(int)
+    public com.google.android.material.snackbar.Snackbar setActionTextColor(android.content.res.ColorStateList)
+    public com.google.android.material.snackbar.Snackbar setBackgroundTint(int)
+    public com.google.android.material.snackbar.Snackbar setBackgroundTintList(android.content.res.ColorStateList)
+    public com.google.android.material.snackbar.Snackbar setBackgroundTintMode(android.graphics.PorterDuff$Mode)
+    public com.google.android.material.snackbar.Snackbar setCallback(com.google.android.material.snackbar.Snackbar$Callback)
+    public com.google.android.material.snackbar.Snackbar setMaxInlineActionWidth(int)
+    public com.google.android.material.snackbar.Snackbar setText(int)
+    public com.google.android.material.snackbar.Snackbar setTextColor(int)
+    public com.google.android.material.snackbar.Snackbar setTextColor(android.content.res.ColorStateList)
+    public com.google.android.material.snackbar.Snackbar setTextMaxLines(int)
 com.google.android.material.snackbar.SnackbarContentLayout:
     public void <init>(android.content.Context)
-    void updateActionTextColorAlphaIfNeeded(float)
-com.google.android.material.snackbar.SnackbarManager$SnackbarRecord:
-    void <init>(int,com.google.android.material.snackbar.SnackbarManager$Callback)
 com.google.android.material.snackbar.SnackbarManager:
     private static final int LONG_DURATION_MS
     static final int MSG_TIMEOUT
     private static final int SHORT_DURATION_MS
     public boolean isCurrent(com.google.android.material.snackbar.SnackbarManager$Callback)
-    public void show(int,com.google.android.material.snackbar.SnackbarManager$Callback)
 com.google.android.material.switchmaterial.SwitchMaterial
 com.google.android.material.tabs.FadeTabIndicatorInterpolator:
     private static final float FADE_THRESHOLD
@@ -1849,34 +1785,54 @@ com.google.android.material.timepicker.ChipTextInputComboView$TextFormatter:
     private static final java.lang.String DEFAULT_TEXT
 com.google.android.material.timepicker.ChipTextInputComboView:
     public void <init>(android.content.Context)
-    public void addInputFilter(android.text.InputFilter)
     java.lang.CharSequence getChipText()
-    public com.google.android.material.textfield.TextInputLayout getTextInput()
-    public void setChipDelegate(androidx.core.view.AccessibilityDelegateCompat)
     public void setCursorVisible(boolean)
     public void setHelperText(java.lang.CharSequence)
-    public void setText(java.lang.CharSequence)
-com.google.android.material.timepicker.ClickActionDelegate
 com.google.android.material.timepicker.ClockFaceView:
     private static final float EPSILON
     private static final int INITIAL_CAPACITY
     private static final java.lang.String VALUE_PLACEHOLDER
     public void <init>(android.content.Context)
-    int getCurrentLevel()
-    void setCurrentLevel(int)
     public void setHandRotation(float)
 com.google.android.material.timepicker.ClockHandView:
     private static final int DEFAULT_ANIMATION_DURATION
     public void <init>(android.content.Context)
-    int getCurrentLevel()
-    public void setAnimateOnTouchUp(boolean)
-    void setCurrentLevel(int)
-    public void setOnActionUpListener(com.google.android.material.timepicker.ClockHandView$OnActionUpListener)
-com.google.android.material.timepicker.MaterialTimePicker$1
-com.google.android.material.timepicker.MaterialTimePicker$2
-com.google.android.material.timepicker.MaterialTimePicker$3
-com.google.android.material.timepicker.MaterialTimePicker$Builder
-com.google.android.material.timepicker.MaterialTimePicker
+com.google.android.material.timepicker.MaterialTimePicker$Builder:
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setInputMode(int)
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setNegativeButtonText(int)
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setNegativeButtonText(java.lang.CharSequence)
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setPositiveButtonText(int)
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setPositiveButtonText(java.lang.CharSequence)
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setTheme(int)
+    public com.google.android.material.timepicker.MaterialTimePicker$Builder setTitleText(int)
+com.google.android.material.timepicker.MaterialTimePicker:
+    public static final int INPUT_MODE_CLOCK
+    static final java.lang.String INPUT_MODE_EXTRA
+    public static final int INPUT_MODE_KEYBOARD
+    static final java.lang.String NEGATIVE_BUTTON_TEXT_EXTRA
+    static final java.lang.String NEGATIVE_BUTTON_TEXT_RES_EXTRA
+    static final java.lang.String OVERRIDE_THEME_RES_ID
+    static final java.lang.String POSITIVE_BUTTON_TEXT_EXTRA
+    static final java.lang.String POSITIVE_BUTTON_TEXT_RES_EXTRA
+    static final java.lang.String TIME_MODEL_EXTRA
+    static final java.lang.String TITLE_RES_EXTRA
+    static final java.lang.String TITLE_TEXT_EXTRA
+    public boolean addOnCancelListener(android.content.DialogInterface$OnCancelListener)
+    public boolean addOnDismissListener(android.content.DialogInterface$OnDismissListener)
+    public boolean addOnNegativeButtonClickListener(android.view.View$OnClickListener)
+    public void clearOnCancelListeners()
+    public void clearOnDismissListeners()
+    public void clearOnNegativeButtonClickListeners()
+    public void clearOnPositiveButtonClickListeners()
+    public int getInputMode()
+    com.google.android.material.timepicker.TimePickerClockPresenter getTimePickerClockPresenter()
+    public boolean removeOnCancelListener(android.content.DialogInterface$OnCancelListener)
+    public boolean removeOnDismissListener(android.content.DialogInterface$OnDismissListener)
+    public boolean removeOnNegativeButtonClickListener(android.view.View$OnClickListener)
+    public boolean removeOnPositiveButtonClickListener(android.view.View$OnClickListener)
+    void setActivePresenter(com.google.android.material.timepicker.TimePickerPresenter)
+    public void setHour(int)
+    public void setMinute(int)
 com.google.android.material.timepicker.MaxInputValidator:
     public int getMax()
     public void setMax(int)
@@ -1890,48 +1846,18 @@ com.google.android.material.timepicker.TimeFormat
 com.google.android.material.timepicker.TimeModel:
     public static final java.lang.String NUMBER_FORMAT
     public static final java.lang.String ZERO_LEADING_NUMBER_FORMAT
-    public int getHourContentDescriptionResId()
-    public int getHourForDisplay()
-    public com.google.android.material.timepicker.MaxInputValidator getHourInputValidator()
-    public com.google.android.material.timepicker.MaxInputValidator getMinuteInputValidator()
-    public void setHour(int)
-    public void setHourOfDay(int)
-    public void setMinute(int)
-    public void setPeriod(int)
-com.google.android.material.timepicker.TimePickerClockPresenter$1
-com.google.android.material.timepicker.TimePickerClockPresenter$2
-com.google.android.material.timepicker.TimePickerClockPresenter
+com.google.android.material.timepicker.TimePickerClockPresenter:
+    private static final int DEGREES_PER_HOUR
+    private static final int DEGREES_PER_MINUTE
 com.google.android.material.timepicker.TimePickerControls$ActiveSelection
 com.google.android.material.timepicker.TimePickerControls$ClockPeriod
 com.google.android.material.timepicker.TimePickerControls
-com.google.android.material.timepicker.TimePickerPresenter
-com.google.android.material.timepicker.TimePickerTextInputKeyController
-com.google.android.material.timepicker.TimePickerTextInputPresenter$1
-com.google.android.material.timepicker.TimePickerTextInputPresenter$2
-com.google.android.material.timepicker.TimePickerTextInputPresenter$3
-com.google.android.material.timepicker.TimePickerTextInputPresenter$4
-com.google.android.material.timepicker.TimePickerTextInputPresenter$5
-com.google.android.material.timepicker.TimePickerTextInputPresenter
+com.google.android.material.timepicker.TimePickerPresenter:
+    public abstract void initialize()
 com.google.android.material.timepicker.TimePickerView:
     static final java.lang.String GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME
     public void <init>(android.content.Context)
-    public void addOnRotateListener(com.google.android.material.timepicker.ClockHandView$OnRotateListener)
-    int getCurrentLevel()
-    public void setActiveSelection(int)
-    public void setAnimateOnTouchUp(boolean)
-    void setCurrentLevel(int)
     public void setHandRotation(float)
-    public void setHandRotation(float,boolean)
-    public void setHourClickDelegate(androidx.core.view.AccessibilityDelegateCompat)
-    public void setMinuteHourDelegate(androidx.core.view.AccessibilityDelegateCompat)
-    public void setOnActionUpListener(com.google.android.material.timepicker.ClockHandView$OnActionUpListener)
-    void setOnDoubleTapListener(com.google.android.material.timepicker.TimePickerView$OnDoubleTapListener)
-    void setOnPeriodChangeListener(com.google.android.material.timepicker.TimePickerView$OnPeriodChangeListener)
-    void setOnSelectionChangeListener(com.google.android.material.timepicker.TimePickerView$OnSelectionChange)
-    public void setValues(java.lang.String[],int)
-    public void showToggle()
-    private void updateSelection(com.google.android.material.chip.Chip,boolean)
-    public void updateTime(int,int,int)
 com.google.android.material.tooltip.TooltipDrawable$1
 com.google.android.material.tooltip.TooltipDrawable
 com.google.android.material.transformation.ExpandableBehavior:
@@ -2079,6 +2005,276 @@ com.google.errorprone.annotations.concurrent.GuardedBy
 com.google.errorprone.annotations.concurrent.LazyInit
 com.google.errorprone.annotations.concurrent.LockMethod
 com.google.errorprone.annotations.concurrent.UnlockMethod
+com.google.gson.FieldAttributes:
+    public java.lang.annotation.Annotation getAnnotation(java.lang.Class)
+    public java.util.Collection getAnnotations()
+    public java.lang.Class getDeclaredClass()
+    public java.lang.reflect.Type getDeclaredType()
+    public java.lang.Class getDeclaringClass()
+    public java.lang.String getName()
+    public boolean hasModifier(int)
+com.google.gson.Gson:
+    static final boolean DEFAULT_COMPLEX_MAP_KEYS
+    static final boolean DEFAULT_ESCAPE_HTML
+    static final boolean DEFAULT_JSON_NON_EXECUTABLE
+    static final boolean DEFAULT_LENIENT
+    static final boolean DEFAULT_PRETTY_PRINT
+    static final boolean DEFAULT_SERIALIZE_NULLS
+    static final boolean DEFAULT_SPECIALIZE_FLOAT_VALUES
+    static final boolean DEFAULT_USE_JDK_UNSAFE
+    private static final java.lang.String JSON_NON_EXECUTABLE_PREFIX
+    public com.google.gson.internal.Excluder excluder()
+    public com.google.gson.FieldNamingStrategy fieldNamingStrategy()
+    public java.lang.Object fromJson(com.google.gson.JsonElement,com.google.gson.reflect.TypeToken)
+    public java.lang.Object fromJson(com.google.gson.JsonElement,java.lang.Class)
+    public java.lang.Object fromJson(com.google.gson.JsonElement,java.lang.reflect.Type)
+    public java.lang.Object fromJson(com.google.gson.stream.JsonReader,java.lang.reflect.Type)
+    public java.lang.Object fromJson(java.io.Reader,java.lang.Class)
+    public java.lang.Object fromJson(java.io.Reader,java.lang.reflect.Type)
+    public java.lang.Object fromJson(java.lang.String,java.lang.Class)
+    public boolean htmlSafe()
+    public com.google.gson.GsonBuilder newBuilder()
+    public boolean serializeNulls()
+    public void toJson(java.lang.Object,java.lang.Appendable)
+    public com.google.gson.JsonElement toJsonTree(java.lang.Object)
+    public com.google.gson.JsonElement toJsonTree(java.lang.Object,java.lang.reflect.Type)
+com.google.gson.GsonBuilder
+com.google.gson.JsonArray:
+    public void <init>(int)
+    public void add(java.lang.Boolean)
+    public void add(java.lang.Character)
+    public void add(java.lang.Number)
+    public void add(java.lang.String)
+    public void addAll(com.google.gson.JsonArray)
+    public java.util.List asList()
+    public boolean contains(com.google.gson.JsonElement)
+    public com.google.gson.JsonArray deepCopy()
+    public synthetic bridge com.google.gson.JsonElement deepCopy()
+    public com.google.gson.JsonElement get(int)
+    public java.math.BigDecimal getAsBigDecimal()
+    public java.math.BigInteger getAsBigInteger()
+    public boolean getAsBoolean()
+    public byte getAsByte()
+    public char getAsCharacter()
+    public double getAsDouble()
+    public float getAsFloat()
+    public int getAsInt()
+    public long getAsLong()
+    public java.lang.Number getAsNumber()
+    public short getAsShort()
+    private com.google.gson.JsonElement getAsSingleElement()
+    public java.lang.String getAsString()
+    public boolean isEmpty()
+    public com.google.gson.JsonElement remove(int)
+    public boolean remove(com.google.gson.JsonElement)
+    public com.google.gson.JsonElement set(int,com.google.gson.JsonElement)
+    public int size()
+com.google.gson.JsonDeserializationContext:
+    public abstract java.lang.Object deserialize(com.google.gson.JsonElement,java.lang.reflect.Type)
+com.google.gson.JsonElement:
+    public abstract com.google.gson.JsonElement deepCopy()
+    public java.math.BigDecimal getAsBigDecimal()
+    public java.math.BigInteger getAsBigInteger()
+    public boolean getAsBoolean()
+    public byte getAsByte()
+    public char getAsCharacter()
+    public double getAsDouble()
+    public float getAsFloat()
+    public int getAsInt()
+    public com.google.gson.JsonNull getAsJsonNull()
+    public long getAsLong()
+    public java.lang.Number getAsNumber()
+    public short getAsShort()
+    public java.lang.String getAsString()
+com.google.gson.JsonNull:
+    public synthetic bridge com.google.gson.JsonElement deepCopy()
+    public com.google.gson.JsonNull deepCopy()
+com.google.gson.JsonObject:
+    public void addProperty(java.lang.String,java.lang.Boolean)
+    public void addProperty(java.lang.String,java.lang.Character)
+    public void addProperty(java.lang.String,java.lang.Number)
+    public void addProperty(java.lang.String,java.lang.String)
+    public java.util.Map asMap()
+    public synthetic bridge com.google.gson.JsonElement deepCopy()
+    public com.google.gson.JsonObject deepCopy()
+    public com.google.gson.JsonElement get(java.lang.String)
+    public com.google.gson.JsonArray getAsJsonArray(java.lang.String)
+    public com.google.gson.JsonObject getAsJsonObject(java.lang.String)
+    public com.google.gson.JsonPrimitive getAsJsonPrimitive(java.lang.String)
+    public boolean has(java.lang.String)
+    public boolean isEmpty()
+    public java.util.Set keySet()
+    public com.google.gson.JsonElement remove(java.lang.String)
+    public int size()
+com.google.gson.JsonParser
+com.google.gson.JsonPrimitive:
+    public void <init>(java.lang.Character)
+    public synthetic bridge com.google.gson.JsonElement deepCopy()
+    public com.google.gson.JsonPrimitive deepCopy()
+    public java.math.BigDecimal getAsBigDecimal()
+    public java.math.BigInteger getAsBigInteger()
+    public byte getAsByte()
+    public char getAsCharacter()
+    public float getAsFloat()
+    public short getAsShort()
+com.google.gson.JsonSerializationContext:
+    public abstract com.google.gson.JsonElement serialize(java.lang.Object)
+    public abstract com.google.gson.JsonElement serialize(java.lang.Object,java.lang.reflect.Type)
+com.google.gson.JsonStreamParser
+com.google.gson.ReflectionAccessFilter$1
+com.google.gson.ReflectionAccessFilter$2
+com.google.gson.ReflectionAccessFilter$3
+com.google.gson.ReflectionAccessFilter$4
+com.google.gson.ReflectionAccessFilter:
+    public static final com.google.gson.ReflectionAccessFilter BLOCK_ALL_ANDROID
+    public static final com.google.gson.ReflectionAccessFilter BLOCK_ALL_JAVA
+    public static final com.google.gson.ReflectionAccessFilter BLOCK_ALL_PLATFORM
+    public static final com.google.gson.ReflectionAccessFilter BLOCK_INACCESSIBLE_JAVA
+    static void <clinit>()
+com.google.gson.TypeAdapter:
+    public final java.lang.Object fromJson(java.io.Reader)
+    public final java.lang.Object fromJson(java.lang.String)
+    public final java.lang.Object fromJsonTree(com.google.gson.JsonElement)
+    public final java.lang.String toJson(java.lang.Object)
+    public final void toJson(java.io.Writer,java.lang.Object)
+com.google.gson.annotations.package-info
+com.google.gson.internal.$Gson$Preconditions:
+    private void <init>()
+    public static java.lang.Object checkNotNull(java.lang.Object)
+com.google.gson.internal.Excluder:
+    private static final double IGNORE_VERSIONS
+    public com.google.gson.internal.Excluder disableInnerClassSerialization()
+    public com.google.gson.internal.Excluder excludeFieldsWithoutExposeAnnotation()
+    public com.google.gson.internal.Excluder withExclusionStrategy(com.google.gson.ExclusionStrategy,boolean,boolean)
+    public varargs com.google.gson.internal.Excluder withModifiers(int[])
+    public com.google.gson.internal.Excluder withVersion(double)
+com.google.gson.internal.GsonBuildConfig
+com.google.gson.internal.JavaVersion:
+    private void <init>()
+    public static int getMajorJavaVersion()
+com.google.gson.internal.NonNullElementWrapperList
+com.google.gson.internal.PreJava9DateFormatProvider:
+    public void <init>()
+    private static java.lang.String getDateFormatPattern(int)
+    public static java.text.DateFormat getUSDateFormat(int)
+com.google.gson.internal.Primitives:
+    private void <init>()
+    public static boolean isWrapperType(java.lang.reflect.Type)
+    public static java.lang.Class unwrap(java.lang.Class)
+    public static java.lang.Class wrap(java.lang.Class)
+com.google.gson.internal.ReflectionAccessFilterHelper:
+    private void <init>()
+    public static boolean isAndroidType(java.lang.Class)
+    private static boolean isAndroidType(java.lang.String)
+    public static boolean isAnyPlatformType(java.lang.Class)
+    public static boolean isJavaType(java.lang.Class)
+    private static boolean isJavaType(java.lang.String)
+com.google.gson.internal.Streams:
+    private void <init>()
+com.google.gson.internal.bind.DefaultDateTypeAdapter$1
+com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType$1:
+    protected java.util.Date deserialize(java.util.Date)
+com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType:
+    public final com.google.gson.TypeAdapterFactory createAdapterFactory(int)
+    public final com.google.gson.TypeAdapterFactory createAdapterFactory(int,int)
+    public final com.google.gson.TypeAdapterFactory createAdapterFactory(java.lang.String)
+    public final com.google.gson.TypeAdapterFactory createDefaultsAdapterFactory()
+    private com.google.gson.TypeAdapterFactory createFactory(com.google.gson.internal.bind.DefaultDateTypeAdapter)
+    protected abstract java.util.Date deserialize(java.util.Date)
+com.google.gson.internal.bind.DefaultDateTypeAdapter
+com.google.gson.internal.bind.JsonTreeReader:
+    public void <init>(com.google.gson.JsonElement)
+com.google.gson.internal.bind.JsonTreeWriter:
+    public com.google.gson.stream.JsonWriter jsonValue(java.lang.String)
+    public com.google.gson.stream.JsonWriter value(float)
+com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl:
+    public java.lang.Object deserialize(com.google.gson.JsonElement,java.lang.reflect.Type)
+    public com.google.gson.JsonElement serialize(java.lang.Object)
+    public com.google.gson.JsonElement serialize(java.lang.Object,java.lang.reflect.Type)
+com.google.gson.internal.bind.TreeTypeAdapter$SingleTypeFactory
+com.google.gson.internal.bind.TreeTypeAdapter:
+    public void <init>(com.google.gson.JsonSerializer,com.google.gson.JsonDeserializer,com.google.gson.Gson,com.google.gson.reflect.TypeToken,com.google.gson.TypeAdapterFactory)
+    public static com.google.gson.TypeAdapterFactory newFactory(com.google.gson.reflect.TypeToken,java.lang.Object)
+    public static com.google.gson.TypeAdapterFactory newFactoryWithMatchRawType(com.google.gson.reflect.TypeToken,java.lang.Object)
+    public static com.google.gson.TypeAdapterFactory newTypeHierarchyFactory(java.lang.Class,java.lang.Object)
+com.google.gson.internal.bind.TypeAdapters$26:
+    private static final java.lang.String DAY_OF_MONTH
+    private static final java.lang.String HOUR_OF_DAY
+    private static final java.lang.String MINUTE
+    private static final java.lang.String MONTH
+    private static final java.lang.String SECOND
+    private static final java.lang.String YEAR
+com.google.gson.internal.bind.TypeAdapters$30
+com.google.gson.internal.bind.TypeAdapters:
+    private void <init>()
+    public static com.google.gson.TypeAdapterFactory newFactory(com.google.gson.reflect.TypeToken,com.google.gson.TypeAdapter)
+com.google.gson.internal.bind.util.ISO8601Utils:
+    private static final java.lang.String UTC_ID
+    public void <init>()
+    public static java.lang.String format(java.util.Date)
+    public static java.lang.String format(java.util.Date,boolean)
+    public static java.lang.String format(java.util.Date,boolean,java.util.TimeZone)
+    private static void padInt(java.lang.StringBuilder,int,int)
+com.google.gson.internal.package-info
+com.google.gson.internal.reflect.ReflectionHelper:
+    private void <init>()
+com.google.gson.internal.sql.SqlTypesSupport$1:
+    protected java.sql.Date deserialize(java.util.Date)
+    protected synthetic bridge java.util.Date deserialize(java.util.Date)
+com.google.gson.internal.sql.SqlTypesSupport$2:
+    protected java.sql.Timestamp deserialize(java.util.Date)
+    protected synthetic bridge java.util.Date deserialize(java.util.Date)
+com.google.gson.internal.sql.SqlTypesSupport:
+    private void <init>()
+com.google.gson.package-info
+com.google.gson.reflect.TypeToken:
+    private static varargs java.lang.AssertionError buildUnexpectedTypeError(java.lang.reflect.Type,java.lang.Class[])
+    public static com.google.gson.reflect.TypeToken getArray(java.lang.reflect.Type)
+    public static varargs com.google.gson.reflect.TypeToken getParameterized(java.lang.reflect.Type,java.lang.reflect.Type[])
+    public boolean isAssignableFrom(com.google.gson.reflect.TypeToken)
+    public boolean isAssignableFrom(java.lang.Class)
+    public boolean isAssignableFrom(java.lang.reflect.Type)
+    private static boolean isAssignableFrom(java.lang.reflect.Type,java.lang.reflect.GenericArrayType)
+    private static boolean isAssignableFrom(java.lang.reflect.Type,java.lang.reflect.ParameterizedType,java.util.Map)
+    private static boolean matches(java.lang.reflect.Type,java.lang.reflect.Type,java.util.Map)
+    private static boolean typeEquals(java.lang.reflect.ParameterizedType,java.lang.reflect.ParameterizedType,java.util.Map)
+com.google.gson.reflect.package-info
+com.google.gson.stream.JsonReader:
+    static final int BUFFER_SIZE
+    private static final long MIN_INCOMPLETE_INTEGER
+    private static final int NUMBER_CHAR_DECIMAL
+    private static final int NUMBER_CHAR_DIGIT
+    private static final int NUMBER_CHAR_EXP_DIGIT
+    private static final int NUMBER_CHAR_EXP_E
+    private static final int NUMBER_CHAR_EXP_SIGN
+    private static final int NUMBER_CHAR_FRACTION_DIGIT
+    private static final int NUMBER_CHAR_NONE
+    private static final int NUMBER_CHAR_SIGN
+    private static final int PEEKED_BEGIN_ARRAY
+    private static final int PEEKED_BEGIN_OBJECT
+    private static final int PEEKED_BUFFERED
+    private static final int PEEKED_DOUBLE_QUOTED
+    private static final int PEEKED_DOUBLE_QUOTED_NAME
+    private static final int PEEKED_END_ARRAY
+    private static final int PEEKED_END_OBJECT
+    private static final int PEEKED_EOF
+    private static final int PEEKED_FALSE
+    private static final int PEEKED_LONG
+    private static final int PEEKED_NONE
+    private static final int PEEKED_NULL
+    private static final int PEEKED_NUMBER
+    private static final int PEEKED_SINGLE_QUOTED
+    private static final int PEEKED_SINGLE_QUOTED_NAME
+    private static final int PEEKED_TRUE
+    private static final int PEEKED_UNQUOTED
+    private static final int PEEKED_UNQUOTED_NAME
+com.google.gson.stream.JsonScope
+com.google.gson.stream.JsonWriter:
+    public com.google.gson.stream.JsonWriter jsonValue(java.lang.String)
+    public com.google.gson.stream.JsonWriter value(float)
+com.google.gson.stream.package-info
+com.velvettouch.nosafeword.AddPositionDialogFragment:
+    public final com.velvettouch.nosafeword.AddPositionDialogFragment$AddPositionDialogListener getListener()
 com.velvettouch.nosafeword.BodyWorshipActivity:
     public static final float DEFAULT_PITCH
     public static final float DEFAULT_SPEED
@@ -2096,12 +2292,14 @@ com.velvettouch.nosafeword.DeveloperSettingsActivity:
 com.velvettouch.nosafeword.FavoritesActivity$Position:
     public final java.lang.String component1()
     public final java.lang.String component2()
-    public final com.velvettouch.nosafeword.FavoritesActivity$Position copy(java.lang.String,java.lang.String)
-    public static synthetic com.velvettouch.nosafeword.FavoritesActivity$Position copy$default(com.velvettouch.nosafeword.FavoritesActivity$Position,java.lang.String,java.lang.String,int,java.lang.Object)
+    public final boolean component3()
+    public final com.velvettouch.nosafeword.FavoritesActivity$Position copy(java.lang.String,java.lang.String,boolean)
+    public static synthetic com.velvettouch.nosafeword.FavoritesActivity$Position copy$default(com.velvettouch.nosafeword.FavoritesActivity$Position,java.lang.String,java.lang.String,boolean,int,java.lang.Object)
 com.velvettouch.nosafeword.FavoritesActivity:
     private static final java.lang.String POSITION_FAVORITES_PREF
     private static final java.lang.String SCENES_FILENAME
     private static final java.lang.String SCENE_FAVORITES_PREF
+    private final java.lang.String capitalize(java.lang.String)
 com.velvettouch.nosafeword.MainActivity:
     private static final int MODE_EDIT
     private static final int MODE_FAVORITES
@@ -2110,9 +2308,25 @@ com.velvettouch.nosafeword.MainActivity:
     static synthetic void updateFavoriteIcon$default(com.velvettouch.nosafeword.MainActivity,android.view.Menu,int,java.lang.Object)
 com.velvettouch.nosafeword.MyApplication$Companion
 com.velvettouch.nosafeword.MyApplication
+com.velvettouch.nosafeword.PlannedItem:
+    public final java.lang.String component1()
+    public final java.lang.String component2()
+    public final java.lang.String component3()
+    public final java.lang.String component4()
+    public final int component5()
+    public final com.velvettouch.nosafeword.PlannedItem copy(java.lang.String,java.lang.String,java.lang.String,java.lang.String,int)
+    public static synthetic com.velvettouch.nosafeword.PlannedItem copy$default(com.velvettouch.nosafeword.PlannedItem,java.lang.String,java.lang.String,java.lang.String,java.lang.String,int,int,java.lang.Object)
+com.velvettouch.nosafeword.PositionItem:
+    public synthetic void <init>(java.lang.String,java.lang.String,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker)
+    public final java.lang.String component1()
+    public final java.lang.String component2()
+    public final boolean component3()
+    public final com.velvettouch.nosafeword.PositionItem copy(java.lang.String,java.lang.String,boolean)
+    public static synthetic com.velvettouch.nosafeword.PositionItem copy$default(com.velvettouch.nosafeword.PositionItem,java.lang.String,java.lang.String,boolean,int,java.lang.Object)
 com.velvettouch.nosafeword.PositionsActivity:
     public static final float DEFAULT_PITCH
     public static final float DEFAULT_SPEED
+    public static final java.lang.String HIDDEN_DEFAULT_POSITIONS_PREF
     public static final java.lang.String POSITION_FAVORITES_PREF
     public static final java.lang.String PREF_VOICE_PITCH
     public static final java.lang.String PREF_VOICE_SETTINGS
@@ -2123,8 +2337,11 @@ com.velvettouch.nosafeword.Scene:
     public final int component1()
     public final java.lang.String component2()
     public final java.lang.String component3()
-    public final com.velvettouch.nosafeword.Scene copy(int,java.lang.String,java.lang.String)
-    public static synthetic com.velvettouch.nosafeword.Scene copy$default(com.velvettouch.nosafeword.Scene,int,java.lang.String,java.lang.String,int,java.lang.Object)
+    public final boolean component4()
+    public final com.velvettouch.nosafeword.Scene copy(int,java.lang.String,java.lang.String,boolean)
+    public static synthetic com.velvettouch.nosafeword.Scene copy$default(com.velvettouch.nosafeword.Scene,int,java.lang.String,java.lang.String,boolean,int,java.lang.Object)
+com.velvettouch.nosafeword.SearchPlannedItemAdapter:
+    public final kotlin.jvm.functions.Function1 getOnSelectionChanged()
 com.velvettouch.nosafeword.SettingsActivity:
     public static final int COLOR_DEFAULT
     public static final int COLOR_JUST_BLACK
@@ -2135,6 +2352,18 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static final int THEME_DARK
     public static final int THEME_LIGHT
     public static final int THEME_SYSTEM
+com.velvettouch.nosafeword.TaskItem:
+    public final java.lang.String component1()
+    public final java.lang.String component2()
+    public final java.lang.Long component3()
+    public final boolean component4()
+    public final int component5()
+    public final void setCompleted(boolean)
+    public final void setDeadline(java.lang.Long)
+    public final void setTitle(java.lang.String)
+com.velvettouch.nosafeword.TaskListActivity:
+    private static final java.lang.String PREFS_NAME
+    private static final java.lang.String TASKS_KEY
 com.velvettouch.nosafeword.cardstack.CardStackView:
     public void <init>(android.content.Context)
     public final void swipeTopCardLeft()
@@ -2142,6 +2371,34 @@ com.velvettouch.nosafeword.cardstack.CardStackView:
 com.velvettouch.nosafeword.cardstack.SceneCardAdapter$CardViewHolder
 com.velvettouch.nosafeword.cardstack.SceneCardAdapter
 com.velvettouch.nosafeword.cardstack.SceneCardViewHolder
+com.velvettouch.nosafeword.databinding.ActivityBodyWorshipBinding
+com.velvettouch.nosafeword.databinding.ActivityDeveloperSettingsBinding
+com.velvettouch.nosafeword.databinding.ActivityFavoritesBinding
+com.velvettouch.nosafeword.databinding.ActivityMainBinding
+com.velvettouch.nosafeword.databinding.ActivityPositionsBinding
+com.velvettouch.nosafeword.databinding.ActivitySettingsBinding
+com.velvettouch.nosafeword.databinding.ActivityTaskListBinding
+com.velvettouch.nosafeword.databinding.DialogAddPositionBinding
+com.velvettouch.nosafeword.databinding.DialogAddTaskBinding
+com.velvettouch.nosafeword.databinding.DialogEditSceneBinding
+com.velvettouch.nosafeword.databinding.DialogQuickVoiceSettingsBinding
+com.velvettouch.nosafeword.databinding.DialogThemeSettingsBinding
+com.velvettouch.nosafeword.databinding.DialogVoiceSeductivenessBinding
+com.velvettouch.nosafeword.databinding.DropdownItemBinding
+com.velvettouch.nosafeword.databinding.FragmentLibraryBinding
+com.velvettouch.nosafeword.databinding.FragmentRandomCardBinding
+com.velvettouch.nosafeword.databinding.ItemEditSceneBinding
+com.velvettouch.nosafeword.databinding.ItemFavoritePositionBinding
+com.velvettouch.nosafeword.databinding.ItemFavoriteSceneBinding
+com.velvettouch.nosafeword.databinding.ItemPlannedNightBinding:
+    public static com.velvettouch.nosafeword.databinding.ItemPlannedNightBinding inflate(android.view.LayoutInflater)
+com.velvettouch.nosafeword.databinding.ItemPositionLibraryBinding
+com.velvettouch.nosafeword.databinding.ItemSceneCardBinding
+com.velvettouch.nosafeword.databinding.ItemSearchResultBinding:
+    public static com.velvettouch.nosafeword.databinding.ItemSearchResultBinding inflate(android.view.LayoutInflater)
+com.velvettouch.nosafeword.databinding.ItemTaskBinding
+com.velvettouch.nosafeword.databinding.NavHeaderBinding
+com.velvettouch.nosafeword.databinding.ToastMaterialYouBinding
 kotlin.ArrayIntrinsicsKt
 kotlin.BuilderInference
 kotlin.CharCodeJVMKt
@@ -4776,7 +5033,6 @@ kotlin.collections.CollectionsKt__MutableCollectionsJVMKt:
     public static final void sort(java.util.List)
     private static final void sort(java.util.List,java.util.Comparator)
     private static final void sort(java.util.List,kotlin.jvm.functions.Function2)
-    public static final void sortWith(java.util.List,java.util.Comparator)
 kotlin.collections.CollectionsKt__MutableCollectionsKt:
     public void <init>()
     public static final boolean addAll(java.util.Collection,kotlin.sequences.Sequence)
@@ -4866,8 +5122,6 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     private static final int count(java.util.Collection)
     public static final java.util.List distinct(java.lang.Iterable)
     public static final java.util.List distinctBy(java.lang.Iterable,kotlin.jvm.functions.Function1)
-    public static final java.util.List drop(java.lang.Iterable,int)
-    public static final java.util.List dropLast(java.util.List,int)
     public static final java.util.List dropLastWhile(java.util.List,kotlin.jvm.functions.Function1)
     public static final java.util.List dropWhile(java.lang.Iterable,kotlin.jvm.functions.Function1)
     private static final java.lang.Object elementAt(java.util.List,int)
@@ -4887,9 +5141,7 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     private static final java.lang.Object find(java.lang.Iterable,kotlin.jvm.functions.Function1)
     private static final java.lang.Object findLast(java.lang.Iterable,kotlin.jvm.functions.Function1)
     private static final java.lang.Object findLast(java.util.List,kotlin.jvm.functions.Function1)
-    public static final java.lang.Object first(java.lang.Iterable)
     public static final java.lang.Object first(java.lang.Iterable,kotlin.jvm.functions.Function1)
-    public static final java.lang.Object first(java.util.List)
     private static final java.lang.Object firstNotNullOf(java.lang.Iterable,kotlin.jvm.functions.Function1)
     private static final java.lang.Object firstNotNullOfOrNull(java.lang.Iterable,kotlin.jvm.functions.Function1)
     public static final java.lang.Object firstOrNull(java.lang.Iterable)
@@ -4922,9 +5174,7 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     public static final int indexOfLast(java.lang.Iterable,kotlin.jvm.functions.Function1)
     public static final int indexOfLast(java.util.List,kotlin.jvm.functions.Function1)
     public static final java.util.Set intersect(java.lang.Iterable,java.lang.Iterable)
-    public static final java.lang.Object last(java.lang.Iterable)
     public static final java.lang.Object last(java.lang.Iterable,kotlin.jvm.functions.Function1)
-    public static final java.lang.Object last(java.util.List)
     public static final java.lang.Object last(java.util.List,kotlin.jvm.functions.Function1)
     public static final int lastIndexOf(java.lang.Iterable,java.lang.Object)
     public static final int lastIndexOf(java.util.List,java.lang.Object)
@@ -5029,7 +5279,6 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     public static final java.util.List sortedBy(java.lang.Iterable,kotlin.jvm.functions.Function1)
     public static final java.util.List sortedByDescending(java.lang.Iterable,kotlin.jvm.functions.Function1)
     public static final java.util.List sortedDescending(java.lang.Iterable)
-    public static final java.util.List sortedWith(java.lang.Iterable,java.util.Comparator)
     public static final java.util.Set subtract(java.lang.Iterable,java.lang.Iterable)
     public static final int sumBy(java.lang.Iterable,kotlin.jvm.functions.Function1)
     public static final double sumByDouble(java.lang.Iterable,kotlin.jvm.functions.Function1)
@@ -5044,7 +5293,6 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     public static final int sumOfShort(java.lang.Iterable)
     private static final int sumOfUInt(java.lang.Iterable,kotlin.jvm.functions.Function1)
     private static final long sumOfULong(java.lang.Iterable,kotlin.jvm.functions.Function1)
-    public static final java.util.List take(java.lang.Iterable,int)
     public static final java.util.List takeLast(java.util.List,int)
     public static final java.util.List takeLastWhile(java.util.List,kotlin.jvm.functions.Function1)
     public static final java.util.List takeWhile(java.lang.Iterable,kotlin.jvm.functions.Function1)
@@ -5488,7 +5736,27 @@ kotlin.internal.jdk7.JDK7PlatformImplementations:
 kotlin.internal.jdk8.JDK8PlatformImplementations:
     public kotlin.text.MatchGroup getMatchResultNamedGroup(java.util.regex.MatchResult,java.lang.String)
 kotlin.io.ByteStreamsKt$iterator$1
-kotlin.io.ByteStreamsKt
+kotlin.io.ByteStreamsKt:
+    private static final java.io.BufferedInputStream buffered(java.io.InputStream,int)
+    private static final java.io.BufferedOutputStream buffered(java.io.OutputStream,int)
+    static synthetic java.io.BufferedInputStream buffered$default(java.io.InputStream,int,int,java.lang.Object)
+    static synthetic java.io.BufferedOutputStream buffered$default(java.io.OutputStream,int,int,java.lang.Object)
+    private static final java.io.BufferedReader bufferedReader(java.io.InputStream,java.nio.charset.Charset)
+    static synthetic java.io.BufferedReader bufferedReader$default(java.io.InputStream,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.BufferedWriter bufferedWriter(java.io.OutputStream,java.nio.charset.Charset)
+    static synthetic java.io.BufferedWriter bufferedWriter$default(java.io.OutputStream,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.ByteArrayInputStream byteInputStream(java.lang.String,java.nio.charset.Charset)
+    static synthetic java.io.ByteArrayInputStream byteInputStream$default(java.lang.String,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.ByteArrayInputStream inputStream(byte[])
+    private static final java.io.ByteArrayInputStream inputStream(byte[],int,int)
+    public static final kotlin.collections.ByteIterator iterator(java.io.BufferedInputStream)
+    public static final byte[] readBytes(java.io.InputStream)
+    public static final byte[] readBytes(java.io.InputStream,int)
+    public static synthetic byte[] readBytes$default(java.io.InputStream,int,int,java.lang.Object)
+    private static final java.io.InputStreamReader reader(java.io.InputStream,java.nio.charset.Charset)
+    static synthetic java.io.InputStreamReader reader$default(java.io.InputStream,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.OutputStreamWriter writer(java.io.OutputStream,java.nio.charset.Charset)
+    static synthetic java.io.OutputStreamWriter writer$default(java.io.OutputStream,java.nio.charset.Charset,int,java.lang.Object)
 kotlin.io.CloseableKt:
     private static final java.lang.Object use(java.io.Closeable,kotlin.jvm.functions.Function1)
 kotlin.io.ConsoleKt
@@ -5503,16 +5771,99 @@ kotlin.io.FileTreeWalk$FileTreeWalkIterator$WhenMappings
 kotlin.io.FileTreeWalk$FileTreeWalkIterator
 kotlin.io.FileTreeWalk$WalkState
 kotlin.io.FileTreeWalk
-kotlin.io.FilesKt
-kotlin.io.FilesKt__FilePathComponentsKt
-kotlin.io.FilesKt__FileReadWriteKt
-kotlin.io.FilesKt__FileTreeWalkKt
-kotlin.io.FilesKt__UtilsKt
+kotlin.io.FilesKt:
+    private void <init>()
+kotlin.io.FilesKt__FilePathComponentsKt:
+    public void <init>()
+    public static final java.io.File getRoot(java.io.File)
+    private static final int getRootLength$FilesKt__FilePathComponentsKt(java.lang.String)
+    public static final java.lang.String getRootName(java.io.File)
+    public static final boolean isRooted(java.io.File)
+    public static final java.io.File subPath(java.io.File,int,int)
+    public static final kotlin.io.FilePathComponents toComponents(java.io.File)
+kotlin.io.FilesKt__FileReadWriteKt:
+    public void <init>()
+    public static final void appendBytes(java.io.File,byte[])
+    public static final void appendText(java.io.File,java.lang.String,java.nio.charset.Charset)
+    public static synthetic void appendText$default(java.io.File,java.lang.String,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.BufferedReader bufferedReader(java.io.File,java.nio.charset.Charset,int)
+    static synthetic java.io.BufferedReader bufferedReader$default(java.io.File,java.nio.charset.Charset,int,int,java.lang.Object)
+    private static final java.io.BufferedWriter bufferedWriter(java.io.File,java.nio.charset.Charset,int)
+    static synthetic java.io.BufferedWriter bufferedWriter$default(java.io.File,java.nio.charset.Charset,int,int,java.lang.Object)
+    public static final void forEachBlock(java.io.File,int,kotlin.jvm.functions.Function2)
+    public static final void forEachBlock(java.io.File,kotlin.jvm.functions.Function2)
+    public static final void forEachLine(java.io.File,java.nio.charset.Charset,kotlin.jvm.functions.Function1)
+    public static synthetic void forEachLine$default(java.io.File,java.nio.charset.Charset,kotlin.jvm.functions.Function1,int,java.lang.Object)
+    private static final java.io.FileInputStream inputStream(java.io.File)
+    private static final java.io.FileOutputStream outputStream(java.io.File)
+    private static final java.io.PrintWriter printWriter(java.io.File,java.nio.charset.Charset)
+    static synthetic java.io.PrintWriter printWriter$default(java.io.File,java.nio.charset.Charset,int,java.lang.Object)
+    public static final byte[] readBytes(java.io.File)
+    public static final java.util.List readLines(java.io.File,java.nio.charset.Charset)
+    public static synthetic java.util.List readLines$default(java.io.File,java.nio.charset.Charset,int,java.lang.Object)
+    public static final java.lang.String readText(java.io.File,java.nio.charset.Charset)
+    public static synthetic java.lang.String readText$default(java.io.File,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.InputStreamReader reader(java.io.File,java.nio.charset.Charset)
+    static synthetic java.io.InputStreamReader reader$default(java.io.File,java.nio.charset.Charset,int,java.lang.Object)
+    public static final java.lang.Object useLines(java.io.File,java.nio.charset.Charset,kotlin.jvm.functions.Function1)
+    public static synthetic java.lang.Object useLines$default(java.io.File,java.nio.charset.Charset,kotlin.jvm.functions.Function1,int,java.lang.Object)
+    public static final void writeBytes(java.io.File,byte[])
+    public static final void writeText(java.io.File,java.lang.String,java.nio.charset.Charset)
+    public static synthetic void writeText$default(java.io.File,java.lang.String,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.OutputStreamWriter writer(java.io.File,java.nio.charset.Charset)
+    static synthetic java.io.OutputStreamWriter writer$default(java.io.File,java.nio.charset.Charset,int,java.lang.Object)
+kotlin.io.FilesKt__FileTreeWalkKt:
+    public void <init>()
+    public static final kotlin.io.FileTreeWalk walk(java.io.File,kotlin.io.FileWalkDirection)
+    public static synthetic kotlin.io.FileTreeWalk walk$default(java.io.File,kotlin.io.FileWalkDirection,int,java.lang.Object)
+    public static final kotlin.io.FileTreeWalk walkBottomUp(java.io.File)
+    public static final kotlin.io.FileTreeWalk walkTopDown(java.io.File)
+kotlin.io.FilesKt__UtilsKt:
+    public void <init>()
+    public static final boolean copyRecursively(java.io.File,java.io.File,boolean,kotlin.jvm.functions.Function2)
+    public static synthetic boolean copyRecursively$default(java.io.File,java.io.File,boolean,kotlin.jvm.functions.Function2,int,java.lang.Object)
+    public static final java.io.File copyTo(java.io.File,java.io.File,boolean,int)
+    public static synthetic java.io.File copyTo$default(java.io.File,java.io.File,boolean,int,int,java.lang.Object)
+    public static final java.io.File createTempDir(java.lang.String,java.lang.String,java.io.File)
+    public static synthetic java.io.File createTempDir$default(java.lang.String,java.lang.String,java.io.File,int,java.lang.Object)
+    public static final java.io.File createTempFile(java.lang.String,java.lang.String,java.io.File)
+    public static synthetic java.io.File createTempFile$default(java.lang.String,java.lang.String,java.io.File,int,java.lang.Object)
+    public static final boolean deleteRecursively(java.io.File)
+    public static final boolean endsWith(java.io.File,java.io.File)
+    public static final boolean endsWith(java.io.File,java.lang.String)
+    public static final java.lang.String getExtension(java.io.File)
+    public static final java.lang.String getInvariantSeparatorsPath(java.io.File)
+    public static final java.io.File normalize(java.io.File)
+    private static final java.util.List normalize$FilesKt__UtilsKt(java.util.List)
+    private static final kotlin.io.FilePathComponents normalize$FilesKt__UtilsKt(kotlin.io.FilePathComponents)
+    public static final java.io.File relativeTo(java.io.File,java.io.File)
+    public static final java.io.File relativeToOrNull(java.io.File,java.io.File)
+    public static final java.io.File relativeToOrSelf(java.io.File,java.io.File)
+    public static final java.io.File resolve(java.io.File,java.io.File)
+    public static final java.io.File resolve(java.io.File,java.lang.String)
+    public static final java.io.File resolveSibling(java.io.File,java.io.File)
+    public static final java.io.File resolveSibling(java.io.File,java.lang.String)
+    public static final boolean startsWith(java.io.File,java.io.File)
+    public static final boolean startsWith(java.io.File,java.lang.String)
+    public static final java.lang.String toRelativeString(java.io.File,java.io.File)
+    private static final java.lang.String toRelativeStringOrNull$FilesKt__UtilsKt(java.io.File,java.io.File)
 kotlin.io.LineReader
 kotlin.io.LinesSequence$iterator$1
 kotlin.io.LinesSequence
 kotlin.io.SerializableKt
-kotlin.io.TextStreamsKt
+kotlin.io.TextStreamsKt:
+    private static final java.io.BufferedReader buffered(java.io.Reader,int)
+    private static final java.io.BufferedWriter buffered(java.io.Writer,int)
+    static synthetic java.io.BufferedReader buffered$default(java.io.Reader,int,int,java.lang.Object)
+    static synthetic java.io.BufferedWriter buffered$default(java.io.Writer,int,int,java.lang.Object)
+    public static final void forEachLine(java.io.Reader,kotlin.jvm.functions.Function1)
+    public static final kotlin.sequences.Sequence lineSequence(java.io.BufferedReader)
+    public static final byte[] readBytes(java.net.URL)
+    public static final java.util.List readLines(java.io.Reader)
+    private static final java.lang.String readText(java.net.URL,java.nio.charset.Charset)
+    static synthetic java.lang.String readText$default(java.net.URL,java.nio.charset.Charset,int,java.lang.Object)
+    private static final java.io.StringReader reader(java.lang.String)
+    public static final java.lang.Object useLines(java.io.Reader,kotlin.jvm.functions.Function1)
 kotlin.io.path.DirectoryEntriesReader:
     public final boolean getFollowLinks()
 kotlin.io.path.ExceptionsCollector:
@@ -6552,13 +6903,11 @@ kotlin.text.CharsKt__CharJVMKt:
     private static final java.lang.String lowercase(char)
     public static final java.lang.String lowercase(char,java.util.Locale)
     private static final char lowercaseChar(char)
-    public static final java.lang.String titlecase(char,java.util.Locale)
     private static final char titlecaseChar(char)
     private static final char toLowerCase(char)
     private static final char toTitleCase(char)
     private static final char toUpperCase(char)
     private static final java.lang.String uppercase(char)
-    public static final java.lang.String uppercase(char,java.util.Locale)
     private static final char uppercaseChar(char)
 kotlin.text.CharsKt__CharKt:
     public void <init>()
@@ -6753,8 +7102,6 @@ kotlin.text.StringsKt__StringsJVMKt:
     private static final java.lang.String String(char[])
     private static final java.lang.String String(char[],int,int)
     private static final java.lang.String String(int[],int,int)
-    public static final java.lang.String capitalize(java.lang.String)
-    public static final java.lang.String capitalize(java.lang.String,java.util.Locale)
     private static final int codePointAt(java.lang.String,int)
     private static final int codePointBefore(java.lang.String,int)
     private static final int codePointCount(java.lang.String,int,int)
@@ -9439,11 +9786,10 @@ com.google.android.material.behavior.HideBottomViewOnScrollBehavior:
     public final void updateCurrentState(int,android.view.View)
 com.google.android.material.behavior.SwipeDismissBehavior$1:
     public static boolean shouldDismiss()
-com.google.android.material.behavior.SwipeDismissBehavior$OnDismissListener
-com.google.android.material.behavior.SwipeDismissBehavior$SettleRunnable:
-    public final boolean dismiss
+com.google.android.material.behavior.SwipeDismissBehavior$OnDismissListener:
+    public abstract void onDismiss(android.view.View)
+    public abstract void onDragStateChanged()
 com.google.android.material.behavior.SwipeDismissBehavior:
-    public com.google.android.material.behavior.SwipeDismissBehavior$OnDismissListener listener
     public final float sensitivity
     public final boolean sensitivitySet
     public static synthetic boolean access$002()
@@ -9633,8 +9979,9 @@ com.google.android.material.button.MaterialButtonToggleGroup$CornerData:
 com.google.android.material.button.MaterialButtonToggleGroup$PressedStateTracker:
     public final void onPressedChanged()
 com.google.android.material.button.MaterialButtonToggleGroup:
-    public static void addOnButtonCheckedListener()
+    public final void addOnButtonCheckedListener(com.google.android.material.timepicker.TimePickerView$$InternalSyntheticLambda$1$5feadb3ca702c7e36ca9a0f418cbec5bee822000d4298df1eb25a795110daf22$0)
     public static android.widget.LinearLayout$LayoutParams buildLayoutParams()
+    public static void check()
     public static void clearChecked()
     public static void dispatchOnButtonChecked()
     public static int getIndexWithinVisibleButtons()
@@ -9781,7 +10128,6 @@ com.google.android.material.checkbox.MaterialCheckBox:
     public static void updateButtonTints()
     public static void updateIconTintIfNeeded()
 com.google.android.material.chip.Chip:
-    public com.google.android.material.internal.MaterialCheckable$OnCheckedChangeListener onCheckedChangeListenerInternal
     public static synthetic com.google.android.material.chip.ChipDrawable access$000()
     public static synthetic boolean access$100()
     public static void applyChipDrawable()
@@ -9903,17 +10249,18 @@ com.google.android.material.chip.ChipDrawable:
     public static boolean shouldDrawText()
     public final void updateCompatRippleColor()
     public static void updateFrameworkCloseIconRipple()
+com.google.android.material.chip.ChipGroup$1:
+    public final void onCheckedStateChanged()
 com.google.android.material.chip.ChipGroup$2:
-    public final synthetic com.google.android.material.chip.ChipGroup this$0
     public final synthetic com.google.android.material.chip.ChipGroup$OnCheckedChangeListener val$listener
-com.google.android.material.chip.ChipGroup$PassThroughHierarchyChangeListener
+    public final void onCheckedChanged()
+com.google.android.material.chip.ChipGroup$OnCheckedChangeListener:
+    public abstract void onCheckedChanged()
+com.google.android.material.chip.ChipGroup$OnCheckedStateChangeListener:
+    public abstract void onCheckedChanged()
 com.google.android.material.chip.ChipGroup:
-    public static final int DEF_STYLE_RES
-    public final com.google.android.material.internal.CheckableGroup checkableGroup
-    public final int defaultCheckedId
-    public com.google.android.material.chip.ChipGroup$OnCheckedStateChangeListener onCheckedStateChangeListener
-    public final com.google.android.material.chip.ChipGroup$PassThroughHierarchyChangeListener passThroughListener
-    public static void <clinit>()
+    public static synthetic com.google.android.material.chip.ChipGroup$OnCheckedStateChangeListener access$100()
+    public static synthetic com.google.android.material.internal.CheckableGroup access$200()
     public static int getIndexOfChip()
     public final boolean isChildVisible(int)
     public static boolean isSingleSelection()
@@ -9943,7 +10290,6 @@ com.google.android.material.datepicker.CalendarConstraints$1:
     public static com.google.android.material.datepicker.CalendarConstraints createFromParcel()
     public static com.google.android.material.datepicker.CalendarConstraints[] newArray()
 com.google.android.material.datepicker.CalendarConstraints$Builder:
-    public static com.google.android.material.datepicker.CalendarConstraints build()
     public static com.google.android.material.datepicker.CalendarConstraints$Builder setOpenAt()
 com.google.android.material.datepicker.CalendarConstraints:
     public static com.google.android.material.datepicker.Month clamp()
@@ -9955,6 +10301,7 @@ com.google.android.material.datepicker.CalendarConstraints:
     public static com.google.android.material.datepicker.Month getStart()
     public static int getYearSpan()
     public static boolean isWithinBounds()
+    public static void setOpenAt()
 com.google.android.material.datepicker.CalendarItemStyle:
     public static int getBottomInset()
     public static int getTopInset()
@@ -9982,6 +10329,8 @@ com.google.android.material.datepicker.DateValidatorPointBackward$1:
 com.google.android.material.datepicker.DateValidatorPointForward$1:
     public static com.google.android.material.datepicker.DateValidatorPointForward createFromParcel()
     public static com.google.android.material.datepicker.DateValidatorPointForward[] newArray()
+com.google.android.material.datepicker.DateValidatorPointForward:
+    public static com.google.android.material.datepicker.DateValidatorPointForward from()
 com.google.android.material.datepicker.DayViewDecorator:
     public abstract android.content.res.ColorStateList getBackgroundColor()
     public abstract android.graphics.drawable.Drawable getCompoundDrawableBottom()
@@ -10029,6 +10378,19 @@ com.google.android.material.datepicker.MaterialCalendarGridView:
     public static int horizontalMidPoint(android.view.View)
 com.google.android.material.datepicker.MaterialDatePicker$4:
     public final synthetic com.google.android.material.datepicker.MaterialDatePicker this$0
+com.google.android.material.datepicker.MaterialDatePicker$Builder:
+    public final com.google.android.material.datepicker.DayViewDecorator dayViewDecorator
+    public final int inputMode
+    public final java.lang.CharSequence negativeButtonText
+    public final int negativeButtonTextResId
+    public final int overrideThemeResId
+    public final java.lang.CharSequence positiveButtonText
+    public final int positiveButtonTextResId
+    public static com.google.android.material.datepicker.Month createDefaultOpenAt()
+    public static com.google.android.material.datepicker.MaterialDatePicker$Builder datePicker()
+    public static boolean monthInValidRange(com.google.android.material.datepicker.Month,com.google.android.material.datepicker.CalendarConstraints)
+    public static com.google.android.material.datepicker.MaterialDatePicker$Builder setSelection()
+    public static com.google.android.material.datepicker.MaterialDatePicker$Builder setTitleText()
 com.google.android.material.datepicker.MaterialDatePicker:
     public static final java.lang.String CANCEL_BUTTON_TAG
     public static final java.lang.String CONFIRM_BUTTON_TAG
@@ -10037,6 +10399,7 @@ com.google.android.material.datepicker.MaterialDatePicker:
     public static synthetic com.google.android.material.datepicker.DateSelector access$100()
     public static synthetic android.widget.Button access$300()
     public static synthetic com.google.android.material.internal.CheckableImageButton access$400()
+    public static boolean addOnPositiveButtonClickListener()
     public static void enableEdgeToEdgeIfNeeded()
     public static java.lang.String getHeaderContentDescription()
     public final java.lang.String getHeaderText()
@@ -10044,6 +10407,7 @@ com.google.android.material.datepicker.MaterialDatePicker:
     public final int getThemeResId(android.content.Context)
     public static void initHeaderToggle()
     public static boolean isLandscape()
+    public static com.google.android.material.datepicker.MaterialDatePicker newInstance()
     public final void updateHeader(java.lang.String)
     public static void updateTitle()
     public final void updateToggleContentDescription(com.google.android.material.internal.CheckableImageButton)
@@ -10053,7 +10417,7 @@ com.google.android.material.datepicker.Month$1:
     public static com.google.android.material.datepicker.Month createFromParcel()
     public static com.google.android.material.datepicker.Month[] newArray()
 com.google.android.material.datepicker.Month:
-    public final int compareTo(com.google.android.material.datepicker.Month)
+    public static com.google.android.material.datepicker.Month current()
     public static int daysFromStartOfWeekToFirstOfMonth()
     public final long getDay(int)
     public static int getDayOfMonth()
@@ -10095,6 +10459,7 @@ com.google.android.material.datepicker.RangeDateSelector:
     public final androidx.core.util.Pair getSelection()
     public static boolean isValidRange(long,long)
     public static void setInvalidRange()
+    public static void setSelection()
     public static void updateError()
     public static void updateIfValidTextProposal()
 com.google.android.material.datepicker.SingleDateSelector$2:
@@ -10105,6 +10470,7 @@ com.google.android.material.datepicker.SingleDateSelector:
     public static synthetic java.lang.CharSequence access$102()
     public static void clearSelection()
     public static java.lang.Long getSelection()
+    public static void setSelection$1()
 com.google.android.material.datepicker.SmoothCalendarLayoutManager$1:
     public final synthetic com.google.android.material.datepicker.SmoothCalendarLayoutManager this$0
 com.google.android.material.datepicker.TimeSource:
@@ -10137,7 +10503,6 @@ com.google.android.material.dialog.MaterialAlertDialogBuilder:
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setMultiChoiceItems()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setMultiChoiceItems$1()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setMultiChoiceItems$2()
-    public static com.google.android.material.dialog.MaterialAlertDialogBuilder setNegativeButton()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setNegativeButtonIcon()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setNeutralButton()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setNeutralButton$1()
@@ -10146,7 +10511,6 @@ com.google.android.material.dialog.MaterialAlertDialogBuilder:
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setOnDismissListener()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setOnItemSelectedListener()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setOnKeyListener()
-    public static com.google.android.material.dialog.MaterialAlertDialogBuilder setPositiveButton()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setPositiveButtonIcon()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setSingleChoiceItems()
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setSingleChoiceItems$1()
@@ -10319,7 +10683,21 @@ com.google.android.material.floatingactionbutton.MotionStrategy:
     public abstract java.util.List getListeners()
     public abstract com.google.android.material.animation.MotionSpec getMotionSpec()
     public abstract void setMotionSpec()
-com.google.android.material.internal.CheckableGroup
+com.google.android.material.internal.CheckableGroup$1:
+    public static void onCheckedChanged()
+    public final void onCheckedChanged$1()
+com.google.android.material.internal.CheckableGroup$OnCheckedStateChangeListener:
+    public abstract void onCheckedStateChanged()
+com.google.android.material.internal.CheckableGroup:
+    public static void addCheckable()
+    public static void check()
+    public static void clearCheck()
+    public final java.util.HashSet getCheckedIds()
+    public static boolean isSingleSelection()
+    public static void removeCheckable()
+    public static void setOnCheckedStateChangeListener()
+    public static void setSelectionRequired()
+    public static void setSingleSelection()
 com.google.android.material.internal.CheckableImageButton$SavedState$1:
     public static com.google.android.material.internal.CheckableImageButton$SavedState createFromParcel()
     public static com.google.android.material.internal.CheckableImageButton$SavedState createFromParcel$1()
@@ -10406,10 +10784,11 @@ com.google.android.material.internal.FadeThroughUtils
 com.google.android.material.internal.FlowLayout:
     public static int getMeasuredDimension(int,int,int)
     public static int getRowIndex()
+    public static void loadFromAttributes()
 com.google.android.material.internal.ManufacturerUtils:
     public static boolean isMeizuDevice()
 com.google.android.material.internal.MaterialCheckable$OnCheckedChangeListener:
-    public abstract void onCheckedChanged()
+    public abstract void onCheckedChanged$1()
 com.google.android.material.internal.NavigationMenuItemView:
     public static void adjustAppearance()
     public static android.graphics.drawable.StateListDrawable createDefaultBackground()
@@ -10520,6 +10899,7 @@ com.google.android.material.internal.TextScale$1:
 com.google.android.material.internal.TextScale:
     public static void captureValues$1(androidx.transition.TransitionValues)
 com.google.android.material.internal.ThemeEnforcement:
+    public static void checkAppCompatTheme()
     public static void checkMaterialTheme()
     public static boolean isMaterial3Theme(android.content.Context)
 com.google.android.material.internal.ToolbarUtils$1:
@@ -10527,6 +10907,8 @@ com.google.android.material.internal.ToolbarUtils$1:
 com.google.android.material.internal.ViewUtils$RelativePadding:
     public static void applyToView()
 com.google.android.material.internal.ViewUtils:
+    public static void addOnGlobalLayoutListener(android.view.View,android.view.ViewTreeObserver$OnGlobalLayoutListener)
+    public static void removeOnGlobalLayoutListener(android.view.View,android.view.ViewTreeObserver$OnGlobalLayoutListener)
     public static void requestFocusAndShowKeyboard(android.widget.EditText)
 com.google.android.material.internal.WindowUtils$Api14Impl
 com.google.android.material.internal.WindowUtils$Api17Impl
@@ -10538,25 +10920,17 @@ com.google.android.material.internal.WindowUtils:
     public static synthetic java.lang.String access$000()
 com.google.android.material.math.MathUtils:
     public static final boolean access$createsCycle()
-    public static final kotlin.text.MatcherMatchResult access$findNext(java.util.regex.Matcher,int,java.lang.CharSequence)
     public static final java.lang.Object access$keyOf()
     public static final void access$notSupportedError()
     public static final java.lang.Boolean boxBoolean()
     public static final java.lang.Integer boxInt()
     public static final java.util.List build(java.util.List)
-    public static final int coerceAtLeast()
-    public static final long coerceAtLeast()
-    public static final int coerceAtMost()
-    public static final long coerceAtMost()
-    public static final int compareValues(java.lang.Comparable,java.lang.Comparable)
     public static final java.lang.Object[] copyOfUninitializedElements(java.lang.Object[],int)
     public static final int differenceModulo(int,int,int)
     public static final long differenceModulo(long,long,long)
     public static float dist(float,float,float,float)
-    public static final kotlin.ranges.IntProgression downTo(int,int)
     public static final java.util.List emptyList()
     public static final java.util.Set emptySet()
-    public static final int fastLog2(int)
     public static void finallyEnd()
     public static void finallyStart()
     public static final java.lang.Object getCOROUTINE_SUSPENDED()
@@ -10566,14 +10940,10 @@ com.google.android.material.math.MathUtils:
     public static void mark()
     public static final int mod()
     public static final long mod(long,long)
-    public static final java.util.List optimizeReadOnlyList(java.util.ArrayList)
     public static final kotlin.coroutines.Continuation probeCoroutineCreated()
     public static final void probeCoroutineSuspended()
     public static final void resetAt(java.lang.Object[],int)
-    public static final kotlin.sequences.SequencesKt__SequenceBuilderKt$sequence$$inlined$Sequence$1 sequence(kotlin.jvm.functions.Function2)
     public static final java.util.Set setOf(java.lang.Object)
-    public static final int takeUpperBits(int,int)
-    public static final void throwIndexOverflow()
 com.google.android.material.motion.MotionUtils:
     public static java.lang.String getLegacyEasingContent(java.lang.String,java.lang.String)
 com.google.android.material.navigation.NavigationBarItemView$ActiveIndicatorTransform:
@@ -10611,7 +10981,7 @@ com.google.android.material.navigation.NavigationBarPresenter:
 com.google.android.material.navigation.NavigationBarView$OnItemReselectedListener:
     public abstract void onNavigationItemReselected()
 com.google.android.material.navigation.NavigationBarView$OnItemSelectedListener:
-    public abstract boolean onNavigationItemSelected(android.view.MenuItem)
+    public abstract boolean onNavigationItemSelected()
 com.google.android.material.navigation.NavigationBarView$SavedState$1:
     public static com.google.android.material.navigation.NavigationBarView$SavedState createFromParcel()
     public static com.google.android.material.navigation.NavigationBarView$SavedState createFromParcel$1()
@@ -10632,7 +11002,6 @@ com.google.android.material.navigation.NavigationView$SavedState$1:
 com.google.android.material.navigation.NavigationView:
     public static synthetic int[] access$000()
     public static android.graphics.drawable.Drawable createDefaultItemBackground()
-    public final android.view.View getHeaderView()
     public static boolean hasShapeAppearance()
     public static android.view.View inflateHeaderView()
     public static void inflateMenu()
@@ -10647,8 +11016,6 @@ com.google.android.material.resources.CancelableFontCallback$ApplyFont:
 com.google.android.material.resources.CancelableFontCallback:
     public static void cancel()
     public final void updateIfNotCancelled(android.graphics.Typeface)
-com.google.android.material.resources.MaterialAttributes:
-    public static int resolveOrThrow(android.content.Context,java.lang.String,int)
 com.google.android.material.resources.MaterialResources:
     public static boolean isFontScaleAtLeast2_0(android.content.Context)
 com.google.android.material.resources.TextAppearance:
@@ -10734,7 +11101,7 @@ com.google.android.material.search.SearchView:
     public static boolean isNavigationIconDrawerArrowDrawable()
     public static boolean isSetupWithSearchBar()
     public static void setUpBackgroundViewElevationOverlay()
-    public static void show$2()
+    public final void show()
     public final void updateChildImportantForAccessibility(android.view.ViewGroup)
     public static void updateNavigationIconIfNeeded()
     public static void updateNavigationIconProgressIfNeeded()
@@ -10977,123 +11344,97 @@ com.google.android.material.slider.RangeSlider$1
 com.google.android.material.slider.RangeSlider$RangeSliderState$1:
     public static com.google.android.material.slider.RangeSlider$RangeSliderState createFromParcel()
     public static com.google.android.material.slider.RangeSlider$RangeSliderState[] newArray()
-com.google.android.material.snackbar.BaseTransientBottomBar$$InternalSyntheticApiModelOutline$1$fb83698863316f65a2cf4c3e0e463a72768dfedb569e062a6bef52a81f379f53$0
-com.google.android.material.snackbar.BaseTransientBottomBar$$InternalSyntheticApiModelOutline$1$fb83698863316f65a2cf4c3e0e463a72768dfedb569e062a6bef52a81f379f53$1
-com.google.android.material.snackbar.BaseTransientBottomBar$10
-com.google.android.material.snackbar.BaseTransientBottomBar$11
-com.google.android.material.snackbar.BaseTransientBottomBar$12
-com.google.android.material.snackbar.BaseTransientBottomBar$13
-com.google.android.material.snackbar.BaseTransientBottomBar$14
-com.google.android.material.snackbar.BaseTransientBottomBar$15
-com.google.android.material.snackbar.BaseTransientBottomBar$16
-com.google.android.material.snackbar.BaseTransientBottomBar$6
-com.google.android.material.snackbar.BaseTransientBottomBar$7
-com.google.android.material.snackbar.BaseTransientBottomBar$8
-com.google.android.material.snackbar.BaseTransientBottomBar$9
-com.google.android.material.snackbar.BaseTransientBottomBar$Anchor
-com.google.android.material.snackbar.BaseTransientBottomBar$BaseCallback
+com.google.android.material.snackbar.BaseTransientBottomBar$14:
+    public int previousAnimatedIntValue
+    public final synthetic int val$translationYBottom
+com.google.android.material.snackbar.BaseTransientBottomBar$16:
+    public int previousAnimatedIntValue
+com.google.android.material.snackbar.BaseTransientBottomBar$7:
+    public final void onDragStateChanged()
+com.google.android.material.snackbar.BaseTransientBottomBar$Anchor:
+    public static android.view.View getAnchorView()
+    public final boolean unanchorIfNoTransientBottomBar()
 com.google.android.material.snackbar.BaseTransientBottomBar$Behavior:
     public static void setBaseTransientBottomBar()
 com.google.android.material.snackbar.BaseTransientBottomBar$BehaviorDelegate:
-    public com.google.android.material.snackbar.SnackbarManager$Callback managerCallback
     public static boolean canSwipeDismissView()
     public static void onInterceptTouchEvent()
     public static void setBaseTransientBottomBar()
 com.google.android.material.snackbar.BaseTransientBottomBar$SnackbarBaseLayout:
-    public boolean addingToTargetParent
-    public android.graphics.Rect originalMargins
     public static synthetic android.graphics.Rect access$1000()
     public static void addToTargetParent()
     public static android.graphics.drawable.Drawable createThemedBackground()
     public static void updateOriginalMargins()
 com.google.android.material.snackbar.BaseTransientBottomBar:
-    public static final android.animation.TimeInterpolator DEFAULT_ANIMATION_FADE_INTERPOLATOR
-    public static final android.animation.TimeInterpolator DEFAULT_ANIMATION_SCALE_INTERPOLATOR
-    public static final android.animation.TimeInterpolator DEFAULT_ANIMATION_SLIDE_INTERPOLATOR
-    public static final int[] SNACKBAR_STYLE_ATTR
-    public static final java.lang.String TAG
     public static final boolean USE_OFFSET_API
-    public final android.view.accessibility.AccessibilityManager accessibilityManager
-    public final com.google.android.material.snackbar.BaseTransientBottomBar$Anchor anchor
-    public final int animationFadeInDuration
-    public final android.animation.TimeInterpolator animationFadeInterpolator
-    public final int animationFadeOutDuration
-    public final android.animation.TimeInterpolator animationScaleInterpolator
-    public final int animationSlideDuration
-    public final android.animation.TimeInterpolator animationSlideInterpolator
-    public final int appliedBottomMarginGestureInset
+    public final boolean anchorViewLayoutListenerEnabled
     public final com.google.android.material.snackbar.BaseTransientBottomBar$Behavior behavior
-    public final java.lang.Runnable bottomMarginGestureInsetRunnable
-    public final java.util.List callbacks
-    public final com.google.android.material.snackbar.ContentViewCallback contentViewCallback
-    public int extraBottomMarginAnchorView
-    public int extraBottomMarginGestureInset
-    public final int extraBottomMarginWindowInset
-    public final int extraLeftMarginWindowInset
-    public final int extraRightMarginWindowInset
     public final boolean gestureInsetBottomIgnored
-    public static final android.os.Handler handler
-    public final com.google.android.material.snackbar.SnackbarManager$Callback managerCallback
-    public boolean pendingShowingView
-    public final android.view.ViewGroup targetParent
-    public final com.google.android.material.snackbar.BaseTransientBottomBar$SnackbarBaseLayout view
+    public static synthetic android.content.Context access$000()
     public static synthetic int access$1500()
     public static synthetic com.google.android.material.snackbar.ContentViewCallback access$1600()
     public static synthetic boolean access$1700()
+    public static synthetic int access$200()
+    public static synthetic int access$302()
+    public static synthetic void access$900()
+    public abstract com.google.android.material.snackbar.BaseTransientBottomBar addCallback()
     public abstract void animateViewIn()
     public abstract void animateViewOut()
     public abstract int calculateBottomMarginForAnchorView()
-    public abstract void dispatchDismiss()
     public final varargs android.animation.ValueAnimator getAlphaAnimator(float[])
-    public abstract android.view.View getAnchorView()
+    public int getDuration()
     public abstract com.google.android.material.behavior.SwipeDismissBehavior getNewBehavior()
     public varargs abstract android.animation.ValueAnimator getScaleAnimator()
-    public abstract int getTranslationYBottom()
+    public abstract int getSnackbarBaseLayoutResId()
+    public final int getTranslationYBottom()
+    public abstract int getViewAbsoluteBottom()
+    public abstract boolean hasSnackbarStyleAttr()
     public abstract void hideView()
     public abstract boolean isShownOrQueued()
     public abstract boolean isSwipeDismissable()
     public abstract void onAttachedToWindow()
     public abstract void onDetachedFromWindow()
     public abstract void onLayoutChange()
-    public static void onViewHidden()
-    public static void onViewShown()
-    public abstract void recalculateAndUpdateMargins()
+    public final void recalculateAndUpdateMargins()
+    public abstract com.google.android.material.snackbar.BaseTransientBottomBar setAnchorView()
+    public abstract com.google.android.material.snackbar.BaseTransientBottomBar setDuration()
     public abstract void setUpBehavior()
-    public abstract boolean shouldAnimate()
+    public final boolean shouldAnimate()
     public abstract boolean shouldUpdateGestureInset()
+    public abstract void show()
     public abstract void showView()
-    public abstract void showViewImpl()
     public abstract void startFadeInAnimation()
     public abstract void startFadeOutAnimation()
     public abstract void startSlideInAnimation()
     public abstract void startSlideOutAnimation()
-    public abstract void updateMargins()
-com.google.android.material.snackbar.ContentViewCallback
+com.google.android.material.snackbar.ContentViewCallback:
+    public abstract void animateContentIn()
+    public abstract void animateContentOut()
+com.google.android.material.snackbar.Snackbar$Callback:
+    public static void onShown()
+com.google.android.material.snackbar.Snackbar:
+    public static final int[] SNACKBAR_BUTTON_STYLE_ATTR
+    public static android.widget.Button getActionView()
+    public final com.google.android.material.snackbar.SnackbarContentLayout getContentLayout()
+    public static android.widget.TextView getMessageView()
+    public static com.google.android.material.snackbar.Snackbar setAction()
+    public static com.google.android.material.snackbar.Snackbar setText()
+    public final void show()
 com.google.android.material.snackbar.SnackbarContentLayout:
-    public final android.animation.TimeInterpolator contentInterpolator
     public final void animateContentIn()
     public final void animateContentOut()
-com.google.android.material.snackbar.SnackbarManager$Callback
+    public static void updateActionTextColorAlphaIfNeeded()
 com.google.android.material.snackbar.SnackbarManager$SnackbarRecord:
-    public final java.lang.ref.WeakReference callback
-    public final int duration
-    public boolean paused
-    public static void isSnackbar()
+    public final boolean isSnackbar(com.google.android.material.snackbar.BaseTransientBottomBar$5)
 com.google.android.material.snackbar.SnackbarManager:
-    public com.google.android.material.snackbar.SnackbarManager$SnackbarRecord currentSnackbar
-    public final android.os.Handler handler
-    public com.google.android.material.snackbar.SnackbarManager$SnackbarRecord nextSnackbar
-    public static boolean cancelSnackbarLocked()
     public static void dismiss()
     public static void handleTimeout()
     public static boolean isCurrentOrNext()
-    public final void isCurrentSnackbarLocked()
-    public static boolean isNextSnackbarLocked()
+    public final boolean isNextSnackbarLocked(com.google.android.material.snackbar.BaseTransientBottomBar$5)
     public static void onDismissed()
     public static void onShown()
-    public final void pauseTimeout()
-    public static void scheduleTimeoutLocked()
-    public static void showNextSnackbarLocked()
+    public static void show()
+    public final void showNextSnackbarLocked()
 com.google.android.material.stateful.ExtendableSavedState$1:
     public static com.google.android.material.stateful.ExtendableSavedState createFromParcel()
     public static com.google.android.material.stateful.ExtendableSavedState createFromParcel$1()
@@ -11123,7 +11464,6 @@ com.google.android.material.tabs.TabLayout$Tab:
     public static java.lang.CharSequence getText()
     public static boolean isSelected()
     public static void reset()
-    public final void select()
     public static com.google.android.material.tabs.TabLayout$Tab setContentDescription()
     public static com.google.android.material.tabs.TabLayout$Tab setCustomView()
     public static com.google.android.material.tabs.TabLayout$Tab setCustomView$1()
@@ -11151,7 +11491,6 @@ com.google.android.material.tabs.TabLayout:
     public static synthetic int access$1200()
     public static synthetic com.google.android.material.tabs.TabIndicatorInterpolator access$1700()
     public static void addOnTabSelectedListener()
-    public final void addOnTabSelectedListener(com.google.android.material.tabs.TabLayout$BaseOnTabSelectedListener)
     public static void addTab()
     public static void addTab$1()
     public static void addTabFromItemView()
@@ -11165,7 +11504,6 @@ com.google.android.material.tabs.TabLayout:
     public static void dispatchTabReselected()
     public static void dispatchTabSelected()
     public static void dispatchTabUnselected()
-    public final com.google.android.material.tabs.TabLayout$Tab getTabAt(int)
     public final boolean isScrollingEnabled()
     public static boolean isTabIndicatorFullWidth()
     public static boolean releaseFromTabPool()
@@ -11425,44 +11763,64 @@ com.google.android.material.textview.MaterialTextView:
 com.google.android.material.timepicker.ChipTextInputComboView$1
 com.google.android.material.timepicker.ChipTextInputComboView:
     public final android.widget.TextView label
-    public final com.google.android.material.textfield.TextInputLayout textInputLayout
-    public final com.google.android.material.timepicker.ChipTextInputComboView$TextFormatter watcher
+    public static synthetic java.lang.String access$100()
     public static synthetic com.google.android.material.chip.Chip access$200()
-    public static java.lang.String formatText()
+    public final void addInputFilter(com.google.android.material.timepicker.MaxInputValidator)
+    public static com.google.android.material.textfield.TextInputLayout getTextInput()
+    public final void setChipDelegate(com.google.android.material.timepicker.ClickActionDelegate)
     public final void updateHintLocales()
 com.google.android.material.timepicker.ClockFaceView:
     public static synthetic com.google.android.material.timepicker.ClockHandView access$000()
     public static synthetic android.graphics.Rect access$300()
+    public final int getCurrentLevel()
     public static android.graphics.RadialGradient getGradientForTextView()
     public static android.widget.TextView getSelectedTextView()
+    public final void setCurrentLevel()
     public final void setRadius()
-    public static void setValues()
     public static void updateTextViews()
-com.google.android.material.timepicker.ClockHandView$$InternalSyntheticLambda$1$d093ea0b239bae6cbf76d576282e0c438274ef62aab2c670570a8783bbe9a178$0
-com.google.android.material.timepicker.ClockHandView$1
-com.google.android.material.timepicker.ClockHandView$OnActionUpListener
+com.google.android.material.timepicker.ClockHandView$1:
+    public final synthetic com.google.android.material.timepicker.ClockHandView this$0
+com.google.android.material.timepicker.ClockHandView$OnActionUpListener:
+    public abstract void onActionUp()
 com.google.android.material.timepicker.ClockHandView:
-    public final boolean animatingOnTouchUp
-    public final int animationDuration
-    public final android.animation.TimeInterpolator animationInterpolator
-    public float downX
-    public float downY
-    public boolean isInTapRegion
-    public final com.google.android.material.timepicker.ClockHandView$OnActionUpListener onActionUpListener
-    public final int scaledTouchSlop
-    public static void addOnRotateListener()
+    public final void addOnRotateListener(com.google.android.material.timepicker.ClockHandView$OnRotateListener)
     public static void adjustLevel()
     public static void drawSelector()
+    public static int getCurrentLevel()
     public static android.graphics.RectF getCurrentSelectorBox()
-    public final int getDegreesFromXY(float,float)
     public static float getHandRotation()
     public static int getSelectorRadius()
     public static android.util.Pair getValuesForAnimation()
     public static boolean handleTouchInput()
+    public static void setAnimateOnTouchUp()
     public static void setCircleRadius()
+    public static void setCurrentLevel()
     public static void setHandRotation()
     public static void setMultiLevel()
-com.google.android.material.timepicker.MaxInputValidator
+    public static void setOnActionUpListener()
+com.google.android.material.timepicker.MaterialTimePicker$Builder:
+    public final java.lang.Integer inputMode
+    public final java.lang.CharSequence negativeButtonText
+    public final int negativeButtonTextResId
+    public final int overrideThemeResId
+    public final java.lang.CharSequence positiveButtonText
+    public final int positiveButtonTextResId
+    public final int titleTextResId
+    public static synthetic java.lang.Integer access$100()
+    public static synthetic java.lang.CharSequence access$300()
+    public static synthetic java.lang.CharSequence access$500()
+    public static synthetic java.lang.CharSequence access$700()
+    public static com.google.android.material.timepicker.MaterialTimePicker build()
+    public static com.google.android.material.timepicker.MaterialTimePicker$Builder setTitleText()
+com.google.android.material.timepicker.MaterialTimePicker:
+    public static boolean addOnPositiveButtonClickListener$1()
+    public static android.util.Pair dataForMode()
+    public static int getThemeResId()
+    public static com.google.android.material.timepicker.TimePickerPresenter initializeOrRetrieveActivePresenterForMode()
+    public final void onDoubleTap()
+    public static void restoreState$1()
+    public final void updateCancelButtonVisibility()
+com.google.android.material.timepicker.RadialViewGroup$$InternalSyntheticLambda$1$7bbc437f301ed8da93e8173b46d2379836a9dc5506bd0cafbf404eb130a29a06$0
 com.google.android.material.timepicker.RadialViewGroup:
     public static void addConstraints()
     public static android.graphics.drawable.Drawable createBackground()
@@ -11474,28 +11832,70 @@ com.google.android.material.timepicker.TimeModel$1:
     public static com.google.android.material.timepicker.TimeModel createFromParcel()
     public static com.google.android.material.timepicker.TimeModel[] newArray()
 com.google.android.material.timepicker.TimeModel:
-    public final com.google.android.material.timepicker.MaxInputValidator hourInputValidator
-    public final com.google.android.material.timepicker.MaxInputValidator minuteInputValidator
-    public final int period
-    public static int getPeriod()
+    public final int getHourContentDescriptionResId()
+    public static com.google.android.material.timepicker.MaxInputValidator getHourInputValidator()
+    public static com.google.android.material.timepicker.MaxInputValidator getMinuteInputValidator()
+    public static int getPeriod(int)
+    public final void setHourOfDay(int)
+    public static void setMinute()
+    public final void setPeriod(int)
+com.google.android.material.timepicker.TimePickerClockPresenter:
+    public static synthetic com.google.android.material.timepicker.TimeModel access$000()
+    public static java.lang.String[] getHourClockValues()
+    public final int getHourRotation()
+    public final void initialize()
+    public final void onActionUp()
+    public final void onPeriodChange()
+    public final void performHapticFeedback(int,int)
+    public static void updateCurrentLevel()
+    public static void updateValues()
+    public final void updateValues(java.lang.String,java.lang.String[])
+com.google.android.material.timepicker.TimePickerTextInputKeyController:
+    public static void bind()
+    public static void clearPrefilledText(android.widget.EditText)
+    public static boolean onHourKeyPress()
+    public static boolean onMinuteKeyPress()
+com.google.android.material.timepicker.TimePickerTextInputPresenter$$InternalSyntheticLambda$1$08c5a4e06d1b1f4c6da1c4872c12bbb887c6c53b58c1b4ec0542c88db93dab88$0
+com.google.android.material.timepicker.TimePickerTextInputPresenter$4:
+    public final synthetic com.google.android.material.timepicker.TimePickerTextInputPresenter this$0
+com.google.android.material.timepicker.TimePickerTextInputPresenter$5:
+    public final synthetic com.google.android.material.timepicker.TimePickerTextInputPresenter this$0
+com.google.android.material.timepicker.TimePickerTextInputPresenter:
+    public final com.google.android.material.timepicker.TimePickerTextInputKeyController controller
+    public static synthetic com.google.android.material.timepicker.TimeModel access$000$1()
+    public final void addTextWatchers()
+    public static void clearCheck()
+    public final void initialize()
+    public static void removeTextWatchers()
+    public static void setCursorDrawableColor()
+    public static void setupPeriodToggle()
 com.google.android.material.timepicker.TimePickerView$3:
     public final synthetic com.google.android.material.timepicker.TimePickerView this$0
-com.google.android.material.timepicker.TimePickerView$OnDoubleTapListener
-com.google.android.material.timepicker.TimePickerView$OnPeriodChangeListener
-com.google.android.material.timepicker.TimePickerView$OnSelectionChange
+com.google.android.material.timepicker.TimePickerView$OnDoubleTapListener:
+    public abstract void onDoubleTap()
+com.google.android.material.timepicker.TimePickerView$OnPeriodChangeListener:
+    public abstract void onPeriodChange()
 com.google.android.material.timepicker.TimePickerView:
-    public final com.google.android.material.timepicker.ClockFaceView clockFace
-    public final com.google.android.material.timepicker.ClockHandView clockHandView
-    public final com.google.android.material.chip.Chip minuteView
-    public final com.google.android.material.timepicker.TimePickerView$OnDoubleTapListener onDoubleTapListener
-    public final com.google.android.material.timepicker.TimePickerView$OnPeriodChangeListener onPeriodChangeListener
-    public final com.google.android.material.timepicker.TimePickerView$OnSelectionChange onSelectionChangeListener
     public final com.google.android.material.timepicker.TimePickerView$1 selectionListener
-    public final com.google.android.material.button.MaterialButtonToggleGroup toggle
-    public static synthetic void access$000()
-    private static synthetic void lambda$new$0()
+    public static synthetic com.google.android.material.timepicker.TimePickerView$OnSelectionChange access$000()
+    public static void addOnRotateListener()
+    public final int getCurrentLevel()
+    public static void setActiveSelection()
+    public static void setAnimateOnTouchUp()
+    public final void setCurrentLevel()
+    public final void setHandRotation(float,boolean)
+    public static void setHourClickDelegate()
+    public static void setMinuteHourDelegate()
+    public static void setOnActionUpListener()
+    public static void setOnDoubleTapListener()
+    public static void setOnPeriodChangeListener()
+    public static void setOnSelectionChangeListener()
     public static void setUpDisplay()
+    public final void setValues(java.lang.String[],int)
     public static void setupDoubleTap()
+    public static void showToggle()
+    public static void updateSelection(com.google.android.material.chip.Chip,boolean)
+    public static void updateTime$1()
 com.google.android.material.transformation.ExpandableBehavior:
     public final boolean didStateChange(boolean)
     public abstract com.google.android.material.expandable.ExpandableWidget findExpandableWidget()
@@ -11530,11 +11930,377 @@ com.google.android.material.transformation.FabTransformationScrimBehavior:
     public static void createScrimAnimation()
 com.google.android.material.transformation.FabTransformationSheetBehavior:
     public static void updateImportantForAccessibility()
+com.google.gson.FieldAttributes
+com.google.gson.Gson$1:
+    public final synthetic com.google.gson.Gson this$0
+    public static java.lang.Double read()
+    public final void write()
+com.google.gson.Gson$2:
+    public final synthetic com.google.gson.Gson this$0
+    public static java.lang.Float read()
+    public final void write()
+com.google.gson.Gson$3
+com.google.gson.Gson$4:
+    public static java.util.concurrent.atomic.AtomicLong read()
+    public static void write$1()
+com.google.gson.Gson$5:
+    public static java.util.concurrent.atomic.AtomicLongArray read()
+    public static void write$2()
+com.google.gson.Gson$FutureTypeAdapter:
+    public final com.google.gson.TypeAdapter delegate()
+    public static void setDelegate()
+com.google.gson.Gson:
+    public static final java.lang.String DEFAULT_DATE_PATTERN
+    public final java.util.List builderFactories
+    public final java.util.List builderHierarchyFactories
+    public final boolean complexMapKeySerialization
+    public final java.lang.String datePattern
+    public final int dateStyle
+    public final com.google.gson.internal.Excluder excluder
+    public final com.google.gson.FieldNamingStrategy fieldNamingStrategy
+    public final boolean generateNonExecutableJson
+    public final java.util.Map instanceCreators
+    public final boolean lenient
+    public final com.google.gson.LongSerializationPolicy longSerializationPolicy
+    public final com.google.gson.ToNumberStrategy numberToNumberStrategy
+    public final com.google.gson.ToNumberStrategy objectToNumberStrategy
+    public final boolean prettyPrinting
+    public final java.util.List reflectionFilters
+    public final boolean serializeNulls
+    public final boolean serializeSpecialFloatingPointValues
+    public final int timeStyle
+    public final boolean useJdkUnsafe
+    public void <init>(int)
+    public static com.google.gson.TypeAdapter atomicLongAdapter()
+    public static com.google.gson.TypeAdapter atomicLongArrayAdapter()
+    public static com.google.gson.TypeAdapter doubleAdapter()
+    public static com.google.gson.TypeAdapter floatAdapter()
+    public static java.lang.Object fromJson()
+    public static java.lang.Object fromJson$1()
+    public static java.lang.Object fromJson$2()
+    public static com.google.gson.TypeAdapter getAdapter()
+    public static com.google.gson.TypeAdapter longAdapter()
+    public static com.google.gson.stream.JsonReader newJsonReader()
+    public static java.lang.String toJson()
+    public static void toJson()
+    public static java.lang.String toJson$1()
+    public static void toJson$1()
+com.google.gson.JsonArray:
+    public final void add(com.google.gson.JsonElement)
+com.google.gson.JsonDeserializationContext
+com.google.gson.JsonElement:
+    public abstract com.google.gson.JsonArray getAsJsonArray()
+    public abstract com.google.gson.JsonObject getAsJsonObject()
+    public final com.google.gson.JsonPrimitive getAsJsonPrimitive()
+    public abstract boolean isJsonArray()
+    public abstract boolean isJsonNull()
+    public abstract boolean isJsonObject()
+    public abstract boolean isJsonPrimitive()
+com.google.gson.JsonObject:
+    public final void add(java.lang.String,com.google.gson.JsonElement)
+    public final java.util.Set entrySet()
+com.google.gson.JsonPrimitive:
+    public static double getAsDouble()
+    public static int getAsInt()
+    public static long getAsLong()
+    public static boolean isBoolean()
+    public static boolean isNumber()
+    public static boolean isString()
+com.google.gson.JsonSerializationContext
+com.google.gson.TypeAdapter:
+    public abstract com.google.gson.TypeAdapter nullSafe()
+    public abstract com.google.gson.JsonElement toJsonTree()
+com.google.gson.annotations.Expose
+com.google.gson.internal.$Gson$Preconditions
+com.google.gson.internal.$Gson$Types:
+    public static final synthetic boolean $assertionsDisabled
+    public void <init>()
+    public static java.lang.reflect.GenericArrayType arrayOf()
+    public static java.lang.Class declaringClassOf()
+    public static boolean equal()
+    public static java.lang.reflect.Type getCollectionElementType()
+    public static java.lang.reflect.Type[] getMapKeyAndValueTypes()
+    public static java.lang.reflect.Type resolve(java.lang.reflect.Type,java.lang.Class,java.lang.reflect.Type)
+    public static java.lang.reflect.Type resolveTypeVariable()
+com.google.gson.internal.ConstructorConstructor$19:
+    public final synthetic com.google.gson.internal.ConstructorConstructor this$0
+com.google.gson.internal.ConstructorConstructor$1:
+    public final synthetic com.google.gson.internal.ConstructorConstructor this$0
+    public final synthetic java.lang.reflect.Type val$type
+com.google.gson.internal.ConstructorConstructor$20:
+    public final synthetic com.google.gson.internal.ConstructorConstructor this$0
+com.google.gson.internal.ConstructorConstructor$2:
+    public final synthetic com.google.gson.internal.ConstructorConstructor this$0
+    public final synthetic java.lang.reflect.Type val$type
+com.google.gson.internal.ConstructorConstructor$3:
+    public final synthetic com.google.gson.internal.ConstructorConstructor this$0
+com.google.gson.internal.ConstructorConstructor$4:
+    public final synthetic com.google.gson.internal.ConstructorConstructor this$0
+com.google.gson.internal.ConstructorConstructor:
+    public static com.google.gson.internal.ObjectConstructor newDefaultConstructor()
+    public static com.google.gson.internal.ObjectConstructor newDefaultImplementationConstructor()
+    public static com.google.gson.internal.ObjectConstructor newSpecialCollectionConstructor()
+    public static com.google.gson.internal.ObjectConstructor newUnsafeAllocator()
+com.google.gson.internal.Excluder$1:
+    public final com.google.gson.TypeAdapter delegate()
+com.google.gson.internal.Excluder:
+    public final boolean requireExpose
+    public static com.google.gson.internal.Excluder clone()
+    public static boolean excludeClass()
+    public static boolean excludeField()
+    public static boolean isInnerClass(java.lang.Class)
+    public static boolean isStatic(java.lang.Class)
+    public static boolean isValidSince()
+    public static boolean isValidUntil()
+com.google.gson.internal.JavaVersion:
+    public static boolean isJava9OrLater()
+com.google.gson.internal.JsonReaderInternalAccess:
+    public abstract void promoteNameToValue()
+com.google.gson.internal.LinkedTreeMap$1:
+    public static int compare()
+com.google.gson.internal.LinkedTreeMap$EntrySet$1:
+    public final synthetic com.google.gson.internal.LinkedTreeMap$EntrySet this$1
+    public static java.util.Map$Entry next()
+com.google.gson.internal.LinkedTreeMap$KeySet$1:
+    public final synthetic com.google.gson.internal.LinkedTreeMap$KeySet this$1
+com.google.gson.internal.LinkedTreeMap$Node:
+    public static com.google.gson.internal.LinkedTreeMap$Node first()
+    public static com.google.gson.internal.LinkedTreeMap$Node last()
+com.google.gson.internal.PreJava9DateFormatProvider
+com.google.gson.internal.Primitives
+com.google.gson.internal.ReflectionAccessFilterHelper$1
+com.google.gson.internal.ReflectionAccessFilterHelper:
+    public static boolean canAccess(java.lang.Object,java.lang.reflect.AccessibleObject)
+com.google.gson.internal.Streams$1
+com.google.gson.internal.Streams$AppendableWriter$CurrentWrite
+com.google.gson.internal.Streams$AppendableWriter
+com.google.gson.internal.Streams
+com.google.gson.internal.UnsafeAllocator:
+    public static void assertInstantiable()
+com.google.gson.internal.bind.CollectionTypeAdapterFactory$Adapter:
+    public static java.util.Collection read()
+    public static void write$3()
+com.google.gson.internal.bind.DateTypeAdapter:
+    public static java.util.Date deserializeToDate()
+    public static java.util.Date read()
+    public static void write$4()
+com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType$1
+com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType
+com.google.gson.internal.bind.JsonTreeReader:
+    public static final java.io.Reader UNREADABLE_READER
+    public static com.google.gson.JsonElement nextJsonElement()
+    public static void promoteNameToValue()
+com.google.gson.internal.bind.JsonTreeWriter:
+    public static com.google.gson.JsonElement get()
+com.google.gson.internal.bind.MapTypeAdapterFactory$Adapter:
+    public static java.lang.String keyToString()
+    public static java.util.Map read()
+    public static void write$5()
+com.google.gson.internal.bind.MapTypeAdapterFactory:
+    public static com.google.gson.TypeAdapter getKeyAdapter()
+com.google.gson.internal.bind.NumberTypeAdapter:
+    public static com.google.gson.internal.bind.NumberTypeAdapter$1 newFactory(com.google.gson.ToNumberPolicy)
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.ObjectTypeAdapter:
+    public static com.google.gson.TypeAdapterFactory newFactory()
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1:
+    public final synthetic com.google.gson.internal.bind.ReflectiveTypeAdapterFactory this$0
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$RecordAdapter:
+    public static java.lang.Object[] createAccumulator()
+    public static java.lang.Object finalize()
+    public static java.util.Map primitiveDefaults()
+    public static void readField()
+com.google.gson.internal.bind.ReflectiveTypeAdapterFactory:
+    public static void checkAccessible()
+    public static com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$BoundField createBoundField()
+    public static java.util.List getFieldNames()
+com.google.gson.internal.bind.TreeTypeAdapter$1
+com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl:
+    public final synthetic com.google.gson.internal.bind.TreeTypeAdapter this$0
+com.google.gson.internal.bind.TreeTypeAdapter:
+    public final com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl context
+com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper:
+    public static boolean isReflective()
+com.google.gson.internal.bind.TypeAdapters$10:
+    public static java.util.concurrent.atomic.AtomicIntegerArray read()
+    public static void write$6()
+com.google.gson.internal.bind.TypeAdapters$11:
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.TypeAdapters$12:
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.TypeAdapters$13:
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.TypeAdapters$14:
+    public static java.lang.Character read()
+    public static void write$7()
+com.google.gson.internal.bind.TypeAdapters$15:
+    public static java.lang.String read()
+    public static void write$8()
+com.google.gson.internal.bind.TypeAdapters$16:
+    public static java.math.BigDecimal read()
+    public static void write$9()
+com.google.gson.internal.bind.TypeAdapters$17:
+    public static java.math.BigInteger read()
+    public static void write$10()
+com.google.gson.internal.bind.TypeAdapters$18:
+    public static com.google.gson.internal.LazilyParsedNumber read()
+    public static void write$11()
+com.google.gson.internal.bind.TypeAdapters$19:
+    public static java.lang.StringBuilder read()
+    public static void write$12()
+com.google.gson.internal.bind.TypeAdapters$1:
+    public static java.lang.Class read()
+    public static void write$13()
+com.google.gson.internal.bind.TypeAdapters$20:
+    public static java.lang.StringBuffer read()
+    public static void write$14()
+com.google.gson.internal.bind.TypeAdapters$21:
+    public static java.net.URL read()
+    public static void write$15()
+com.google.gson.internal.bind.TypeAdapters$22:
+    public static java.net.URI read()
+    public static void write$16()
+com.google.gson.internal.bind.TypeAdapters$23:
+    public static java.net.InetAddress read()
+    public static void write$17()
+com.google.gson.internal.bind.TypeAdapters$24:
+    public static java.util.UUID read()
+    public static void write$18()
+com.google.gson.internal.bind.TypeAdapters$25:
+    public static java.util.Currency read()
+    public static void write$19()
+com.google.gson.internal.bind.TypeAdapters$26:
+    public static java.util.Calendar read()
+    public static void write$20()
+com.google.gson.internal.bind.TypeAdapters$27:
+    public static java.util.Locale read()
+    public static void write$21()
+com.google.gson.internal.bind.TypeAdapters$28:
+    public static com.google.gson.JsonElement read()
+com.google.gson.internal.bind.TypeAdapters$2:
+    public static java.util.BitSet read()
+    public static void write$22()
+com.google.gson.internal.bind.TypeAdapters$3:
+    public final java.lang.Boolean read()
+    public final void write$23()
+com.google.gson.internal.bind.TypeAdapters$4:
+    public final java.lang.Boolean read()
+    public final void write$23()
+com.google.gson.internal.bind.TypeAdapters$5:
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.TypeAdapters$6:
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.TypeAdapters$7:
+    public final java.lang.Number read()
+    public final void write()
+com.google.gson.internal.bind.TypeAdapters$8:
+    public static java.util.concurrent.atomic.AtomicInteger read()
+    public static void write$24()
+com.google.gson.internal.bind.TypeAdapters$9:
+    public static java.util.concurrent.atomic.AtomicBoolean read()
+    public static void write$25()
+com.google.gson.internal.bind.TypeAdapters$EnumTypeAdapter$1:
+    public final synthetic com.google.gson.internal.bind.TypeAdapters$EnumTypeAdapter this$0
+    public static java.lang.reflect.Field[] run()
+com.google.gson.internal.bind.TypeAdapters$EnumTypeAdapter:
+    public static java.lang.Enum read()
+    public static void write$26()
+com.google.gson.internal.bind.TypeAdapters:
+    public static final com.google.gson.TypeAdapter$1 ATOMIC_BOOLEAN
+    public static final com.google.gson.TypeAdapter$1 ATOMIC_INTEGER
+    public static final com.google.gson.TypeAdapter$1 ATOMIC_INTEGER_ARRAY
+    public static final com.google.gson.TypeAdapter$1 BIT_SET
+    public static final com.google.gson.internal.bind.TypeAdapters$3 BOOLEAN
+    public static final com.google.gson.internal.bind.TypeAdapters$5 BYTE
+    public static final com.google.gson.internal.bind.TypeAdapters$26 CALENDAR
+    public static final com.google.gson.internal.bind.TypeAdapters$14 CHARACTER
+    public static final com.google.gson.TypeAdapter$1 CLASS
+    public static final com.google.gson.TypeAdapter$1 CURRENCY
+    public static final com.google.gson.internal.bind.TypeAdapters$13 DOUBLE
+    public static final com.google.gson.internal.bind.TypeAdapters$12 FLOAT
+    public static final com.google.gson.internal.bind.TypeAdapters$23 INET_ADDRESS
+    public static final com.google.gson.internal.bind.TypeAdapters$7 INTEGER
+    public static final com.google.gson.internal.bind.TypeAdapters$27 LOCALE
+    public static final com.google.gson.internal.bind.TypeAdapters$6 SHORT
+    public static final com.google.gson.internal.bind.TypeAdapters$15 STRING
+    public static final com.google.gson.internal.bind.TypeAdapters$20 STRING_BUFFER
+    public static final com.google.gson.internal.bind.TypeAdapters$19 STRING_BUILDER
+    public static final com.google.gson.internal.bind.TypeAdapters$22 URI
+    public static final com.google.gson.internal.bind.TypeAdapters$21 URL
+    public static final com.google.gson.internal.bind.TypeAdapters$24 UUID
+    public static com.google.gson.TypeAdapterFactory newFactory()
+    public static com.google.gson.TypeAdapterFactory newFactory$1()
+    public static com.google.gson.TypeAdapterFactory newFactoryForMultipleTypes()
+    public static com.google.gson.TypeAdapterFactory newTypeHierarchyFactory()
+com.google.gson.internal.reflect.ReflectionHelper$1
+com.google.gson.internal.reflect.ReflectionHelper:
+    public static void access$300(java.lang.ReflectiveOperationException)
+    public static void createExceptionForUnexpectedIllegalAccess(java.lang.IllegalAccessException)
+    public static java.lang.reflect.Method getAccessor()
+    public static java.lang.reflect.Constructor getCanonicalRecordConstructor()
+    public static java.lang.String[] getRecordComponentNames()
+    public static boolean isRecord()
+    public static java.lang.String tryMakeAccessible()
+com.google.gson.internal.sql.SqlDateTypeAdapter:
+    public static java.sql.Date read()
+    public static void write$27()
+com.google.gson.internal.sql.SqlTimeTypeAdapter:
+    public static java.sql.Time read()
+    public static void write$28()
+com.google.gson.internal.sql.SqlTimestampTypeAdapter:
+    public void <init>()
+    public static java.sql.Timestamp read()
+    public static void write$29()
+com.google.gson.internal.sql.SqlTypesSupport$1
+com.google.gson.internal.sql.SqlTypesSupport$2
+com.google.gson.internal.sql.SqlTypesSupport:
+    public static final com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType DATE_DATE_TYPE
+    public static final com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType TIMESTAMP_DATE_TYPE
+com.google.gson.reflect.TypeToken:
+    public static com.google.gson.reflect.TypeToken get()
+    public static com.google.gson.reflect.TypeToken get$1()
+    public static java.lang.Class getRawType()
+    public static java.lang.reflect.Type getType()
+    public static java.lang.reflect.Type getTypeTokenTypeArgument()
+com.google.gson.stream.JsonReader$1:
+    public final void promoteNameToValue()
+com.google.gson.stream.JsonReader:
+    public static void consumeNonExecutePrefix()
+    public static boolean isLenient()
+    public static int peekKeyword()
+    public static int peekNumber()
+    public static void setLenient()
+    public static boolean skipTo()
+com.google.gson.stream.JsonWriter:
+    public java.lang.String indent
+    public static void beforeName()
+    public static boolean getSerializeNulls()
+    public static boolean isHtmlSafe()
+    public static boolean isLenient()
+    public static boolean isTrustedNumberType()
+    public final void open(char,int)
+    public final void push(int)
+    public final void replaceTop(int)
+    public static void setHtmlSafe()
+    public static void setIndent()
+    public static void setLenient()
+    public static void setSerializeNulls()
+com.velvettouch.nosafeword.AddPositionDialogFragment$$InternalSyntheticLambda$3$726f08a445973579a6146616204da81a9c3894b56b52a7a0d27f1cf61d297543$0:
+    public final boolean onNavigationItemSelected()
+com.velvettouch.nosafeword.AddPositionDialogFragment$$InternalSyntheticLambda$3$efde584e5acdf1292a91dbe111f85f00ddf64f1f753041d35a804b0992bb2fbf$1
+com.velvettouch.nosafeword.AddPositionDialogFragment$$InternalSyntheticLambda$3$efde584e5acdf1292a91dbe111f85f00ddf64f1f753041d35a804b0992bb2fbf$2
+com.velvettouch.nosafeword.AddPositionDialogFragment:
+    public static void setListener()
 com.velvettouch.nosafeword.BaseActivity$Companion
 com.velvettouch.nosafeword.BaseActivity:
     public static final com.velvettouch.nosafeword.BaseActivity$Companion Companion
     public abstract void applyTheme()
-com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$0
 com.velvettouch.nosafeword.BodyWorshipActivity$$InternalSyntheticLambda$1$a54d3a212c59f92aefd7585c2a15a6cedcdffcdd63422f4715db709e7d781bb3$2
 com.velvettouch.nosafeword.BodyWorshipActivity$VoiceSettings
 com.velvettouch.nosafeword.BodyWorshipActivity:
@@ -11576,13 +12342,12 @@ com.velvettouch.nosafeword.EditScenesAdapter:
 com.velvettouch.nosafeword.FavoritePositionsAdapter$PositionDiffCallback:
     public static boolean areContentsTheSame$1()
     public static boolean areItemsTheSame$1()
-com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder$$InternalSyntheticLambda$2$d915e5c6c1d2278da8a1597a425a1ea9a731cfa6eb961a224a5541d84d75e04d$0
 com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder:
     public static void bind$1()
 com.velvettouch.nosafeword.FavoritePositionsAdapter:
     public static void onBindViewHolder$4()
     public static com.velvettouch.nosafeword.FavoritePositionsAdapter$ViewHolder onCreateViewHolder()
-    public final void removeItem()
+    public final void removeItem(int)
 com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder$$InternalSyntheticLambda$2$8f6f16a3f99fa79e67386a5e7e315dd612ef98fa5c26b9263b2486e64916d74a$0
 com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder:
     public final com.google.android.material.card.MaterialCardView cardView
@@ -11594,18 +12359,18 @@ com.velvettouch.nosafeword.FavoriteScenesAdapter$SceneDiffCallback:
 com.velvettouch.nosafeword.FavoriteScenesAdapter:
     public static void onBindViewHolder$5()
     public static com.velvettouch.nosafeword.FavoriteScenesAdapter$FavoriteViewHolder onCreateViewHolder()
-    public final void removeItem()
+    public final void removeItem(int)
 com.velvettouch.nosafeword.FavoritesActivity$$InternalSyntheticLambda$1$a62e4242708c1b536ad090211a7ea89935686dbe718fd1397fb3d7d7412cbfdd$0
 com.velvettouch.nosafeword.FavoritesActivity$Companion
 com.velvettouch.nosafeword.FavoritesActivity$Position:
     public static java.lang.String getImagePath()
     public static java.lang.String getName()
+    public static boolean isAsset()
 com.velvettouch.nosafeword.FavoritesActivity:
     public static final com.velvettouch.nosafeword.FavoritesActivity$Companion Companion
     public static void <clinit>()
     public static final synthetic androidx.recyclerview.widget.RecyclerView access$getPositionFavoritesRecyclerView$p()
     public static final synthetic androidx.recyclerview.widget.RecyclerView access$getSceneFavoritesRecyclerView$p()
-    public final java.lang.String capitalize(java.lang.String)
     public final void loadPositionFavorites()
     public static void loadPositions()
     public static void loadSceneFavorites()
@@ -11616,22 +12381,25 @@ com.velvettouch.nosafeword.FavoritesActivity:
     public static void saveSceneFavorites()
     public static void setupPositionSwipeToDelete()
     public static void setupSceneSwipeToDelete()
+com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$0
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$1
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$3
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$4
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$5
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$6
 com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$7
+com.velvettouch.nosafeword.MainActivity$$InternalSyntheticLambda$1$cdefd10a8ce2a87ce95f22e78fc5c08ea14a74a17fa1df03f23edf7ae398a093$9
 com.velvettouch.nosafeword.MainActivity$Companion
 com.velvettouch.nosafeword.MainActivity:
     public static final com.velvettouch.nosafeword.MainActivity$Companion Companion
-    public android.widget.FrameLayout favoritesContainer
     public static void <clinit>()
+    public static final synthetic void access$filterScenes()
     public static final synthetic int access$getHistoryPosition$p()
     public static final synthetic com.google.android.material.card.MaterialCardView access$getSceneCardView$p()
+    public static final synthetic void access$switchToRandomMode()
     public static final synthetic void access$updatePreviousButtonState()
+    public static void addCurrentSceneToPlan()
     public static void displayNextScene()
-    public static void filterScenes()
     public static java.lang.String formatMarkdownText(java.lang.String)
     public static void loadFavorites()
     public final void loadScenes()
@@ -11640,32 +12408,98 @@ com.velvettouch.nosafeword.MainActivity:
     public static void shareCurrentScene()
     public static void showDeleteConfirmation()
     public static void showResetConfirmation()
-    public static void switchToRandomMode()
     public final void toggleFavorite()
     public final void updateFavoriteIcon()
 com.velvettouch.nosafeword.NoSafeWordApplication$Companion
 com.velvettouch.nosafeword.NoSafeWordApplication:
     public static final com.velvettouch.nosafeword.NoSafeWordApplication$Companion Companion
     public static void applyThemeSettings()
+com.velvettouch.nosafeword.PlanNightActivity$$InternalSyntheticLambda$1$e1ae7648cfbe61afd868846240c28c6f0e1e7052056fb7f54a29328459bab5b0$0
+com.velvettouch.nosafeword.PlanNightActivity$$InternalSyntheticLambda$2$d8addd86a6b0b2a553c2065a99b55ea10210f7625d7e5fa059a91f1e407185f5$1
+com.velvettouch.nosafeword.PlanNightActivity$$InternalSyntheticLambda$2$d8addd86a6b0b2a553c2065a99b55ea10210f7625d7e5fa059a91f1e407185f5$3
+com.velvettouch.nosafeword.PlanNightActivity:
+    public static final synthetic com.velvettouch.nosafeword.PlannedNightAdapter access$getPlannedItemsAdapter$p()
+    public static final synthetic void access$savePlannedItems()
+    public static final synthetic void access$showAddPlannedItemDialog$filterAndDisplayItems()
+    public static final synthetic void access$updatePlaceholderVisibility()
+    public static void loadPlannedItems()
+    public static void setupDrawer()
+    public final void setupRecyclerView()
+    public static void showAddPlannedItemDialog()
+com.velvettouch.nosafeword.PlannedItem:
+    public static java.lang.String getDetails()
+    public static java.lang.String getId()
+    public static java.lang.String getName()
+    public static int getOrder()
+    public static java.lang.String getType()
+    public static void setOrder()
+com.velvettouch.nosafeword.PlannedNightAdapter$$InternalSyntheticLambda$2$4fb41281bc18708bff7f50f8df46c3c0ecaf08d08c8b46a51401e42627a7b857$0
+com.velvettouch.nosafeword.PlannedNightAdapter$$InternalSyntheticLambda$2$4fb41281bc18708bff7f50f8df46c3c0ecaf08d08c8b46a51401e42627a7b857$1
+com.velvettouch.nosafeword.PlannedNightAdapter$PlannedItemViewHolder:
+    public final synthetic com.velvettouch.nosafeword.PlannedNightAdapter this$0
+    public static void bind$2()
+    public static com.velvettouch.nosafeword.databinding.ItemPlannedNightBinding getBinding()
+com.velvettouch.nosafeword.PlannedNightAdapter:
+    public static void onBindViewHolder$6()
+    public static com.velvettouch.nosafeword.PlannedNightAdapter$PlannedItemViewHolder onCreateViewHolder()
+    public static boolean onItemMove()
+com.velvettouch.nosafeword.PositionItem:
+    public static java.lang.String getImageName()
+    public static java.lang.String getName()
+    public static boolean isAsset()
+com.velvettouch.nosafeword.PositionLibraryAdapter$ViewHolder$$InternalSyntheticLambda$2$549817917cc6faba4ecebb5299acbacbe2f6177081d9c1cdaa58f72160680b38$1
+com.velvettouch.nosafeword.PositionLibraryAdapter$ViewHolder:
+    public static void bind$3()
+com.velvettouch.nosafeword.PositionLibraryAdapter:
+    public static void onBindViewHolder$7()
+    public static com.velvettouch.nosafeword.PositionLibraryAdapter$ViewHolder onCreateViewHolder()
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$0
 com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$1$7e2010e9769c576fc990d014584d51561ca09462f64bd1a43c0230479c285c97$2
+com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$2$08fa11be33ad01c9f80e218fcf429f3a0ae82273c20b7129fb34992b24ed6bda$1
+com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$2$70729091be6429c0c510a51c645e2e7891e1f2524dbd21a1fd4809fcbb699e2c$0
+com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$2$fb9149cfcab5e976b75381fe69a30cbfef97e6c6ad26bfc149ad39978f7e54b0$0
+com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$3$2fe354ef13e473fe3ca49a53fbf6abc01f1875efc17710094786d0276870c560$0
+com.velvettouch.nosafeword.PositionsActivity$$InternalSyntheticLambda$3$2fe354ef13e473fe3ca49a53fbf6abc01f1875efc17710094786d0276870c560$1
 com.velvettouch.nosafeword.PositionsActivity$VoiceSettings
+com.velvettouch.nosafeword.PositionsActivity$setupLibraryRecyclerView$3$$InternalSyntheticLambda$1$9da36083e7a29a63fed5a1490597ad714d66757829c0dc096e97bef09348cb43$0:
+    private static synthetic void $r8$constructor$com$velvettouch$nosafeword$PositionsActivity$setupLibraryRecyclerView$3$$InternalSyntheticLambda$1$9da36083e7a29a63fed5a1490597ad714d66757829c0dc096e97bef09348cb43$0()
+    private static synthetic void $r8$constructor$com$velvettouch$nosafeword$SearchPlannedItemAdapter$$InternalSyntheticLambda$3$10076b472d62f7daff67c66baad338719c149072cd3140564f7e84d663c8b23e$0()
+com.velvettouch.nosafeword.PositionsActivity$setupLibraryRecyclerView$3$2:
+    public static void onDismissed()
 com.velvettouch.nosafeword.PositionsActivity:
     public static final com.velvettouch.nosafeword.PositionsActivity$VoiceSettings VoiceSettings
+    public com.google.android.material.chip.ChipGroup positionFilterChipGroup
     public static void <clinit>()
     public static final synthetic void access$displayRandomPosition()
+    public static final synthetic void access$filterPositionsLibrary()
+    public static final synthetic java.util.List access$getAllPositionItems$p()
+    public static final synthetic java.util.Set access$getHiddenDefaultPositionNames$p()
+    public static final synthetic android.view.View access$getLibraryTabContent$p()
     public static final synthetic int access$getMaxTimeSeconds$p$1()
     public static final synthetic int access$getMinTimeSeconds$p$1()
+    public static final synthetic java.util.Set access$getPositionFavorites$p()
     public static final synthetic android.widget.ImageView access$getPositionImageView$p()
+    public static final synthetic com.velvettouch.nosafeword.PositionLibraryAdapter access$getPositionLibraryAdapter$p()
+    public static final synthetic android.view.View access$getRandomizeTabContent$p()
     public static final synthetic java.util.List access$getTimeOptions$p$1()
+    public static final void access$saveHiddenDefaultPositionNames(com.velvettouch.nosafeword.PositionsActivity)
     public static final synthetic void access$startAutoPlay$1()
-    public static void displayPositionByName()
+    public static void addCurrentPositionToPlan()
     public final java.lang.String formatTime()
+    public static void loadHiddenDefaultPositionNames()
     public final void loadPositionFavorites()
     public static void loadPositionImages()
     public final void loadVoiceSettings()
+    public static void resetToDefaultPositions()
+    public static void saveHiddenDefaultPositionNames()
     public final void savePositionFavorites()
+    public final void setupFab()
+    public static void setupLibraryRecyclerView()
+    public static void setupPositionFilterChips()
+    public static void setupResetButton()
+    public static void setupSearch()
     public final void setupSpinners()
+    public static void showResetConfirmationDialog()
     public final void stopAutoPlay()
     public final void toggleAutoPlay()
     public final void toggleFavorite()
@@ -11675,7 +12509,21 @@ com.velvettouch.nosafeword.Scene:
     public static java.lang.String getContent()
     public static int getId()
     public static java.lang.String getTitle()
+    public static boolean isCustom()
+com.velvettouch.nosafeword.SearchPlannedItemAdapter$$InternalSyntheticLambda$3$10076b472d62f7daff67c66baad338719c149072cd3140564f7e84d663c8b23e$0
+com.velvettouch.nosafeword.SearchPlannedItemAdapter$$InternalSyntheticLambda$3$10076b472d62f7daff67c66baad338719c149072cd3140564f7e84d663c8b23e$1
+com.velvettouch.nosafeword.SearchPlannedItemAdapter$SearchResultViewHolder:
+    public final synthetic com.velvettouch.nosafeword.SearchPlannedItemAdapter this$0
+    public static void bind$4()
+    public static com.velvettouch.nosafeword.databinding.ItemSearchResultBinding getBinding()
+com.velvettouch.nosafeword.SearchPlannedItemAdapter:
+    public static java.util.List getSelectedItems()
+    public static void onBindViewHolder$8()
+    public static com.velvettouch.nosafeword.SearchPlannedItemAdapter$SearchResultViewHolder onCreateViewHolder()
+    public static void setOnSelectionChanged()
+    public static void updateData()
 com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$1$b34b4dcea25e590d0a50b0966654fd120f44b7433f3a17a06f02b87578efc425$0
+com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$0
 com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$263211c31cc31ddeae384dbe87f99e53fa1324e8f66d027a0b80b6ffe8700718$1
 com.velvettouch.nosafeword.SettingsActivity$$InternalSyntheticLambda$2$2e8175324eb24821e15c632bf51621cee139603e3f2becffb9f110b847ceeb7f$0
 com.velvettouch.nosafeword.SettingsActivity$Companion
@@ -11693,6 +12541,43 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static void setupThemeSelector()
     public static void setupVoiceInstructionsToggle()
     public static void setupVoiceSettingsCard()
+com.velvettouch.nosafeword.TaskItem:
+    public static com.velvettouch.nosafeword.TaskItem copy()
+    public static java.lang.Long getDeadline()
+    public static java.lang.String getId()
+    public static int getOrder()
+    public static java.lang.String getTitle()
+    public static boolean isCompleted()
+    public static void setOrder()
+com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$1$50a20ffd681f543ffa0c7d837a0315ab2d2474d107186f7e47d9f1c2d1f61cfc$0
+com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$2$37dc7a8d3497db8326a1c85dec38372a33b8815b58e9cd787ae601feb9b3cbd3$0
+com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$3$7b9859bbddf4d15076f25569de9dd9eba5db93558edfa2279c25ca08f74b724e$0
+com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$4$0e9791234ecf0de214b6f816f2e5af3a9c0f4013db287c62ebcd847531883190$0
+com.velvettouch.nosafeword.TaskListActivity$Companion
+com.velvettouch.nosafeword.TaskListActivity$setupRecyclerView$callback$1$$InternalSyntheticLambda$2$1e786ee9811087e53a803ead9f60a08e7bcecd2014a2a46170bd3e38f9772200$0
+com.velvettouch.nosafeword.TaskListActivity:
+    public static final com.velvettouch.nosafeword.TaskListActivity$Companion Companion
+    public static void <clinit>()
+    public static final synthetic java.util.List access$getTaskItems$p()
+    public static final synthetic com.velvettouch.nosafeword.TaskListAdapter access$getTaskListAdapter$p()
+    public static final synthetic void access$saveTasksToPreferences()
+    public static final synthetic void access$updateEmptyViewVisibility()
+    public static void handleNavigationItemSelected()
+    public static void loadSampleTasks()
+    public static void loadTasks()
+    public final void setupFab()
+    public final void setupRecyclerView()
+    public static void showAddTaskDialog()
+com.velvettouch.nosafeword.TaskListAdapter$TaskDiffCallback:
+    public static boolean areContentsTheSame$2()
+    public static boolean areItemsTheSame$2()
+com.velvettouch.nosafeword.TaskListAdapter$TaskViewHolder$$InternalSyntheticLambda$2$7118ac2ec46849dee57237bafc100caf6415acba70d75cf0e174f0879788f8d3$1
+com.velvettouch.nosafeword.TaskListAdapter$TaskViewHolder$$InternalSyntheticLambda$2$7118ac2ec46849dee57237bafc100caf6415acba70d75cf0e174f0879788f8d3$2
+com.velvettouch.nosafeword.TaskListAdapter$TaskViewHolder:
+    public static void bind$5()
+com.velvettouch.nosafeword.TaskListAdapter:
+    public static void onBindViewHolder$9()
+    public static com.velvettouch.nosafeword.TaskListAdapter$TaskViewHolder onCreateViewHolder()
 com.velvettouch.nosafeword.cardstack.CardStackView:
     public static final synthetic androidx.recyclerview.widget.RecyclerView$Adapter access$getAdapter$p()
     public static final synthetic int access$getTopCardPosition$p()
@@ -11704,6 +12589,16 @@ com.velvettouch.nosafeword.cardstack.CardStackView:
     public static float calculateRotation()
     public static int dpToPx()
     public static void setupGestureDetector()
+com.velvettouch.nosafeword.databinding.ActivityPlanNightBinding:
+    public final com.google.android.material.appbar.AppBarLayout appbarPlanNight
+    public static androidx.drawerlayout.widget.DrawerLayout getRoot()
+com.velvettouch.nosafeword.databinding.DialogAddPlannedItemBinding:
+    public final android.widget.TextView dialogTitle
+    public static android.widget.LinearLayout getRoot()
+com.velvettouch.nosafeword.databinding.ItemPlannedNightBinding:
+    public static com.google.android.material.card.MaterialCardView getRoot()
+com.velvettouch.nosafeword.databinding.ItemSearchResultBinding:
+    public static androidx.constraintlayout.widget.ConstraintLayout getRoot()
 kotlin.ExceptionsKt
 kotlin.ExceptionsKt__ExceptionsKt
 kotlin.LazyKt
@@ -11789,8 +12684,8 @@ kotlin.collections.ArraysKt___ArraysKt:
     public static final int getLastIndex(java.lang.Object[])
     public static final java.lang.Object getOrNull(java.lang.Object[],int)
     public static final int indexOf()
-    public static final char single(char[])
     public static final java.lang.Object singleOrNull()
+    public static final void sortWith(java.lang.Object[],java.util.Comparator)
     public static final java.lang.Object[] sortedArrayWith()
     public static final java.util.List sortedWith()
     public static final java.util.List toList()
@@ -11808,13 +12703,16 @@ kotlin.collections.CollectionsKt___CollectionsKt:
     public static final kotlin.sequences.Sequence asSequence()
     public static final java.lang.Object elementAt()
     public static final java.lang.Object elementAtOrElse()
+    public static final java.lang.Object first()
     public static final java.lang.Object firstOrNull()
     public static final java.lang.String joinToString()
+    public static final java.lang.Object last()
     public static final java.lang.Comparable minOrNull()
     public static final java.lang.Object single()
     public static final java.lang.Object single$1()
+    public static final java.util.List sortedWith$1()
     public static final java.util.ArrayList toMutableList(java.util.Collection)
-    public static final java.util.List toMutableList$1()
+    public static final java.util.List toMutableList(java.lang.Iterable)
     public static final java.util.Set toMutableSet(java.util.Set)
     public static final java.util.List zip()
 kotlin.collections.EmptyIterator:
@@ -11906,8 +12804,14 @@ kotlin.internal.jdk7.JDK7PlatformImplementations:
 kotlin.internal.jdk8.JDK8PlatformImplementations$ReflectSdkVersion:
     public static final kotlin.internal.jdk8.JDK8PlatformImplementations$ReflectSdkVersion INSTANCE
     public void <init>()
+kotlin.io.ByteStreamsKt
 kotlin.io.CloseableKt
 kotlin.io.ExceptionsKt
+kotlin.io.FilesKt
+kotlin.io.FilesKt__FilePathComponentsKt
+kotlin.io.FilesKt__FileReadWriteKt
+kotlin.io.FilesKt__FileTreeWalkKt
+kotlin.io.TextStreamsKt
 kotlin.io.path.DirectoryEntriesReader$$InternalSyntheticApiModelOutline$2$70a2b410071e013e79690bd78dda506beb911bff4997db144f915dfb595b094f$0
 kotlin.io.path.DirectoryEntriesReader$$InternalSyntheticApiModelOutline$2$82be78b3dfbb542c02418fe0ea98fb599f9c8e2d97f3298d09efb1f6df7aaac6$0
 kotlin.io.path.DirectoryEntriesReader:
@@ -12062,7 +12966,33 @@ kotlin.jvm.internal.markers.KMappedMarker
 kotlin.jvm.internal.markers.KMutableIterable
 kotlin.random.FallbackThreadLocalRandom$implStorage$1:
     public static java.util.Random initialValue()
-kotlin.random.PlatformRandomKt
+kotlin.random.PlatformRandomKt:
+    public static kotlinx.coroutines.SupervisorJobImpl SupervisorJob$default()
+    public static final long access$durationOfMillis(long)
+    public static final kotlin.text.MatcherMatchResult access$findNext(java.util.regex.Matcher,int,java.lang.CharSequence)
+    public static final kotlinx.coroutines.flow.CallbackFlowBuilder callbackFlow(kotlin.jvm.functions.Function2)
+    public static final void cancel(kotlin.coroutines.CoroutineContext,java.util.concurrent.CancellationException)
+    public static void cancel$default(kotlin.coroutines.CoroutineContext)
+    public static final int coerceAtLeast()
+    public static final long coerceAtLeast()
+    public static final int coerceAtMost()
+    public static final long coerceAtMost()
+    public static final java.lang.Object collect(kotlinx.coroutines.flow.Flow,kotlin.coroutines.Continuation)
+    public static final void disposeOnCancellation(kotlinx.coroutines.CancellableContinuationImpl,kotlinx.coroutines.DisposableHandle)
+    public static final kotlin.ranges.IntProgression downTo(int,int)
+    public static final java.lang.Object emitAll(kotlin.coroutines.Continuation,kotlinx.coroutines.flow.Flow,kotlinx.coroutines.flow.FlowCollector)
+    public static final void ensureActive(kotlinx.coroutines.Job)
+    public static final void ensureActive(kotlinx.coroutines.flow.FlowCollector)
+    public static final int fastLog2(int)
+    public static final java.lang.Object first()
+    public static final java.lang.Throwable handlerException(java.lang.Throwable,java.lang.Throwable)
+    public static final boolean isCancellableMode(int)
+    public static final void removeOnCancellation(kotlinx.coroutines.CancellableContinuationImpl,kotlinx.coroutines.internal.LockFreeLinkedListNode)
+    public static final kotlin.sequences.SequencesKt__SequenceBuilderKt$sequence$$inlined$Sequence$1 sequence(kotlin.jvm.functions.Function2)
+    public static final int takeUpperBits(int,int)
+    public static final java.lang.Object toChannel()
+    public static final java.lang.Object toState(kotlin.jvm.functions.Function1,java.lang.Object)
+    public static java.lang.Object toState$default(java.lang.Object)
 kotlin.random.RandomKt
 kotlin.ranges.ClosedRange$DefaultImpls
 kotlin.ranges.IntProgression$Companion
@@ -12150,28 +13080,7 @@ kotlin.text.Regex$Companion:
     public static int ensureUnicodeCase()
 kotlin.text.RegexKt
 kotlin.text.StringsKt
-kotlin.text.StringsKt__AppendableKt:
-    public static kotlinx.coroutines.SupervisorJobImpl SupervisorJob$default()
-    public static final long access$durationOfMillis(long)
-    public static final kotlinx.coroutines.flow.CallbackFlowBuilder callbackFlow(kotlin.jvm.functions.Function2)
-    public static final void cancel(kotlin.coroutines.CoroutineContext,java.util.concurrent.CancellationException)
-    public static void cancel$default(kotlin.coroutines.CoroutineContext)
-    public static final void checkOwnership()
-    public static final java.lang.Object collect(kotlinx.coroutines.flow.Flow,kotlin.coroutines.Continuation)
-    public static java.lang.Object constructor-impl()
-    public static java.lang.Object constructor-impl$default()
-    public static final void disposeOnCancellation(kotlinx.coroutines.CancellableContinuationImpl,kotlinx.coroutines.DisposableHandle)
-    public static final java.lang.Object emitAll(kotlin.coroutines.Continuation,kotlinx.coroutines.flow.Flow,kotlinx.coroutines.flow.FlowCollector)
-    public static final void ensureActive(kotlinx.coroutines.Job)
-    public static final void ensureActive(kotlinx.coroutines.flow.FlowCollector)
-    public static final java.lang.Object first()
-    public static final java.lang.Throwable handlerException(java.lang.Throwable,java.lang.Throwable)
-    public static final boolean isCancellableMode(int)
-    public static final void removeOnCancellation(kotlinx.coroutines.CancellableContinuationImpl,kotlinx.coroutines.internal.LockFreeLinkedListNode)
-    public static final java.lang.Object toChannel()
-    public static final java.lang.Object toState(kotlin.jvm.functions.Function1,java.lang.Object)
-    public static java.lang.Object toState$default(java.lang.Object)
-    public static synthetic java.lang.Object withContextUndispatched$default(kotlin.coroutines.CoroutineContext,java.lang.Object,kotlin.jvm.functions.Function2,kotlin.coroutines.Continuation)
+kotlin.text.StringsKt__AppendableKt
 kotlin.text.StringsKt__IndentKt:
     public static final kotlin.jvm.functions.Function1 getIndentFunction$StringsKt__IndentKt()
 kotlin.text.StringsKt__RegexExtensionsJVMKt
@@ -12188,7 +13097,6 @@ kotlin.text.StringsKt__StringsKt:
     public static final kotlin.sequences.Sequence rangesDelimitedBy$StringsKt__StringsKt()
     public static final java.util.List split()
     public static final kotlin.sequences.Sequence splitToSequence()
-    public static java.lang.String substringAfter$default(java.lang.String,java.lang.String)
 kotlin.text.StringsKt___StringsJvmKt
 kotlin.text._OneToManyTitlecaseMappingsKt
 kotlin.time.Duration$$InternalSyntheticBackport$1$aa05760c2a1c30df271e26da0b9d452ed91a3ca68f29483162a334351c641ba3$0
@@ -12695,7 +13603,20 @@ kotlinx.coroutines.flow.FlowKt__ReduceKt:
     public static final java.lang.Object fold()
 kotlinx.coroutines.flow.FlowKt__ShareKt$launchSharingDeferred$1$1:
     public final synthetic kotlinx.coroutines.CompletableDeferred $result
-kotlinx.coroutines.flow.FlowKt__ShareKt
+kotlinx.coroutines.flow.FlowKt__ShareKt:
+    public static final void checkOwnership()
+    public static java.lang.Object constructor-impl()
+    public static java.lang.Object constructor-impl$1()
+    public static java.lang.Object constructor-impl$default()
+    public static final int getAVAILABLE_PROCESSORS()
+    public static final boolean isClosed-impl(java.lang.Object)
+    public static synthetic void startCoroutineCancellable$default(kotlin.jvm.functions.Function2,java.lang.Object,kotlin.coroutines.Continuation)
+    public static final void startCoroutineUnintercepted(kotlin.jvm.functions.Function1,kotlin.coroutines.Continuation)
+    public static final int systemProp(java.lang.String,int,int,int)
+    public static final java.lang.String systemProp(java.lang.String)
+    public static final boolean systemProp(java.lang.String,boolean)
+    public static synthetic long systemProp$default(java.lang.String,long)
+    public static synthetic java.lang.Object withContextUndispatched$default(kotlin.coroutines.CoroutineContext,java.lang.Object,kotlin.jvm.functions.Function2,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.FlowKt__TransformKt$filter$$inlined$unsafeTransform$1$2:
     public final java.lang.Object emit(java.lang.Object,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.FlowKt__TransformKt$filter$$inlined$unsafeTransform$1:
@@ -12923,17 +13844,7 @@ kotlinx.coroutines.internal.ScopeCoroutine:
 kotlinx.coroutines.internal.Segment:
     public abstract long getId()
     public abstract void onSlotCleaned()
-kotlinx.coroutines.internal.SegmentOrClosed:
-    public static java.lang.Object constructor-impl()
-    public static final void dispatcherFailure(java.lang.Throwable,kotlin.coroutines.Continuation)
-    public static final int getAVAILABLE_PROCESSORS()
-    public static final boolean isClosed-impl(java.lang.Object)
-    public static synthetic void startCoroutineCancellable$default(kotlin.jvm.functions.Function2,java.lang.Object,kotlin.coroutines.Continuation)
-    public static final void startCoroutineUnintercepted(kotlin.jvm.functions.Function1,kotlin.coroutines.Continuation)
-    public static final int systemProp(java.lang.String,int,int,int)
-    public static final java.lang.String systemProp(java.lang.String)
-    public static final boolean systemProp(java.lang.String,boolean)
-    public static synthetic long systemProp$default(java.lang.String,long)
+kotlinx.coroutines.internal.SegmentOrClosed
 kotlinx.coroutines.internal.StackTraceRecoveryKt:
     public static final java.lang.String baseContinuationImplClassName
     public static final java.lang.String stackTraceRecoveryClassName
