@@ -1078,7 +1078,7 @@ class MainActivity : BaseActivity() {
             displayScene(scenes[currentSceneIndex])
 
             // Show a toast to confirm the selection
-            showMaterialToast(getString(R.string.scene_selected), true)
+            // showMaterialToast(getString(R.string.scene_selected), true)
         }
     }
 
