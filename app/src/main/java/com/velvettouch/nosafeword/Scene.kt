@@ -6,5 +6,6 @@ package com.velvettouch.nosafeword
 data class Scene(
     val id: Int,
     val title: String,
-    val content: String
+    val content: String,
+    val isCustom: Boolean = false // Added to distinguish custom scenes
 )

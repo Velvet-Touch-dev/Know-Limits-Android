@@ -4,12 +4,14 @@ package com.velvettouch.nosafeword.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.velvettouch.nosafeword.R;
@@ -19,10 +21,16 @@ import java.lang.String;
 
 public final class FragmentEditBinding implements ViewBinding {
   @NonNull
-  private final FrameLayout rootView;
+  private final LinearLayout rootView;
 
   @NonNull
   public final FloatingActionButton addSceneFab;
+
+  @NonNull
+  public final Chip chipCustomScenes;
+
+  @NonNull
+  public final Chip chipDefaultScenes;
 
   @NonNull
   public final RecyclerView editRecyclerView;
@@ -30,18 +38,26 @@ public final class FragmentEditBinding implements ViewBinding {
   @NonNull
   public final ExtendedFloatingActionButton resetScenesButton;
 
-  private FragmentEditBinding(@NonNull FrameLayout rootView,
-      @NonNull FloatingActionButton addSceneFab, @NonNull RecyclerView editRecyclerView,
-      @NonNull ExtendedFloatingActionButton resetScenesButton) {
+  @NonNull
+  public final ChipGroup sceneFilterChipGroup;
+
+  private FragmentEditBinding(@NonNull LinearLayout rootView,
+      @NonNull FloatingActionButton addSceneFab, @NonNull Chip chipCustomScenes,
+      @NonNull Chip chipDefaultScenes, @NonNull RecyclerView editRecyclerView,
+      @NonNull ExtendedFloatingActionButton resetScenesButton,
+      @NonNull ChipGroup sceneFilterChipGroup) {
     this.rootView = rootView;
     this.addSceneFab = addSceneFab;
+    this.chipCustomScenes = chipCustomScenes;
+    this.chipDefaultScenes = chipDefaultScenes;
     this.editRecyclerView = editRecyclerView;
     this.resetScenesButton = resetScenesButton;
+    this.sceneFilterChipGroup = sceneFilterChipGroup;
   }
 
   @Override
   @NonNull
-  public FrameLayout getRoot() {
+  public LinearLayout getRoot() {
     return rootView;
   }
 
@@ -72,6 +88,18 @@ public final class FragmentEditBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.chip_custom_scenes;
+      Chip chipCustomScenes = ViewBindings.findChildViewById(rootView, id);
+      if (chipCustomScenes == null) {
+        break missingId;
+      }
+
+      id = R.id.chip_default_scenes;
+      Chip chipDefaultScenes = ViewBindings.findChildViewById(rootView, id);
+      if (chipDefaultScenes == null) {
+        break missingId;
+      }
+
       id = R.id.edit_recycler_view;
       RecyclerView editRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (editRecyclerView == null) {
@@ -84,8 +112,14 @@ public final class FragmentEditBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentEditBinding((FrameLayout) rootView, addSceneFab, editRecyclerView,
-          resetScenesButton);
+      id = R.id.scene_filter_chip_group;
+      ChipGroup sceneFilterChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (sceneFilterChipGroup == null) {
+        break missingId;
+      }
+
+      return new FragmentEditBinding((LinearLayout) rootView, addSceneFab, chipCustomScenes,
+          chipDefaultScenes, editRecyclerView, resetScenesButton, sceneFilterChipGroup);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

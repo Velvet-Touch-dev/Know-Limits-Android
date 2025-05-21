@@ -4,4 +4,21 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <!-- Custom Filter Chip Style -->
+    <style name="Widget.App.Chip.Filter" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_background_color_selector</item>
+        <item name="android:textColor">@color/chip_text_color_selector</item>
+        <item name="chipStrokeColor">@color/chip_stroke_color_selector</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <!-- Optional: Adjust corner radius if needed -->
+        <!-- <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.Chip</item> -->
+    </style>
+    <!-- Optional: Define ShapeAppearance.App.Chip if you want custom corners -->
+    <!--
+    <style name="ShapeAppearance.App.Chip" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    -->
 </resources>

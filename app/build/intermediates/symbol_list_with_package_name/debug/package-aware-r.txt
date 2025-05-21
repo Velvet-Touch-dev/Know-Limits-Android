@@ -1360,6 +1360,9 @@ color cardview_dark_background
 color cardview_light_background
 color cardview_shadow_end_color
 color cardview_shadow_start_color
+color chip_background_color_selector
+color chip_stroke_color_selector
+color chip_text_color_selector
 color dark_background
 color dark_error
 color dark_errorContainer
@@ -3373,6 +3376,8 @@ id chain2
 id chains
 id checkbox
 id checked
+id chip_custom_scenes
+id chip_default_scenes
 id chronometer
 id circle_center
 id clear_deadline_button
@@ -3703,6 +3708,7 @@ id scale
 id sceneCardView
 id scene_card
 id scene_favorites_recycler_view
+id scene_filter_chip_group
 id screen
 id scroll
 id scrollIndicatorDown
@@ -4182,7 +4188,9 @@ string color_palette
 string color_palette_changed
 string color_pink
 string color_purple
+string custom_scenes
 string deadline_optional_label
+string default_scenes
 string delete
 string delete_task
 string drag_to_reorder
@@ -5121,6 +5129,7 @@ style Widget_App_Button
 style Widget_App_CardView
 style Widget_App_CardView_Dark
 style Widget_App_CardView_PitchBlack
+style Widget_App_Chip_Filter
 style Widget_App_DialogButton
 style Widget_App_DialogButton_Text
 style Widget_App_Switch_PitchBlack

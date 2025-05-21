@@ -1359,6 +1359,9 @@ int color cardview_dark_background 0x7f06002a
 int color cardview_light_background 0x7f06002b
 int color cardview_shadow_end_color 0x7f06002c
 int color cardview_shadow_start_color 0x7f06002d
+int color chip_background_color_selector 0x7f060393
+int color chip_stroke_color_selector 0x7f060394
+int color chip_text_color_selector 0x7f060395
 int color dark_background 0x7f06002e
 int color dark_error 0x7f06002f
 int color dark_errorContainer 0x7f060030
@@ -3372,6 +3375,8 @@ int id chain2 0x7f090084
 int id chains 0x7f090085
 int id checkbox 0x7f090086
 int id checked 0x7f090087
+int id chip_custom_scenes 0x7f090292
+int id chip_default_scenes 0x7f090293
 int id chronometer 0x7f090088
 int id circle_center 0x7f090089
 int id clear_deadline_button 0x7f09008a
@@ -3702,6 +3707,7 @@ int id scale 0x7f0901cc
 int id sceneCardView 0x7f0901cd
 int id scene_card 0x7f0901ce
 int id scene_favorites_recycler_view 0x7f0901cf
+int id scene_filter_chip_group 0x7f090294
 int id screen 0x7f0901d0
 int id scroll 0x7f0901d1
 int id scrollIndicatorDown 0x7f0901d2
@@ -4181,7 +4187,9 @@ int string color_palette 0x7f110039
 int string color_palette_changed 0x7f11003a
 int string color_pink 0x7f11003b
 int string color_purple 0x7f11003c
+int string custom_scenes 0x7f110106
 int string deadline_optional_label 0x7f11003d
+int string default_scenes 0x7f110107
 int string delete 0x7f11003e
 int string delete_task 0x7f11003f
 int string drag_to_reorder 0x7f110040
@@ -5120,6 +5128,7 @@ int style Widget_App_Button 0x7f1202e1
 int style Widget_App_CardView 0x7f1202e2
 int style Widget_App_CardView_Dark 0x7f1202e3
 int style Widget_App_CardView_PitchBlack 0x7f1202e4
+int style Widget_App_Chip_Filter 0x7f12045e
 int style Widget_App_DialogButton 0x7f1202e5
 int style Widget_App_DialogButton_Text 0x7f1202e6
 int style Widget_App_Switch_PitchBlack 0x7f1202e7

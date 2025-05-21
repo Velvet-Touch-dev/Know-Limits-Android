@@ -34,6 +34,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -72,6 +74,9 @@ class MainActivity : BaseActivity() {
     private lateinit var favoritesRecyclerView: RecyclerView
     private lateinit var editRecyclerView: RecyclerView
     private lateinit var emptyFavoritesView: LinearLayout
+    private lateinit var sceneFilterChipGroup: ChipGroup
+    private lateinit var chipDefaultScenes: Chip
+    private lateinit var chipCustomScenes: Chip
 
     private var scenes: MutableList<Scene> = mutableListOf()
     private var originalScenes: List<Scene> = listOf() // Keep original scenes for reset
@@ -120,6 +125,9 @@ class MainActivity : BaseActivity() {
         emptyFavoritesView = findViewById(R.id.empty_favorites_view)
         addSceneButton = findViewById(R.id.add_scene_fab)
         resetScenesButton = findViewById(R.id.reset_scenes_button)
+        sceneFilterChipGroup = findViewById(R.id.scene_filter_chip_group)
+        chipDefaultScenes = findViewById(R.id.chip_default_scenes)
+        chipCustomScenes = findViewById(R.id.chip_custom_scenes)
 
         // Get drawer components
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -409,6 +417,35 @@ class MainActivity : BaseActivity() {
             showResetConfirmation()
         }
 
+        chipDefaultScenes.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!isChecked && !chipCustomScenes.isChecked) {
+                // Prevent deselecting if it's the last one selected
+                chipDefaultScenes.isChecked = true
+                showMaterialToast("At least one filter must be selected.", false)
+            } else {
+                val currentQueryFromSearch = try {
+                    val searchMenuItem = topAppBar.menu.findItem(R.id.action_search)
+                    val searchView = searchMenuItem?.actionView as? SearchView
+                    if (searchView?.isIconified == false) searchView.query?.toString() else null
+                } catch (e: Exception) { null }
+                filterScenes(currentQueryFromSearch)
+            }
+        }
+        chipCustomScenes.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!isChecked && !chipDefaultScenes.isChecked) {
+                // Prevent deselecting if it's the last one selected
+                chipCustomScenes.isChecked = true
+                showMaterialToast("At least one filter must be selected.", false)
+            } else {
+                val currentQueryFromSearch = try {
+                    val searchMenuItem = topAppBar.menu.findItem(R.id.action_search)
+                    val searchView = searchMenuItem?.actionView as? SearchView
+                    if (searchView?.isIconified == false) searchView.query?.toString() else null
+                } catch (e: Exception) { null }
+                filterScenes(currentQueryFromSearch)
+            }
+        }
+
         // Initialize the sceneHistory list with the initial scene
         sceneHistory.clear()
         historyPosition = -1
@@ -483,7 +520,7 @@ class MainActivity : BaseActivity() {
                     }
 
                     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                        updateEditList() // Reset to show all scenes
+                        filterScenes(null) // Re-apply chip filters when search is closed
                         return true
                     }
                 })
@@ -544,63 +581,104 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Update the selected menu item in the drawer
-        navigationView.setCheckedItem(R.id.nav_scenes)
+        navigationView.setCheckedItem(R.id.nav_scenes) // Default, updateUI will adjust if needed
+        updateUI() // General UI setup
+
+        // Explicitly re-apply filters if in MODE_EDIT when activity resumes
+        if (currentMode == MODE_EDIT) {
+            val currentQueryFromSearch = try {
+                val searchMenuItem = topAppBar.menu.findItem(R.id.action_search)
+                val searchView = searchMenuItem?.actionView as? SearchView
+                if (searchView != null && !searchView.isIconified) searchView.query?.toString() else null
+            } catch (e: Exception) {
+                // Menu might not be ready, or search item not present
+                null
+            }
+            filterScenes(currentQueryFromSearch)
+        }
     }
 
     private fun updateUI() {
+        val currentQueryFromSearch = try {
+            val searchMenuItem = topAppBar.menu.findItem(R.id.action_search)
+            val searchView = searchMenuItem?.actionView as? SearchView
+            if (searchView?.isIconified == false) searchView.query?.toString() else null
+        } catch (e: Exception) {
+            null
+        }
+
         when (currentMode) {
             MODE_RANDOM -> {
-                // Update app bar title
                 topAppBar.title = getString(R.string.app_name)
-                
-                // Show random content, hide others
                 randomContent.visibility = View.VISIBLE
+                favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
+                addSceneButton.visibility = View.GONE
+                resetScenesButton.visibility = View.GONE
+                navigationView.setCheckedItem(R.id.nav_scenes)
+                if (::sceneFilterChipGroup.isInitialized) {
+                    sceneFilterChipGroup.visibility = View.GONE
+                }
                 shareButton.visibility = View.VISIBLE
-                // Update button states
                 randomizeButton.visibility = View.VISIBLE
                 previousButton.visibility = View.VISIBLE
                 editButton.visibility = View.VISIBLE
-                
-                // Enable/disable previous button based on history
-                previousButton.isEnabled = historyPosition > 0
+                updatePreviousButtonState()
+            }
+            MODE_FAVORITES -> {
+                topAppBar.title = getString(R.string.favorites)
+                randomContent.visibility = View.GONE
+                favoritesContainer.visibility = View.VISIBLE
+                editContainer.visibility = View.GONE
+                addSceneButton.visibility = View.GONE
+                resetScenesButton.visibility = View.GONE
+                updateFavoritesList()
+                navigationView.setCheckedItem(R.id.nav_favorites)
+                 if (::sceneFilterChipGroup.isInitialized) {
+                    sceneFilterChipGroup.visibility = View.GONE
+                }
+                shareButton.visibility = View.GONE
+                randomizeButton.visibility = View.GONE
+                previousButton.visibility = View.GONE
+                editButton.visibility = View.GONE
             }
             MODE_EDIT -> {
-                // Update app bar title
                 topAppBar.title = getString(R.string.edit_scenes)
-                
-                // Hide random & favorites, show edit
                 randomContent.visibility = View.GONE
+                favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.VISIBLE
-                updateEditList()
+                addSceneButton.visibility = View.VISIBLE
+                resetScenesButton.visibility = View.VISIBLE
+                navigationView.setCheckedItem(R.id.nav_scenes)
+                if (::sceneFilterChipGroup.isInitialized) {
+                    sceneFilterChipGroup.visibility = View.VISIBLE
+                }
+                filterScenes(currentQueryFromSearch)
                 shareButton.visibility = View.GONE
                 randomizeButton.visibility = View.GONE
                 previousButton.visibility = View.GONE
                 editButton.visibility = View.GONE
             }
         }
-        
-        // Recreate options menu to update search visibility
         invalidateOptionsMenu()
     }
 
-
     private fun filterScenes(query: String?) {
-        if (query.isNullOrBlank()) {
-            // If query is empty, show all scenes
-            updateEditList()
-            return
-        }
+        val showDefault = chipDefaultScenes.isChecked
+        val showCustom = chipCustomScenes.isChecked
 
-        // Filter scenes based on query text
-        val filteredScenes = scenes.filter { scene ->
-            scene.title.contains(query, ignoreCase = true) ||
-                    scene.content.contains(query, ignoreCase = true)
+        val filteredList = scenes.filter { scene ->
+            val typeMatch = (showDefault && !scene.isCustom) || (showCustom && scene.isCustom)
+            val queryMatch = if (query.isNullOrBlank()) {
+                true
+            } else {
+                scene.title.contains(query, ignoreCase = true) ||
+                        scene.content.contains(query, ignoreCase = true)
+            }
+            typeMatch && queryMatch
         }
-
-        // Update adapter with filtered list
-        editAdapter.submitList(filteredScenes)
+        editAdapter.submitList(filteredList.toList()) // Ensure a new list is submitted
+        editRecyclerView.scrollToPosition(0)
     }
 
     private fun updateFavoritesList() {
@@ -730,10 +808,12 @@ class MainActivity : BaseActivity() {
                         scenesList.add(Scene(
                             id = id,
                             title = jsonObject.getString("title"),
-                            content = jsonObject.getString("content")
+                            content = jsonObject.getString("content"),
+                            isCustom = jsonObject.optBoolean("isCustom", false) // Read isCustom here
                         ))
                     }
-                    scenes = scenesList // Do not shuffle here, preserve user's order if loaded from file
+                    scenes.clear() // Clear before adding to ensure no duplicates if called multiple times
+                    scenes.addAll(scenesList) // Preserve user's order if loaded from file
                     nextSceneId = maxId + 1
                     scenesLoadedFromFile = true
                 }
@@ -840,6 +920,7 @@ class MainActivity : BaseActivity() {
                     put("id", scene.id)
                     put("title", scene.title)
                     put("content", scene.content)
+                    put("isCustom", scene.isCustom) // Add this line to save the isCustom flag
                 }
                 jsonArray.put(jsonObject)
             }
@@ -1096,7 +1177,8 @@ class MainActivity : BaseActivity() {
                 val newScene = Scene(
                     id = nextSceneId++,
                     title = newTitle,
-                    content = newContent
+                    content = newContent,
+                    isCustom = true // New scenes are custom
                 )
                 scenes.add(newScene)
                 showMaterialToast(getString(R.string.scene_saved), true)
@@ -1107,7 +1189,8 @@ class MainActivity : BaseActivity() {
                     scenes[index] = Scene(
                         id = scene.id,
                         title = newTitle,
-                        content = newContent
+                        content = newContent,
+                        isCustom = true // Edited scenes are also marked as custom
                     )
                     showMaterialToast(getString(R.string.scene_saved), true)
 
