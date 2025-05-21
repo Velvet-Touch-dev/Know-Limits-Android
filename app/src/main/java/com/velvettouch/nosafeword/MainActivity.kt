@@ -17,6 +17,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -418,7 +419,7 @@ class MainActivity : BaseActivity() {
             showResetConfirmation()
         }
 
-        chipDefaultScenes.setOnCheckedChangeListener { buttonView, isChecked ->
+        chipDefaultScenes.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked && !chipCustomScenes.isChecked) {
                 // Prevent deselecting if it's the last one selected
                 chipDefaultScenes.isChecked = true
@@ -432,7 +433,7 @@ class MainActivity : BaseActivity() {
                 filterScenes(currentQueryFromSearch)
             }
         }
-        chipCustomScenes.setOnCheckedChangeListener { buttonView, isChecked ->
+        chipCustomScenes.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked && !chipDefaultScenes.isChecked) {
                 // Prevent deselecting if it's the last one selected
                 chipCustomScenes.isChecked = true
@@ -494,14 +495,25 @@ class MainActivity : BaseActivity() {
         // Update UI based on initial mode
         updateUI()
 
-        // Handle pending navigation to scene in edit view
+        // Handle pending navigation to scene in random view
         pendingSceneTitleNavigation?.let { title ->
-            // UI elements for random view (sceneCardView, etc.) should be ready after initial onCreate.
-            // Posting might still be good practice if there are complex layout changes.
-            // For now, direct call as switchToRandomMode handles UI updates.
             navigateToSceneInRandomView(title)
             pendingSceneTitleNavigation = null // Clear after attempting
         }
+
+        // Setup custom back press handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    // If no custom action, disable this callback and let default behavior proceed
+                    // (which might be finishing the activity or popping fragment back stack)
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -595,12 +607,7 @@ class MainActivity : BaseActivity() {
                 }
                 true
             }
-            R.id.action_add_to_plan -> {
-                if (currentMode == MODE_RANDOM) {
-                    addCurrentSceneToPlan()
-                }
-                true
-            }
+            // Removed duplicate R.id.action_add_to_plan block
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -611,14 +618,8 @@ class MainActivity : BaseActivity() {
         drawerToggle.syncState()
     }
 
-    override fun onBackPressed() {
-        // Close the drawer if it's open, otherwise proceed with normal back button behavior
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
+    // Removed deprecated override fun onBackPressed()
+    // Back press logic is now handled by OnBackPressedDispatcher in onCreate
 
     override fun onPause() {
         // Cancel any showing toast
@@ -796,23 +797,14 @@ class MainActivity : BaseActivity() {
         // Cancel any previous toast to avoid stacking
         currentToast?.cancel()
 
-        // Inflate custom layout
-        val inflater = LayoutInflater.from(this)
-        val layout = inflater.inflate(R.layout.toast_material_you, null)
+        val iconText = if (isAddedToFavorite) "❤️" else "💔"
+        val fullMessage = "$iconText $message"
 
-        // Set text and icon
-        val text = layout.findViewById<TextView>(R.id.toast_text)
-        text.text = message
-
-        // Set icon based on action
-        val icon = layout.findViewById<TextView>(R.id.toast_icon)
-        icon.text = if (isAddedToFavorite) "❤️" else "💔"
-
-        // Create and show custom toast
-        val toast = Toast(applicationContext)
+        // Create and show standard text toast
+        // Note: Using applicationContext for Toast.makeText is generally safe.
+        val toast = Toast.makeText(applicationContext, fullMessage, Toast.LENGTH_SHORT)
+        // Gravity can still be set for standard toasts.
         toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout
         toast.show()
 
         // Store reference to cancel later if needed

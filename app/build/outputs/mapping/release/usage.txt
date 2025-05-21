@@ -2227,17 +2227,6 @@ com.google.gson.internal.sql.SqlTypesSupport$2:
 com.google.gson.internal.sql.SqlTypesSupport:
     private void <init>()
 com.google.gson.package-info
-com.google.gson.reflect.TypeToken:
-    private static varargs java.lang.AssertionError buildUnexpectedTypeError(java.lang.reflect.Type,java.lang.Class[])
-    public static com.google.gson.reflect.TypeToken getArray(java.lang.reflect.Type)
-    public static varargs com.google.gson.reflect.TypeToken getParameterized(java.lang.reflect.Type,java.lang.reflect.Type[])
-    public boolean isAssignableFrom(com.google.gson.reflect.TypeToken)
-    public boolean isAssignableFrom(java.lang.Class)
-    public boolean isAssignableFrom(java.lang.reflect.Type)
-    private static boolean isAssignableFrom(java.lang.reflect.Type,java.lang.reflect.GenericArrayType)
-    private static boolean isAssignableFrom(java.lang.reflect.Type,java.lang.reflect.ParameterizedType,java.util.Map)
-    private static boolean matches(java.lang.reflect.Type,java.lang.reflect.Type,java.util.Map)
-    private static boolean typeEquals(java.lang.reflect.ParameterizedType,java.lang.reflect.ParameterizedType,java.util.Map)
 com.google.gson.reflect.package-info
 com.google.gson.stream.JsonReader:
     static final int BUFFER_SIZE
@@ -2308,14 +2297,6 @@ com.velvettouch.nosafeword.MainActivity:
     static synthetic void updateFavoriteIcon$default(com.velvettouch.nosafeword.MainActivity,android.view.Menu,int,java.lang.Object)
 com.velvettouch.nosafeword.MyApplication$Companion
 com.velvettouch.nosafeword.MyApplication
-com.velvettouch.nosafeword.PlannedItem:
-    public final java.lang.String component1()
-    public final java.lang.String component2()
-    public final java.lang.String component3()
-    public final java.lang.String component4()
-    public final int component5()
-    public final com.velvettouch.nosafeword.PlannedItem copy(java.lang.String,java.lang.String,java.lang.String,java.lang.String,int)
-    public static synthetic com.velvettouch.nosafeword.PlannedItem copy$default(com.velvettouch.nosafeword.PlannedItem,java.lang.String,java.lang.String,java.lang.String,java.lang.String,int,int,java.lang.Object)
 com.velvettouch.nosafeword.PositionItem:
     public synthetic void <init>(java.lang.String,java.lang.String,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker)
     public final java.lang.String component1()
@@ -2333,13 +2314,6 @@ com.velvettouch.nosafeword.PositionsActivity:
     public static final java.lang.String PREF_VOICE_SPEED
     private final void toggleAutoPlaySettings()
     static synthetic void updateFavoriteIcon$default(com.velvettouch.nosafeword.PositionsActivity,android.view.Menu,int,java.lang.Object)
-com.velvettouch.nosafeword.Scene:
-    public final int component1()
-    public final java.lang.String component2()
-    public final java.lang.String component3()
-    public final boolean component4()
-    public final com.velvettouch.nosafeword.Scene copy(int,java.lang.String,java.lang.String,boolean)
-    public static synthetic com.velvettouch.nosafeword.Scene copy$default(com.velvettouch.nosafeword.Scene,int,java.lang.String,java.lang.String,boolean,int,java.lang.Object)
 com.velvettouch.nosafeword.SearchPlannedItemAdapter:
     public final kotlin.jvm.functions.Function1 getOnSelectionChanged()
 com.velvettouch.nosafeword.SettingsActivity:
@@ -2352,15 +2326,6 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static final int THEME_DARK
     public static final int THEME_LIGHT
     public static final int THEME_SYSTEM
-com.velvettouch.nosafeword.TaskItem:
-    public final java.lang.String component1()
-    public final java.lang.String component2()
-    public final java.lang.Long component3()
-    public final boolean component4()
-    public final int component5()
-    public final void setCompleted(boolean)
-    public final void setDeadline(java.lang.Long)
-    public final void setTitle(java.lang.String)
 com.velvettouch.nosafeword.TaskListActivity:
     private static final java.lang.String PREFS_NAME
     private static final java.lang.String TASKS_KEY
@@ -7102,6 +7067,8 @@ kotlin.text.StringsKt__StringsJVMKt:
     private static final java.lang.String String(char[])
     private static final java.lang.String String(char[],int,int)
     private static final java.lang.String String(int[],int,int)
+    public static final java.lang.String capitalize(java.lang.String)
+    public static final java.lang.String capitalize(java.lang.String,java.util.Locale)
     private static final int codePointAt(java.lang.String,int)
     private static final int codePointBefore(java.lang.String,int)
     private static final int codePointCount(java.lang.String,int,int)
@@ -11978,7 +11945,7 @@ com.google.gson.Gson:
     public static java.lang.Object fromJson()
     public static java.lang.Object fromJson$1()
     public static java.lang.Object fromJson$2()
-    public static com.google.gson.TypeAdapter getAdapter()
+    public final com.google.gson.TypeAdapter getAdapter(java.lang.Class)
     public static com.google.gson.TypeAdapter longAdapter()
     public static com.google.gson.stream.JsonReader newJsonReader()
     public static java.lang.String toJson()
@@ -12015,7 +11982,6 @@ com.google.gson.internal.$Gson$Preconditions
 com.google.gson.internal.$Gson$Types:
     public static final synthetic boolean $assertionsDisabled
     public void <init>()
-    public static java.lang.reflect.GenericArrayType arrayOf()
     public static java.lang.Class declaringClassOf()
     public static boolean equal()
     public static java.lang.reflect.Type getCollectionElementType()
@@ -12262,12 +12228,6 @@ com.google.gson.internal.sql.SqlTypesSupport$2
 com.google.gson.internal.sql.SqlTypesSupport:
     public static final com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType DATE_DATE_TYPE
     public static final com.google.gson.internal.bind.DefaultDateTypeAdapter$DateType TIMESTAMP_DATE_TYPE
-com.google.gson.reflect.TypeToken:
-    public static com.google.gson.reflect.TypeToken get()
-    public static com.google.gson.reflect.TypeToken get$1()
-    public static java.lang.Class getRawType()
-    public static java.lang.reflect.Type getType()
-    public static java.lang.reflect.Type getTypeTokenTypeArgument()
 com.google.gson.stream.JsonReader$1:
     public final void promoteNameToValue()
 com.google.gson.stream.JsonReader:
@@ -12369,6 +12329,7 @@ com.velvettouch.nosafeword.FavoritesActivity$Position:
 com.velvettouch.nosafeword.FavoritesActivity:
     public static final com.velvettouch.nosafeword.FavoritesActivity$Companion Companion
     public static void <clinit>()
+    public static final synthetic androidx.drawerlayout.widget.DrawerLayout access$getDrawerLayout$p()
     public static final synthetic androidx.recyclerview.widget.RecyclerView access$getPositionFavoritesRecyclerView$p()
     public static final synthetic androidx.recyclerview.widget.RecyclerView access$getSceneFavoritesRecyclerView$p()
     public final void loadPositionFavorites()
@@ -12394,6 +12355,7 @@ com.velvettouch.nosafeword.MainActivity:
     public static final com.velvettouch.nosafeword.MainActivity$Companion Companion
     public static void <clinit>()
     public static final synthetic void access$filterScenes()
+    public static final synthetic androidx.drawerlayout.widget.DrawerLayout access$getDrawerLayout$p$1()
     public static final synthetic int access$getHistoryPosition$p()
     public static final synthetic com.google.android.material.card.MaterialCardView access$getSceneCardView$p()
     public static final synthetic void access$switchToRandomMode()
@@ -12418,6 +12380,7 @@ com.velvettouch.nosafeword.PlanNightActivity$$InternalSyntheticLambda$1$e1ae7648
 com.velvettouch.nosafeword.PlanNightActivity$$InternalSyntheticLambda$2$d8addd86a6b0b2a553c2065a99b55ea10210f7625d7e5fa059a91f1e407185f5$1
 com.velvettouch.nosafeword.PlanNightActivity$$InternalSyntheticLambda$2$d8addd86a6b0b2a553c2065a99b55ea10210f7625d7e5fa059a91f1e407185f5$3
 com.velvettouch.nosafeword.PlanNightActivity:
+    public static final synthetic com.velvettouch.nosafeword.databinding.ActivityPlanNightBinding access$getBinding$p()
     public static final synthetic com.velvettouch.nosafeword.PlannedNightAdapter access$getPlannedItemsAdapter$p()
     public static final synthetic void access$savePlannedItems()
     public static final synthetic void access$showAddPlannedItemDialog$filterAndDisplayItems()
@@ -12426,13 +12389,6 @@ com.velvettouch.nosafeword.PlanNightActivity:
     public static void setupDrawer()
     public final void setupRecyclerView()
     public static void showAddPlannedItemDialog()
-com.velvettouch.nosafeword.PlannedItem:
-    public static java.lang.String getDetails()
-    public static java.lang.String getId()
-    public static java.lang.String getName()
-    public static int getOrder()
-    public static java.lang.String getType()
-    public static void setOrder()
 com.velvettouch.nosafeword.PlannedNightAdapter$$InternalSyntheticLambda$2$4fb41281bc18708bff7f50f8df46c3c0ecaf08d08c8b46a51401e42627a7b857$0
 com.velvettouch.nosafeword.PlannedNightAdapter$$InternalSyntheticLambda$2$4fb41281bc18708bff7f50f8df46c3c0ecaf08d08c8b46a51401e42627a7b857$1
 com.velvettouch.nosafeword.PlannedNightAdapter$PlannedItemViewHolder:
@@ -12473,6 +12429,7 @@ com.velvettouch.nosafeword.PositionsActivity:
     public static final synthetic void access$displayRandomPosition()
     public static final synthetic void access$filterPositionsLibrary()
     public static final synthetic java.util.List access$getAllPositionItems$p()
+    public static final synthetic androidx.drawerlayout.widget.DrawerLayout access$getDrawerLayout$p$2()
     public static final synthetic java.util.Set access$getHiddenDefaultPositionNames$p()
     public static final synthetic android.view.View access$getLibraryTabContent$p()
     public static final synthetic int access$getMaxTimeSeconds$p$1()
@@ -12505,11 +12462,6 @@ com.velvettouch.nosafeword.PositionsActivity:
     public final void toggleFavorite()
     public final void updateButtonLayout()
     public final void updateFavoriteIcon()
-com.velvettouch.nosafeword.Scene:
-    public static java.lang.String getContent()
-    public static int getId()
-    public static java.lang.String getTitle()
-    public static boolean isCustom()
 com.velvettouch.nosafeword.SearchPlannedItemAdapter$$InternalSyntheticLambda$3$10076b472d62f7daff67c66baad338719c149072cd3140564f7e84d663c8b23e$0
 com.velvettouch.nosafeword.SearchPlannedItemAdapter$$InternalSyntheticLambda$3$10076b472d62f7daff67c66baad338719c149072cd3140564f7e84d663c8b23e$1
 com.velvettouch.nosafeword.SearchPlannedItemAdapter$SearchResultViewHolder:
@@ -12531,6 +12483,7 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static final com.velvettouch.nosafeword.SettingsActivity$Companion Companion
     public boolean isTtsReady
     public static void <clinit>()
+    public static final synthetic androidx.drawerlayout.widget.DrawerLayout access$getDrawerLayout$p$3()
     public static void applyThemeAndColor()
     public static boolean isTtsEnabled()
     public static int loadColorSetting()
@@ -12541,14 +12494,6 @@ com.velvettouch.nosafeword.SettingsActivity:
     public static void setupThemeSelector()
     public static void setupVoiceInstructionsToggle()
     public static void setupVoiceSettingsCard()
-com.velvettouch.nosafeword.TaskItem:
-    public static com.velvettouch.nosafeword.TaskItem copy()
-    public static java.lang.Long getDeadline()
-    public static java.lang.String getId()
-    public static int getOrder()
-    public static java.lang.String getTitle()
-    public static boolean isCompleted()
-    public static void setOrder()
 com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$1$50a20ffd681f543ffa0c7d837a0315ab2d2474d107186f7e47d9f1c2d1f61cfc$0
 com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$2$37dc7a8d3497db8326a1c85dec38372a33b8815b58e9cd787ae601feb9b3cbd3$0
 com.velvettouch.nosafeword.TaskListActivity$$InternalSyntheticLambda$3$7b9859bbddf4d15076f25569de9dd9eba5db93558edfa2279c25ca08f74b724e$0
@@ -12558,6 +12503,7 @@ com.velvettouch.nosafeword.TaskListActivity$setupRecyclerView$callback$1$$Intern
 com.velvettouch.nosafeword.TaskListActivity:
     public static final com.velvettouch.nosafeword.TaskListActivity$Companion Companion
     public static void <clinit>()
+    public static final synthetic androidx.drawerlayout.widget.DrawerLayout access$getDrawerLayout$p$4()
     public static final synthetic java.util.List access$getTaskItems$p()
     public static final synthetic com.velvettouch.nosafeword.TaskListAdapter access$getTaskListAdapter$p()
     public static final synthetic void access$saveTasksToPreferences()

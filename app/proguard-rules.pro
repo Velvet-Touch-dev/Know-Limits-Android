@@ -14,8 +14,18 @@
 -keep public class com.velvettouch.nosafeword.PositionsActivity
 -keep public class com.velvettouch.nosafeword.BodyWorshipActivity
 
-# Keep model classes (if any)
--keep class com.velvettouch.nosafeword.model.** { *; }
+# Keep model classes (if any) - Note: TaskItem, PlannedItem, Scene are not in a 'model' subpackage.
+# -keep class com.velvettouch.nosafeword.model.** { *; } # This rule might be unused or for other models
+
+# Keep specific model classes used with Gson and TypeToken
+-keep class com.velvettouch.nosafeword.TaskItem { *; }
+-keep class com.velvettouch.nosafeword.PlannedItem { *; }
+-keep class com.velvettouch.nosafeword.Scene { *; }
+# Add other models used with Gson here if needed
+
+# Keep TypeToken and its subclasses for Gson
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
 
 # For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
 -keepclasseswithmembernames class * {
@@ -41,6 +51,8 @@
 
 # Preserve all annotations
 -keepattributes *Annotation*
+# Preserve generic signatures (important for Gson TypeToken)
+-keepattributes Signature
 
 # Keep the support library components
 -keep class androidx.** { *; }

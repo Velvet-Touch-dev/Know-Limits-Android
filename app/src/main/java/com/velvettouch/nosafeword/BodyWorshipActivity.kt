@@ -478,8 +478,8 @@ class BodyWorshipActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 // First, try to find high-quality female voice that supports SSML
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     for (voice in voices) {
-                        if (voice.name.contains("female", ignoreCase = true) && 
-                            voice.features.contains(TextToSpeech.Engine.KEY_FEATURE_EMBEDDED_SYNTHESIS)) {
+                        if (voice.name.contains("female", ignoreCase = true) &&
+                            !voice.isNetworkConnectionRequired()) { // Use !isNetworkConnectionRequired
                             textToSpeech.voice = voice
                             femaleVoiceFound = true
                             break
@@ -506,7 +506,7 @@ class BodyWorshipActivity : BaseActivity(), TextToSpeech.OnInitListener {
                     for (voice in voices) {
                         if (voice.name.contains("female", ignoreCase = true)) {
                             textToSpeech.voice = voice
-                            femaleVoiceFound = true
+                            // femaleVoiceFound = true // This assignment is unused as per warning, loop breaks.
                             break
                         }
                     }

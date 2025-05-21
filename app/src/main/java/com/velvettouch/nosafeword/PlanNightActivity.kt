@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -59,6 +60,18 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
             showAddPlannedItemDialog()
         }
         updatePlaceholderVisibility()
+
+        // Setup custom back press handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.drawerLayoutPlanNight.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayoutPlanNight.closeDrawer(GravityCompat.START)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     private fun updatePlaceholderVisibility() {
@@ -474,13 +487,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
 
     // Removed getHomeMenuItem() as it's no longer needed with the simplified onSupportNavigateUp
 
-    override fun onBackPressed() {
-        if (binding.drawerLayoutPlanNight.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayoutPlanNight.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
+    // Removed deprecated override fun onBackPressed()
 
     private fun savePlannedItems() {
         val prefs = getSharedPreferences(plannedItemsPrefsName, MODE_PRIVATE)

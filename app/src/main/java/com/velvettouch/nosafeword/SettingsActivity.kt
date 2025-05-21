@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -146,6 +147,25 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         
         // Set up voice instructions toggle
         setupVoiceInstructionsToggle()
+
+        // Setup custom back press handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else if (settingsChanged) {
+                    // Theme or color has changed, go back to MainActivity and ensure it refreshes
+                    val intent = Intent(this@SettingsActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish() // Finish SettingsActivity
+                } else {
+                    // If no custom action, disable this callback and let default behavior proceed
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
     
     override fun onDestroy() {
@@ -233,20 +253,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             e.printStackTrace()
         }
     }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else if (settingsChanged) {
-            // Theme or color has changed, go back to MainActivity and ensure it refreshes
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-            finish() // Finish SettingsActivity
-        } else {
-            super.onBackPressed()
-        }
-    }
+ 
+    // Removed deprecated override fun onBackPressed()
 
     private fun setupThemeSelector() {
         try {

@@ -17,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.velvettouch.nosafeword.BaseActivity
@@ -382,6 +383,18 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             }
             pendingPositionNavigationName = null // Clear after attempting
         }
+
+        // Setup custom back press handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -791,15 +804,8 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         drawerToggle.syncState()
     }
     
-    override fun onBackPressed() {
-        // Close the drawer if it's open, otherwise proceed with normal back button behavior
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-    
+    // Removed deprecated override fun onBackPressed()
+
     override fun onPause() {
         super.onPause()
         // Stop auto play when activity is paused
@@ -932,7 +938,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             
             // Display the image name without the extension
             val nameWithoutExtension = imageName.substringBeforeLast(".")
-            val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+            val positionName = nameWithoutExtension.replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             positionNameTextView.text = positionName
             
             // Speak the position name with TTS
@@ -1191,8 +1197,8 @@ private fun setupLibraryRecyclerView() {
                 // First, try to find high-quality female voice
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     for (voice in voices) {
-                        if (voice.name.contains("female", ignoreCase = true) && 
-                            voice.features.contains(TextToSpeech.Engine.KEY_FEATURE_EMBEDDED_SYNTHESIS)) {
+                        if (voice.name.contains("female", ignoreCase = true) &&
+                            !voice.isNetworkConnectionRequired()) { // Use !isNetworkConnectionRequired as a proxy for embedded/high quality
                             textToSpeech.voice = voice
                             femaleVoiceFound = true
                             break
@@ -1205,7 +1211,7 @@ private fun setupLibraryRecyclerView() {
                     for (voice in voices) {
                         if (voice.name.contains("female", ignoreCase = true)) {
                             textToSpeech.voice = voice
-                            femaleVoiceFound = true
+                            // femaleVoiceFound = true // This assignment was unused as per warning, loop breaks anyway
                             break
                         }
                     }
@@ -1219,7 +1225,7 @@ private fun setupLibraryRecyclerView() {
                 if (currentPosition >= 0 && currentPosition < positionImages.size) {
                     val imageName = positionImages[currentPosition]
                     val nameWithoutExtension = imageName.substringBeforeLast(".")
-                    val positionName = nameWithoutExtension.replace("_", " ").capitalize()
+                    val positionName = nameWithoutExtension.replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
                     speakPositionName(positionName)
                 }
             }

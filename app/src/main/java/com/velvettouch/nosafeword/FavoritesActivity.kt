@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.velvettouch.nosafeword.BaseActivity
@@ -235,6 +236,18 @@ class FavoritesActivity : BaseActivity() {
         
         // Update UI
         updateSceneFavoritesList()
+
+        // Setup custom back press handling
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
     
     private fun loadSceneFavorites() {
@@ -436,15 +449,8 @@ class FavoritesActivity : BaseActivity() {
         drawerToggle.syncState()
     }
     
-    override fun onBackPressed() {
-        // Close the drawer if it's open, otherwise proceed with normal back button behavior
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-    
+    // Removed deprecated override fun onBackPressed()
+
     // Data class for Position items
     data class Position(
         val name: String,
