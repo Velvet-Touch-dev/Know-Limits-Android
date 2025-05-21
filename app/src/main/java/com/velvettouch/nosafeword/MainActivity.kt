@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -44,6 +45,14 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson // Added for SharedPreferences
 import com.google.gson.reflect.TypeToken // Added for SharedPreferences
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -89,6 +98,10 @@ class MainActivity : BaseActivity() {
     private var currentToast: Toast? = null
     private var nextSceneId: Int = 1 // Re-declare as a member variable, will be updated in loadScenes
 
+    // Firebase Auth
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
+
     private val gson = Gson() // Added for SharedPreferences
     private val plannedItemsPrefsName = "PlanNightPrefs"
     private val plannedItemsKey = "plannedItemsList"
@@ -101,6 +114,8 @@ class MainActivity : BaseActivity() {
         private const val MODE_RANDOM = 0
         private const val MODE_FAVORITES = 1
         private const val MODE_EDIT = 2
+        private const val RC_SIGN_IN = 9001 // Request code for Google Sign-In
+        private const val TAG = "MainActivityAuth" // Tag for logging
 
         private const val SCENES_FILENAME = "scenes.json"
     }
@@ -108,6 +123,32 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Initialize Firebase Auth
+        auth = Firebase.auth
+
+        // Configure Google Sign-In
+        var webClientId: String? = null
+        try {
+            webClientId = getString(R.string.default_web_client_id)
+            Log.d(TAG, "onCreate: Successfully retrieved default_web_client_id.")
+        } catch (e: Exception) {
+            Log.e(TAG, "onCreate: Failed to retrieve R.string.default_web_client_id. Check google-services.json and Gradle sync.", e)
+            // Handle the error appropriately - perhaps disable sign-in or show an error message
+            // For now, we'll let it proceed, but GoogleSignInClient initialization might fail or be problematic.
+        }
+
+        val gsoBuilder = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+
+        if (webClientId != null) {
+            gsoBuilder.requestIdToken(webClientId)
+        } else {
+            // Log or handle the case where webClientId is null - sign-in might not work as expected
+            Log.w(TAG, "onCreate: webClientId is null. Google Sign-In might not function correctly for Firebase auth.")
+        }
+        val gso = gsoBuilder.build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         // Initialize views
         titleTextView = findViewById(R.id.titleTextView)
@@ -1290,5 +1331,69 @@ class MainActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun signIn() {
+        Log.d(TAG, "signIn: Attempting to launch Google Sign-In flow.")
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                Log.d(TAG, "onActivityResult: Google Sign-In successful, token: ${account.idToken?.take(10)}...")
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e)
+                Toast.makeText(this, "Google Sign-In failed: ${e.message} (Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
+                updateUIForSignedOutUser()
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        Log.d(TAG, "firebaseAuthWithGoogle: Attempting Firebase auth with Google token.")
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    val user = auth.currentUser
+                    Log.d(TAG, "firebaseAuthWithGoogle: Firebase Authentication successful. User: ${user?.email}")
+                    Toast.makeText(this, "Firebase Authentication successful.", Toast.LENGTH_SHORT).show()
+                    updateUIForCurrentUser()
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "firebaseAuthWithGoogle: Firebase Authentication failed.", task.exception)
+                    Toast.makeText(this, "Firebase Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    updateUIForSignedOutUser()
+                }
+            }
+    }
+
+    private fun updateUIForCurrentUser() {
+        val user = auth.currentUser
+        Log.d(TAG, "updateUIForCurrentUser: User is ${user?.email}")
+        Toast.makeText(this, "Welcome ${user?.displayName ?: user?.email}", Toast.LENGTH_SHORT).show()
+        // TODO: Implement actual UI changes for a signed-in user.
+        // e.g., show user info, enable authenticated features, hide sign-in button.
+        // updateUI() // Call your main UI update logic if it's designed to handle auth state.
+    }
+
+    private fun updateUIForSignedOutUser() {
+        Log.d(TAG, "updateUIForSignedOutUser: No user is signed in.")
+        Toast.makeText(this, "User signed out or authentication failed.", Toast.LENGTH_SHORT).show()
+        // TODO: Implement actual UI changes for a signed-out user.
+        // e.g., show sign-in button, disable authenticated features.
+        // Consider if signIn() should be called again here or if onStart will handle it.
     }
 }

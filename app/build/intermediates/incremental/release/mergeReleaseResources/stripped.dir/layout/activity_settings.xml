@@ -160,6 +160,15 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/google_sign_in_button_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal"
+                android:text="Sign in with Google"
+                app:icon="@drawable/googleg_standard_color_18" />
+
         </LinearLayout>
     </ScrollView>
     </LinearLayout>

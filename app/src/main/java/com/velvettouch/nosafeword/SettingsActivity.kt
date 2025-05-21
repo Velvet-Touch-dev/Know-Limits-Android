@@ -5,6 +5,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
+import android.util.Log
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.android.material.button.MaterialButton
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.RadioGroup
@@ -32,7 +42,15 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var textToSpeech: TextToSpeech
     private var isTtsReady = false
 
+    // Firebase Auth
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var googleSignInButton: MaterialButton
+
     companion object {
+        private const val RC_SIGN_IN_SETTINGS = 9002 // Differentiate from MainActivity's RC_SIGN_IN
+        private const val TAG = "SettingsActivityAuth"
+
         // Theme mode constants
         const val THEME_LIGHT = 1
         const val THEME_DARK = 2
@@ -147,6 +165,37 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         
         // Set up voice instructions toggle
         setupVoiceInstructionsToggle()
+
+        // Initialize Firebase Auth
+        auth = Firebase.auth
+
+        // Configure Google Sign-In
+        var webClientId: String? = null
+        try {
+            webClientId = getString(R.string.default_web_client_id)
+            Log.d(TAG, "onCreate: Successfully retrieved default_web_client_id.")
+        } catch (e: Exception) {
+            Log.e(TAG, "onCreate: Failed to retrieve R.string.default_web_client_id. Check google-services.json and Gradle sync.", e)
+            Toast.makeText(this, "Error: Missing default_web_client_id for Sign-In.", Toast.LENGTH_LONG).show()
+        }
+
+        val gsoBuilder = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+
+        if (webClientId != null) {
+            gsoBuilder.requestIdToken(webClientId)
+        } else {
+            Log.w(TAG, "onCreate: webClientId is null. Google Sign-In might not function correctly for Firebase auth.")
+        }
+        val gso = gsoBuilder.build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        // Setup Google Sign-In Button
+        googleSignInButton = findViewById(R.id.google_sign_in_button_settings)
+        googleSignInButton.setOnClickListener {
+            Log.d(TAG, "Google Sign-In button clicked.")
+            signIn()
+        }
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -558,5 +607,48 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private fun saveTtsSetting(enabled: Boolean) {
         val prefs = getSharedPreferences("com.velvettouch.nosafeword_preferences", Context.MODE_PRIVATE)
         prefs.edit().putBoolean(getString(R.string.pref_tts_enabled_key), enabled).apply()
+    }
+
+    private fun signIn() {
+        Log.d(TAG, "signIn: Attempting to launch Google Sign-In flow from Settings.")
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN_SETTINGS)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
+
+        if (requestCode == RC_SIGN_IN_SETTINGS) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)!!
+                Log.d(TAG, "onActivityResult: Google Sign-In successful from Settings, token: ${account.idToken?.take(10)}...")
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                Log.w(TAG, "Google sign in failed from Settings", e)
+                Toast.makeText(this, "Google Sign-In failed: ${e.message} (Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
+                // Optionally, update UI to reflect sign-in failure
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        Log.d(TAG, "firebaseAuthWithGoogle: Attempting Firebase auth with Google token from Settings.")
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    Log.d(TAG, "firebaseAuthWithGoogle: Firebase Authentication successful from Settings. User: ${user?.email}")
+                    Toast.makeText(this, "Sign-In Successful: ${user?.displayName ?: user?.email}", Toast.LENGTH_LONG).show()
+                    // Optionally, update UI to reflect signed-in state (e.g., change button text to "Sign Out")
+                    // You might want to finish SettingsActivity and return to MainActivity,
+                    // or provide a sign-out button here.
+                } else {
+                    Log.w(TAG, "firebaseAuthWithGoogle: Firebase Authentication failed from Settings.", task.exception)
+                    Toast.makeText(this, "Firebase Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 }

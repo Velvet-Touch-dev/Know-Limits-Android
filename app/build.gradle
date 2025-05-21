@@ -1,15 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.google.gms.google-services' // Google services plugin
 }
 
 android {
-    compileSdk 33
+    namespace "com.velvettouch.nosafeword"
+    compileSdk 34
     
     defaultConfig {
         applicationId "com.velvettouch.nosafeword"
-        minSdk 21
-        targetSdk 33
+        minSdk 23
+        targetSdk 33 // Target SDK can often remain for now, but compileSdk needs to be higher
         versionCode 1
         versionName "1.0"
         
@@ -91,4 +93,22 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // Firebase BoM (Bill of Materials)
+    implementation platform('com.google.firebase:firebase-bom:33.1.0') // Updated to a more recent BoM version
+
+    // Firebase Authentication (for Google Sign-In and user management)
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
+    // Firebase Firestore (for cloud data storage and sync)
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
+    // Firebase Cloud Messaging (for notifications)
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    // Firebase Analytics (optional, but often useful)
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // Google Sign-In services
+    implementation 'com.google.android.gms:play-services-auth:21.0.0' // Check for the latest version if necessary
 }

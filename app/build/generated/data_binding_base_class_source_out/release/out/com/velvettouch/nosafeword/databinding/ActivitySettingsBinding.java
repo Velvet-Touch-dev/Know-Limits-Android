@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.navigation.NavigationView;
 import com.velvettouch.nosafeword.R;
@@ -25,6 +26,9 @@ public final class ActivitySettingsBinding implements ViewBinding {
 
   @NonNull
   public final DrawerLayout drawerLayout;
+
+  @NonNull
+  public final MaterialButton googleSignInButtonSettings;
 
   @NonNull
   public final NavigationView navView;
@@ -51,13 +55,14 @@ public final class ActivitySettingsBinding implements ViewBinding {
   public final SwitchCompat voiceSwitch;
 
   private ActivitySettingsBinding(@NonNull DrawerLayout rootView,
-      @NonNull DrawerLayout drawerLayout, @NonNull NavigationView navView,
-      @NonNull Toolbar settingsToolbar, @NonNull MaterialCardView themeCard,
-      @NonNull TextView themeValue, @NonNull MaterialCardView voiceCard,
-      @NonNull MaterialCardView voiceSettingsCard, @NonNull TextView voiceSettingsValue,
-      @NonNull SwitchCompat voiceSwitch) {
+      @NonNull DrawerLayout drawerLayout, @NonNull MaterialButton googleSignInButtonSettings,
+      @NonNull NavigationView navView, @NonNull Toolbar settingsToolbar,
+      @NonNull MaterialCardView themeCard, @NonNull TextView themeValue,
+      @NonNull MaterialCardView voiceCard, @NonNull MaterialCardView voiceSettingsCard,
+      @NonNull TextView voiceSettingsValue, @NonNull SwitchCompat voiceSwitch) {
     this.rootView = rootView;
     this.drawerLayout = drawerLayout;
+    this.googleSignInButtonSettings = googleSignInButtonSettings;
     this.navView = navView;
     this.settingsToolbar = settingsToolbar;
     this.themeCard = themeCard;
@@ -96,6 +101,12 @@ public final class ActivitySettingsBinding implements ViewBinding {
     int id;
     missingId: {
       DrawerLayout drawerLayout = (DrawerLayout) rootView;
+
+      id = R.id.google_sign_in_button_settings;
+      MaterialButton googleSignInButtonSettings = ViewBindings.findChildViewById(rootView, id);
+      if (googleSignInButtonSettings == null) {
+        break missingId;
+      }
 
       id = R.id.nav_view;
       NavigationView navView = ViewBindings.findChildViewById(rootView, id);
@@ -145,9 +156,9 @@ public final class ActivitySettingsBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivitySettingsBinding((DrawerLayout) rootView, drawerLayout, navView,
-          settingsToolbar, themeCard, themeValue, voiceCard, voiceSettingsCard, voiceSettingsValue,
-          voiceSwitch);
+      return new ActivitySettingsBinding((DrawerLayout) rootView, drawerLayout,
+          googleSignInButtonSettings, navView, settingsToolbar, themeCard, themeValue, voiceCard,
+          voiceSettingsCard, voiceSettingsValue, voiceSwitch);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

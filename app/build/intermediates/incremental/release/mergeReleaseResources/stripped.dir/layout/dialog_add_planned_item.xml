@@ -19,7 +19,7 @@ android:background="@drawable/dialog_background_rounded"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-android:background="@drawable/tab_layout_rounded_background"
+android:background="@drawable/dialog_background_rounded"
         app:tabMode="fixed"
         app:tabGravity="fill">
 
