@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +78,7 @@ class PositionsViewModel : ViewModel() {
         updateAllPositions()
     }
 
-    fun addOrUpdatePosition(position: PositionItem) {
+    fun addOrUpdatePosition(position: PositionItem, imageUriToUpload: Uri?) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
@@ -88,8 +89,26 @@ class PositionsViewModel : ViewModel() {
                     _isLoading.value = false
                     return@launch
                 }
-                // Ensure userId is set for non-asset positions
-                val positionToSave = if (!position.isAsset) position.copy(userId = userId ?: "") else position
+
+                var finalImageNameToSave: String? = position.imageName // Use existing if not a new upload
+
+                if (imageUriToUpload != null && !position.isAsset) {
+                    // Attempt to upload new image if provided for a non-asset position
+                    val uploadedImageUrl = repository.uploadImage(imageUriToUpload)
+                    if (uploadedImageUrl == null) {
+                        _errorMessage.value = "Failed to upload image. Position not saved."
+                        _isLoading.value = false
+                        return@launch // Stop if image upload failed
+                    }
+                    finalImageNameToSave = uploadedImageUrl // Use the new URL
+                }
+
+                val positionToSave = if (!position.isAsset) {
+                    position.copy(userId = userId ?: "", imageName = finalImageNameToSave ?: "")
+                } else {
+                    position // Assets don't get new images or userId changes this way
+                }
+
                 repository.addOrUpdatePosition(positionToSave)
                 loadPositions() // Refresh the list
             } catch (e: Exception) {

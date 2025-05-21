@@ -1,5 +1,8 @@
 package com.velvettouch.nosafeword
 
+import android.util.Log
+import com.bumptech.glide.Glide // Add Glide import
+import com.google.firebase.firestore.PropertyName
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
@@ -15,9 +18,9 @@ data class PositionItem(
     val id: String = "", // Document ID from Firestore
     val name: String = "",
     val imageName: String = "",
-    val isAsset: Boolean = false, // Default to false; true for assets created in code
+    @get:PropertyName("asset") @set:PropertyName("asset") var isAsset: Boolean = false, // Default to false; true for assets created in code
     val userId: String = "", // To associate with a Firebase User
-    val isFavorite: Boolean = false // New field for favorite status
+    @get:PropertyName("favorite") @set:PropertyName("favorite") var isFavorite: Boolean = false // New field for favorite status
 )
 
 class PositionLibraryAdapter(
@@ -55,21 +58,50 @@ class PositionLibraryAdapter(
 
         fun bind(positionItem: PositionItem) {
             positionNameTextView.text = positionItem.name
+            Log.d("PositionAdapter", "Binding item: Name=${positionItem.name}, ImageName=${positionItem.imageName}, IsAsset=${positionItem.isAsset}, ID=${positionItem.id}") // Log item details
             try {
+                // Reset image view before loading new image to prevent showing stale image from recycled view
+                positionImageView.setImageDrawable(null)
+                positionImageView.setImageResource(R.drawable.ic_image_24) // Set placeholder immediately
+
                 if (positionItem.isAsset) {
                     val inputStream = context.assets.open("positions/${positionItem.imageName}")
                     val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
                     positionImageView.setImageDrawable(drawable)
                     inputStream.close()
                 } else {
-                    // Handle loading from app storage if/when implemented
-                    // For now, this branch won't be hit if all items are assets
-                    positionImageView.setImageURI(Uri.parse(positionItem.imageName))
+                    // Handle loading from app storage or content URI
+                    if (positionItem.imageName.isNotBlank()) {
+                        if (positionItem.imageName.startsWith("http://") || positionItem.imageName.startsWith("https://")) {
+                            Log.d("PositionAdapter", "Loading network URL with Glide: ${positionItem.imageName}")
+                            Glide.with(itemView.context)
+                                .load(positionItem.imageName)
+                                .placeholder(R.drawable.ic_image_24) // Placeholder while loading
+                                .error(R.drawable.ic_image_24) // Placeholder on error
+                                .into(positionImageView)
+                        } else if (positionItem.imageName.startsWith("content://")) {
+                            // It's a local content URI, attempt to load with Glide
+                            Log.d("PositionAdapter", "Loading content URI with Glide: ${positionItem.imageName}")
+                            Glide.with(itemView.context)
+                                .load(Uri.parse(positionItem.imageName))
+                                .placeholder(R.drawable.ic_image_24)
+                                .error(R.drawable.ic_image_24)
+                                .into(positionImageView)
+                        } else {
+                            Log.w("PositionAdapter", "Unknown imageName format for non-asset: ${positionItem.imageName}")
+                            positionImageView.setImageResource(R.drawable.ic_image_24)
+                        }
+                    } else {
+                        Log.d("PositionAdapter", "ImageName is blank for non-asset item: ${positionItem.name}")
+                        positionImageView.setImageResource(R.drawable.ic_image_24)
+                    }
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) { // Catch generic Exception as Glide might throw various types
+                Log.e("PositionAdapter", "Exception loading image for ${positionItem.name} with URI ${positionItem.imageName}: ${e.message}")
                 e.printStackTrace()
-                // Set a placeholder image in case of error
                 positionImageView.setImageResource(R.drawable.ic_image_24)
+                // Optionally, log this or inform the user that the image couldn't be loaded due to permissions.
+                // Toast.makeText(context, "Failed to load image: Permission denied.", Toast.LENGTH_SHORT).show()
             }
 
             itemView.setOnClickListener {

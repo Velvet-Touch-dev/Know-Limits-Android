@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.velvettouch.nosafeword.app-mergeDebugResources-45:/values-hu/values-hu.xml",
+            "outputFile": "com.velvettouch.nosafeword.app-mergeDebugResources-46:/values-hu/values-hu.xml",
             "map": [
                 {
                     "source": "/home/aditya/.gradle/caches/8.12/transforms/353bdb0480e0b87a73752287041f0af3/transformed/core-1.9.0/res/values-hu/values-hu.xml",

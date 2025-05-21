@@ -4,18 +4,44 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import android.net.Uri
+import java.util.UUID
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine // Add this for combining flows
 
 class PositionsRepository {
 
     private val db = Firebase.firestore
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous" // Handle anonymous or unauthenticated users
+    private val storage = Firebase.storage
 
     companion object {
         private const val POSITIONS_COLLECTION = "positions"
+        private const val POSITION_IMAGES_STORAGE_PATH = "position_images"
+    }
+
+    // Upload image to Firebase Storage and get download URL
+    suspend fun uploadImage(imageUri: Uri): String? {
+        if (userId == "anonymous") return null // Anonymous users cannot upload images
+        // Create a unique filename for the image
+        val filename = UUID.randomUUID().toString()
+        val imageRef = storage.reference.child("$POSITION_IMAGES_STORAGE_PATH/$userId/$filename")
+
+        return try {
+            val uploadTask = imageRef.putFile(imageUri).await()
+            val downloadUrl = uploadTask.storage.downloadUrl.await()
+            downloadUrl.toString()
+        } catch (e: Exception) {
+            // Handle exceptions like FirebaseStorageException
+            e.printStackTrace()
+            null
+        }
     }
 
     // Add a new position or update an existing one
@@ -35,18 +61,30 @@ class PositionsRepository {
         }
     }
 
-    // Get all positions for the current user
-    fun getUserPositions(): Flow<List<PositionItem>> = flow {
+    // Get all positions for the current user (real-time updates)
+    fun getUserPositions(): Flow<List<PositionItem>> = callbackFlow {
         if (userId == "anonymous") {
-            emit(emptyList<PositionItem>()) // No custom positions for anonymous users
-            return@flow
+            trySend(emptyList<PositionItem>())
+            close() // Close the flow for anonymous users
+            return@callbackFlow
         }
-        val snapshot = db.collection(POSITIONS_COLLECTION)
+
+        val listenerRegistration = db.collection(POSITIONS_COLLECTION)
             .whereEqualTo("userId", userId)
-            .get()
-            .await()
-        val positions = snapshot.toObjects(PositionItem::class.java)
-        emit(positions)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error) // Close the flow with an error
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val positions = snapshot.documents.mapNotNull { document ->
+                        document.toObject(PositionItem::class.java)?.copy(id = document.id)
+                    }
+                    trySend(positions).isSuccess
+                }
+            }
+        // When the flow is cancelled, remove the listener
+        awaitClose { listenerRegistration.remove() }
     }
 
     // Get a specific position by its ID
@@ -83,29 +121,45 @@ class PositionsRepository {
     // e.g., fun getDefaultPositions(): Flow<List<PositionItem>>
 
     // Example: If you also store default positions in Firestore (e.g., with a specific userId like "system_default")
-    fun getAllPositionsIncludingDefaults(): Flow<List<PositionItem>> = flow {
+    fun getAllPositionsIncludingDefaults(): Flow<List<PositionItem>> = callbackFlow {
         if (userId == "anonymous") {
-            // Potentially load only defaults for anonymous users
-            // For now, let's assume defaults are handled locally or via a separate mechanism
-            emit(emptyList())
-            return@flow
+            // For anonymous users, you might only want to show default/asset positions.
+            // This part needs to be defined based on how you store/retrieve defaults.
+            // For now, emitting empty list for simplicity if defaults aren't cloud-based.
+            trySend(emptyList())
+            close()
+            return@callbackFlow
         }
 
-        val userPositionsSnapshot = db.collection(POSITIONS_COLLECTION)
+        // Listener for user-specific positions
+        val userPositionsListener = db.collection(POSITIONS_COLLECTION)
             .whereEqualTo("userId", userId)
-            .get()
-            .await()
-        val userPositions = userPositionsSnapshot.toObjects(PositionItem::class.java)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val userPositions = snapshot.documents.mapNotNull { document ->
+                        document.toObject(PositionItem::class.java)?.copy(id = document.id)
+                    }
+                    // This will be combined with default positions below.
+                    // For now, just sending user positions. If you have defaults in another flow, combine them.
+                    trySend(userPositions).isSuccess
+                }
+            }
 
-        // Placeholder for fetching default/asset positions if they were also in Firestore
-        // For example, if defaults have `isAsset == true` and no specific `userId` or a special one.
-        // val defaultPositionsSnapshot = db.collection(POSITIONS_COLLECTION)
-        //     .whereEqualTo("isAsset", true) // Or another marker for default items
-        //     .get()
-        //     .await()
-        // val defaultPositions = defaultPositionsSnapshot.toObjects(PositionItem::class.java)
-        // emit(userPositions + defaultPositions)
-
-        emit(userPositions) // For now, just emitting user-specific positions
+        // Placeholder: If you had a separate flow for default/asset positions from Firestore:
+        // val defaultPositionsFlow: Flow<List<PositionItem>> = callbackFlow { /* ... listener for defaults ... */ awaitClose { /* remove listener */ } }
+        //
+        // Then you would combine them:
+        // combine(userPositionsFlow, defaultPositionsFlow) { user, defaults -> user + defaults }
+        // .collect { combinedList -> trySend(combinedList).isSuccess }
+        //
+        // For now, since we only have the user positions listener directly here:
+        awaitClose {
+            userPositionsListener.remove()
+            // defaultPositionsListener.remove() // if you had one
+        }
     }
 }

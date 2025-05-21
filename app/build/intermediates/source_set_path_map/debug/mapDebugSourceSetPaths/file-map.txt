@@ -1,50 +1,51 @@
 com.velvettouch.nosafeword.app-play-services-auth-21.0.0-0 /home/aditya/.gradle/caches/8.12/transforms/134e916098af315b02d36fbde5e7d956/transformed/play-services-auth-21.0.0/res
-com.velvettouch.nosafeword.app-play-services-basement-18.3.0-1 /home/aditya/.gradle/caches/8.12/transforms/180a058ab7ab26f1c23041212b660c60/transformed/play-services-basement-18.3.0/res
-com.velvettouch.nosafeword.app-lifecycle-viewmodel-savedstate-2.6.1-2 /home/aditya/.gradle/caches/8.12/transforms/1fbb20a015e469933e2a85cf3664ea7b/transformed/lifecycle-viewmodel-savedstate-2.6.1/res
-com.velvettouch.nosafeword.app-lifecycle-viewmodel-2.6.1-3 /home/aditya/.gradle/caches/8.12/transforms/2160af6f9816a9bd278cac186f1dc028/transformed/lifecycle-viewmodel-2.6.1/res
-com.velvettouch.nosafeword.app-fragment-1.5.7-4 /home/aditya/.gradle/caches/8.12/transforms/29b531c21439b22c9f9e4ad2610f8824/transformed/fragment-1.5.7/res
-com.velvettouch.nosafeword.app-lifecycle-runtime-2.6.1-5 /home/aditya/.gradle/caches/8.12/transforms/2af1485e0d5b16f270a5cb42fc2fedc3/transformed/lifecycle-runtime-2.6.1/res
-com.velvettouch.nosafeword.app-core-1.9.0-6 /home/aditya/.gradle/caches/8.12/transforms/353bdb0480e0b87a73752287041f0af3/transformed/core-1.9.0/res
-com.velvettouch.nosafeword.app-lifecycle-runtime-ktx-2.6.1-7 /home/aditya/.gradle/caches/8.12/transforms/3900a20b997d7f53ce993b648b5317aa/transformed/lifecycle-runtime-ktx-2.6.1/res
-com.velvettouch.nosafeword.app-startup-runtime-1.1.1-8 /home/aditya/.gradle/caches/8.12/transforms/3e61ee18054e58311cd9ad5ff0a139bc/transformed/startup-runtime-1.1.1/res
-com.velvettouch.nosafeword.app-emoji2-views-helper-1.2.0-9 /home/aditya/.gradle/caches/8.12/transforms/3f8193e20f1e827730490283c3b7e792/transformed/emoji2-views-helper-1.2.0/res
-com.velvettouch.nosafeword.app-savedstate-ktx-1.2.1-10 /home/aditya/.gradle/caches/8.12/transforms/45ab5a1a6eddb5205b45f016fbceb55e/transformed/savedstate-ktx-1.2.1/res
-com.velvettouch.nosafeword.app-lifecycle-viewmodel-ktx-2.6.1-11 /home/aditya/.gradle/caches/8.12/transforms/476aa459f5ca9afb068718ea465cb12d/transformed/lifecycle-viewmodel-ktx-2.6.1/res
-com.velvettouch.nosafeword.app-ads-adservices-java-1.0.0-beta05-12 /home/aditya/.gradle/caches/8.12/transforms/4d0aa6859dd80cfc81411f6f743a150a/transformed/ads-adservices-java-1.0.0-beta05/res
-com.velvettouch.nosafeword.app-play-services-measurement-api-22.0.1-13 /home/aditya/.gradle/caches/8.12/transforms/506f07ab0edee0878362d1ebbd75451c/transformed/play-services-measurement-api-22.0.1/res
-com.velvettouch.nosafeword.app-material-1.9.0-14 /home/aditya/.gradle/caches/8.12/transforms/5222e24de038810a57e9f2af9853b6be/transformed/material-1.9.0/res
-com.velvettouch.nosafeword.app-swiperefreshlayout-1.1.0-15 /home/aditya/.gradle/caches/8.12/transforms/575189f5247a194fb8e6436a66eba060/transformed/swiperefreshlayout-1.1.0/res
-com.velvettouch.nosafeword.app-savedstate-1.2.1-16 /home/aditya/.gradle/caches/8.12/transforms/5af6ef5b09f0d4db6b81339e25ddc200/transformed/savedstate-1.2.1/res
-com.velvettouch.nosafeword.app-annotation-experimental-1.3.0-17 /home/aditya/.gradle/caches/8.12/transforms/6f67906777494bdf9ac6f76d457c0076/transformed/annotation-experimental-1.3.0/res
-com.velvettouch.nosafeword.app-credentials-1.2.0-rc01-18 /home/aditya/.gradle/caches/8.12/transforms/742b0573fd9ca47a4b2a77d6070747a2/transformed/credentials-1.2.0-rc01/res
-com.velvettouch.nosafeword.app-viewpager2-1.0.0-19 /home/aditya/.gradle/caches/8.12/transforms/76ea94346eb9f65eaa69d5ead6298dda/transformed/viewpager2-1.0.0/res
-com.velvettouch.nosafeword.app-profileinstaller-1.3.0-20 /home/aditya/.gradle/caches/8.12/transforms/7e6b6ca8fb60bc9441af9a7864de08a2/transformed/profileinstaller-1.3.0/res
-com.velvettouch.nosafeword.app-credentials-play-services-auth-1.2.0-rc01-21 /home/aditya/.gradle/caches/8.12/transforms/7e810fe55004dc3928453f65f9a37721/transformed/credentials-play-services-auth-1.2.0-rc01/res
-com.velvettouch.nosafeword.app-lifecycle-livedata-core-2.6.1-22 /home/aditya/.gradle/caches/8.12/transforms/8342359333526dce25a618675caede7a/transformed/lifecycle-livedata-core-2.6.1/res
-com.velvettouch.nosafeword.app-emoji2-1.2.0-23 /home/aditya/.gradle/caches/8.12/transforms/874b06eba07b998e4c9c867bd355e344/transformed/emoji2-1.2.0/res
-com.velvettouch.nosafeword.app-ads-adservices-1.0.0-beta05-24 /home/aditya/.gradle/caches/8.12/transforms/89da28c07ae1ea65d4a43b9add1ffdad/transformed/ads-adservices-1.0.0-beta05/res
-com.velvettouch.nosafeword.app-coordinatorlayout-1.2.0-25 /home/aditya/.gradle/caches/8.12/transforms/9aa77f1070b578e62a9c474bd78fbcd0/transformed/coordinatorlayout-1.2.0/res
-com.velvettouch.nosafeword.app-firebase-common-21.0.0-26 /home/aditya/.gradle/caches/8.12/transforms/9e9e063cefcb59a06b76a673c6108f9d/transformed/firebase-common-21.0.0/res
-com.velvettouch.nosafeword.app-activity-ktx-1.7.2-27 /home/aditya/.gradle/caches/8.12/transforms/9ebed9a093bd3e838dd56a474cc636a0/transformed/activity-ktx-1.7.2/res
-com.velvettouch.nosafeword.app-cardview-1.0.0-28 /home/aditya/.gradle/caches/8.12/transforms/a9d1b3aed126f8b51f610ab0beacf37d/transformed/cardview-1.0.0/res
-com.velvettouch.nosafeword.app-appcompat-1.6.1-29 /home/aditya/.gradle/caches/8.12/transforms/ada3000a82f077dc58e4fc95feb56fc6/transformed/appcompat-1.6.1/res
-com.velvettouch.nosafeword.app-browser-1.4.0-30 /home/aditya/.gradle/caches/8.12/transforms/b25141814c60da98bd6d1ed5cd5cfe86/transformed/browser-1.4.0/res
-com.velvettouch.nosafeword.app-firebase-messaging-24.0.0-31 /home/aditya/.gradle/caches/8.12/transforms/b44a556e46561ae09cebe018de43b1e9/transformed/firebase-messaging-24.0.0/res
-com.velvettouch.nosafeword.app-transition-1.2.0-32 /home/aditya/.gradle/caches/8.12/transforms/be9c89557d95ab5d6c65d976fdf626e5/transformed/transition-1.2.0/res
-com.velvettouch.nosafeword.app-constraintlayout-2.1.4-33 /home/aditya/.gradle/caches/8.12/transforms/c0494927fe64bd26e03ee4e068ce073a/transformed/constraintlayout-2.1.4/res
-com.velvettouch.nosafeword.app-appcompat-resources-1.6.1-34 /home/aditya/.gradle/caches/8.12/transforms/c4dc5c58139c23a75802f8faa790814a/transformed/appcompat-resources-1.6.1/res
-com.velvettouch.nosafeword.app-core-runtime-2.2.0-35 /home/aditya/.gradle/caches/8.12/transforms/c7cd94d3954e31ba53cb29ff2ee2364b/transformed/core-runtime-2.2.0/res
-com.velvettouch.nosafeword.app-activity-1.7.2-36 /home/aditya/.gradle/caches/8.12/transforms/c90375ae96cd9c18440a23fdf8d6fc25/transformed/activity-1.7.2/res
-com.velvettouch.nosafeword.app-play-services-base-18.1.0-37 /home/aditya/.gradle/caches/8.12/transforms/ca5a78d207dee4f1da54d5a53796de5f/transformed/play-services-base-18.1.0/res
-com.velvettouch.nosafeword.app-recyclerview-1.1.0-38 /home/aditya/.gradle/caches/8.12/transforms/cf48a2a25e162c369b3b804eaf3ba426/transformed/recyclerview-1.1.0/res
-com.velvettouch.nosafeword.app-lifecycle-process-2.6.1-39 /home/aditya/.gradle/caches/8.12/transforms/ef9e8d895bfd01b093ce00e7dd22c582/transformed/lifecycle-process-2.6.1/res
-com.velvettouch.nosafeword.app-drawerlayout-1.1.1-40 /home/aditya/.gradle/caches/8.12/transforms/f2f909c9cf1a457597b05ae9ebd0450b/transformed/drawerlayout-1.1.1/res
-com.velvettouch.nosafeword.app-core-ktx-1.9.0-41 /home/aditya/.gradle/caches/8.12/transforms/f9cc04a070b01f04c3162350a00a88a2/transformed/core-ktx-1.9.0/res
-com.velvettouch.nosafeword.app-pngs-42 /home/aditya/Documents/Android App/app/build/generated/res/pngs/debug
-com.velvettouch.nosafeword.app-res-43 /home/aditya/Documents/Android App/app/build/generated/res/processDebugGoogleServices
-com.velvettouch.nosafeword.app-resValues-44 /home/aditya/Documents/Android App/app/build/generated/res/resValues/debug
-com.velvettouch.nosafeword.app-mergeDebugResources-45 /home/aditya/Documents/Android App/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-com.velvettouch.nosafeword.app-mergeDebugResources-46 /home/aditya/Documents/Android App/app/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-com.velvettouch.nosafeword.app-debug-47 /home/aditya/Documents/Android App/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.velvettouch.nosafeword.app-debug-48 /home/aditya/Documents/Android App/app/src/debug/res
-com.velvettouch.nosafeword.app-main-49 /home/aditya/Documents/Android App/app/src/main/res
+com.velvettouch.nosafeword.app-glide-4.16.0-1 /home/aditya/.gradle/caches/8.12/transforms/16c938595c306a87bbd76e5bb2501e8e/transformed/glide-4.16.0/res
+com.velvettouch.nosafeword.app-play-services-basement-18.3.0-2 /home/aditya/.gradle/caches/8.12/transforms/180a058ab7ab26f1c23041212b660c60/transformed/play-services-basement-18.3.0/res
+com.velvettouch.nosafeword.app-lifecycle-viewmodel-savedstate-2.6.1-3 /home/aditya/.gradle/caches/8.12/transforms/1fbb20a015e469933e2a85cf3664ea7b/transformed/lifecycle-viewmodel-savedstate-2.6.1/res
+com.velvettouch.nosafeword.app-lifecycle-viewmodel-2.6.1-4 /home/aditya/.gradle/caches/8.12/transforms/2160af6f9816a9bd278cac186f1dc028/transformed/lifecycle-viewmodel-2.6.1/res
+com.velvettouch.nosafeword.app-fragment-1.5.7-5 /home/aditya/.gradle/caches/8.12/transforms/29b531c21439b22c9f9e4ad2610f8824/transformed/fragment-1.5.7/res
+com.velvettouch.nosafeword.app-lifecycle-runtime-2.6.1-6 /home/aditya/.gradle/caches/8.12/transforms/2af1485e0d5b16f270a5cb42fc2fedc3/transformed/lifecycle-runtime-2.6.1/res
+com.velvettouch.nosafeword.app-core-1.9.0-7 /home/aditya/.gradle/caches/8.12/transforms/353bdb0480e0b87a73752287041f0af3/transformed/core-1.9.0/res
+com.velvettouch.nosafeword.app-lifecycle-runtime-ktx-2.6.1-8 /home/aditya/.gradle/caches/8.12/transforms/3900a20b997d7f53ce993b648b5317aa/transformed/lifecycle-runtime-ktx-2.6.1/res
+com.velvettouch.nosafeword.app-startup-runtime-1.1.1-9 /home/aditya/.gradle/caches/8.12/transforms/3e61ee18054e58311cd9ad5ff0a139bc/transformed/startup-runtime-1.1.1/res
+com.velvettouch.nosafeword.app-emoji2-views-helper-1.2.0-10 /home/aditya/.gradle/caches/8.12/transforms/3f8193e20f1e827730490283c3b7e792/transformed/emoji2-views-helper-1.2.0/res
+com.velvettouch.nosafeword.app-savedstate-ktx-1.2.1-11 /home/aditya/.gradle/caches/8.12/transforms/45ab5a1a6eddb5205b45f016fbceb55e/transformed/savedstate-ktx-1.2.1/res
+com.velvettouch.nosafeword.app-lifecycle-viewmodel-ktx-2.6.1-12 /home/aditya/.gradle/caches/8.12/transforms/476aa459f5ca9afb068718ea465cb12d/transformed/lifecycle-viewmodel-ktx-2.6.1/res
+com.velvettouch.nosafeword.app-ads-adservices-java-1.0.0-beta05-13 /home/aditya/.gradle/caches/8.12/transforms/4d0aa6859dd80cfc81411f6f743a150a/transformed/ads-adservices-java-1.0.0-beta05/res
+com.velvettouch.nosafeword.app-play-services-measurement-api-22.0.1-14 /home/aditya/.gradle/caches/8.12/transforms/506f07ab0edee0878362d1ebbd75451c/transformed/play-services-measurement-api-22.0.1/res
+com.velvettouch.nosafeword.app-material-1.9.0-15 /home/aditya/.gradle/caches/8.12/transforms/5222e24de038810a57e9f2af9853b6be/transformed/material-1.9.0/res
+com.velvettouch.nosafeword.app-swiperefreshlayout-1.1.0-16 /home/aditya/.gradle/caches/8.12/transforms/575189f5247a194fb8e6436a66eba060/transformed/swiperefreshlayout-1.1.0/res
+com.velvettouch.nosafeword.app-savedstate-1.2.1-17 /home/aditya/.gradle/caches/8.12/transforms/5af6ef5b09f0d4db6b81339e25ddc200/transformed/savedstate-1.2.1/res
+com.velvettouch.nosafeword.app-annotation-experimental-1.3.0-18 /home/aditya/.gradle/caches/8.12/transforms/6f67906777494bdf9ac6f76d457c0076/transformed/annotation-experimental-1.3.0/res
+com.velvettouch.nosafeword.app-credentials-1.2.0-rc01-19 /home/aditya/.gradle/caches/8.12/transforms/742b0573fd9ca47a4b2a77d6070747a2/transformed/credentials-1.2.0-rc01/res
+com.velvettouch.nosafeword.app-viewpager2-1.0.0-20 /home/aditya/.gradle/caches/8.12/transforms/76ea94346eb9f65eaa69d5ead6298dda/transformed/viewpager2-1.0.0/res
+com.velvettouch.nosafeword.app-profileinstaller-1.3.0-21 /home/aditya/.gradle/caches/8.12/transforms/7e6b6ca8fb60bc9441af9a7864de08a2/transformed/profileinstaller-1.3.0/res
+com.velvettouch.nosafeword.app-credentials-play-services-auth-1.2.0-rc01-22 /home/aditya/.gradle/caches/8.12/transforms/7e810fe55004dc3928453f65f9a37721/transformed/credentials-play-services-auth-1.2.0-rc01/res
+com.velvettouch.nosafeword.app-lifecycle-livedata-core-2.6.1-23 /home/aditya/.gradle/caches/8.12/transforms/8342359333526dce25a618675caede7a/transformed/lifecycle-livedata-core-2.6.1/res
+com.velvettouch.nosafeword.app-emoji2-1.2.0-24 /home/aditya/.gradle/caches/8.12/transforms/874b06eba07b998e4c9c867bd355e344/transformed/emoji2-1.2.0/res
+com.velvettouch.nosafeword.app-ads-adservices-1.0.0-beta05-25 /home/aditya/.gradle/caches/8.12/transforms/89da28c07ae1ea65d4a43b9add1ffdad/transformed/ads-adservices-1.0.0-beta05/res
+com.velvettouch.nosafeword.app-coordinatorlayout-1.2.0-26 /home/aditya/.gradle/caches/8.12/transforms/9aa77f1070b578e62a9c474bd78fbcd0/transformed/coordinatorlayout-1.2.0/res
+com.velvettouch.nosafeword.app-firebase-common-21.0.0-27 /home/aditya/.gradle/caches/8.12/transforms/9e9e063cefcb59a06b76a673c6108f9d/transformed/firebase-common-21.0.0/res
+com.velvettouch.nosafeword.app-activity-ktx-1.7.2-28 /home/aditya/.gradle/caches/8.12/transforms/9ebed9a093bd3e838dd56a474cc636a0/transformed/activity-ktx-1.7.2/res
+com.velvettouch.nosafeword.app-cardview-1.0.0-29 /home/aditya/.gradle/caches/8.12/transforms/a9d1b3aed126f8b51f610ab0beacf37d/transformed/cardview-1.0.0/res
+com.velvettouch.nosafeword.app-appcompat-1.6.1-30 /home/aditya/.gradle/caches/8.12/transforms/ada3000a82f077dc58e4fc95feb56fc6/transformed/appcompat-1.6.1/res
+com.velvettouch.nosafeword.app-browser-1.4.0-31 /home/aditya/.gradle/caches/8.12/transforms/b25141814c60da98bd6d1ed5cd5cfe86/transformed/browser-1.4.0/res
+com.velvettouch.nosafeword.app-firebase-messaging-24.0.0-32 /home/aditya/.gradle/caches/8.12/transforms/b44a556e46561ae09cebe018de43b1e9/transformed/firebase-messaging-24.0.0/res
+com.velvettouch.nosafeword.app-transition-1.2.0-33 /home/aditya/.gradle/caches/8.12/transforms/be9c89557d95ab5d6c65d976fdf626e5/transformed/transition-1.2.0/res
+com.velvettouch.nosafeword.app-constraintlayout-2.1.4-34 /home/aditya/.gradle/caches/8.12/transforms/c0494927fe64bd26e03ee4e068ce073a/transformed/constraintlayout-2.1.4/res
+com.velvettouch.nosafeword.app-appcompat-resources-1.6.1-35 /home/aditya/.gradle/caches/8.12/transforms/c4dc5c58139c23a75802f8faa790814a/transformed/appcompat-resources-1.6.1/res
+com.velvettouch.nosafeword.app-core-runtime-2.2.0-36 /home/aditya/.gradle/caches/8.12/transforms/c7cd94d3954e31ba53cb29ff2ee2364b/transformed/core-runtime-2.2.0/res
+com.velvettouch.nosafeword.app-activity-1.7.2-37 /home/aditya/.gradle/caches/8.12/transforms/c90375ae96cd9c18440a23fdf8d6fc25/transformed/activity-1.7.2/res
+com.velvettouch.nosafeword.app-play-services-base-18.1.0-38 /home/aditya/.gradle/caches/8.12/transforms/ca5a78d207dee4f1da54d5a53796de5f/transformed/play-services-base-18.1.0/res
+com.velvettouch.nosafeword.app-recyclerview-1.1.0-39 /home/aditya/.gradle/caches/8.12/transforms/cf48a2a25e162c369b3b804eaf3ba426/transformed/recyclerview-1.1.0/res
+com.velvettouch.nosafeword.app-lifecycle-process-2.6.1-40 /home/aditya/.gradle/caches/8.12/transforms/ef9e8d895bfd01b093ce00e7dd22c582/transformed/lifecycle-process-2.6.1/res
+com.velvettouch.nosafeword.app-drawerlayout-1.1.1-41 /home/aditya/.gradle/caches/8.12/transforms/f2f909c9cf1a457597b05ae9ebd0450b/transformed/drawerlayout-1.1.1/res
+com.velvettouch.nosafeword.app-core-ktx-1.9.0-42 /home/aditya/.gradle/caches/8.12/transforms/f9cc04a070b01f04c3162350a00a88a2/transformed/core-ktx-1.9.0/res
+com.velvettouch.nosafeword.app-pngs-43 /home/aditya/Documents/Android App/app/build/generated/res/pngs/debug
+com.velvettouch.nosafeword.app-res-44 /home/aditya/Documents/Android App/app/build/generated/res/processDebugGoogleServices
+com.velvettouch.nosafeword.app-resValues-45 /home/aditya/Documents/Android App/app/build/generated/res/resValues/debug
+com.velvettouch.nosafeword.app-mergeDebugResources-46 /home/aditya/Documents/Android App/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
+com.velvettouch.nosafeword.app-mergeDebugResources-47 /home/aditya/Documents/Android App/app/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
+com.velvettouch.nosafeword.app-debug-48 /home/aditya/Documents/Android App/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.velvettouch.nosafeword.app-debug-49 /home/aditya/Documents/Android App/app/src/debug/res
+com.velvettouch.nosafeword.app-main-50 /home/aditya/Documents/Android App/app/src/main/res

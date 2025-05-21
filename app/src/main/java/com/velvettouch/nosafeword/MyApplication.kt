@@ -3,6 +3,12 @@ package com.velvettouch.nosafeword
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+// If you want to use the debug provider for emulators/non-Play Store builds:
+// import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import timber.log.Timber // Assuming Timber is used or will be used
 import androidx.appcompat.app.AppCompatDelegate
 
 class MyApplication : Application() {
@@ -37,6 +43,24 @@ class MyApplication : Application() {
     
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize Firebase App (if not already done elsewhere, good to have here)
+        FirebaseApp.initializeApp(this)
+
+        // Initialize Firebase App Check
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
+        // For testing on emulators or non-Play Store builds, you might use the debug provider:
+        // firebaseAppCheck.installAppCheckProviderFactory(
+        //     DebugAppCheckProviderFactory.getInstance()
+        // )
+
+        // Initialize Timber for logging, if you use it
+        if (BuildConfig.DEBUG) { // Assuming BuildConfig is available
+            Timber.plant(Timber.DebugTree())
+        }
         
         // Apply the saved theme mode and color palette
         applyThemeSettings()

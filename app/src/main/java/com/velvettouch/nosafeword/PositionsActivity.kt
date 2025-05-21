@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import com.google.firebase.auth.FirebaseAuth
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
@@ -22,6 +23,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide // Add Glide import
 import com.velvettouch.nosafeword.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -532,41 +534,84 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             return
         }
 
-        // Ensure allPositionItems is populated before calling displayPositionByName
-        // This should be guaranteed by the call order in onCreate.
-        if (allPositionItems.isEmpty() && !positionImages.isEmpty()) {
-             // This might indicate an issue if allPositionItems is expected but empty.
-             // However, displayPositionByName primarily uses allPositionItems.
-             // loadAllPositionsForLibrary() should have populated it.
-        }
-
         positionsTabs.getTabAt(0)?.select() // Select Randomize tab (index 0)
-        // When navigating by name, we should find its index in positionImages and update history
-        val targetIndex = allPositionItems.indexOfFirst { it.name.equals(positionName, ignoreCase = true) }
-        val assetImageName = if (targetIndex != -1) allPositionItems[targetIndex].imageName else null
 
-        if (assetImageName != null) {
-            val imageIndexInAssets = positionImages.indexOfFirst { it.equals(assetImageName, ignoreCase = true) }
-            if (imageIndexInAssets != -1) {
-                // Clear history or decide how to integrate this navigation
+        val targetPositionItem = allPositionItems.find { it.name.equals(positionName, ignoreCase = true) }
+
+        if (targetPositionItem != null) {
+            positionNameTextView.text = targetPositionItem.name
+            try {
+                if (targetPositionItem.isAsset) {
+                    val inputStream = assets.open("positions/${targetPositionItem.imageName}")
+                    val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
+                    positionImageView.setImageDrawable(drawable)
+                    inputStream.close()
+
+                    // If it's an asset, try to update history for Next/Previous consistency
+                    val imageIndexInAssets = positionImages.indexOfFirst { it.equals(targetPositionItem.imageName, ignoreCase = true) }
+                    if (imageIndexInAssets != -1) {
+                        positionHistory.clear()
+                        currentPosition = imageIndexInAssets
+                        positionHistory.add(currentPosition)
+                        positionHistoryPosition = 0
+                    } else {
+                        // Asset from allPositionItems not found in positionImages (consistency issue)
+                        // Treat as if navigation is outside the standard asset sequence
+                        currentPosition = -1
+                        positionHistory.clear()
+                        positionHistoryPosition = -1
+                    }
+                } else {
+                    // Custom position, load image from URI
+                    if (targetPositionItem.imageName.isNotBlank()) {
+                        if (targetPositionItem.imageName.startsWith("http://") || targetPositionItem.imageName.startsWith("https://")) {
+                            Glide.with(this@PositionsActivity)
+                                .load(targetPositionItem.imageName)
+                                .placeholder(R.drawable.ic_image_24)
+                                .error(R.drawable.ic_image_24)
+                                .into(positionImageView)
+                        } else if (targetPositionItem.imageName.startsWith("content://")) {
+                            // This case might be less common here if imageName is always a download URL from Firestore
+                            Glide.with(this@PositionsActivity)
+                                .load(Uri.parse(targetPositionItem.imageName))
+                                .placeholder(R.drawable.ic_image_24)
+                                .error(R.drawable.ic_image_24)
+                                .into(positionImageView)
+                        } else {
+                            positionImageView.setImageResource(R.drawable.ic_image_24) // Unknown format
+                        }
+                    } else {
+                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder if URI is blank
+                    }
+                    // For custom items, Next/Previous based on asset list is not directly applicable
+                    currentPosition = -1
+                    positionHistory.clear()
+                    positionHistoryPosition = -1
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                // If image loading fails, also reset position tracking
+                currentPosition = -1
                 positionHistory.clear()
-                currentPosition = imageIndexInAssets
-                positionHistory.add(currentPosition)
-                positionHistoryPosition = 0
-                displayCurrentPosition()
-                updateNavigationButtonStates()
-            // This was the original fallback, but it could loop if displayPositionByName itself calls displayInitialRandomPosition on failure.
-            // Instead, handle the "not found in positionImages" case directly.
-             Toast.makeText(this, "Asset image '${assetImageName}' (used by '${positionName}') not found in preloaded image list.", Toast.LENGTH_LONG).show()
-             positionImageView.setImageResource(R.drawable.ic_image_24) // Show placeholder
-             currentPosition = -1 // Mark as invalid for history tracking by index
-             invalidateOptionsMenu() // Update favorite icon if necessary
-             updateNavigationButtonStates() // Update nav buttons
+                positionHistoryPosition = -1
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+                positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                Toast.makeText(this, "Failed to load image: Permission denied.", Toast.LENGTH_SHORT).show()
+                // If image loading fails, also reset position tracking
+                currentPosition = -1
+                positionHistory.clear()
+                positionHistoryPosition = -1
             }
+
+            updateFavoriteIcon() // Update favorite status for the newly displayed item
+            updateNavigationButtonStates() // Update Next/Previous buttons based on new history state
+
         } else {
-            // This case means positionName was not found in allPositionItems
-             Toast.makeText(this, "Position '${positionName}' not found.", Toast.LENGTH_LONG).show()
-            displayInitialRandomPosition() // Display a new random position as a fallback
+            // Position name not found in allPositionItems
+            Toast.makeText(this, "Position '${positionName}' not found.", Toast.LENGTH_LONG).show()
+            displayInitialRandomPosition() // Display a new random (asset) position as a fallback
         }
     }
 
@@ -618,28 +663,30 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     override fun onPositionAdded(name: String, imageUri: Uri?) {
         // The imageUri is a content URI from the image picker.
         // For Firestore, we'd typically upload this image to Firebase Storage and store the download URL.
-        // Or, if storing locally and syncing paths, ensure the path is meaningful.
-        // For now, we'll create a PositionItem and let the ViewModel/Repository handle it.
-        // The actual image file handling (saving locally, uploading to cloud) needs to be
-        // decided and implemented, likely involving the Repository.
+        // For now, we'll store the URI string.
+        val imageNameOrPath = imageUri?.toString() ?: "" // Store URI as string, or empty if no image
 
-        val imageNameOrPath = imageUri?.toString() ?: generateCustomImageNameForDialog(name)
+        // Ensure user is logged in before attempting to get UID
+        val currentFirebaseUser = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser == null) {
+            Toast.makeText(this, "You must be logged in to add custom positions.", Toast.LENGTH_LONG).show()
+            return
+        }
+        val userId = currentFirebaseUser.uid
 
         val newPosition = PositionItem(
-            id = "", // Firestore will generate if new
+            id = "", // Firestore will generate ID for new items
             name = name,
-            imageName = imageNameOrPath, // This might be a content URI, a local file path, or later a cloud URL
-            isAsset = false
-            // userId will be set by ViewModel/Repository before saving to Firestore
+            imageName = "", // This will be replaced by the download URL after upload
+            isAsset = false, // Custom positions are not assets
+            userId = userId, // Associate with the current user
+            isFavorite = false // Default to not favorite
         )
 
-        positionsViewModel.addOrUpdatePosition(newPosition)
-        // The UI will update via the observer on `allPositions` or `userPositions`.
-
-        Toast.makeText(this, "Adding position \"$name\"...", Toast.LENGTH_SHORT).show()
-        // Optionally, switch to the library tab. Scrolling to the item will be tricky
-        // until the list is updated by the observer and the item has an ID from Firestore.
-        positionsTabs.getTabAt(1)?.select()
+        positionsViewModel.addOrUpdatePosition(newPosition, imageUri) // Pass the original imageUri for upload
+        Toast.makeText(this, "Adding position: $name", Toast.LENGTH_SHORT).show()
+        // The actual image file handling (saving locally, uploading to cloud) needs to be
+        // decided and implemented, likely involving the Repository.
     }
 
     // Helper to generate a placeholder name if URI is null, or for other temporary uses.

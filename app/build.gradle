@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt' // Add kotlin-kapt plugin
     id 'com.google.gms.google-services' // Google services plugin
 }
 
@@ -110,6 +111,16 @@ dependencies {
 
     // Firebase Analytics (optional, but often useful)
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // Firebase Storage (for image uploads)
+    implementation 'com.google.firebase:firebase-storage-ktx'
+
+    // Firebase App Check
+    implementation 'com.google.firebase:firebase-appcheck-playintegrity' // Or firebase-appcheck-debug for testing
+
+    // Image Loading Library - Glide
+    implementation 'com.github.bumptech.glide:glide:4.16.0' // Check for the latest version
+    // annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0' // For Java projects, Kotlin uses kapt
 
     // Google Sign-In services
     implementation 'com.google.android.gms:play-services-auth:21.0.0' // Check for the latest version if necessary
