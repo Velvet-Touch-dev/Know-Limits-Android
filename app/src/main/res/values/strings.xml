@@ -97,6 +97,7 @@
     <string name="custom_scenes">Custom Scenes</string>
     <string name="all_positions">Default Positions</string>
     <string name="custom_positions">My Positions</string>
+<string name="no_position_images_found">No position images found</string>
     <!-- Color palette settings -->
     <string name="theme_mode">Theme Mode</string>
     <string name="color_palette">Color Palette</string>

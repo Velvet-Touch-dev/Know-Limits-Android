@@ -11,7 +11,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.io.IOException
 
-data class PositionItem(val name: String, val imageName: String, val isAsset: Boolean = true)
+data class PositionItem(
+    val id: String = "", // Document ID from Firestore
+    val name: String = "",
+    val imageName: String = "",
+    val isAsset: Boolean = false, // Default to false; true for assets created in code
+    val userId: String = "", // To associate with a Firebase User
+    val isFavorite: Boolean = false // New field for favorite status
+)
 
 class PositionLibraryAdapter(
     private val context: Context,
@@ -35,6 +42,10 @@ class PositionLibraryAdapter(
     fun updatePositions(newPositions: List<PositionItem>) {
         positions = newPositions
         notifyDataSetChanged() // Or use DiffUtil for better performance
+    }
+
+    fun getPositionAt(adapterPosition: Int): PositionItem {
+        return positions[adapterPosition]
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

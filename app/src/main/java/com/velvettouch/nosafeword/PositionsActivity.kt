@@ -20,6 +20,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.velvettouch.nosafeword.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -27,6 +29,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.button.MaterialButton
@@ -45,6 +48,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Locale
 import kotlin.random.Random
+import kotlinx.coroutines.launch
 
 class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositionDialogFragment.AddPositionDialogListener {
     
@@ -74,6 +78,8 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var chipAllPositions: Chip
     private lateinit var chipCustomPositions: Chip
 
+    private lateinit var positionsViewModel: PositionsViewModel
+
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
     private var isTtsReady = false
@@ -94,8 +100,9 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private var maxTimeSeconds = 60 // Default maximum time in seconds
     private val timeOptions = listOf(10, 15, 20, 30, 45, 60, 90, 120) // Time options in seconds
     
-    // Favorites
-    private var positionFavorites: MutableSet<String> = mutableSetOf()
+    // Favorites - SharedPreferences for asset favorites.
+    // Non-asset favorites are stored in Firestore via PositionItem.isFavorite.
+    private var assetPositionFavorites: MutableSet<String> = mutableSetOf() // Used for local asset favorites
     private var hiddenDefaultPositionNames: MutableSet<String> = mutableSetOf() // For session-persistent hiding
 private var pendingPositionNavigationName: String? = null // For navigating from intent
 
@@ -121,6 +128,9 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_positions)
         
+        // Initialize ViewModel
+        positionsViewModel = ViewModelProvider(this)[PositionsViewModel::class.java]
+
         // Initialize TextToSpeech
         textToSpeech = TextToSpeech(this, this)
         
@@ -314,17 +324,21 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // Load all positions (assets and custom) into allPositionItems first.
         // This is crucial for displayPositionByName to find custom positions passed via intent.
         // Load hidden names FIRST, so loadAllPositionsForLibrary can use it.
-        loadHiddenDefaultPositionNames() // Load hidden names
+        loadHiddenDefaultPositionNames() // Load hidden names - This might also move to ViewModel or be handled differently with Firestore
 
-        loadAllPositionsForLibrary() // Ensures allPositionItems is populated, respecting hidden names.
+        // loadAllPositionsForLibrary() // ViewModel will now handle loading positions
+        // loadPositionImages() // ViewModel will handle loading or providing asset positions
 
-        // Load position images (assets only, for the randomize tab's default pool)
-        loadPositionImages()
+        // Load position favorites for assets (if any are stored locally)
+        loadAssetPositionFavorites() // This should be called once in onCreate to load initial asset favorites.
+        // Asset favorites are loaded by loadAssetPositionFavorites() called from onCreate if still needed for assets.
+        // Firestore item's favorite status is part of the PositionItem.
+
+        // Prepare and load asset positions into ViewModel
+        val assetItems = prepareAssetPositionItems()
+        positionsViewModel.loadAssetPositions(assetItems)
         
-        // Load position favorites
-        loadPositionFavorites()
-        
-        // Check for specific position to display from intent AFTER allPositionItems is populated
+        // Check for specific position to display from intent AFTER allPositionItems is populated (or ViewModel provides data)
         // This will be handled later, after RecyclerView setup, if the intent is for library navigation.
         // For now, store it if present. The original displayPositionByName might be for the randomize tab.
         // The new requirement is to navigate to the library card.
@@ -336,6 +350,10 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             // For now, we'll let displayInitialRandomPosition run, and then navigate if pending.
         }
 
+        // The initial display logic might need adjustment now that ViewModel loads data asynchronously.
+        // displayInitialRandomPosition() might be called too early or based on incomplete data.
+        // Consider triggering initial display from the ViewModel observer when data is ready.
+        // For now, let's see how it behaves.
         if (pendingPositionNavigationName == null) {
              displayInitialRandomPosition() // This now handles history initialization
         } else {
@@ -400,9 +418,10 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         setupLibraryRecyclerView() // Call to setup RecyclerView, adapter will use allPositionItems
         // loadAllPositionsForLibrary() was called earlier and populated allPositionItems.
         // Now that the adapter is initialized, update it with the loaded items.
-        if (::positionLibraryAdapter.isInitialized) {
-            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-        }
+        // This will be handled by the ViewModel observer
+        // if (::positionLibraryAdapter.isInitialized) {
+        //     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+        // }
         setupSearch()
         setupPositionFilterChips() // Setup for the new filter chips
         setupFab()
@@ -410,6 +429,9 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
         // Initial filter load for the library
         filterPositionsLibrary(positionSearchView.query?.toString())
+
+        // Observe ViewModel data - MOVED HERE after all UI is initialized
+        observeViewModel()
 
         // Handle pending navigation from intent after all UI is set up
         pendingPositionNavigationName?.let { name ->
@@ -432,6 +454,60 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 }
             }
         })
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            positionsViewModel.allPositions.collect { positions ->
+                allPositionItems.clear()
+                allPositionItems.addAll(positions)
+                if (::positionLibraryAdapter.isInitialized) {
+                    positionLibraryAdapter.updatePositions(ArrayList(positions))
+                }
+                // If asset positions are loaded separately by ViewModel, update positionImages for Randomize tab
+                // This part needs careful handling based on how asset positions are managed by ViewModel
+                val assetBasedPositions = positions.filter { it.isAsset }
+                positionImages = assetBasedPositions.map { it.imageName }
+
+
+                // After positions are loaded, handle any pending navigation or initial display
+                if (pendingPositionNavigationName == null && positionsTabs.selectedTabPosition == 0) {
+                     displayInitialRandomPosition() // Ensure this uses the new positionImages
+                } else if (pendingPositionNavigationName != null) {
+                    navigateToPositionInRandomizeView(pendingPositionNavigationName!!)
+                    pendingPositionNavigationName = null
+                }
+                filterPositionsLibrary(positionSearchView.query?.toString()) // Re-filter
+                updateNavigationButtonStates() // Update nav buttons based on new data
+            }
+        }
+
+        lifecycleScope.launch {
+            positionsViewModel.isLoading.collect { isLoading ->
+                // Show/hide loading indicator (e.g., a ProgressBar)
+                // findViewById<ProgressBar>(R.id.progressBar).visibility = if (isLoading) View.VISIBLE else View.GONE
+            }
+        }
+
+        lifecycleScope.launch {
+            positionsViewModel.errorMessage.collect { errorMessage ->
+                errorMessage?.let {
+                    Toast.makeText(this@PositionsActivity, it, Toast.LENGTH_LONG).show()
+                    // Clear the error message in ViewModel after showing it if needed
+                }
+            }
+        }
+
+        // If you still load asset images separately (e.g., from local assets folder)
+        // you might trigger this from here after ViewModel is initialized.
+        // This is a placeholder for how asset positions might be loaded if not part of the main Firestore flow.
+        // Option 1: ViewModel loads them internally.
+        // Option 2: Activity tells ViewModel to load them or provides them.
+        // For now, assuming ViewModel's `loadPositions` also fetches/provides asset data
+        // or `positionImages` gets populated correctly from `allPositions`.
+        // Example:
+        // val localAssetPositionItems = loadPositionImagesFromAssets() // A new function to get List<PositionItem>
+        // positionsViewModel.loadAssetPositions(localAssetPositionItems)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -518,58 +594,57 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // Clear the set of hidden default positions and its SharedPreferences
         hiddenDefaultPositionNames.clear()
         val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
-        prefs.edit().remove("hidden_names").commit() // Changed to commit()
+        prefs.edit().remove("hidden_names").apply() // Use apply() for SharedPreferences
 
-        // Delete files of custom positions
-        val customPositions = allPositionItems.filter { !it.isAsset }
-        for (customPosition in customPositions) {
-            try {
-                val file = File(customPosition.imageName)
-                if (file.exists()) {
-                    file.delete()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, "Error deleting file for ${customPosition.name}", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // Deleting user's custom positions from Firestore should be handled by the ViewModel/Repository
+        // if a "full reset" means deleting cloud data.
+        // For now, this "reset" will primarily clear local hides and refresh from the source.
+        // If you need to delete all user's positions from Firestore, a specific ViewModel function would be required.
+        // Example: positionsViewModel.deleteAllUserPositions()
 
-        // Clear current list and reload only defaults
-        allPositionItems.clear()
-        loadAllPositionsForLibrary(true) // Pass a flag to indicate reset
+        // Reload positions from ViewModel. This will fetch current user positions from Firestore
+        // and any default/asset positions managed by the ViewModel.
+        positionsViewModel.loadPositions()
 
-        Toast.makeText(this, "Positions reset to default.", Toast.LENGTH_SHORT).show()
+        // UI will update via observers.
+        // The filterPositionsLibrary() called by the observer will respect the now-empty hiddenDefaultPositionNames.
+        // displayInitialRandomPosition() might also be called by the observer if the list changes.
+
+        Toast.makeText(this, "Positions list refreshed. Hidden items restored.", Toast.LENGTH_SHORT).show()
+        invalidateOptionsMenu() // Update favorite icon if current position changed due to reset
     }
 
 
     override fun onPositionAdded(name: String, imageUri: Uri?) {
-        if (imageUri == null) {
-            Toast.makeText(this, "Image URI is null, cannot save.", Toast.LENGTH_LONG).show()
-            return
-        }
+        // The imageUri is a content URI from the image picker.
+        // For Firestore, we'd typically upload this image to Firebase Storage and store the download URL.
+        // Or, if storing locally and syncing paths, ensure the path is meaningful.
+        // For now, we'll create a PositionItem and let the ViewModel/Repository handle it.
+        // The actual image file handling (saving locally, uploading to cloud) needs to be
+        // decided and implemented, likely involving the Repository.
 
-        // Create a more robust unique filename
-        val timestamp = System.currentTimeMillis()
-        val safeName = name.replace("\\s+".toRegex(), "_").replace("[^a-zA-Z0-9_\\-]".toRegex(), "")
-        val fileName = "position_${safeName}_${timestamp}.jpg"
+        val imageNameOrPath = imageUri?.toString() ?: generateCustomImageNameForDialog(name)
 
-        val newPositionFile = File(getExternalFilesDir("positions"), fileName)
-        try {
-            contentResolver.openInputStream(imageUri)?.use { inputStream ->
-                FileOutputStream(newPositionFile).use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
-            // Add to the list and update adapter
-            val newPositionItem = PositionItem(name, newPositionFile.absolutePath, false) // isAsset = false
-            allPositionItems.add(newPositionItem)
-            allPositionItems.sortBy { it.name } // Keep it sorted
-            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-            Toast.makeText(this, "Position '$name' added.", Toast.LENGTH_SHORT).show()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error saving image: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+        val newPosition = PositionItem(
+            id = "", // Firestore will generate if new
+            name = name,
+            imageName = imageNameOrPath, // This might be a content URI, a local file path, or later a cloud URL
+            isAsset = false
+            // userId will be set by ViewModel/Repository before saving to Firestore
+        )
+
+        positionsViewModel.addOrUpdatePosition(newPosition)
+        // The UI will update via the observer on `allPositions` or `userPositions`.
+
+        Toast.makeText(this, "Adding position \"$name\"...", Toast.LENGTH_SHORT).show()
+        // Optionally, switch to the library tab. Scrolling to the item will be tricky
+        // until the list is updated by the observer and the item has an ID from Firestore.
+        positionsTabs.getTabAt(1)?.select()
+    }
+
+    // Helper to generate a placeholder name if URI is null, or for other temporary uses.
+    private fun generateCustomImageNameForDialog(positionName: String): String {
+        return "custom_${positionName.replace("\\s+".toRegex(), "_")}_${System.currentTimeMillis()}"
     }
 
     private fun setupFab() {
@@ -625,14 +700,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
     }
     
-    private fun loadPositionFavorites() {
+    private fun loadAssetPositionFavorites() {
         val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
-        positionFavorites = prefs.getStringSet("favorite_position_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        assetPositionFavorites = prefs.getStringSet("favorite_position_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
     }
 
-    private fun savePositionFavorites() {
+    private fun saveAssetPositionFavorites() {
         val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
-        prefs.edit().putStringSet("favorite_position_names", positionFavorites).apply()
+        prefs.edit().putStringSet("favorite_position_names", assetPositionFavorites).apply()
     }
 
     private fun loadHiddenDefaultPositionNames() {
@@ -646,56 +721,79 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     }
     
     private fun toggleFavorite() {
-        val currentDisplayedName = positionNameTextView.text.toString()
-        if (currentDisplayedName.isBlank() || currentDisplayedName == "No position images found") {
+        val displayedPositionName = positionNameTextView.text.toString()
+        if (displayedPositionName.isBlank() || displayedPositionName == getString(R.string.no_position_images_found)) {
             Toast.makeText(this, "No position selected to favorite.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Use currentDisplayedName for favoriting, as it's reliable for both assets and custom items.
-        // The name is already capitalized correctly by displayPositionByName or displayCurrentPosition.
-        val positionNameToFavorite = currentDisplayedName
+        val positionToToggle = allPositionItems.find { it.name.equals(displayedPositionName, ignoreCase = true) }
 
-        if (positionFavorites.contains(positionNameToFavorite)) {
-            // Remove from favorites
-            positionFavorites.remove(positionNameToFavorite)
-            
-            // Show toast
-            Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show()
+        if (positionToToggle != null) {
+            if (positionToToggle.isAsset) {
+                // Handle asset favorites locally with SharedPreferences
+                if (assetPositionFavorites.contains(positionToToggle.name)) {
+                    assetPositionFavorites.remove(positionToToggle.name)
+                    Toast.makeText(this, "\"${positionToToggle.name}\" removed from asset favorites.", Toast.LENGTH_SHORT).show()
+                } else {
+                    assetPositionFavorites.add(positionToToggle.name)
+                    Toast.makeText(this, "\"${positionToToggle.name}\" added to asset favorites.", Toast.LENGTH_SHORT).show()
+                }
+                saveAssetPositionFavorites()
+                invalidateOptionsMenu() // Update icon immediately
+            } else {
+                // Handle non-asset (Firestore) positions via ViewModel
+                if (positionToToggle.id.isNotBlank()) {
+                    positionsViewModel.toggleFavoriteStatus(positionToToggle)
+                    // Toast message for immediate feedback. ViewModel will trigger data reload.
+                    val actionText = if (!positionToToggle.isFavorite) "added to" else "removed from" // Check current state before toggle
+                    Toast.makeText(this, "\"${positionToToggle.name}\" $actionText Firestore favorites.", Toast.LENGTH_SHORT).show()
+                    // The observer of positionsViewModel.allPositions will call invalidateOptionsMenu()
+                    // once the data is updated and re-collected.
+                    // For a slightly faster visual update of the icon (though data might not be saved yet):
+                    val index = allPositionItems.indexOfFirst { it.id == positionToToggle.id } // Ensure finding by ID for safety
+                    if (index != -1) {
+                        // Create a new updated item to ensure StateFlow detects a change if the object reference was the same.
+                        allPositionItems[index] = positionToToggle.copy(isFavorite = !positionToToggle.isFavorite) // Reflect the toggle for immediate UI
+                        invalidateOptionsMenu()
+                    }
+                } else {
+                    Toast.makeText(this, "Cannot favorite unsaved custom position. Save it first.", Toast.LENGTH_LONG).show()
+                }
+            }
         } else {
-            // Add to favorites
-            positionFavorites.add(positionNameToFavorite)
-            
-            // Show toast
-            Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Could not find position: $displayedPositionName", Toast.LENGTH_SHORT).show()
         }
-        
-        // Save changes
-        savePositionFavorites()
-        
-        // Update favorite icon
-        invalidateOptionsMenu()
     }
-    
+
     private fun updateFavoriteIcon(menu: Menu? = null) {
-        val currentDisplayedName = positionNameTextView.text.toString()
-        if (currentDisplayedName.isBlank() || currentDisplayedName == "No position images found") {
-            // No specific position is displayed, or it's a placeholder.
-            // Ensure the favorite icon is in its default (empty) state.
-            menu?.findItem(R.id.action_favorite_position)?.setIcon(R.drawable.ic_favorite)
-            return
-        }
+        val favoriteItem = menu?.findItem(R.id.action_favorite_position) ?: toolbar.menu.findItem(R.id.action_favorite_position) // Ensure correct menu item ID
+        if (favoriteItem != null) {
+            if (positionsTabs.selectedTabPosition == 0) { // Only on Randomize tab
+                favoriteItem.isVisible = true
+                var isCurrentFavorite = false
+                val displayedPositionName = positionNameTextView.text.toString()
 
-        // Use currentDisplayedName to check favorite status.
-        // This name should be the one displayed and correctly formatted.
-        val positionNameToCheck = currentDisplayedName
-        val isFavorite = positionFavorites.contains(positionNameToCheck)
+                if (displayedPositionName.isNotEmpty() && displayedPositionName != getString(R.string.no_position_images_found)) {
+                    val currentDisplayedItem = allPositionItems.find { it.name.equals(displayedPositionName, ignoreCase = true) }
+                    if (currentDisplayedItem != null) {
+                        isCurrentFavorite = if (currentDisplayedItem.isAsset) {
+                            assetPositionFavorites.contains(currentDisplayedItem.name)
+                        } else {
+                            // isFavorite status comes from the PositionItem itself, which is sourced from Firestore via ViewModel
+                            currentDisplayedItem.isFavorite
+                        }
+                    }
+                }
 
-        // Update the icon in the menu
-        menu?.findItem(R.id.action_favorite_position)?.let { menuItem ->
-            menuItem.setIcon(
-                if (isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite
-            )
+                if (isCurrentFavorite) {
+                    favoriteItem.setIcon(R.drawable.ic_favorite_filled) // Use ic_favorite_filled
+                } else {
+                    favoriteItem.setIcon(R.drawable.ic_favorite) // Use ic_favorite (border)
+                }
+            } else { // Hide on Library tab
+                favoriteItem.isVisible = false
+            }
         }
     }
     
@@ -1080,131 +1178,98 @@ private fun setupLibraryRecyclerView() {
     positionLibraryAdapter = PositionLibraryAdapter(this, mutableListOf(), // Initial empty list
         onItemClick = { positionItem ->
             // Handle item click: Display the position in the "Randomize" tab
-            displayPositionByName(positionItem.name) // Use existing function
+            navigateToPositionInRandomizeView(positionItem.name) // Updated to use the correct navigation
             positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
             invalidateOptionsMenu() // Ensure favorite icon updates
         },
-            onDeleteClick = { positionItem ->
-                val originalPosition = allPositionItems.indexOf(positionItem)
-                if (originalPosition != -1) {
-                    // Temporarily remove from list and update adapter
-                    allPositionItems.remove(positionItem)
-                    positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
+        onDeleteClick = { positionItem -> // This is for the explicit delete button on the card
+            handlePositionDeletionOrHiding(positionItem, -1) // -1 as adapterPosition is not from swipe
+        }
+    )
+    positionsLibraryRecyclerView.adapter = positionLibraryAdapter
+    positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
 
-                    Snackbar.make(findViewById(android.R.id.content), "'${positionItem.name}' deleted.", Snackbar.LENGTH_LONG)
-                        .setAnchorView(libraryFabContainer)
-                        .setAction("Undo") {
-                            // Add item back to its original position
-                            allPositionItems.add(originalPosition, positionItem)
-                            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-                            // If it was a default item that was "hidden", remove from hidden list
-                            if (positionItem.isAsset) {
-                                hiddenDefaultPositionNames.remove(positionItem.name)
-                                saveHiddenDefaultPositionNames()
-                            }
-                            Toast.makeText(this, "'${positionItem.name}' restored.", Toast.LENGTH_SHORT).show()
-                        }
-                        .addCallback(object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                if (event != DISMISS_EVENT_ACTION) { // If not dismissed by "Undo"
-                                    // Perform actual deletion
-                                    if (!positionItem.isAsset) {
-                                        // This is a custom position, delete its file
-                                        try {
-                                            val file = File(positionItem.imageName)
-                                            if (file.exists()) {
-                                                file.delete()
-                                            }
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
-                                            // Consider showing an error to the user if file deletion fails
-                                        }
-                                    } else {
-                                        // This is a default (asset) position, add to hidden list
-                                        hiddenDefaultPositionNames.add(positionItem.name)
-                                        saveHiddenDefaultPositionNames() // Save the updated hidden list
-                                    }
-                                    // Remove from favorites if it exists there (after permanent delete)
-                                    if (positionFavorites.contains(positionItem.name)) {
-                                        positionFavorites.remove(positionItem.name)
-                                        savePositionFavorites()
-                                    }
-                                    // No need to update adapter again as it's already removed visually
-                                }
-                            }
-                        })
-                        .show()
+    // Setup ItemTouchHelper for swipe-to-delete/hide
+    val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            return false // We don't want to handle move
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val positionSwiped = positionLibraryAdapter.getPositionAt(viewHolder.adapterPosition)
+            handlePositionDeletionOrHiding(positionSwiped, viewHolder.adapterPosition)
+        }
+    }
+    ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(positionsLibraryRecyclerView)
+}
+
+private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPosition: Int) {
+    val positionName = positionItem.name
+
+    if (!positionItem.isAsset) { // It's a user's custom position (from Firestore)
+        MaterialAlertDialogBuilder(this@PositionsActivity)
+            .setTitle("Delete Position")
+            .setMessage("Are you sure you want to delete your custom position \"$positionName\"?")
+            .setNegativeButton("CANCEL") { dialog, _ ->
+                if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition) // Rebind if from swipe
+                dialog.dismiss()
+            }
+            .setPositiveButton("DELETE") { _, _ ->
+                if (positionItem.id.isNotBlank()) {
+                    positionsViewModel.deletePosition(positionItem.id)
+                    Toast.makeText(this@PositionsActivity, "\"$positionName\" deleted.", Toast.LENGTH_SHORT).show()
                 } else {
-                     Toast.makeText(this, "Could not find '${positionItem.name}' in the list to remove.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PositionsActivity, "Error: Position ID missing.", Toast.LENGTH_SHORT).show()
+                    if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition)
                 }
             }
-        )
-    positionsLibraryRecyclerView.adapter = positionLibraryAdapter
-        // Use GridLayoutManager for a card-like appearance, adjust spanCount as needed
-        positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
+            .setOnCancelListener { // Handles back press or tap outside
+                if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition)
+            }
+            .show()
+    } else { // It's a default/asset position
+         MaterialAlertDialogBuilder(this@PositionsActivity)
+            .setTitle("Hide Position")
+            .setMessage("Are you sure you want to hide the default position \"$positionName\"? This can be undone by resetting positions.")
+            .setNegativeButton("CANCEL") { dialog, _ ->
+                if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition)
+                dialog.dismiss()
+            }
+            .setPositiveButton("HIDE") { _, _ ->
+                hiddenDefaultPositionNames.add(positionName)
+                saveHiddenDefaultPositionNames()
+                filterPositionsLibrary(positionSearchView.query?.toString())
+                Toast.makeText(this@PositionsActivity, "\"$positionName\" hidden.", Toast.LENGTH_SHORT).show()
+            }
+             .setOnCancelListener {
+                 if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition)
+             }
+            .show()
     }
+}
+
 
     private fun loadAllPositionsForLibrary(isReset: Boolean = false) {
-        if (isReset) {
-            allPositionItems.clear()
-            // hiddenDefaultPositionNames is cleared by resetToDefaultPositions before calling this
-        } else {
-            // For a normal load (e.g., onCreate, onResume if activity was destroyed),
-            // always clear to ensure we rebuild respecting hiddenDefaultPositionNames.
-            allPositionItems.clear()
-        }
-        // Now allPositionItems is definitely empty if it's a normal load,
-        // or empty if it's a reset.
-
-        // Load from assets
-        try {
-            val assetManager = assets
-            val assetFiles = assetManager.list("positions")
-            assetFiles?.forEach { fileName ->
-                if (fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".png", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true)) {
-                    val nameWithoutExtension = fileName.substringBeforeLast(".")
-                    val positionName = nameWithoutExtension.replace("_", " ").capitalizeWords()
-                    // Only add asset if it's not in the hidden set
-                    if (!hiddenDefaultPositionNames.contains(positionName)) {
-                        allPositionItems.add(PositionItem(positionName, fileName, true)) // isAsset = true
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error loading asset positions", Toast.LENGTH_SHORT).show()
-        }
-
-        // Load from app's external files directory only if not a reset
-        if (!isReset) {
-            val customPositionsDir = getExternalFilesDir("positions")
-            if (customPositionsDir != null && customPositionsDir.exists()) {
-                customPositionsDir.listFiles()?.forEach { file ->
-                    if (file.isFile && (file.name.endsWith(".jpg", ignoreCase = true) || file.name.endsWith(".png", ignoreCase = true) || file.name.endsWith(".jpeg", ignoreCase = true))) {
-                        val parts = file.nameWithoutExtension.split("_")
-                        val positionName = if (parts.size > 2 && parts.first() == "position" && parts.last().toLongOrNull() != null) {
-                            parts.drop(1).dropLast(1).joinToString(" ").capitalizeWords()
-                        } else {
-                            file.nameWithoutExtension.replace("_", " ").capitalizeWords()
-                        }
-                        // Add custom position only if it's not already in the list (e.g. from assets if names collide)
-                        if (allPositionItems.none { it.name.equals(positionName, ignoreCase = true) }) {
-                            allPositionItems.add(PositionItem(positionName, file.absolutePath, false)) // isAsset = false
-                        }
-                    }
-                }
-            }
-        }
-
-        allPositionItems.sortBy { it.name }
-        if (::positionLibraryAdapter.isInitialized) {
-            positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
-        }
+        // This function is largely obsolete as ViewModel now loads data.
+        // It should not directly modify `allPositionItems`.
+        // Calls to this function have been or should be removed/refactored.
+        android.util.Log.w("PositionsActivity", "loadAllPositionsForLibrary() called. This function is deprecated. Data should come from ViewModel.")
     }
 
-    // Helper function to capitalize first letter of each word
+    // Helper function to capitalize first letter of each word - This can be moved to a utils file or kept if still used by other local logic
     fun String.capitalizeWords(): String = split(" ").joinToString(" ") { word ->
         word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+
+    // Example helper to load custom positions from SharedPreferences - OBSOLETE with Firestore
+    private fun loadCustomPositions(): List<PositionItem> {
+        android.util.Log.w("PositionsActivity", "loadCustomPositions() called. This is obsolete with Firestore.")
+        return emptyList()
+    }
+
+    // Example helper to save custom positions (called when adding/deleting custom ones) - OBSOLETE with Firestore
+    private fun saveCustomPositions() {
+        android.util.Log.w("PositionsActivity", "saveCustomPositions() called. This is obsolete with Firestore.")
     }
 
     private fun setupSearch() {
@@ -1366,7 +1431,42 @@ private fun setupLibraryRecyclerView() {
         voicePitch = prefs.getFloat(VoiceSettings.PREF_VOICE_PITCH, VoiceSettings.DEFAULT_PITCH)
         voiceSpeed = prefs.getFloat(VoiceSettings.PREF_VOICE_SPEED, VoiceSettings.DEFAULT_SPEED)
     }
-private fun addCurrentPositionToPlan() {
+    
+    private fun prepareAssetPositionItems(): List<PositionItem> {
+        val assetPositionItems = mutableListOf<PositionItem>()
+        try {
+            val imageFiles = assets.list("positions")?.filter {
+                it.endsWith(".jpg", ignoreCase = true) ||
+                it.endsWith(".jpeg", ignoreCase = true) ||
+                it.endsWith(".png", ignoreCase = true) // Added png support
+            } ?: emptyList()
+    
+            for (imageName in imageFiles) {
+                val nameWithoutExtension = imageName.substringBeforeLast(".")
+                val displayName = nameWithoutExtension.replace("_", " ").capitalizeWords()
+                // Use a consistent prefix for asset IDs to avoid clashes with Firestore IDs
+                val assetId = "asset_$imageName"
+                val isFavorite = assetPositionFavorites.contains(imageName) // Check against loaded asset favorites
+    
+                assetPositionItems.add(
+                    PositionItem(
+                        id = assetId,
+                        name = displayName,
+                        imageName = imageName, // Adapter uses this to load from assets/positions/
+                        isAsset = true,
+                        userId = "", // Not applicable for assets
+                        isFavorite = isFavorite
+                    )
+                )
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error loading asset position items: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+        return assetPositionItems
+    }
+
+    private fun addCurrentPositionToPlan() {
         val currentPositionName = positionNameTextView.text.toString()
         if (currentPositionName.isBlank() || currentPositionName == "No position images found") {
             Toast.makeText(this, "No position selected to add to plan.", Toast.LENGTH_SHORT).show()

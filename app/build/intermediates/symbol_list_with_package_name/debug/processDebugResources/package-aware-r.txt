@@ -4425,6 +4425,7 @@ string new_scene
 string next
 string next_task
 string no_favorites
+string no_position_images_found
 string no_tasks
 string password_toggle_content_description
 string path_password_eye

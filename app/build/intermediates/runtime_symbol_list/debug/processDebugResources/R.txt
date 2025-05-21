@@ -4424,6 +4424,7 @@ int string new_scene 0x7f1200df
 int string next 0x7f1200e0
 int string next_task 0x7f1200e1
 int string no_favorites 0x7f1200e2
+int string no_position_images_found 0x7f120129
 int string no_tasks 0x7f1200e3
 int string password_toggle_content_description 0x7f1200e4
 int string path_password_eye 0x7f1200e5
