@@ -107,6 +107,9 @@ public final class ActivityPositionsBinding implements ViewBinding {
   public final TabLayout positionsTabs;
 
   @NonNull
+  public final MaterialButton previousButton;
+
+  @NonNull
   public final MaterialButton randomizeButton;
 
   @NonNull
@@ -132,8 +135,9 @@ public final class ActivityPositionsBinding implements ViewBinding {
       @NonNull TextView positionNameTextView, @NonNull SearchView positionSearchView,
       @NonNull FrameLayout positionsContentContainer,
       @NonNull RecyclerView positionsLibraryRecyclerView, @NonNull TabLayout positionsTabs,
-      @NonNull MaterialButton randomizeButton, @NonNull ConstraintLayout randomizeTabContent,
-      @NonNull TextView timerTextView, @NonNull Toolbar toolbar) {
+      @NonNull MaterialButton previousButton, @NonNull MaterialButton randomizeButton,
+      @NonNull ConstraintLayout randomizeTabContent, @NonNull TextView timerTextView,
+      @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.appBarLayout = appBarLayout;
     this.autoPlayButton = autoPlayButton;
@@ -158,6 +162,7 @@ public final class ActivityPositionsBinding implements ViewBinding {
     this.positionsContentContainer = positionsContentContainer;
     this.positionsLibraryRecyclerView = positionsLibraryRecyclerView;
     this.positionsTabs = positionsTabs;
+    this.previousButton = previousButton;
     this.randomizeButton = randomizeButton;
     this.randomizeTabContent = randomizeTabContent;
     this.timerTextView = timerTextView;
@@ -325,6 +330,12 @@ public final class ActivityPositionsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.previous_button;
+      MaterialButton previousButton = ViewBindings.findChildViewById(rootView, id);
+      if (previousButton == null) {
+        break missingId;
+      }
+
       id = R.id.randomize_button;
       MaterialButton randomizeButton = ViewBindings.findChildViewById(rootView, id);
       if (randomizeButton == null) {
@@ -354,8 +365,8 @@ public final class ActivityPositionsBinding implements ViewBinding {
           chipCustomPositions, controlsContainer, drawerLayout, fabAddPosition, libraryFabContainer,
           libraryTabContent, maxTimeSpinner, minTimeSpinner, navView, positionCardView,
           positionFilterChipGroup, positionImageView, positionNameTextView, positionSearchView,
-          positionsContentContainer, positionsLibraryRecyclerView, positionsTabs, randomizeButton,
-          randomizeTabContent, timerTextView, toolbar);
+          positionsContentContainer, positionsLibraryRecyclerView, positionsTabs, previousButton,
+          randomizeButton, randomizeTabContent, timerTextView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

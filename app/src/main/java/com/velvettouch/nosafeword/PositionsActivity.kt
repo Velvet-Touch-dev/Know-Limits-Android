@@ -52,6 +52,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionNameTextView: TextView
     private lateinit var randomizeButton: MaterialButton
     private lateinit var autoPlayButton: MaterialButton
+    private lateinit var previousButton: MaterialButton // Added previous button
     private lateinit var timerTextView: TextView
     private lateinit var autoPlaySettings: LinearLayout
     private lateinit var minTimeSpinner: Spinner
@@ -84,6 +85,9 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     
     private var positionImages: List<String> = emptyList()
     private var currentPosition: Int = -1
+    private var previousPosition: Int = -1 // Used for non-history based previous, will be replaced by history
+    private var positionHistory: MutableList<Int> = mutableListOf()
+    private var positionHistoryPosition: Int = -1
     private var isAutoPlayOn = false
     private var autoPlayTimer: CountDownTimer? = null
     private var minTimeSeconds = 30 // Default minimum time in seconds
@@ -129,6 +133,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         positionImageView = findViewById(R.id.position_image_view)
         positionNameTextView = findViewById(R.id.position_name_text_view)
         randomizeButton = findViewById(R.id.randomize_button)
+        previousButton = findViewById(R.id.previous_button) // Initialize previous button
         autoPlayButton = findViewById(R.id.auto_play_button)
         timerTextView = findViewById(R.id.timer_text_view)
         autoPlaySettings = findViewById(R.id.auto_play_settings)
@@ -236,9 +241,9 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
         
         // Set up randomize button (now "Next" button) with Material motion
-        randomizeButton.setOnClickListener {
-            // If auto play is on, stop current timer and start a new one
+        randomizeButton.setOnClickListener { // This is the "Next" button
             if (isAutoPlayOn) {
+                // If auto play is on, stop current timer and start a new one
                 // Cancel current timer
                 autoPlayTimer?.cancel()
                 
@@ -251,32 +256,57 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                     override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                     override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                        displayRandomPosition()
+                        displayNextPositionWithHistory() // Changed from displayRandomPosition
                         positionImageView.startAnimation(fadeIn)
-                        
-                        // Start new timer
                         startAutoPlay()
                     }
                 })
             } else {
-                // Regular behavior when auto play is off
                 val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
                 val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
-                
                 positionImageView.startAnimation(fadeOut)
                 fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
                     override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                     override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                     override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                        displayRandomPosition()
+                        displayNextPositionWithHistory() // Changed from displayRandomPosition
                         positionImageView.startAnimation(fadeIn)
                     }
                 })
             }
         }
-        
+
+        previousButton.setOnClickListener {
+            if (isAutoPlayOn) {
+                autoPlayTimer?.cancel()
+                val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
+                val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
+                positionImageView.startAnimation(fadeOut)
+                fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                    override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                        displayPreviousPositionWithHistory()
+                        positionImageView.startAnimation(fadeIn)
+                        startAutoPlay() // Restart timer if it was on
+                    }
+                })
+            } else {
+                val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast)
+                val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast)
+                positionImageView.startAnimation(fadeOut)
+                fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                    override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+                    override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                        displayPreviousPositionWithHistory()
+                        positionImageView.startAnimation(fadeIn)
+                    }
+                })
+            }
+        }
         // Initialize with consistent Play button text
-        autoPlayButton.text = getString(R.string.play)
+        // autoPlayButton.text = getString(R.string.play) // Text is removed, icon is set in XML
         autoPlayButton.setOnClickListener {
             toggleAutoPlay()
         }
@@ -303,13 +333,20 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             pendingPositionNavigationName = intentPositionName
             // If this intent means we should NOT display a random position initially on the randomize tab,
             // then the displayRandomPosition() call below might need to be conditional.
-            // For now, we'll let displayRandomPosition run, and then navigate if pending.
+            // For now, we'll let displayInitialRandomPosition run, and then navigate if pending.
         }
 
-        if (pendingPositionNavigationName == null) { // Only display random if not about to navigate
-            displayRandomPosition()
+        if (pendingPositionNavigationName == null) {
+             displayInitialRandomPosition() // This now handles history initialization
+        } else {
+            // Navigation pending, will be handled by navigateToPositionInRandomizeView
+            // which also handles history.
+            // Ensure history is clear if we are about to navigate to a specific item as the start.
+            positionHistory.clear()
+            positionHistoryPosition = -1
+            // updateNavigationButtonStates() will be called by navigateToPositionInRandomizeView or displayInitialRandomPosition
         }
-        
+        // updateNavigationButtonStates() // Moved to be called by the functions that change position
         // Initialize Tab Content Views if not already done (should be done after setContentView)
         // Ensure these IDs match your activity_positions.xml
         positionsTabs = findViewById(R.id.positions_tabs)
@@ -428,7 +465,33 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
 
         positionsTabs.getTabAt(0)?.select() // Select Randomize tab (index 0)
-        displayPositionByName(positionName) // Display the position in the main view of Randomize tab
+        // When navigating by name, we should find its index in positionImages and update history
+        val targetIndex = allPositionItems.indexOfFirst { it.name.equals(positionName, ignoreCase = true) }
+        val assetImageName = if (targetIndex != -1) allPositionItems[targetIndex].imageName else null
+
+        if (assetImageName != null) {
+            val imageIndexInAssets = positionImages.indexOfFirst { it.equals(assetImageName, ignoreCase = true) }
+            if (imageIndexInAssets != -1) {
+                // Clear history or decide how to integrate this navigation
+                positionHistory.clear()
+                currentPosition = imageIndexInAssets
+                positionHistory.add(currentPosition)
+                positionHistoryPosition = 0
+                displayCurrentPosition()
+                updateNavigationButtonStates()
+            // This was the original fallback, but it could loop if displayPositionByName itself calls displayInitialRandomPosition on failure.
+            // Instead, handle the "not found in positionImages" case directly.
+             Toast.makeText(this, "Asset image '${assetImageName}' (used by '${positionName}') not found in preloaded image list.", Toast.LENGTH_LONG).show()
+             positionImageView.setImageResource(R.drawable.ic_image_24) // Show placeholder
+             currentPosition = -1 // Mark as invalid for history tracking by index
+             invalidateOptionsMenu() // Update favorite icon if necessary
+             updateNavigationButtonStates() // Update nav buttons
+            }
+        } else {
+            // This case means positionName was not found in allPositionItems
+             Toast.makeText(this, "Position '${positionName}' not found.", Toast.LENGTH_LONG).show()
+            displayInitialRandomPosition() // Display a new random position as a fallback
+        }
     }
 
     private fun setupResetButton() {
@@ -685,65 +748,53 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     
     private fun toggleAutoPlay() {
         isAutoPlayOn = !isAutoPlayOn
-        
         if (isAutoPlayOn) {
-            // Start auto play
-            startAutoPlay()
-            
-            // Change button text to Pause
-            autoPlayButton.text = getString(R.string.pause)
-            
-            // Show timer
+            autoPlayButton.icon = ContextCompat.getDrawable(this, R.drawable.ic_pause_24)
             timerTextView.visibility = View.VISIBLE
-            
-            // Update layout weights to accommodate timer
-            updateButtonLayout()
+            autoPlaySettings.visibility = View.GONE // Hide settings when auto play starts
+            startAutoPlay()
         } else {
-            // Stop auto play
-            stopAutoPlay()
-            
-            // Change button text to Play
-            autoPlayButton.text = getString(R.string.play)
-            
-            // Hide timer
+            autoPlayButton.icon = ContextCompat.getDrawable(this, R.drawable.ic_play_24)
             timerTextView.visibility = View.GONE
-            
-            // Update layout weights for two-button layout
-            updateButtonLayout()
+            autoPlaySettings.visibility = View.VISIBLE // Show settings when auto play stops
+            stopAutoPlay()
         }
+        updateButtonLayout() // Ensure layout updates correctly
     }
-    
+
     private fun updateButtonLayout() {
-        val buttonsLayout = findViewById<LinearLayout>(R.id.buttons_container)
+        val buttonsContainer = findViewById<LinearLayout>(R.id.buttons_container)
+        val autoPlayButtonParams = autoPlayButton.layoutParams as LinearLayout.LayoutParams
+        val timerTextViewParams = timerTextView.layoutParams as LinearLayout.LayoutParams
         
-        if (timerTextView.visibility == View.VISIBLE) {
-            // Three-element layout (Play, Timer, Next)
-            for (i in 0 until buttonsLayout.childCount) {
-                val view = buttonsLayout.getChildAt(i)
-                val params = view.layoutParams as LinearLayout.LayoutParams
-                params.weight = 1.0f
-                view.layoutParams = params
-            }
+        // The navButtonsContainer is the LinearLayout that holds the previous and next buttons.
+        // It's the third child in the buttons_container LinearLayout in the XML.
+        val navButtonsContainer = buttonsContainer.getChildAt(2) as LinearLayout
+        val navButtonsContainerParams = navButtonsContainer.layoutParams as LinearLayout.LayoutParams
+
+        if (isAutoPlayOn) {
+            // Distribute weight in thirds: AutoPlay | Timer | NavButtons
+            autoPlayButtonParams.weight = 1f
+            timerTextViewParams.weight = 1f
+            navButtonsContainerParams.weight = 1f
+            timerTextView.visibility = View.VISIBLE
         } else {
-            // Two-element layout (Play, Next)
-            autoPlayButton.layoutParams = LinearLayout.LayoutParams(
-                0, 
-                LinearLayout.LayoutParams.WRAP_CONTENT, 
-                1.0f
-            ).apply {
-                marginEnd = resources.getDimensionPixelSize(R.dimen.button_margin)
-            }
-            
-            randomizeButton.layoutParams = LinearLayout.LayoutParams(
-                0, 
-                LinearLayout.LayoutParams.WRAP_CONTENT, 
-                1.0f
-            ).apply {
-                marginStart = resources.getDimensionPixelSize(R.dimen.button_margin)
-            }
+            // Distribute weight in thirds: AutoPlay | Timer (gone) | NavButtons
+            // Timer is GONE, so AutoPlay and NavButtons effectively take 50/50 of the space
+            // by still assigning them 1f weight each and timer 0f.
+            autoPlayButtonParams.weight = 1f
+            timerTextViewParams.weight = 0f // Timer is hidden and takes no space
+            navButtonsContainerParams.weight = 1f
+            timerTextView.visibility = View.GONE
         }
+        
+        autoPlayButton.layoutParams = autoPlayButtonParams
+        timerTextView.layoutParams = timerTextViewParams
+        navButtonsContainer.layoutParams = navButtonsContainerParams
+        
+        buttonsContainer.requestLayout() // Crucial to apply layout changes
     }
-    
+
     private fun startAutoPlay() {
         // Cancel any existing timer
         autoPlayTimer?.cancel()
@@ -769,7 +820,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     override fun onAnimationStart(animation: android.view.animation.Animation?) {}
                     override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
                     override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                        displayRandomPosition()
+                        displayInitialRandomPosition()
                         positionImageView.startAnimation(fadeIn)
                         
                         // Start new timer if auto play is still on
@@ -905,26 +956,77 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         } else {
             Toast.makeText(this, "Position '$targetPositionName' not found.", Toast.LENGTH_SHORT).show()
             // Fallback to a random position if the named position isn't found in allPositionItems
-            displayRandomPosition()
+            displayInitialRandomPosition()
         }
     }
 
-    private fun displayRandomPosition() {
+    private fun displayNextPositionWithHistory() {
         if (positionImages.isEmpty()) {
-            positionNameTextView.text = "No position images found"
+            updateNavigationButtonStates()
             return
         }
-        
-        // Get a random position that's different from the current one if possible
-        var newIndex: Int
-        do {
-            newIndex = Random.nextInt(positionImages.size)
-        } while (positionImages.size > 1 && newIndex == currentPosition)
-        
-        currentPosition = newIndex
+
+        if (positionHistoryPosition < positionHistory.size - 1) {
+            // We have a "forward" history
+            positionHistoryPosition++
+            currentPosition = positionHistory[positionHistoryPosition]
+        } else {
+            // No "forward" history, get a new random position
+            var newRandomIndex: Int
+            if (positionImages.size == 1) {
+                newRandomIndex = 0 // Only one image
+            } else {
+                do {
+                    newRandomIndex = Random.nextInt(positionImages.size)
+                } while (newRandomIndex == currentPosition) // Ensure it's different from current
+            }
+            currentPosition = newRandomIndex
+
+            // Add to history
+            // If we were at the end of history, just add.
+            // If we went back and then "next" to a new random, truncate future history.
+            if (positionHistoryPosition < positionHistory.size -1) {
+                positionHistory = positionHistory.subList(0, positionHistoryPosition + 1)
+            }
+            positionHistory.add(currentPosition)
+            positionHistoryPosition = positionHistory.size - 1
+        }
         displayCurrentPosition()
+        updateNavigationButtonStates()
+    }
+
+    private fun displayPreviousPositionWithHistory() {
+        if (positionHistoryPosition > 0) {
+            positionHistoryPosition--
+            currentPosition = positionHistory[positionHistoryPosition]
+            displayCurrentPosition()
+        } else {
+            Toast.makeText(this, "No previous position", Toast.LENGTH_SHORT).show()
+        }
+        updateNavigationButtonStates()
     }
     
+    // Renamed from displayRandomPosition to reflect it's now for initial/fallback
+    private fun displayInitialRandomPosition() {
+        if (positionImages.isEmpty()) {
+            positionNameTextView.text = "No Positions Available"
+            positionImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_image_24))
+            currentPosition = -1
+            positionHistory.clear()
+            positionHistoryPosition = -1
+            updateNavigationButtonStates()
+            return
+        }
+
+        currentPosition = Random.nextInt(positionImages.size)
+        positionHistory.clear()
+        positionHistory.add(currentPosition)
+        positionHistoryPosition = 0
+        displayCurrentPosition()
+        updateNavigationButtonStates()
+    }
+
+    // This function is now primarily for displaying the image/name based on currentPosition
     private fun displayCurrentPosition() {
         if (currentPosition < 0 || currentPosition >= positionImages.size) return
         
@@ -962,6 +1064,11 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
     }
     
+    private fun updateNavigationButtonStates() {
+        previousButton.isEnabled = positionHistoryPosition > 0
+        randomizeButton.isEnabled = positionImages.isNotEmpty() // Next is always enabled if there are images
+    }
+
 private fun setupLibraryRecyclerView() {
     // Ensure positionsLibraryRecyclerView is initialized before use
     if (!::positionsLibraryRecyclerView.isInitialized) {
