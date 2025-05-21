@@ -57,6 +57,7 @@ MERGED from [androidx.fragment:fragment:1.5.7] /home/aditya/.gradle/caches/8.12/
 MERGED from [androidx.activity:activity:1.7.2] /home/aditya/.gradle/caches/8.12/transforms/c90375ae96cd9c18440a23fdf8d6fc25/transformed/activity-1.7.2/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core-ktx:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/f9cc04a070b01f04c3162350a00a88a2/transformed/core-ktx-1.9.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/9aa77f1070b578e62a9c474bd78fbcd0/transformed/coordinatorlayout-1.2.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/aditya/.gradle/caches/8.12/transforms/575189f5247a194fb8e6436a66eba060/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/3f8193e20f1e827730490283c3b7e792/transformed/emoji2-views-helper-1.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/874b06eba07b998e4c9c867bd355e344/transformed/emoji2-1.2.0/AndroidManifest.xml:17:1-35:12
 MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] /home/aditya/.gradle/caches/8.12/transforms/f2f909c9cf1a457597b05ae9ebd0450b/transformed/drawerlayout-1.1.1/AndroidManifest.xml:17:1-24:12
@@ -86,6 +87,7 @@ MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/aditya/.gradle/ca
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/7e6b6ca8fb60bc9441af9a7864de08a2/transformed/profileinstaller-1.3.0/AndroidManifest.xml:17:1-55:12
 MERGED from [androidx.startup:startup-runtime:1.1.1] /home/aditya/.gradle/caches/8.12/transforms/3e61ee18054e58311cd9ad5ff0a139bc/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
 MERGED from [androidx.tracing:tracing:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/892391d433d32adaca880aaf2a1810c9/transformed/tracing-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/3437f1063405e5dd7b867ce0bc226a35/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.firebase:firebase-components:18.0.0] /home/aditya/.gradle/caches/8.12/transforms/154f9eb241a99e416c282a36f22b645e/transformed/firebase-components-18.0.0/AndroidManifest.xml:15:1-20:12
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/aditya/.gradle/caches/8.12/transforms/87b5fc187065b791af8b79feaf5a71d7/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
 MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/aditya/.gradle/caches/8.12/transforms/c7cd94d3954e31ba53cb29ff2ee2364b/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
@@ -95,7 +97,6 @@ MERGED from [com.google.android.datatransport:transport-backend-cct:3.1.9] /home
 MERGED from [com.google.firebase:firebase-encoders-json:18.0.0] /home/aditya/.gradle/caches/8.12/transforms/7da004738c6745cd3980e21b3747c666/transformed/firebase-encoders-json-18.0.0/AndroidManifest.xml:15:1-23:12
 MERGED from [com.google.android.datatransport:transport-runtime:3.1.9] /home/aditya/.gradle/caches/8.12/transforms/170a66d1e46d1c2094ced441ef8d14b3/transformed/transport-runtime-3.1.9/AndroidManifest.xml:15:1-41:12
 MERGED from [com.google.android.datatransport:transport-api:3.1.0] /home/aditya/.gradle/caches/8.12/transforms/32972df320334de84c1eb80f81b0f1e7/transformed/transport-api-3.1.0/AndroidManifest.xml:15:1-20:12
-MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/3437f1063405e5dd7b867ce0bc226a35/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.documentfile:documentfile:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/712df94e77cb50d0494b05bbb6efdaa3/transformed/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/73bdf4646279ab237cdbb4266d155d30/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/aditya/.gradle/caches/8.12/transforms/6f67906777494bdf9ac6f76d457c0076/transformed/annotation-experimental-1.3.0/AndroidManifest.xml:17:1-22:12
@@ -415,6 +416,8 @@ MERGED from [androidx.core:core-ktx:1.9.0] /home/aditya/.gradle/caches/8.12/tran
 MERGED from [androidx.core:core-ktx:1.9.0] /home/aditya/.gradle/caches/8.12/transforms/f9cc04a070b01f04c3162350a00a88a2/transformed/core-ktx-1.9.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/9aa77f1070b578e62a9c474bd78fbcd0/transformed/coordinatorlayout-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/9aa77f1070b578e62a9c474bd78fbcd0/transformed/coordinatorlayout-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/aditya/.gradle/caches/8.12/transforms/575189f5247a194fb8e6436a66eba060/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/aditya/.gradle/caches/8.12/transforms/575189f5247a194fb8e6436a66eba060/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/3f8193e20f1e827730490283c3b7e792/transformed/emoji2-views-helper-1.2.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/3f8193e20f1e827730490283c3b7e792/transformed/emoji2-views-helper-1.2.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2:1.2.0] /home/aditya/.gradle/caches/8.12/transforms/874b06eba07b998e4c9c867bd355e344/transformed/emoji2-1.2.0/AndroidManifest.xml:21:5-44
@@ -473,6 +476,8 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/aditya/.gradle/caches
 MERGED from [androidx.startup:startup-runtime:1.1.1] /home/aditya/.gradle/caches/8.12/transforms/3e61ee18054e58311cd9ad5ff0a139bc/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
 MERGED from [androidx.tracing:tracing:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/892391d433d32adaca880aaf2a1810c9/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.tracing:tracing:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/892391d433d32adaca880aaf2a1810c9/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/3437f1063405e5dd7b867ce0bc226a35/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/3437f1063405e5dd7b867ce0bc226a35/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.firebase:firebase-components:18.0.0] /home/aditya/.gradle/caches/8.12/transforms/154f9eb241a99e416c282a36f22b645e/transformed/firebase-components-18.0.0/AndroidManifest.xml:18:5-44
 MERGED from [com.google.firebase:firebase-components:18.0.0] /home/aditya/.gradle/caches/8.12/transforms/154f9eb241a99e416c282a36f22b645e/transformed/firebase-components-18.0.0/AndroidManifest.xml:18:5-44
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/aditya/.gradle/caches/8.12/transforms/87b5fc187065b791af8b79feaf5a71d7/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
@@ -491,8 +496,6 @@ MERGED from [com.google.android.datatransport:transport-runtime:3.1.9] /home/adi
 MERGED from [com.google.android.datatransport:transport-runtime:3.1.9] /home/aditya/.gradle/caches/8.12/transforms/170a66d1e46d1c2094ced441ef8d14b3/transformed/transport-runtime-3.1.9/AndroidManifest.xml:18:5-20:41
 MERGED from [com.google.android.datatransport:transport-api:3.1.0] /home/aditya/.gradle/caches/8.12/transforms/32972df320334de84c1eb80f81b0f1e7/transformed/transport-api-3.1.0/AndroidManifest.xml:18:5-44
 MERGED from [com.google.android.datatransport:transport-api:3.1.0] /home/aditya/.gradle/caches/8.12/transforms/32972df320334de84c1eb80f81b0f1e7/transformed/transport-api-3.1.0/AndroidManifest.xml:18:5-44
-MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/3437f1063405e5dd7b867ce0bc226a35/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.interpolator:interpolator:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/3437f1063405e5dd7b867ce0bc226a35/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.documentfile:documentfile:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/712df94e77cb50d0494b05bbb6efdaa3/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.documentfile:documentfile:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/712df94e77cb50d0494b05bbb6efdaa3/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.print:print:1.0.0] /home/aditya/.gradle/caches/8.12/transforms/73bdf4646279ab237cdbb4266d155d30/transformed/print-1.0.0/AndroidManifest.xml:20:5-44

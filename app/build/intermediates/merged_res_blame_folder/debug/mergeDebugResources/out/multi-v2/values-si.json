@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.velvettouch.nosafeword.app-mergeDebugResources-44:/values-si/values-si.xml",
+            "outputFile": "com.velvettouch.nosafeword.app-mergeDebugResources-45:/values-si/values-si.xml",
             "map": [
                 {
                     "source": "/home/aditya/.gradle/caches/8.12/transforms/180a058ab7ab26f1c23041212b660c60/transformed/play-services-basement-18.3.0/res/values-si/values.xml",

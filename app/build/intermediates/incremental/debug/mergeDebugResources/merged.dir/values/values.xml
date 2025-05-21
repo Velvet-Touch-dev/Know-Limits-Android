@@ -13242,6 +13242,10 @@
     <declare-styleable name="StateSet">
         <attr format="reference" name="defaultState"/>
     </declare-styleable>
+    <declare-styleable name="SwipeRefreshLayout">
+        
+        <attr format="color" name="swipeRefreshLayoutProgressSpinnerBackgroundColor"/>
+    </declare-styleable>
     <declare-styleable name="SwitchCompat">
         
         <attr name="android:thumb"/>

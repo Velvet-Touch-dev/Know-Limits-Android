@@ -85,6 +85,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0' // Added SwipeRefreshLayout dependency
 
     // Gson for JSON serialization/deserialization
     implementation 'com.google.code.gson:gson:2.10.1'
