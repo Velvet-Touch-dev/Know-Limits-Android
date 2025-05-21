@@ -97,13 +97,38 @@ class PositionsRepository {
             .toObject(PositionItem::class.java)
     }
 
-    // Delete a position
+    // Delete a position and its associated image from Firebase Storage
     suspend fun deletePosition(positionId: String) {
-        if (userId == "anonymous") return // Anonymous users cannot delete
-        db.collection(POSITIONS_COLLECTION)
-            .document(positionId)
-            .delete()
-            .await()
+        if (userId == "anonymous" || positionId.isBlank()) return // Anonymous users cannot delete, or if ID is missing
+
+        try {
+            // 1. Get the position details to find the image URL
+            val positionDocument = db.collection(POSITIONS_COLLECTION).document(positionId).get().await()
+            val positionItem = positionDocument.toObject(PositionItem::class.java)
+
+            if (positionItem != null && !positionItem.isAsset && positionItem.imageName.startsWith("https://firebasestorage.googleapis.com/")) {
+                // 2. If it's a Firebase Storage URL, delete the image from Storage
+                try {
+                    val imageRef = storage.getReferenceFromUrl(positionItem.imageName)
+                    imageRef.delete().await()
+                } catch (e: Exception) {
+                    // Log error or handle cases where image deletion fails (e.g., file not found, permissions)
+                    // For now, we'll print the stack trace and proceed to delete the Firestore document
+                    e.printStackTrace()
+                }
+            }
+
+            // 3. Delete the Firestore document
+            db.collection(POSITIONS_COLLECTION)
+                .document(positionId)
+                .delete()
+                .await()
+
+        } catch (e: Exception) {
+            // Handle exceptions during Firestore document fetch or delete
+            e.printStackTrace()
+            // You might want to throw the exception or handle it more gracefully
+        }
     }
 
     suspend fun updateFavoriteStatus(positionId: String, isFavorite: Boolean) {
