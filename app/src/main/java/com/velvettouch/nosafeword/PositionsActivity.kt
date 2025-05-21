@@ -749,11 +749,13 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     private fun toggleAutoPlay() {
         isAutoPlayOn = !isAutoPlayOn
         if (isAutoPlayOn) {
+            autoPlayButton.text = getString(R.string.pause)
             autoPlayButton.icon = ContextCompat.getDrawable(this, R.drawable.ic_pause_24)
             timerTextView.visibility = View.VISIBLE
             autoPlaySettings.visibility = View.GONE // Hide settings when auto play starts
             startAutoPlay()
         } else {
+            autoPlayButton.text = getString(R.string.play)
             autoPlayButton.icon = ContextCompat.getDrawable(this, R.drawable.ic_play_24)
             timerTextView.visibility = View.GONE
             autoPlaySettings.visibility = View.VISIBLE // Show settings when auto play stops
