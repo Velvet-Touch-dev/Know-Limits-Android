@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
+import timber.log.Timber // Added Timber import
 
 class NoSafeWordApplication : MultiDexApplication() {  // Using MultiDexApplication for MultiDex support
     
@@ -26,6 +27,11 @@ class NoSafeWordApplication : MultiDexApplication() {  // Using MultiDexApplicat
     
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+            Timber.d("Timber initialized")
+        }
         
         // Apply theme mode and color palette
         applyThemeSettings()

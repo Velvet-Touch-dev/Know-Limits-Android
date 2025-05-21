@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -40,6 +41,9 @@ public final class ActivityTaskListBinding implements ViewBinding {
   public final NavigationView navViewTaskList;
 
   @NonNull
+  public final ProgressBar progressBarTaskList;
+
+  @NonNull
   public final RecyclerView taskListRecyclerView;
 
   @NonNull
@@ -48,14 +52,15 @@ public final class ActivityTaskListBinding implements ViewBinding {
   private ActivityTaskListBinding(@NonNull DrawerLayout rootView,
       @NonNull AppBarLayout appBarLayout, @NonNull DrawerLayout drawerLayoutTaskList,
       @NonNull LinearLayout emptyTaskListView, @NonNull FloatingActionButton fabAddTask,
-      @NonNull NavigationView navViewTaskList, @NonNull RecyclerView taskListRecyclerView,
-      @NonNull Toolbar toolbar) {
+      @NonNull NavigationView navViewTaskList, @NonNull ProgressBar progressBarTaskList,
+      @NonNull RecyclerView taskListRecyclerView, @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.appBarLayout = appBarLayout;
     this.drawerLayoutTaskList = drawerLayoutTaskList;
     this.emptyTaskListView = emptyTaskListView;
     this.fabAddTask = fabAddTask;
     this.navViewTaskList = navViewTaskList;
+    this.progressBarTaskList = progressBarTaskList;
     this.taskListRecyclerView = taskListRecyclerView;
     this.toolbar = toolbar;
   }
@@ -113,6 +118,12 @@ public final class ActivityTaskListBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.progress_bar_task_list;
+      ProgressBar progressBarTaskList = ViewBindings.findChildViewById(rootView, id);
+      if (progressBarTaskList == null) {
+        break missingId;
+      }
+
       id = R.id.task_list_recycler_view;
       RecyclerView taskListRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (taskListRecyclerView == null) {
@@ -126,7 +137,7 @@ public final class ActivityTaskListBinding implements ViewBinding {
       }
 
       return new ActivityTaskListBinding((DrawerLayout) rootView, appBarLayout,
-          drawerLayoutTaskList, emptyTaskListView, fabAddTask, navViewTaskList,
+          drawerLayoutTaskList, emptyTaskListView, fabAddTask, navViewTaskList, progressBarTaskList,
           taskListRecyclerView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);

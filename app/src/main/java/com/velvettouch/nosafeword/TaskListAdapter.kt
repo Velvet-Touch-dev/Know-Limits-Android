@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import com.velvettouch.nosafeword.data.model.TaskItem // Added import
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View

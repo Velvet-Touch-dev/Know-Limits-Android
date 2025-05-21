@@ -101,7 +101,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
 
     // Firebase Firestore (for cloud data storage and sync)
-    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx' // Keep if you use Firestore elsewhere
+    implementation 'com.google.firebase:firebase-database-ktx' // Added for Realtime Database
 
     // Firebase Cloud Messaging (for notifications)
     implementation 'com.google.firebase:firebase-messaging-ktx'
@@ -111,4 +112,7 @@ dependencies {
 
     // Google Sign-In services
     implementation 'com.google.android.gms:play-services-auth:21.0.0' // Check for the latest version if necessary
+
+    // Timber for logging
+    implementation 'com.jakewharton.timber:timber:5.0.1' // Or latest version
 }

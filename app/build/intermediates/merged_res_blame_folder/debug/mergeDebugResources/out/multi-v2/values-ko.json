@@ -40,7 +40,7 @@
                     }
                 },
                 {
-                    "source": "/home/aditya/.gradle/caches/8.12/transforms/9726bf5eb92683e2444611f5285a7386/transformed/play-services-base-18.0.1/res/values-ko/values.xml",
+                    "source": "/home/aditya/.gradle/caches/8.12/transforms/ca5a78d207dee4f1da54d5a53796de5f/transformed/play-services-base-18.1.0/res/values-ko/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",

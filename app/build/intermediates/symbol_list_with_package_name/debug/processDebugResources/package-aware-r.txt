@@ -3743,6 +3743,7 @@ id pressed
 id preview_button
 id previousButton
 id previous_button
+id progress_bar_task_list
 id progress_circular
 id progress_horizontal
 id radio

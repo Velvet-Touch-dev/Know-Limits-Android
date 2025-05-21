@@ -1,6 +1,5 @@
 package com.velvettouch.nosafeword
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,13 +7,16 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,8 +27,11 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.velvettouch.nosafeword.data.model.TaskItem // Updated import
+import com.velvettouch.nosafeword.data.repository.TasksRepository
+import com.velvettouch.nosafeword.ui.tasks.TasksViewModel
+import com.velvettouch.nosafeword.ui.tasks.TasksViewModelFactory
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Collections
@@ -44,14 +49,18 @@ class TaskListActivity : BaseActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var taskListAdapter: TaskListAdapter
     private lateinit var fabAddTask: FloatingActionButton
-    private val taskItems = mutableListOf<TaskItem>() // In-memory list for now
+    // private val taskItems = mutableListOf<TaskItem>() // Removed: ViewModel will manage this
     private var itemTouchHelper: ItemTouchHelper? = null
     private lateinit var emptyTaskListView: View
+    private lateinit var progressBar: ProgressBar
 
-    companion object {
-        private const val PREFS_NAME = "TaskListPrefs"
-        private const val TASKS_KEY = "tasks"
+    // ViewModel initialization
+    private val tasksViewModel: TasksViewModel by viewModels {
+        // In a real app, use Hilt or another DI framework to provide the repository
+        TasksViewModelFactory(TasksRepository())
     }
+
+    // Removed PREFS_NAME and TASKS_KEY companion object
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,13 +92,13 @@ class TaskListActivity : BaseActivity() {
         recyclerView = findViewById(R.id.task_list_recycler_view)
         fabAddTask = findViewById(R.id.fab_add_task)
         emptyTaskListView = findViewById(R.id.empty_task_list_view)
+        progressBar = findViewById(R.id.progress_bar_task_list) // Assuming you add a ProgressBar with this ID
 
         setupRecyclerView()
         setupFab()
+        observeViewModel()
 
-        // Load tasks from preferences or sample data if none found
-        loadTasks()
-        updateEmptyViewVisibility()
+        // loadTasks() and updateEmptyViewVisibility() will be handled by ViewModel observation
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -106,30 +115,13 @@ class TaskListActivity : BaseActivity() {
 
     private fun setupRecyclerView() {
         taskListAdapter = TaskListAdapter(
-            onTaskChecked = { task, isChecked ->
-                // Update UI or data source
-                val index = taskItems.indexOfFirst { it.id == task.id }
-                if (index != -1) {
-                    // Create a new copy of the item with the updated status
-                    val updatedTask = taskItems[index].copy(isCompleted = isChecked)
-                    taskItems[index] = updatedTask // Update the item in the mutable list
-                    // Post the update to the RecyclerView's message queue
-                    recyclerView.post {
-                        taskListAdapter.submitList(taskItems.toList())
-                    }
-                }
-                saveTasksToPreferences()
-                updateEmptyViewVisibility()
+            onTaskChecked = { task, _ -> // isChecked is part of task now
+                tasksViewModel.toggleTaskCompletion(task)
             },
             onDeleteClicked = { task ->
-                val index = taskItems.indexOfFirst { it.id == task.id }
-                if (index != -1) {
-                    taskItems.removeAt(index)
-                    taskListAdapter.submitList(taskItems.toList()) // Submit a new list
-                }
+                tasksViewModel.deleteTask(task.id)
                 Toast.makeText(this, "Task '${task.title}' deleted", Toast.LENGTH_SHORT).show()
-                saveTasksToPreferences()
-                updateEmptyViewVisibility()
+                // saveTasksToPreferences() and updateEmptyViewVisibility() handled by ViewModel
             },
             onDragStarted = { viewHolder ->
                 itemTouchHelper?.startDrag(viewHolder)
@@ -150,24 +142,21 @@ class TaskListActivity : BaseActivity() {
                 val fromPosition = viewHolder.adapterPosition
                 val toPosition = target.adapterPosition
                 // Directly update the list and submit it
+                val currentList = taskListAdapter.currentList.toMutableList()
                 if (fromPosition < toPosition) {
                     for (i in fromPosition until toPosition) {
-                        Collections.swap(taskItems, i, i + 1)
+                        Collections.swap(currentList, i, i + 1)
                     }
                 } else {
                     for (i in fromPosition downTo toPosition + 1) {
-                        Collections.swap(taskItems, i, i - 1)
+                        Collections.swap(currentList, i, i - 1)
                     }
                 }
-                // Update order property for persistence
-                taskItems.forEachIndexed { index, task -> task.order = index }
-                
-                // Notify the adapter by submitting the new list
-                // Posting to ensure it runs after layout pass
-                recyclerView.post {
-                    taskListAdapter.submitList(taskItems.toList())
-                }
-                saveTasksToPreferences()
+                // Update order property for persistence by notifying ViewModel
+                // The adapter will be updated when the ViewModel's flow emits the new list
+                taskListAdapter.notifyItemMoved(fromPosition, toPosition) // For immediate visual feedback
+                tasksViewModel.updateTaskOrder(currentList)
+                // saveTasksToPreferences() handled by ViewModel
                 return true
             }
 
@@ -246,18 +235,8 @@ class TaskListActivity : BaseActivity() {
             .setPositiveButton(getString(R.string.save)) { _, _ ->
                 val title = titleEditText.text.toString().trim()
                 if (title.isNotEmpty()) {
-                    val newTask = TaskItem(
-                        title = title,
-                        deadline = selectedDeadlineMillis,
-                        order = taskItems.size // New tasks go to the end
-                    )
-                    taskItems.add(newTask)
-                    // Ensure order is updated for all items if needed, though adding at end is simple
-                    taskItems.sortBy { it.order } // Re-sort if order logic is complex
-                    recyclerView.post { taskListAdapter.submitList(taskItems.toList()) }
-                    saveTasksToPreferences()
-                    updateEmptyViewVisibility()
-                    recyclerView.smoothScrollToPosition(taskItems.indexOf(newTask).takeIf { it != -1} ?: taskItems.size -1)
+                    tasksViewModel.addTask(title, selectedDeadlineMillis)
+                    // UI updates (list, empty view, scroll) will be handled by ViewModel observation
                 } else {
                     Toast.makeText(this, "Task title cannot be empty", Toast.LENGTH_SHORT).show()
                 }
@@ -265,56 +244,39 @@ class TaskListActivity : BaseActivity() {
             .show()
     }
 
-    private fun saveTasksToPreferences() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        val gson = Gson()
-        // Sort by order before saving to maintain it
-        val sortedTasks = taskItems.sortedBy { it.order }
-        val json = gson.toJson(sortedTasks)
-        editor.putString(TASKS_KEY, json)
-        editor.apply()
-    }
+    // Removed saveTasksToPreferences(), loadTasks(), loadSampleTasks()
+    // updateEmptyViewVisibility() will be called from ViewModel observer
 
-    private fun loadTasks() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val gson = Gson()
-        val json = prefs.getString(TASKS_KEY, null)
-        val type = object : TypeToken<MutableList<TaskItem>>() {}.type
-
-        if (json != null) {
-            val loadedTasks: MutableList<TaskItem>? = gson.fromJson(json, type)
-            if (loadedTasks != null) {
-                taskItems.clear()
-                taskItems.addAll(loadedTasks)
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            tasksViewModel.tasks.collect { tasks ->
+                taskListAdapter.submitList(tasks)
+                updateEmptyViewVisibility(tasks.isEmpty())
+                // If a new task was added, we might want to scroll to it.
+                // This requires more complex logic to detect new item vs. general update.
+                // For now, manual scroll or no scroll on general updates.
             }
         }
 
-        if (taskItems.isEmpty()) {
-            // Load sample tasks if preferences are empty or loading failed
-            loadSampleTasks()
-        } else {
-            // Ensure order is consistent if loaded from prefs
-            taskItems.sortBy { it.order }
-            taskListAdapter.submitList(taskItems.toList())
+        lifecycleScope.launch {
+            tasksViewModel.isLoading.collect { isLoading ->
+                progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+                // Optionally disable UI elements during loading
+            }
         }
-        updateEmptyViewVisibility()
+
+        lifecycleScope.launch {
+            tasksViewModel.error.collect { errorMessage ->
+                errorMessage?.let {
+                    Toast.makeText(this@TaskListActivity, it, Toast.LENGTH_LONG).show()
+                    tasksViewModel.clearError() // Clear error after showing
+                }
+            }
+        }
     }
 
-    private fun loadSampleTasks() {
-        taskItems.clear()
-        // No sample tasks will be added
-        taskListAdapter.submitList(taskItems.toList())
-        // It's important to save the empty list to preferences if we want the list to remain empty on next launch
-        // Otherwise, if the app is launched and there are no tasks in prefs, it might call loadSampleTasks again.
-        // However, the current logic in loadTasks() calls loadSampleTasks() only if taskItems is empty *after* trying to load from prefs.
-        // So, if we save an empty list here, it should correctly reflect an empty state.
-        saveTasksToPreferences()
-        updateEmptyViewVisibility()
-    }
-
-    private fun updateEmptyViewVisibility() {
-        if (taskItems.isEmpty()) {
+    private fun updateEmptyViewVisibility(isEmpty: Boolean) {
+        if (isEmpty) {
             emptyTaskListView.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
         } else {

@@ -192,10 +192,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
         // Setup Google Sign-In Button
         googleSignInButton = findViewById(R.id.google_sign_in_button_settings)
-        googleSignInButton.setOnClickListener {
-            Log.d(TAG, "Google Sign-In button clicked.")
-            signIn()
-        }
+        // Initial UI update for the button will be handled in onResume or by updateAuthButtonUI directly
+        updateAuthButtonUI() // Set initial state of the button
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -301,6 +299,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        // Update Auth button UI state in onResume as well
+        updateAuthButtonUI()
     }
  
     // Removed deprecated override fun onBackPressed()
@@ -642,13 +642,48 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                     val user = auth.currentUser
                     Log.d(TAG, "firebaseAuthWithGoogle: Firebase Authentication successful from Settings. User: ${user?.email}")
                     Toast.makeText(this, "Sign-In Successful: ${user?.displayName ?: user?.email}", Toast.LENGTH_LONG).show()
-                    // Optionally, update UI to reflect signed-in state (e.g., change button text to "Sign Out")
-                    // You might want to finish SettingsActivity and return to MainActivity,
-                    // or provide a sign-out button here.
+                    updateAuthButtonUI() // Update button to "Sign Out"
                 } else {
                     Log.w(TAG, "firebaseAuthWithGoogle: Firebase Authentication failed from Settings.", task.exception)
                     Toast.makeText(this, "Firebase Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    updateAuthButtonUI() // Ensure button is "Sign In"
                 }
             }
+    }
+
+    private fun signOut() {
+        Log.d(TAG, "signOut: Attempting to sign out.")
+        // Firebase sign out
+        auth.signOut()
+
+        // Google sign out
+        googleSignInClient.signOut().addOnCompleteListener(this) {
+            Log.d(TAG, "signOut: Google Sign-Out complete.")
+            Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show()
+            updateAuthButtonUI() // Update button to "Sign In"
+        }
+    }
+
+    private fun updateAuthButtonUI() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // User is signed in
+            googleSignInButton.text = "Sign Out (${currentUser.displayName ?: currentUser.email})"
+            googleSignInButton.setOnClickListener {
+                Log.d(TAG, "Sign Out button clicked.")
+                signOut()
+            }
+            // Optionally change icon for sign out
+            // googleSignInButton.icon = ContextCompat.getDrawable(this, R.drawable.ic_sign_out) // Example
+        } else {
+            // User is signed out
+            googleSignInButton.text = "Sign in with Google"
+            googleSignInButton.setOnClickListener {
+                Log.d(TAG, "Sign In button clicked.")
+                signIn()
+            }
+            // Optionally change icon back for sign in
+            googleSignInButton.setIconResource(R.drawable.googleg_standard_color_18) // Assuming this is your sign-in icon
+        }
     }
 }
