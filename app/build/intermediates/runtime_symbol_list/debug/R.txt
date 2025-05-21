@@ -3234,6 +3234,7 @@ int drawable notification_template_icon_bg 0x7f080107
 int drawable notification_template_icon_low_bg 0x7f080108
 int drawable notification_tile_bg 0x7f080109
 int drawable notify_panel_notification_icon_bg 0x7f08010a
+int drawable tab_layout_rounded_background 0x7f08010f
 int drawable test_level_drawable 0x7f08010b
 int drawable theme_selector_background 0x7f08010c
 int drawable tooltip_frame_dark 0x7f08010d

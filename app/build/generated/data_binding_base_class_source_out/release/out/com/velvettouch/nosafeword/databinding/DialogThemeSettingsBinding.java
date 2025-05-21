@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.card.MaterialCardView;
@@ -20,7 +20,7 @@ import java.lang.String;
 
 public final class DialogThemeSettingsBinding implements ViewBinding {
   @NonNull
-  private final ConstraintLayout rootView;
+  private final ScrollView rootView;
 
   @NonNull
   public final RadioButton colorDefaultRadio;
@@ -67,7 +67,7 @@ public final class DialogThemeSettingsBinding implements ViewBinding {
   @NonNull
   public final RadioButton themeSystemRadio;
 
-  private DialogThemeSettingsBinding(@NonNull ConstraintLayout rootView,
+  private DialogThemeSettingsBinding(@NonNull ScrollView rootView,
       @NonNull RadioButton colorDefaultRadio, @NonNull RadioButton colorJustBlackRadio,
       @NonNull MaterialCardView colorOptionsCard, @NonNull TextView colorPaletteTitle,
       @NonNull RadioButton colorPitchBlackRadio, @NonNull RadioButton colorPurpleRadio,
@@ -96,7 +96,7 @@ public final class DialogThemeSettingsBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public ConstraintLayout getRoot() {
+  public ScrollView getRoot() {
     return rootView;
   }
 
@@ -211,7 +211,7 @@ public final class DialogThemeSettingsBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogThemeSettingsBinding((ConstraintLayout) rootView, colorDefaultRadio,
+      return new DialogThemeSettingsBinding((ScrollView) rootView, colorDefaultRadio,
           colorJustBlackRadio, colorOptionsCard, colorPaletteTitle, colorPitchBlackRadio,
           colorPurpleRadio, colorRadioGroup, justBlackDivider, pitchBlackDivider, themeDarkRadio,
           themeLightRadio, themeModeTitle, themeOptionsCard, themeRadioGroup, themeSystemRadio);

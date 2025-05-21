@@ -3235,6 +3235,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable tab_layout_rounded_background
 drawable test_level_drawable
 drawable theme_selector_background
 drawable tooltip_frame_dark
@@ -3683,6 +3684,7 @@ id postLayout
 id pressed
 id preview_button
 id previousButton
+id previous_button
 id progress_circular
 id progress_horizontal
 id radio

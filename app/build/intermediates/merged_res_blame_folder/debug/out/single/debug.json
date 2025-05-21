@@ -160,8 +160,8 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-xhdpi/ic_launcher_foreground.webp"
     },
     {
-        "merged": "com.velvettouch.nosafeword.app-merged_res-36:/layout_activity_positions.xml.flat",
-        "source": "com.velvettouch.nosafeword.app-main-38:/layout/activity_positions.xml"
+        "merged": "com.velvettouch.nosafeword.app-merged_res-36:/layout_dialog_add_planned_item.xml.flat",
+        "source": "com.velvettouch.nosafeword.app-main-38:/layout/dialog_add_planned_item.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_ic_menu.xml.flat",
@@ -192,6 +192,10 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/ic_delete.xml"
     },
     {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/drawable_tab_layout_rounded_background.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/drawable/tab_layout_rounded_background.xml"
+    },
+    {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-xxxhdpi_ic_launcher.webp.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-xxxhdpi/ic_launcher.webp"
     },
@@ -206,6 +210,10 @@
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-38:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.velvettouch.nosafeword.app-merged_res-36:/layout_activity_plan_night.xml.flat",
+        "source": "com.velvettouch.nosafeword.app-main-38:/layout/activity_plan_night.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-merged_res-36:/animator_card_state_list_anim.xml.flat",
