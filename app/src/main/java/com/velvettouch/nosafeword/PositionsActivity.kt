@@ -92,6 +92,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     // Favorites
     private var positionFavorites: MutableSet<String> = mutableSetOf()
     private var hiddenDefaultPositionNames: MutableSet<String> = mutableSetOf() // For session-persistent hiding
+private var pendingPositionNavigationName: String? = null // For navigating from intent
 
     // Plan Night SharedPreferences
     private val gson = Gson()
@@ -293,11 +294,18 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         loadPositionFavorites()
         
         // Check for specific position to display from intent AFTER allPositionItems is populated
-        val positionNameFromIntent = intent.getStringExtra("DISPLAY_POSITION_NAME")
-        if (positionNameFromIntent != null) {
-            displayPositionByName(positionNameFromIntent)
-        } else {
-            // Display initial random position if no specific one is requested
+        // This will be handled later, after RecyclerView setup, if the intent is for library navigation.
+        // For now, store it if present. The original displayPositionByName might be for the randomize tab.
+        // The new requirement is to navigate to the library card.
+        val intentPositionName = intent.getStringExtra("DISPLAY_POSITION_NAME")
+        if (intentPositionName != null) {
+            pendingPositionNavigationName = intentPositionName
+            // If this intent means we should NOT display a random position initially on the randomize tab,
+            // then the displayRandomPosition() call below might need to be conditional.
+            // For now, we'll let displayRandomPosition run, and then navigate if pending.
+        }
+
+        if (pendingPositionNavigationName == null) { // Only display random if not about to navigate
             displayRandomPosition()
         }
         
@@ -364,6 +372,50 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
 
         // Initial filter load for the library
         filterPositionsLibrary(positionSearchView.query?.toString())
+
+        // Handle pending navigation from intent after all UI is set up
+        pendingPositionNavigationName?.let { name ->
+            // No need to check for RecyclerView readiness here as displayPositionByName handles its own UI.
+            // Ensure positionsTabs is ready for tab selection.
+             if (::positionsTabs.isInitialized) {
+                navigateToPositionInRandomizeView(name)
+            }
+            pendingPositionNavigationName = null // Clear after attempting
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            setIntent(it) // Update the activity's intent
+            val positionNameToDisplay = it.getStringExtra("DISPLAY_POSITION_NAME")
+            if (positionNameToDisplay != null) {
+                if (::positionsTabs.isInitialized) {
+                    navigateToPositionInRandomizeView(positionNameToDisplay)
+                } else {
+                    // If UI not fully ready, store for onCreate to pick up.
+                    pendingPositionNavigationName = positionNameToDisplay
+                }
+            }
+        }
+    }
+
+    private fun navigateToPositionInRandomizeView(positionName: String) {
+        if (!::positionsTabs.isInitialized) {
+            // Not ready to navigate
+            return
+        }
+
+        // Ensure allPositionItems is populated before calling displayPositionByName
+        // This should be guaranteed by the call order in onCreate.
+        if (allPositionItems.isEmpty() && !positionImages.isEmpty()) {
+             // This might indicate an issue if allPositionItems is expected but empty.
+             // However, displayPositionByName primarily uses allPositionItems.
+             // loadAllPositionsForLibrary() should have populated it.
+        }
+
+        positionsTabs.getTabAt(0)?.select() // Select Randomize tab (index 0)
+        displayPositionByName(positionName) // Display the position in the main view of Randomize tab
     }
 
     private fun setupResetButton() {

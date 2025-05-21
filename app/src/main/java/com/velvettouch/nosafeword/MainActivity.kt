@@ -91,6 +91,7 @@ class MainActivity : BaseActivity() {
     private val gson = Gson() // Added for SharedPreferences
     private val plannedItemsPrefsName = "PlanNightPrefs"
     private val plannedItemsKey = "plannedItemsList"
+    private var pendingSceneTitleNavigation: String? = null // For navigating from intent extra
 
     private lateinit var favoritesAdapter: FavoriteScenesAdapter
     private lateinit var editAdapter: EditScenesAdapter
@@ -450,40 +451,86 @@ class MainActivity : BaseActivity() {
         sceneHistory.clear()
         historyPosition = -1
 
-        // Check for specific scene to display from intent
-        val displaySceneId = intent.getIntExtra("DISPLAY_SCENE_ID", -1)
-        val displaySceneTitle = intent.getStringExtra("DISPLAY_SCENE_TITLE")
-        var sceneFound = false
+        // Check for navigation intent from search dialog first
+        val selectedSceneTitleNav = intent.getStringExtra("SELECTED_SCENE_TITLE")
+        if (selectedSceneTitleNav != null) {
+            pendingSceneTitleNavigation = selectedSceneTitleNav
+            // If navigating to edit view, initial display in random view might be skipped or handled after updateUI
+        } else {
+            // Original logic if not navigating to edit view via SELECTED_SCENE_TITLE
+            val displaySceneId = intent.getIntExtra("DISPLAY_SCENE_ID", -1)
+            // Note: "DISPLAY_SCENE_TITLE" is a different key than "SELECTED_SCENE_TITLE"
+            val displaySceneTitleLegacy = intent.getStringExtra("DISPLAY_SCENE_TITLE")
+            var sceneFoundForRandomView = false
 
-        if (displaySceneId != -1) {
-            val sceneIndex = scenes.indexOfFirst { it.id == displaySceneId }
-            if (sceneIndex != -1) {
-                currentSceneIndex = sceneIndex
-                sceneHistory.add(currentSceneIndex)
-                historyPosition = sceneHistory.size - 1
-                displayScene(scenes[currentSceneIndex])
-                sceneFound = true
+            if (displaySceneId != -1) {
+                val sceneIndex = scenes.indexOfFirst { it.id == displaySceneId }
+                if (sceneIndex != -1) {
+                    currentSceneIndex = sceneIndex
+                    sceneHistory.add(currentSceneIndex)
+                    historyPosition = sceneHistory.size - 1
+                    displayScene(scenes[currentSceneIndex]) // Displays in Random mode
+                    sceneFoundForRandomView = true
+                }
             }
-        }
 
-        if (!sceneFound && displaySceneTitle != null) {
-            val sceneIndex = scenes.indexOfFirst { it.title.equals(displaySceneTitle, ignoreCase = true) }
-            if (sceneIndex != -1) {
-                currentSceneIndex = sceneIndex
-                sceneHistory.add(currentSceneIndex)
-                historyPosition = sceneHistory.size - 1
-                displayScene(scenes[currentSceneIndex])
-                sceneFound = true
+            if (!sceneFoundForRandomView && displaySceneTitleLegacy != null) {
+                val sceneIndex = scenes.indexOfFirst { it.title.equals(displaySceneTitleLegacy, ignoreCase = true) }
+                if (sceneIndex != -1) {
+                    currentSceneIndex = sceneIndex
+                    sceneHistory.add(currentSceneIndex)
+                    historyPosition = sceneHistory.size - 1
+                    displayScene(scenes[currentSceneIndex]) // Displays in Random mode
+                    sceneFoundForRandomView = true
+                }
             }
-        }
 
-        if (!sceneFound) {
-            // If no specific scene found by ID or title, display initial random scene
-            displayRandomScene()
+            if (!sceneFoundForRandomView) {
+                // If no specific scene found by legacy ID/title for Random view, display initial random scene
+                displayRandomScene()
+            }
         }
 
         // Update UI based on initial mode
         updateUI()
+
+        // Handle pending navigation to scene in edit view
+        pendingSceneTitleNavigation?.let { title ->
+            // UI elements for random view (sceneCardView, etc.) should be ready after initial onCreate.
+            // Posting might still be good practice if there are complex layout changes.
+            // For now, direct call as switchToRandomMode handles UI updates.
+            navigateToSceneInRandomView(title)
+            pendingSceneTitleNavigation = null // Clear after attempting
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let { newIntent ->
+            setIntent(newIntent) // Update the activity's intent
+            val sceneTitleToDisplay = newIntent.getStringExtra("SELECTED_SCENE_TITLE")
+            if (sceneTitleToDisplay != null) {
+                navigateToSceneInRandomView(sceneTitleToDisplay)
+            }
+            // Optionally, handle other intent extras here if MainActivity can be launched with other actions
+        }
+    }
+
+    private fun navigateToSceneInRandomView(sceneTitle: String) {
+        if (scenes.isEmpty()) {
+            Toast.makeText(this, "Cannot navigate: Scenes not loaded.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val sceneToDisplay = scenes.find { it.title.equals(sceneTitle, ignoreCase = true) }
+
+        if (sceneToDisplay != null) {
+            switchToRandomMode(sceneToDisplay) // This function sets mode to MODE_RANDOM and updates UI
+        } else {
+            Toast.makeText(this, "Scene '$sceneTitle' not found.", Toast.LENGTH_SHORT).show()
+            // Optionally, display a default random scene as fallback
+            // displayRandomScene()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -3880,6 +3880,7 @@ int id unlabeled 0x7f09027e
 int id up 0x7f09027f
 int id useLogo 0x7f090280
 int id vertical_only 0x7f090281
+int id view_item_icon 0x7f090297
 int id view_offset_helper 0x7f090282
 int id view_transition 0x7f090283
 int id view_tree_lifecycle_owner 0x7f090284

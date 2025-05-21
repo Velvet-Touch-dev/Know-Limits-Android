@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,11 +27,16 @@ public final class ItemSearchResultBinding implements ViewBinding {
   @NonNull
   public final TextView itemNameTextview;
 
+  @NonNull
+  public final ImageView viewItemIcon;
+
   private ItemSearchResultBinding(@NonNull ConstraintLayout rootView,
-      @NonNull CheckBox itemCheckbox, @NonNull TextView itemNameTextview) {
+      @NonNull CheckBox itemCheckbox, @NonNull TextView itemNameTextview,
+      @NonNull ImageView viewItemIcon) {
     this.rootView = rootView;
     this.itemCheckbox = itemCheckbox;
     this.itemNameTextview = itemNameTextview;
+    this.viewItemIcon = viewItemIcon;
   }
 
   @Override
@@ -72,8 +78,14 @@ public final class ItemSearchResultBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.view_item_icon;
+      ImageView viewItemIcon = ViewBindings.findChildViewById(rootView, id);
+      if (viewItemIcon == null) {
+        break missingId;
+      }
+
       return new ItemSearchResultBinding((ConstraintLayout) rootView, itemCheckbox,
-          itemNameTextview);
+          itemNameTextview, viewItemIcon);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

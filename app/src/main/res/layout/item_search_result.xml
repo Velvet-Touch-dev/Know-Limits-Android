@@ -19,11 +19,26 @@
         android:layout_marginEnd="8dp"
         android:maxLines="2"
         android:ellipsize="end"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view_item_icon"
         app:layout_constraintEnd_toStartOf="@+id/item_checkbox"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/view_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_view"
+        android:contentDescription="View Item"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="8dp"/>
 
     <CheckBox
         android:id="@+id/item_checkbox"

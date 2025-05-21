@@ -1,6 +1,7 @@
 package com.velvettouch.nosafeword
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -38,6 +39,26 @@ class SearchPlannedItemAdapter(
             notifyItemChanged(position)
             onSelectionChanged?.invoke(selectedItems.toList())
         }
+
+        holder.binding.viewItemIcon.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = when (item.type) {
+                "Position" -> Intent(context, PositionsActivity::class.java).apply {
+                    putExtra("DISPLAY_POSITION_NAME", item.name) // Changed to use name and existing key
+                    // Potentially add a flag to indicate navigation to a specific item
+                    // For example: putExtra("ACTION_VIEW_ITEM", true)
+                }
+                "Scene" -> Intent(context, MainActivity::class.java).apply { // Assuming MainActivity handles scenes
+                    putExtra("SELECTED_SCENE_TITLE", item.name) // Changed to use name
+                    putExtra("TARGET_TAB", "SCENES") // This can remain as a hint
+                    // Potentially add a flag: putExtra("ACTION_VIEW_ITEM", true)
+                }
+                else -> null
+            }
+            intent?.let {
+                context.startActivity(it)
+            }
+        }
     }
 
     override fun getItemCount(): Int = searchResults.size
@@ -54,7 +75,7 @@ class SearchPlannedItemAdapter(
         return selectedItems.toList()
     }
 
-    inner class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class SearchResultViewHolder(val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) { // Changed private val to val
         fun bind(item: PlannedItem, isSelected: Boolean) {
             binding.itemNameTextview.text = item.name
             binding.itemCheckbox.isChecked = isSelected
