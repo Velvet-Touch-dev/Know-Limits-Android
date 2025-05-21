@@ -22,6 +22,8 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -51,6 +53,12 @@ public final class ActivityPositionsBinding implements ViewBinding {
   public final LinearLayout buttonsContainer;
 
   @NonNull
+  public final Chip chipAllPositions;
+
+  @NonNull
+  public final Chip chipCustomPositions;
+
+  @NonNull
   public final LinearLayout controlsContainer;
 
   @NonNull
@@ -76,6 +84,9 @@ public final class ActivityPositionsBinding implements ViewBinding {
 
   @NonNull
   public final CardView positionCardView;
+
+  @NonNull
+  public final ChipGroup positionFilterChipGroup;
 
   @NonNull
   public final ImageView positionImageView;
@@ -111,13 +122,15 @@ public final class ActivityPositionsBinding implements ViewBinding {
       @NonNull AppBarLayout appBarLayout, @NonNull MaterialButton autoPlayButton,
       @NonNull LinearLayout autoPlaySettings,
       @NonNull ExtendedFloatingActionButton buttonResetToDefault,
-      @NonNull LinearLayout buttonsContainer, @NonNull LinearLayout controlsContainer,
+      @NonNull LinearLayout buttonsContainer, @NonNull Chip chipAllPositions,
+      @NonNull Chip chipCustomPositions, @NonNull LinearLayout controlsContainer,
       @NonNull DrawerLayout drawerLayout, @NonNull FloatingActionButton fabAddPosition,
       @NonNull LinearLayout libraryFabContainer, @NonNull RelativeLayout libraryTabContent,
       @NonNull Spinner maxTimeSpinner, @NonNull Spinner minTimeSpinner,
       @NonNull NavigationView navView, @NonNull CardView positionCardView,
-      @NonNull ImageView positionImageView, @NonNull TextView positionNameTextView,
-      @NonNull SearchView positionSearchView, @NonNull FrameLayout positionsContentContainer,
+      @NonNull ChipGroup positionFilterChipGroup, @NonNull ImageView positionImageView,
+      @NonNull TextView positionNameTextView, @NonNull SearchView positionSearchView,
+      @NonNull FrameLayout positionsContentContainer,
       @NonNull RecyclerView positionsLibraryRecyclerView, @NonNull TabLayout positionsTabs,
       @NonNull MaterialButton randomizeButton, @NonNull ConstraintLayout randomizeTabContent,
       @NonNull TextView timerTextView, @NonNull Toolbar toolbar) {
@@ -127,6 +140,8 @@ public final class ActivityPositionsBinding implements ViewBinding {
     this.autoPlaySettings = autoPlaySettings;
     this.buttonResetToDefault = buttonResetToDefault;
     this.buttonsContainer = buttonsContainer;
+    this.chipAllPositions = chipAllPositions;
+    this.chipCustomPositions = chipCustomPositions;
     this.controlsContainer = controlsContainer;
     this.drawerLayout = drawerLayout;
     this.fabAddPosition = fabAddPosition;
@@ -136,6 +151,7 @@ public final class ActivityPositionsBinding implements ViewBinding {
     this.minTimeSpinner = minTimeSpinner;
     this.navView = navView;
     this.positionCardView = positionCardView;
+    this.positionFilterChipGroup = positionFilterChipGroup;
     this.positionImageView = positionImageView;
     this.positionNameTextView = positionNameTextView;
     this.positionSearchView = positionSearchView;
@@ -205,6 +221,18 @@ public final class ActivityPositionsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.chip_all_positions;
+      Chip chipAllPositions = ViewBindings.findChildViewById(rootView, id);
+      if (chipAllPositions == null) {
+        break missingId;
+      }
+
+      id = R.id.chip_custom_positions;
+      Chip chipCustomPositions = ViewBindings.findChildViewById(rootView, id);
+      if (chipCustomPositions == null) {
+        break missingId;
+      }
+
       id = R.id.controls_container;
       LinearLayout controlsContainer = ViewBindings.findChildViewById(rootView, id);
       if (controlsContainer == null) {
@@ -252,6 +280,12 @@ public final class ActivityPositionsBinding implements ViewBinding {
       id = R.id.position_card_view;
       CardView positionCardView = ViewBindings.findChildViewById(rootView, id);
       if (positionCardView == null) {
+        break missingId;
+      }
+
+      id = R.id.position_filter_chip_group;
+      ChipGroup positionFilterChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (positionFilterChipGroup == null) {
         break missingId;
       }
 
@@ -316,9 +350,10 @@ public final class ActivityPositionsBinding implements ViewBinding {
       }
 
       return new ActivityPositionsBinding((DrawerLayout) rootView, appBarLayout, autoPlayButton,
-          autoPlaySettings, buttonResetToDefault, buttonsContainer, controlsContainer, drawerLayout,
-          fabAddPosition, libraryFabContainer, libraryTabContent, maxTimeSpinner, minTimeSpinner,
-          navView, positionCardView, positionImageView, positionNameTextView, positionSearchView,
+          autoPlaySettings, buttonResetToDefault, buttonsContainer, chipAllPositions,
+          chipCustomPositions, controlsContainer, drawerLayout, fabAddPosition, libraryFabContainer,
+          libraryTabContent, maxTimeSpinner, minTimeSpinner, navView, positionCardView,
+          positionFilterChipGroup, positionImageView, positionNameTextView, positionSearchView,
           positionsContentContainer, positionsLibraryRecyclerView, positionsTabs, randomizeButton,
           randomizeTabContent, timerTextView, toolbar);
     }

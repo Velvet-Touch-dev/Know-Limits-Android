@@ -34,6 +34,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -66,6 +68,9 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionSearchView: SearchView
     private lateinit var resetButton: ExtendedFloatingActionButton // Changed for Reset to Default ExtendedFAB styling
     private lateinit var libraryFabContainer: LinearLayout
+    private lateinit var positionFilterChipGroup: ChipGroup
+    private lateinit var chipAllPositions: Chip
+    private lateinit var chipCustomPositions: Chip
 
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
@@ -304,6 +309,9 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
         positionSearchView = findViewById(R.id.position_search_view) // Initialize SearchView here
         resetButton = findViewById(R.id.button_reset_to_default) // Initialize Reset Button
         libraryFabContainer = findViewById(R.id.library_fab_container) // Initialize FAB container
+        positionFilterChipGroup = findViewById(R.id.position_filter_chip_group)
+        chipAllPositions = findViewById(R.id.chip_all_positions)
+        chipCustomPositions = findViewById(R.id.chip_custom_positions)
         // RecyclerView initialization is now inside setupLibraryRecyclerView,
         // but ensure the view ID is correct in your XML (positions_library_recycler_view)
 
@@ -350,8 +358,12 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
             positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
         }
         setupSearch()
+        setupPositionFilterChips() // Setup for the new filter chips
         setupFab()
         setupResetButton() // Call setup for reset button
+
+        // Initial filter load for the library
+        filterPositionsLibrary(positionSearchView.query?.toString())
     }
 
     private fun setupResetButton() {
@@ -1031,19 +1043,75 @@ private fun setupLibraryRecyclerView() {
     private fun setupSearch() {
         positionSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                filterPositionsLibrary(query) // Use new filter method
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterPositions(newText)
-                return true
+                filterPositionsLibrary(newText) // Use new filter method
+                return false
             }
         })
     }
 
+    private fun setupPositionFilterChips() {
+        chipAllPositions.setOnCheckedChangeListener { _, _ ->
+            if (!chipAllPositions.isChecked && !chipCustomPositions.isChecked) {
+                chipAllPositions.isChecked = true // Keep at least one selected
+                Toast.makeText(this, "At least one filter must be selected.", Toast.LENGTH_SHORT).show()
+            } else {
+                filterPositionsLibrary(positionSearchView.query?.toString())
+            }
+        }
+
+        chipCustomPositions.setOnCheckedChangeListener { _, _ ->
+            if (!chipAllPositions.isChecked && !chipCustomPositions.isChecked) {
+                chipCustomPositions.isChecked = true // Keep at least one selected
+                Toast.makeText(this, "At least one filter must be selected.", Toast.LENGTH_SHORT).show()
+            } else {
+                filterPositionsLibrary(positionSearchView.query?.toString())
+            }
+        }
+    }
+
+    private fun filterPositionsLibrary(query: String?) {
+        if (!::positionLibraryAdapter.isInitialized) {
+            return // Not ready to filter yet
+        }
+
+        val showAll = chipAllPositions.isChecked
+        val showCustom = chipCustomPositions.isChecked
+
+        val filteredList = allPositionItems.filter { position ->
+            // Corrected typeMatch logic:
+            val typeMatchLogic = when {
+                showAll && showCustom -> true // Both checked, show all types
+                showAll -> position.isAsset // Only "All" (meaning default/asset) is checked
+                showCustom -> !position.isAsset // Only "Custom" is checked
+                else -> false // Should not happen due to check listeners, but as a fallback
+            }
+
+            val queryMatch = if (query.isNullOrBlank()) {
+                true
+            } else {
+                position.name.contains(query, ignoreCase = true)
+            }
+            typeMatchLogic && queryMatch
+        }
+        positionLibraryAdapter.updatePositions(ArrayList(filteredList))
+        // Scroll to top after filtering
+        if (::positionsLibraryRecyclerView.isInitialized) {
+            positionsLibraryRecyclerView.scrollToPosition(0)
+        }
+    }
+
+    //This original filterPositions method is no longer directly used by search,
+    //but can be kept if other parts of the app call it, or removed if not.
+    //For now, I'll comment it out to avoid confusion.
+    /*
     private fun filterPositions(query: String?) {
         val filteredList = if (query.isNullOrEmpty()) {
-            allPositionItems
+            allPositionItems // Show all if query is empty
         } else {
             allPositionItems.filter {
                 it.name.contains(query, ignoreCase = true)
@@ -1051,6 +1119,7 @@ private fun setupLibraryRecyclerView() {
         }
         positionLibraryAdapter.updatePositions(filteredList)
     }
+    */
 
     // TTS initialization callback
     override fun onInit(status: Int) {

@@ -245,11 +245,39 @@
                         app:iconifiedByDefault="false"
                         app:queryHint="@string/search_positions" />
 
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/position_filter_chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/position_search_view"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        app:singleSelection="false"
+                        app:selectionRequired="false">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_all_positions"
+                            style="@style/Widget.App.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/all_positions"
+                            android:checked="true"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_custom_positions"
+                            style="@style/Widget.App.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/custom_positions"
+                            android:checked="true"/>
+                    </com.google.android.material.chip.ChipGroup>
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/positions_library_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@id/position_search_view"
+                        android:layout_below="@id/position_filter_chip_group"
                         android:layout_above="@+id/library_fab_container"
                         android:clipToPadding="false"
                         android:paddingStart="8dp"

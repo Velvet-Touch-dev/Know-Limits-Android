@@ -95,6 +95,8 @@
 <string name="add_to_plan_night">Add to Plan</string>
     <string name="default_scenes">Default Scenes</string>
     <string name="custom_scenes">Custom Scenes</string>
+    <string name="all_positions">Default Positions</string>
+    <string name="custom_positions">My Positions</string>
     <!-- Color palette settings -->
     <string name="theme_mode">Theme Mode</string>
     <string name="color_palette">Color Palette</string>

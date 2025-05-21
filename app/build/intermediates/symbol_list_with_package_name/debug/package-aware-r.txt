@@ -3376,6 +3376,8 @@ id chain2
 id chains
 id checkbox
 id checked
+id chip_all_positions
+id chip_custom_positions
 id chip_custom_scenes
 id chip_default_scenes
 id chronometer
@@ -3664,6 +3666,7 @@ id pitch_value
 id position
 id position_card_view
 id position_favorites_recycler_view
+id position_filter_chip_group
 id position_image
 id position_image_view
 id position_library_delete_button
@@ -4159,6 +4162,7 @@ string add_new_task
 string add_planned_item
 string add_tasks_prompt
 string add_to_plan_night
+string all_positions
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
@@ -4188,6 +4192,7 @@ string color_palette
 string color_palette_changed
 string color_pink
 string color_purple
+string custom_positions
 string custom_scenes
 string deadline_optional_label
 string default_scenes
