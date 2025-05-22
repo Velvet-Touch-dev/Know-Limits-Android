@@ -331,12 +331,20 @@ class PositionsRepository(private val context: Context) {
                 db.collection(POSITIONS_COLLECTION).document(existingFirestorePosition.id)
                     .set(finalPositionToSet)
                     .await()
+                // Save to local SharedPreferences after successful Firestore update
+                val localPositionsUpdate = loadLocalPositions()
+                val existingIndexUpdate = localPositionsUpdate.indexOfFirst { it.id == finalPositionToSet.id }
+                if (existingIndexUpdate != -1) {
+                    localPositionsUpdate[existingIndexUpdate] = finalPositionToSet
+                } else {
+                    localPositionsUpdate.add(finalPositionToSet)
+                }
+                saveLocalPositions(localPositionsUpdate.distinctBy { it.id })
+                Log.d("PositionsRepository", "addOrUpdatePosition (online update): Synced to local SharedPreferences: ID ${finalPositionToSet.id}")
                 finalPositionToSet
-            } else { // Item is new to Firestore - Reverting to non-transactional add due to persistent compiler issues.
-                 Log.d("PositionsRepository", "addOrUpdatePosition (online): No existing found by ID or name. Adding new (non-transactional). Original Name: '${position.name}', Final ImageName: ${positionForFirestore.imageName}")
+            } else { // Item is new to Firestore
+                 Log.d("PositionsRepository", "addOrUpdatePosition (online): No existing found by ID or name. Adding new. Original Name: '${position.name}', Final ImageName: ${positionForFirestore.imageName}")
                 try {
-                    // Last-minute check: Query by name again right before adding.
-                    // Use the original 'position.name' for the query to ensure we're checking against the correct item.
                     val checkQuery = db.collection(POSITIONS_COLLECTION)
                         .whereEqualTo("userId", currentProcessingUserId)
                         .whereEqualTo("name", position.name)
@@ -344,28 +352,38 @@ class PositionsRepository(private val context: Context) {
 
                     if (!checkQuery.isEmpty) {
                         val docSnapshot = checkQuery.documents.first()
-                        Log.w("PositionsRepository", "addOrUpdatePosition (non-transactional): Item with original name '${position.name}' found (ID: ${docSnapshot.id}) during pre-add check. Updating it with current image and original name.")
-                        // We found an existing document by name.
-                        // `positionForFirestore` has the correct imageName.
-                        // Ensure we use the original 'position.name' and the existing docSnapshot.id.
-                        val finalPositionToSet = positionForFirestore.copy(id = docSnapshot.id, name = position.name)
+                        Log.w("PositionsRepository", "addOrUpdatePosition: Item with original name '${position.name}' found (ID: ${docSnapshot.id}) during pre-add check. Updating it.")
+                        val positionToUpdate = positionForFirestore.copy(id = docSnapshot.id, name = position.name)
                         db.collection(POSITIONS_COLLECTION).document(docSnapshot.id)
-                            .set(finalPositionToSet)
+                            .set(positionToUpdate)
                             .await()
-                        return finalPositionToSet // Return the data that was actually set
+                        // Save to local SharedPreferences
+                        val localPositionsUpdate = loadLocalPositions()
+                        val existingIndexUpdate = localPositionsUpdate.indexOfFirst { it.id == positionToUpdate.id }
+                        if (existingIndexUpdate != -1) {
+                            localPositionsUpdate[existingIndexUpdate] = positionToUpdate
+                        } else {
+                            localPositionsUpdate.add(positionToUpdate)
+                        }
+                        saveLocalPositions(localPositionsUpdate.distinctBy { it.id })
+                        Log.d("PositionsRepository", "addOrUpdatePosition (online add - found by name): Synced to local SharedPreferences: ID ${positionToUpdate.id}")
+                        return positionToUpdate
                     }
                     
-                    // If still not found, then proceed with the add.
-                    // Ensure we use the original 'position.name' for the new item.
-                    Log.d("PositionsRepository", "addOrUpdatePosition (non-transactional): Pre-add check found no existing item. Proceeding to add '${position.name}'.")
+                    Log.d("PositionsRepository", "addOrUpdatePosition: Pre-add check found no existing item. Proceeding to add '${position.name}'.")
                     val newDocRef = db.collection(POSITIONS_COLLECTION)
-                        .add(positionForFirestore.copy(id = "", name = position.name)) // Let Firestore generate ID, ensure original name
+                        .add(positionForFirestore.copy(id = "", name = position.name))
                         .await()
-                    // Return the item with its new Firestore ID and original name.
-                    positionForFirestore.copy(id = newDocRef.id, name = position.name)
+                    val newlyAddedPosition = positionForFirestore.copy(id = newDocRef.id, name = position.name)
+                    // Save to local SharedPreferences
+                    val localPositionsAdd = loadLocalPositions()
+                    localPositionsAdd.add(newlyAddedPosition) // Add the new item
+                    saveLocalPositions(localPositionsAdd.distinctBy { it.id })
+                    Log.d("PositionsRepository", "addOrUpdatePosition (online add - new doc): Synced to local SharedPreferences: ID ${newlyAddedPosition.id}")
+                    newlyAddedPosition
                 } catch (e: Exception) {
-                    Log.e("PositionsRepository", "addOrUpdatePosition (online): Error adding new position non-transactionally for name '${position.name}'", e)
-                    null // Indicate failure
+                    Log.e("PositionsRepository", "addOrUpdatePosition (online): Error adding/updating position for name '${position.name}'", e)
+                    null
                 }
             }
         }
