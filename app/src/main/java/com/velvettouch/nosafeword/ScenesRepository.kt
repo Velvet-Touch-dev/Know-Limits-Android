@@ -124,30 +124,121 @@ class ScenesRepository {
         }
     }
 
+    suspend fun getExistingDefaultSceneOriginalIds(userId: String): Result<Set<Int>> {
+        return try {
+            val snapshot = getScenesCollection()
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("isCustom", false) // Only check against existing default scenes
+                .get()
+                .await()
+            val ids = snapshot.documents.mapNotNull { document ->
+                // Safely access the 'id' field, ensuring it's treated as Int (or Long then Int)
+                val sceneObject = document.toObject<Scene>()
+                sceneObject?.id // Assuming 'id' in Scene class is Int
+            }.toSet()
+            Log.d(TAG, "Fetched existing default original IDs for user $userId: $ids")
+            Result.success(ids)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching existing default scene original IDs for user $userId", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun hasDefaultSceneWithOriginalId(originalId: Int, userId: String): Result<Boolean> {
+        return try {
+            val querySnapshot = getScenesCollection()
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("id", originalId) // Query by the Int 'id' field
+                .whereEqualTo("isCustom", false)
+                .limit(1)
+                .get()
+                .await()
+            val exists = !querySnapshot.isEmpty
+            Log.d(TAG, "Checked for default scene with originalId $originalId for user $userId. Exists: $exists")
+            Result.success(exists)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking for default scene with originalId $originalId for user $userId", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getSceneByOriginalId(originalId: Int, userId: String): Result<Scene?> {
+        return try {
+            val querySnapshot = getScenesCollection()
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("id", originalId) // Query by the Int 'id' field (original asset ID)
+                .limit(1)
+                .get()
+                .await()
+
+            if (querySnapshot.isEmpty) {
+                Log.d(TAG, "No scene found with originalId $originalId for user $userId.")
+                Result.success(null)
+            } else {
+                val document = querySnapshot.documents.first()
+                val scene = document.toObject<Scene>()?.apply {
+                    firestoreId = document.id // Populate firestoreId from the document
+                }
+                if (scene != null) {
+                    Log.d(TAG, "Found scene '${scene.title}' (FirestoreId: ${scene.firestoreId}) with originalId $originalId for user $userId.")
+                    Result.success(scene)
+                } else {
+                    Log.e(TAG, "Failed to convert document to Scene object for originalId $originalId, user $userId.")
+                    Result.failure(Exception("Failed to convert Firestore document to Scene object."))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting scene by originalId $originalId for user $userId", e)
+            Result.failure(e)
+        }
+    }
+
     suspend fun addDefaultScenesBatch(scenes: List<Scene>): Result<Unit> {
         val userId = getCurrentUserId()
         if (userId == null) {
+            Log.w(TAG, "User not logged in. Cannot add default scenes batch.")
             return Result.failure(Exception("User not logged in for batch add"))
         }
+
         return try {
+            val existingOriginalIdsResult = getExistingDefaultSceneOriginalIds(userId)
+            if (existingOriginalIdsResult.isFailure) {
+                Log.e(TAG, "Failed to get existing default scene IDs for user $userId, aborting batch add.", existingOriginalIdsResult.exceptionOrNull())
+                return Result.failure(existingOriginalIdsResult.exceptionOrNull() ?: Exception("Failed to get existing default scene IDs"))
+            }
+            val existingOriginalIds = existingOriginalIdsResult.getOrNull() ?: emptySet()
+
+            val scenesToActuallySeed = scenes.filter { assetScene ->
+                val shouldSeed = !existingOriginalIds.contains(assetScene.id)
+                if (!shouldSeed) {
+                    Log.d(TAG, "Default scene with originalId ${assetScene.id} ('${assetScene.title}') already exists for user $userId. Skipping from batch.")
+                }
+                shouldSeed
+            }
+
+            if (scenesToActuallySeed.isEmpty()) {
+                Log.i(TAG, "No new default scenes to seed for user $userId. All provided scenes seem to exist or list was empty.")
+                return Result.success(Unit)
+            }
+
+            Log.d(TAG, "Preparing to seed ${scenesToActuallySeed.size} new default scenes for user $userId.")
             val batch = firestore.batch()
             val scenesCollection = getScenesCollection()
-            scenes.forEach { assetScene ->
-                // Create a new Scene object for Firestore, ensuring isCustom is false and userId is set.
-                // Also, ensure a new firestoreId is generated by Firestore.
+            scenesToActuallySeed.forEach { assetScene ->
                 val sceneForFirestore = Scene(
-                    id = assetScene.id, // Keep original ID if it's meaningful (e.g. from JSON)
+                    id = assetScene.id,
                     title = assetScene.title,
                     content = assetScene.content,
-                    isCustom = false, // Explicitly set default scenes as not custom
+                    isCustom = false, // Default scenes are not custom
                     userId = userId,
-                    firestoreId = scenesCollection.document().id // Generate new Firestore ID
+                    firestoreId = scenesCollection.document().id // Generate new Firestore ID for this new entry
                 )
                 val docRef = scenesCollection.document(sceneForFirestore.firestoreId)
                 batch.set(docRef, sceneForFirestore)
+                Log.d(TAG, "Adding scene '${assetScene.title}' (originalId: ${assetScene.id}, new FirestoreId: ${sceneForFirestore.firestoreId}) to batch for user $userId.")
             }
             batch.commit().await()
-            Log.d(TAG, "Successfully added batch of ${scenes.size} default scenes for user $userId")
+            Log.i(TAG, "Successfully added batch of ${scenesToActuallySeed.size} new default scenes to Firestore for user $userId")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "Error adding default scenes batch for user $userId", e)

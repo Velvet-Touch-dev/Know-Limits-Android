@@ -3340,7 +3340,9 @@ id actionDown
 id actionDownUp
 id actionUp
 id action_add_to_plan
+id action_add_to_plan_overflow
 id action_add_to_plan_position
+id action_add_to_plan_toolbar
 id action_bar
 id action_bar_activity_content
 id action_bar_container

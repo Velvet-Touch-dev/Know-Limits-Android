@@ -8,16 +8,24 @@
         android:title="Search" 
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
-
+    
+    <!-- This will be the dedicated calendar button - now appearing first -->
     <item
-        android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_favorite" 
-        android:title="Favorite" 
+        android:id="@+id/action_add_to_plan_toolbar"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Add to Plan"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_add_to_plan"
-        android:title="Add to Plan" 
+        android:id="@+id/action_favorite"
+        android:icon="@drawable/ic_favorite"
+        android:title="Favorite"
+        app:showAsAction="ifRoom" />
+
+    <!-- This is the overflow menu version, will be hidden in Random mode -->
+    <item
+        android:id="@+id/action_add_to_plan_overflow"
+        android:title="Add to Plan"
         app:showAsAction="never" />
         
     <item

@@ -3339,7 +3339,9 @@ int id actionDown 0x7f090030
 int id actionDownUp 0x7f090031
 int id actionUp 0x7f090032
 int id action_add_to_plan 0x7f090033
+int id action_add_to_plan_overflow 0x7f0902aa
 int id action_add_to_plan_position 0x7f090034
+int id action_add_to_plan_toolbar 0x7f0902ab
 int id action_bar 0x7f090035
 int id action_bar_activity_content 0x7f090036
 int id action_bar_container 0x7f090037

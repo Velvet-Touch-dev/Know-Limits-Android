@@ -731,8 +731,13 @@ class MainActivity : BaseActivity() {
                         scenesViewModel.addScene(Scene(title = title, content = content, isCustom = true, userId = currentUid))
                         showMaterialToast("Adding scene: $title", false)
                     } else {
-                        val updatedScene = scene.copy(title = title, content = content, userId = scene.userId.ifBlank { currentUid })
-                        if (updatedScene.firestoreId.isBlank()) showMaterialToast("Error: Scene ID missing.", false) 
+                        val updatedScene = scene.copy(
+                            title = title,
+                            content = content,
+                            isCustom = true, // Always mark edited scenes as custom
+                            userId = scene.userId.ifBlank { currentUid }
+                        )
+                        if (updatedScene.firestoreId.isBlank()) showMaterialToast("Error: Scene ID missing.", false)
                         else { scenesViewModel.updateScene(updatedScene); showMaterialToast("Updating scene: ${updatedScene.title}", false) }
                     }
                     dialog.dismiss()
@@ -837,29 +842,84 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        try { 
-            menu?.findItem(R.id.action_sign_in_out)?.title = if (auth.currentUser == null) "Sign In" else "Sign Out"
-        } catch (e: Exception) {
-            Log.e(TAG, "Error preparing R.id.action_sign_in_out: ${e.message}")
+        val searchItem = menu?.findItem(R.id.action_search)
+        val favoriteItem = menu?.findItem(R.id.action_favorite)
+        val addToPlanToolbarItem = menu?.findItem(R.id.action_add_to_plan_toolbar)
+        val addToPlanOverflowItem = menu?.findItem(R.id.action_add_to_plan_overflow)
+        val settingsItem = menu?.findItem(R.id.action_settings)
+        val signInSignOutItem = menu?.findItem(R.id.action_sign_in_out)
+
+        if (currentMode == MODE_RANDOM) {
+            searchItem?.isVisible = false
+            favoriteItem?.isVisible = true
+            addToPlanToolbarItem?.isVisible = true
+            addToPlanOverflowItem?.isVisible = false // Hide overflow version
+            settingsItem?.isVisible = false
+            signInSignOutItem?.isVisible = false
+
+            // Collapse search view if it was open
+            if (searchItem?.isActionViewExpanded == true) {
+                searchItem.collapseActionView()
+            }
+        } else if (currentMode == MODE_EDIT) {
+            searchItem?.isVisible = true
+            favoriteItem?.isVisible = false
+            addToPlanToolbarItem?.isVisible = false
+            addToPlanOverflowItem?.isVisible = false // Hide in Edit mode
+            settingsItem?.isVisible = false         // Hide in Edit mode
+            signInSignOutItem?.isVisible = false    // Hide in Edit mode
+        } else { // Default or other modes (e.g. if MODE_FAVORITES was active via bottom nav)
+            // Default visibility for any other modes, or if no specific mode is matched above
+            searchItem?.isVisible = true
+            favoriteItem?.isVisible = false
+            addToPlanToolbarItem?.isVisible = false
+            addToPlanOverflowItem?.isVisible = true
+            settingsItem?.isVisible = true
+            signInSignOutItem?.isVisible = true
         }
-        updateFavoriteIcon(menu)
+        
+        signInSignOutItem?.title = if (auth.currentUser == null) "Sign In" else "Sign Out"
+        updateFavoriteIcon(menu) // This already handles visibility based on mode for favorite icon
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (drawerToggle.onOptionsItemSelected(item)) return true
-        try { 
+        try {
             return when (item.itemId) {
-                R.id.action_favorite -> { toggleFavorite(); true }
-                R.id.action_add_to_plan -> { addCurrentSceneToPlan(); true }
+                R.id.action_favorite -> {
+                    val itemView = findViewById<View>(R.id.action_favorite)
+                    itemView?.animate()
+                        ?.scaleX(1.2f)?.scaleY(1.2f)?.setDuration(150)?.withEndAction {
+                            itemView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(150).start()
+                        }?.start()
+                    toggleFavorite()
+                    true
+                }
+                R.id.action_add_to_plan_toolbar -> {
+                    // Attempt to animate the toolbar icon view
+                    // Note: findViewById on a menu item ID might not always work reliably to get its View.
+                    // A more robust method might involve custom action layouts or iterating through toolbar children.
+                    val itemView = findViewById<View>(R.id.action_add_to_plan_toolbar)
+                    itemView?.animate()
+                        ?.scaleX(1.2f)?.scaleY(1.2f)?.setDuration(150)?.withEndAction {
+                            itemView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(150).start()
+                        }?.start()
+                    addCurrentSceneToPlan()
+                    true
+                }
+                R.id.action_add_to_plan_overflow -> {
+                    addCurrentSceneToPlan()
+                    true
+                }
                 R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
                 R.id.action_sign_in_out -> {
                     if (auth.currentUser == null) signIn()
                     else MaterialAlertDialogBuilder(this)
-                            .setTitle("Sign Out") 
-                            .setMessage("Are you sure you want to sign out?") 
-                            .setNegativeButton("Cancel", null) 
-                            .setPositiveButton("Sign Out") { _, _ -> 
+                            .setTitle("Sign Out")
+                            .setMessage("Are you sure you want to sign out?")
+                            .setNegativeButton("Cancel", null)
+                            .setPositiveButton("Sign Out") { _, _ ->
                                 auth.signOut(); googleSignInClient.signOut()
                                 updateUIForSignedOutUser()
                                 Toast.makeText(this, "Signed out.", Toast.LENGTH_SHORT).show()
