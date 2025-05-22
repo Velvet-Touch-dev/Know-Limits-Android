@@ -53,11 +53,15 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
         // Listen for authentication changes to trigger sync and reload positions
         authListener = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
-            if (user != null && user.uid != "anonymous") {
+            if (user != null && !user.isAnonymous) { // Check if user is not null and not anonymous
                 // User logged in
+                Log.d("PositionsViewModel", "AuthListener: User logged in (${user.uid}). Triggering sync.")
                 syncLocalPositions()
+            } else {
+                Log.d("PositionsViewModel", "AuthListener: User signed out or anonymous. Not syncing.")
             }
             // Always reload positions on auth state change to reflect correct data source
+            Log.d("PositionsViewModel", "AuthListener: Triggering loadPositions() due to auth state change.")
             loadPositions()
         }
         firebaseAuth.addAuthStateListener(authListener!!)
@@ -76,10 +80,18 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
                     _errorMessage.value = "Error loading positions: ${e.message}"
                     _isLoading.value = false
                 }
-                .collect { positions ->
-                    _userPositions.value = positions
+                .collect { firestoreFetchedPositions -> // Renamed for clarity
+                    _userPositions.value = firestoreFetchedPositions
                     updateAllPositions()
                     _isLoading.value = false
+
+                    // If user is logged in, these positions are from Firestore.
+                    // Persist them to SharedPreferences so they are available after sign-out.
+                    val currentUser = firebaseAuth.currentUser
+                    if (currentUser != null && !currentUser.isAnonymous) {
+                        Log.d("PositionsViewModel", "loadPositions: User is logged in. Persisting ${firestoreFetchedPositions.size} Firestore positions to SharedPreferences.")
+                        repository.mergeAndSaveFirestorePositionsToLocal(firestoreFetchedPositions)
+                    }
                 }
         }
     }

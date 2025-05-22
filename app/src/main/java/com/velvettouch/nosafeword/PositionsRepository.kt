@@ -122,7 +122,7 @@ class PositionsRepository(private val context: Context) {
         val trulyFinalPositions = finalPositionsToSave.distinctBy { it.id }
 
         val json = gson.toJson(trulyFinalPositions)
-        getLocalPositionsPrefs().edit().putString(LOCAL_POSITIONS_KEY, json).commit()
+        getLocalPositionsPrefs().edit().putString(LOCAL_POSITIONS_KEY, json).apply()
         Log.d("PositionsRepository", "saveLocalPositions: Saved ${trulyFinalPositions.size} positions to SharedPreferences. Original: ${positions.size}, DistinctById: ${distinctById.size}")
     }
 
@@ -142,6 +142,34 @@ class PositionsRepository(private val context: Context) {
         getLocalPositionsPrefs().edit().remove(LOCAL_POSITIONS_KEY).apply()
     }
 
+// Merges positions from Firestore into local SharedPreferences
+    fun mergeAndSaveFirestorePositionsToLocal(firestorePositions: List<PositionItem>) {
+        Log.d("PositionsRepository", "mergeAndSaveFirestorePositionsToLocal: Merging ${firestorePositions.size} Firestore positions into local.")
+        if (firestorePositions.isEmpty()) {
+            Log.d("PositionsRepository", "mergeAndSaveFirestorePositionsToLocal: No Firestore positions to merge.")
+            // Optionally, decide if you want to clear local if Firestore is empty for a logged-in user.
+            // For now, we'll just return, preserving local items if Firestore is empty.
+            return
+        }
+
+        val localPositions = loadLocalPositions()
+        Log.d("PositionsRepository", "mergeAndSaveFirestorePositionsToLocal: Loaded ${localPositions.size} existing local positions.")
+
+        // Create a map of existing local positions by ID for efficient lookup and update
+        val localPositionsMap = localPositions.associateBy { it.id }.toMutableMap()
+
+        // Add or update positions from Firestore. Firestore versions take precedence.
+        firestorePositions.forEach { firestorePosition ->
+            // Ensure the userId from Firestore is preserved.
+            // If a local item with the same ID exists, it will be overwritten by the Firestore version.
+            localPositionsMap[firestorePosition.id] = firestorePosition
+        }
+
+        val consolidatedList = localPositionsMap.values.toList()
+        Log.d("PositionsRepository", "mergeAndSaveFirestorePositionsToLocal: Consolidated list size before saving: ${consolidatedList.size}")
+        saveLocalPositions(consolidatedList) // This handles de-duplication and final saving
+        Log.d("PositionsRepository", "mergeAndSaveFirestorePositionsToLocal: Finished merging and saving to local SharedPreferences.")
+    }
 
     // Upload image to Firebase Storage and get download URL
     suspend fun uploadImage(
@@ -475,16 +503,18 @@ class PositionsRepository(private val context: Context) {
     // Renamed and modified to accept a list of specific items to sync.
     // Returns a list of local IDs that were successfully processed (handed to CF or directly synced)
     suspend fun syncListOfLocalPositionsToFirestore(itemsToSyncThisRun: List<PositionItem>): List<String> = withContext(Dispatchers.IO) {
-        val successfullyProcessedLocalIds = mutableListOf<String>()
+        val localIdsMarkedAsPotentiallyProcessedInThisRun = mutableListOf<String>()
+        val verifiedSuccessfullyProcessedAndRemovedLocalIds = mutableListOf<String>() // This will be returned
+
         if (itemsToSyncThisRun.isEmpty()) {
             Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: No items passed to sync this run.")
-            return@withContext successfullyProcessedLocalIds
+            return@withContext verifiedSuccessfullyProcessedAndRemovedLocalIds
         }
         val currentSyncingUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         if (currentSyncingUserId == null) {
             Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: No logged-in user. Aborting sync.")
-            return@withContext successfullyProcessedLocalIds
+            return@withContext verifiedSuccessfullyProcessedAndRemovedLocalIds
         }
 
         Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: User $currentSyncingUserId. Received ${itemsToSyncThisRun.size} items to process.")
@@ -523,8 +553,10 @@ class PositionsRepository(private val context: Context) {
                         Log.d("PositionsRepository", "Sync: Successfully uploaded image for '${localPositionToSync.name}' with metadata. Removing local version ID '${localPositionToSync.id}' from map, as Cloud Function will create it.")
                         allCurrentLocalPositionsMap.remove(localPositionToSync.id)
                         saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
-                        successfullyProcessedLocalIds.add(localPositionToSync.id) // Mark as processed
-                        Log.d("PositionsRepository", "Sync: Saved SharedPreferences mid-loop after removing item handed to CF: '${localPositionToSync.name}'.")
+                        if (localPositionToSync.id.startsWith("local_")) {
+                            localIdsMarkedAsPotentiallyProcessedInThisRun.add(localPositionToSync.id)
+                        }
+                        Log.d("PositionsRepository", "Sync: Saved SharedPreferences mid-loop after removing item handed to CF: '${localPositionToSync.name}'. Marked ${localPositionToSync.id} as potentially processed.")
                     } else {
                         Log.e("PositionsRepository", "Sync: Failed to upload image with metadata for '${localPositionToSync.name}'. Local item will remain for next sync.")
                         // Item remains in allCurrentLocalPositionsMap, will be saved back as is.
@@ -548,9 +580,9 @@ class PositionsRepository(private val context: Context) {
                         allCurrentLocalPositionsMap[syncedPosition.id] = syncedPosition
                         saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
                         if (localPositionToSync.id.startsWith("local_")) { // If it was originally local and now synced
-                            successfullyProcessedLocalIds.add(localPositionToSync.id)
+                            localIdsMarkedAsPotentiallyProcessedInThisRun.add(localPositionToSync.id)
                         }
-                        Log.i("PositionsRepository", "SYNC_LOOP: Item '${syncedPosition.name}' (ID: ${syncedPosition.id}) updated via addOrUpdatePosition after local image not found. SP Saved.")
+                        Log.i("PositionsRepository", "SYNC_LOOP: Item '${syncedPosition.name}' (ID: ${syncedPosition.id}) updated via addOrUpdatePosition after local image not found. SP Saved. Marked ${localPositionToSync.id} as potentially processed.")
                     } else {
                         Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}) FAILED update via addOrUpdatePosition after local image not found.")
                     }
@@ -577,9 +609,23 @@ class PositionsRepository(private val context: Context) {
         }
 
         // Final save after the loop, though individual saves happen within.
-        saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
-        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Sync processing finished for this batch. Saved ${allCurrentLocalPositionsMap.values.size} total items to SharedPreferences.")
-        return@withContext successfullyProcessedLocalIds
+        saveLocalPositions(allCurrentLocalPositionsMap.values.toList()) // Final save for the batch
+        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Batch processing loop finished. Saved ${allCurrentLocalPositionsMap.values.size} total items to SharedPreferences via allCurrentLocalPositionsMap.")
+
+        // Verification step: Re-load SharedPreferences and confirm removal of processed local_ IDs
+        val finalLocalStateAfterSync = loadLocalPositions()
+        val finalLocalIdsSet = finalLocalStateAfterSync.map { it.id }.toSet()
+
+        localIdsMarkedAsPotentiallyProcessedInThisRun.distinct().forEach { potentialId ->
+            if (!finalLocalIdsSet.contains(potentialId)) {
+                verifiedSuccessfullyProcessedAndRemovedLocalIds.add(potentialId)
+                Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Confirmed: Local ID '$potentialId' was processed and is no longer in SharedPreferences.")
+            } else {
+                Log.w("PositionsRepository", "syncListOfLocalPositionsToFirestore: Verification FAILED: Local ID '$potentialId' was marked for processing but was still found in SharedPreferences. It will NOT be reported as successfully processed to ViewModel this time.")
+            }
+        }
+        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Returning ${verifiedSuccessfullyProcessedAndRemovedLocalIds.size} verified processed local IDs: $verifiedSuccessfullyProcessedAndRemovedLocalIds")
+        return@withContext verifiedSuccessfullyProcessedAndRemovedLocalIds
     }
 
     // New method for ViewModel to get all local positions for pre-filtering
