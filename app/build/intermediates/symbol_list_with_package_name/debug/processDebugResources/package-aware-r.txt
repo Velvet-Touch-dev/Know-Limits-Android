@@ -3360,6 +3360,8 @@ id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
 id action_search
+id action_settings
+id action_sign_in_out
 id action_text
 id actions
 id activity_chooser_view_content
@@ -4192,6 +4194,7 @@ layout toast_material_you
 menu bottom_nav_menu
 menu drawer_menu
 menu edit_menu
+menu main_menu
 menu position_menu
 menu top_app_bar
 mipmap ic_launcher
@@ -4428,6 +4431,10 @@ string next_task
 string no_favorites
 string no_position_images_found
 string no_positions_to_randomize
+string no_scenes_available_content
+string no_scenes_available_title
+string no_scenes_match_filter_content
+string no_scenes_match_filter_title
 string no_tasks
 string password_toggle_content_description
 string path_password_eye

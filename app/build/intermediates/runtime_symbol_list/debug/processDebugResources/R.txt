@@ -3359,6 +3359,8 @@ int id action_mode_bar 0x7f090044
 int id action_mode_bar_stub 0x7f090045
 int id action_mode_close_button 0x7f090046
 int id action_search 0x7f090047
+int id action_settings 0x7f0902a8
+int id action_sign_in_out 0x7f0902a9
 int id action_text 0x7f090048
 int id actions 0x7f090049
 int id activity_chooser_view_content 0x7f09004a
@@ -4191,6 +4193,7 @@ int layout toast_material_you 0x7f0c0086
 int menu bottom_nav_menu 0x7f0e0000
 int menu drawer_menu 0x7f0e0001
 int menu edit_menu 0x7f0e0002
+int menu main_menu 0x7f0e0005
 int menu position_menu 0x7f0e0003
 int menu top_app_bar 0x7f0e0004
 int mipmap ic_launcher 0x7f0f0000
@@ -4427,6 +4430,10 @@ int string next_task 0x7f1200e1
 int string no_favorites 0x7f1200e2
 int string no_position_images_found 0x7f1200e3
 int string no_positions_to_randomize 0x7f1200e4
+int string no_scenes_available_content 0x7f12012b
+int string no_scenes_available_title 0x7f12012c
+int string no_scenes_match_filter_content 0x7f12012d
+int string no_scenes_match_filter_title 0x7f12012e
 int string no_tasks 0x7f1200e5
 int string password_toggle_content_description 0x7f1200e6
 int string path_password_eye 0x7f1200e7

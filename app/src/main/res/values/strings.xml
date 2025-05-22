@@ -107,4 +107,9 @@
     <string name="color_just_black">Just Black (Dark mode only)</string>
     <string name="color_palette_changed">Color palette changed</string>
     <string name="no_positions_to_randomize">No positions available to randomize</string>
+    <string name="no_scenes_available_title">No Scenes Available</string>
+    <string name="no_scenes_available_content">There are currently no scenes to display. Try adding some custom scenes or check your connection.</string>
+    <string name="no_scenes_match_filter_title">No Scenes Match Filter</string>
+    <string name="no_scenes_match_filter_content">No scenes match your current filter settings. Try adjusting the filters or search query.</string>
+
 </resources>
