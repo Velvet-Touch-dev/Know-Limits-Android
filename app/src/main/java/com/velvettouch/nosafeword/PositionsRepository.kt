@@ -149,6 +149,8 @@ class PositionsRepository(private val context: Context) {
         forUserId: String?,
         deterministicFileName: String // The name (e.g., UUID.jpg) to use in Firebase Storage
     ): String? {
+        // This log was already present from a previous attempt, ensuring it's correct.
+        Log.d("PositionsRepository", "[[UPLOAD_IMAGE_OLD_START]] File: '$deterministicFileName', User: '$forUserId'")
         if (forUserId == null) {
             Log.w("PositionsRepository", "uploadImage: forUserId is null, cannot upload.")
             return null
@@ -197,6 +199,8 @@ class PositionsRepository(private val context: Context) {
         // Add other relevant primitive fields from PositionItem as needed
         forUserId: String // The ID of the user this position belongs to
     ): Boolean { // Returns true if upload with metadata was successful
+        // This log was already present from a previous attempt, ensuring it's correct.
+        Log.d("PositionsRepository", "[[UPLOAD_WITH_METADATA_START]] For item: '$positionName', User: '$forUserId'")
         if (forUserId.isBlank()) {
             Log.e("PositionsRepository", "uploadPositionImageWithMetadata: forUserId is blank.")
             return false
@@ -469,16 +473,18 @@ class PositionsRepository(private val context: Context) {
 
 
     // Renamed and modified to accept a list of specific items to sync.
-    suspend fun syncListOfLocalPositionsToFirestore(itemsToSyncThisRun: List<PositionItem>) = withContext(Dispatchers.IO) {
+    // Returns a list of local IDs that were successfully processed (handed to CF or directly synced)
+    suspend fun syncListOfLocalPositionsToFirestore(itemsToSyncThisRun: List<PositionItem>): List<String> = withContext(Dispatchers.IO) {
+        val successfullyProcessedLocalIds = mutableListOf<String>()
         if (itemsToSyncThisRun.isEmpty()) {
             Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: No items passed to sync this run.")
-            return@withContext
+            return@withContext successfullyProcessedLocalIds
         }
         val currentSyncingUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         if (currentSyncingUserId == null) {
             Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: No logged-in user. Aborting sync.")
-            return@withContext
+            return@withContext successfullyProcessedLocalIds
         }
 
         Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: User $currentSyncingUserId. Received ${itemsToSyncThisRun.size} items to process.")
@@ -502,7 +508,7 @@ class PositionsRepository(private val context: Context) {
             
             // Condition: Item is local (ID starts with "local_") AND has a local image path to upload
             if (localPositionToSync.id.startsWith("local_") && isLocalImagePresent) {
-                Log.d("PositionsRepository", "Sync: Item '${localPositionToSync.name}' is local with a local image. Attempting upload with metadata for Cloud Function.")
+                Log.i("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Path: Cloud Function Upload.")
                 val localImageFile = File(localPositionToSync.imageName)
                 if (localImageFile.exists()) {
                     val uploadWithMetadataSuccess = uploadPositionImageWithMetadata(
@@ -516,19 +522,20 @@ class PositionsRepository(private val context: Context) {
                     if (uploadWithMetadataSuccess) {
                         Log.d("PositionsRepository", "Sync: Successfully uploaded image for '${localPositionToSync.name}' with metadata. Removing local version ID '${localPositionToSync.id}' from map, as Cloud Function will create it.")
                         allCurrentLocalPositionsMap.remove(localPositionToSync.id)
-                        // Save immediately to reflect removal of the item now handled by CF
                         saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
+                        successfullyProcessedLocalIds.add(localPositionToSync.id) // Mark as processed
                         Log.d("PositionsRepository", "Sync: Saved SharedPreferences mid-loop after removing item handed to CF: '${localPositionToSync.name}'.")
                     } else {
                         Log.e("PositionsRepository", "Sync: Failed to upload image with metadata for '${localPositionToSync.name}'. Local item will remain for next sync.")
                         // Item remains in allCurrentLocalPositionsMap, will be saved back as is.
                     }
                 } else {
-                    Log.e("PositionsRepository", "Sync: Local image file not found for '${localPositionToSync.name}' at path ${localPositionToSync.imageName}. Skipping image upload for this item.")
+                    Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Local image file NOT FOUND at '${localPositionToSync.imageName}'. Attempting addOrUpdatePosition with cleared imageName.")
                     // No image to upload, proceed to sync other data if necessary (or treat as error)
                     // For now, we'll let it fall through to the generic addOrUpdatePosition if needed,
                     // which will likely result in an item without an image or with the old (broken) path.
                     // This case might need more specific handling if an image was expected.
+                    // Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Local image file NOT FOUND. Attempting addOrUpdatePosition with cleared imageName.") // This was a duplicate/old log, removed.
                     val syncedPosition = addOrUpdatePosition(
                         position = localPositionToSync.copy(imageName = ""), // Clear broken image path
                         imageUriToUpload = null,
@@ -540,12 +547,16 @@ class PositionsRepository(private val context: Context) {
                         }
                         allCurrentLocalPositionsMap[syncedPosition.id] = syncedPosition
                         saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
+                        if (localPositionToSync.id.startsWith("local_")) { // If it was originally local and now synced
+                            successfullyProcessedLocalIds.add(localPositionToSync.id)
+                        }
+                        Log.i("PositionsRepository", "SYNC_LOOP: Item '${syncedPosition.name}' (ID: ${syncedPosition.id}) updated via addOrUpdatePosition after local image not found. SP Saved.")
+                    } else {
+                        Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}) FAILED update via addOrUpdatePosition after local image not found.")
                     }
                 }
             } else {
-                // Not a local item with a new local image to upload via Cloud Function.
-                // Use existing addOrUpdatePosition for direct Firestore interaction (e.g., text updates, image already URL, no image)
-                Log.d("PositionsRepository", "Sync: Item '${localPositionToSync.name}' does not require CF image upload. Using direct addOrUpdatePosition.")
+                Log.i("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Path: Direct addOrUpdatePosition. isLocalImagePresent=${isLocalImagePresent}, idStartsWithLocal=${localPositionToSync.id.startsWith("local_")}")
                 val syncedPosition = addOrUpdatePosition(
                     position = localPositionToSync,
                     imageUriToUpload = null, // No new URI from picker during sync
@@ -558,9 +569,9 @@ class PositionsRepository(private val context: Context) {
                     }
                     allCurrentLocalPositionsMap[syncedPosition.id] = syncedPosition
                     saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
-                    Log.d("PositionsRepository", "Sync: Saved SharedPreferences mid-loop for item (direct path): '${syncedPosition.name}'.")
+                    Log.i("PositionsRepository", "SYNC_LOOP: Item '${syncedPosition.name}' (ID: ${syncedPosition.id}) updated/added via direct addOrUpdatePosition. Saved SharedPreferences.")
                 } else {
-                    Log.w("PositionsRepository", "Sync: Failed to get a synced version for '${localPositionToSync.name}' (direct path). Original local record preserved.")
+                    Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}) FAILED update/add via direct addOrUpdatePosition. Original local record preserved.")
                 }
             }
         }
@@ -568,6 +579,7 @@ class PositionsRepository(private val context: Context) {
         // Final save after the loop, though individual saves happen within.
         saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
         Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Sync processing finished for this batch. Saved ${allCurrentLocalPositionsMap.values.size} total items to SharedPreferences.")
+        return@withContext successfullyProcessedLocalIds
     }
 
     // New method for ViewModel to get all local positions for pre-filtering

@@ -86,94 +86,76 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun syncLocalPositions() {
         viewModelScope.launch {
-            if (syncMutex.tryLock()) { // Attempt to acquire the lock
-                val idsProcessedThisRun = mutableListOf<String>()
-                try {
-                    // This redundant _isSyncing.value check can be removed if Mutex is trusted,
-                    // but as a safeguard, it's okay.
-                    if (_isSyncing.value && itemIdsBeingSynced.isEmpty()) {
-                         // If _isSyncing is true but itemIdsBeingSynced is empty, it might be a stale _isSyncing flag.
-                         // Or, if Mutex was acquired, _isSyncing should ideally be false.
-                         Log.w("PositionsViewModel", "syncLocalPositions: _isSyncing was true but itemIdsBeingSynced was empty. Proceeding with caution.")
-                    }
+            if (_isSyncing.value) {
+                Log.d("PositionsViewModel", "syncLocalPositions: Already syncing (_isSyncing is true), skipping new launch.")
+                return@launch
+            }
+            _isSyncing.value = true
+            _errorMessage.value = null // Clear previous errors
+            Log.d("PositionsViewModel", "syncLocalPositions: Sync initiated. _isSyncing=true. Attempting to acquire syncMutex.")
 
-                    _isSyncing.value = true // Set main sync flag
-                    _errorMessage.value = null
-                    Log.d("PositionsViewModel", "syncLocalPositions: Starting sync (mutex acquired).")
+            try {
+                syncMutex.withLock { // SERIALIZE execution of this block
+                    Log.d("PositionsViewModel", "syncLocalPositions: Mutex acquired by withLock.")
+                    val idsAddedToItemIdsBeingSyncedThisRun = mutableSetOf<String>()
+                    try {
+                        Log.d("PositionsViewModel", "syncLocalPositions (withLock): Calling repository.getAllLocalPositionsForSync().")
+                        val rawLocalPositionsFromPrefs = repository.getAllLocalPositionsForSync()
+                        Log.i("PositionsViewModel", "syncLocalPositions (withLock): RAW positions from Prefs for sync: ${rawLocalPositionsFromPrefs.joinToString { it.name + "(ID:" + it.id + ", Img:" + it.imageName + ")" }}")
 
-                    val rawLocalPositionsFromPrefs = repository.getAllLocalPositionsForSync()
-                    // Step 1: Absolutely ensure no duplicate IDs from the start.
-                    val allLocalPositions = rawLocalPositionsFromPrefs.distinctBy { it.id }
-                    Log.d("PositionsViewModel", "syncLocalPositions: Raw from prefs: ${rawLocalPositionsFromPrefs.size}, After distinctById: ${allLocalPositions.size}")
+                        val allLocalPositions = rawLocalPositionsFromPrefs.distinctBy { it.id }
+                        Log.d("PositionsViewModel", "syncLocalPositions (withLock): Raw from prefs: ${rawLocalPositionsFromPrefs.size}, After distinctById: ${allLocalPositions.size}")
 
-                    // Separate local items (those needing potential name de-duplication before sync)
-                    val itemsWithLocalId = allLocalPositions.filter { it.id.startsWith("local_") }
-                    val otherItems = allLocalPositions.filterNot { it.id.startsWith("local_") } // These are Firestore or asset items
+                        val itemsWithLocalId = allLocalPositions.filter { it.id.startsWith("local_") }
+                        val otherItems = allLocalPositions.filterNot { it.id.startsWith("local_") }
 
-                    // Get names of items that are already synced (non-local)
-                    val nonLocalItemNames = otherItems.map { it.name }.toSet()
+                        // Normalize names for comparison: lowercase and remove all whitespace
+                        fun String.normalizeForComparison() = this.lowercase().replace("\\s".toRegex(), "")
+                        val nonLocalItemNames = otherItems.map { it.name.normalizeForComparison() }.toSet()
 
-                    // For items with local_ IDs:
-                    // 1. Filter out any local item whose name already exists in nonLocalItemNames.
-                    // 2. Then, from the remainder, ensure only one item per name is considered for this sync run.
-                    // Normalize names for comparison: lowercase and remove all whitespace
-                    fun String.normalizeForComparison() = this.toLowerCase().replace("\\s".toRegex(), "")
-
-                    val normalizedNonLocalItemNames = nonLocalItemNames.map { it.normalizeForComparison() }.toSet()
-
-                    val localItemsToConsider = itemsWithLocalId.filterNot { localItem ->
-                        localItem.name.normalizeForComparison() in normalizedNonLocalItemNames
-                    }
-                    Log.d("PositionsViewModel", "syncLocalPositions: Local items to consider (IDs: ${localItemsToConsider.joinToString { it.id + " ('" + it.name + "')" }}), count: ${localItemsToConsider.size}")
-
-                    // De-duplicate by normalized name
-                    val distinctLocalItemsByName = localItemsToConsider.distinctBy { it.name.normalizeForComparison() }
-                    
-                    Log.d("PositionsViewModel", "syncLocalPositions: Items with local_ prefix: ${itemsWithLocalId.size}. Non-local items: ${otherItems.size}. Normalized non-local names: $normalizedNonLocalItemNames")
-                    Log.d("PositionsViewModel", "syncLocalPositions: Distinct local items by normalized name (IDs: ${distinctLocalItemsByName.joinToString { it.id + " ('" + it.name + "')" }}), count: ${distinctLocalItemsByName.size}")
-
-                    // Combine the de-duplicated local items with the other (non-local) items.
-                    // Ensure final list is distinct by ID.
-                    val candidatePositionsForSync = (distinctLocalItemsByName + otherItems).distinctBy { it.id }
-                    Log.d("PositionsViewModel", "syncLocalPositions: Total candidate positions for sync (IDs: ${candidatePositionsForSync.joinToString { it.id + " ('" + it.name + "')" }}), count: ${candidatePositionsForSync.size}")
-
-
-                    val positionsToProcessThisRun = candidatePositionsForSync.filter { candidateItem ->
-                        // Only process items whose original ID is not already in the itemIdsBeingSynced set.
-                        val originalId = candidateItem.id
-                        if (!itemIdsBeingSynced.contains(originalId)) {
-                            idsProcessedThisRun.add(originalId) // Add to our tracking for this specific run
-                            itemIdsBeingSynced.add(originalId) // Add to the global set
-                            true
-                        } else {
-                            Log.d("PositionsViewModel", "syncLocalPositions: Item ID '$originalId' (${candidateItem.name}) already in itemIdsBeingSynced. Skipping for this run.")
-                            false
+                        val localItemsToConsider = itemsWithLocalId.filterNot { localItem ->
+                            localItem.name.normalizeForComparison() in nonLocalItemNames
                         }
-                    }
+                        val distinctLocalItemsByName = localItemsToConsider.distinctBy { it.name.normalizeForComparison() }
+                        val candidatePositionsForSync = (distinctLocalItemsByName + otherItems).distinctBy { it.id }
+                        Log.d("PositionsViewModel", "syncLocalPositions (withLock): Total candidate positions for sync: ${candidatePositionsForSync.joinToString { it.id + " ('" + it.name + "')" }}), count: ${candidatePositionsForSync.size}")
 
-                    if (positionsToProcessThisRun.isEmpty()) {
-                        Log.d("PositionsViewModel", "syncLocalPositions: No new items to process in this run after all filtering.")
-                        // No need to call repository if list is empty
-                    } else {
-                        Log.d("PositionsViewModel", "syncLocalPositions: Processing ${positionsToProcessThisRun.size} items this run: ${positionsToProcessThisRun.joinToString { it.name + " (ID: " + it.id + ")" }}.")
-                        repository.syncListOfLocalPositionsToFirestore(positionsToProcessThisRun)
-                    }
-                    
-                    // After sync, reload positions to get the latest from Firestore
-                    Log.d("PositionsViewModel", "syncLocalPositions: Sync attempt for this batch finished, refreshing positions state.")
-                    refreshPositionsState() // Await the state refresh
+                        val positionsToActuallyProcess = mutableListOf<PositionItem>()
+                        candidatePositionsForSync.forEach { candidate ->
+                            if (!itemIdsBeingSynced.contains(candidate.id)) {
+                                positionsToActuallyProcess.add(candidate)
+                                itemIdsBeingSynced.add(candidate.id)
+                                idsAddedToItemIdsBeingSyncedThisRun.add(candidate.id)
+                            } else {
+                                Log.d("PositionsViewModel", "syncLocalPositions (withLock): Item ID '${candidate.id}' (${candidate.name}) already in itemIdsBeingSynced. Skipping.")
+                            }
+                        }
 
-                } catch (e: Exception) {
-                    Log.e("PositionsViewModel", "syncLocalPositions: Error syncing positions", e)
-                    _errorMessage.value = "Error syncing positions: ${e.message}"
-                } finally {
-                    itemIdsBeingSynced.removeAll(idsProcessedThisRun) // Remove only the IDs processed in this specific run
-                    _isSyncing.value = false // Clear main sync flag
-                    syncMutex.unlock() // Release the lock
-                    Log.d("PositionsViewModel", "syncLocalPositions: Sync process ended. IDs processed this run: $idsProcessedThisRun. Mutex unlocked. itemIdsBeingSynced size: ${itemIdsBeingSynced.size}")
-                }
-            } else {
-                Log.d("PositionsViewModel", "syncLocalPositions: Mutex was locked. Another sync is likely in progress. Skipping this call.")
+                        if (positionsToActuallyProcess.isEmpty()) {
+                            Log.d("PositionsViewModel", "syncLocalPositions (withLock): No new items to process in this run.")
+                        } else {
+                            Log.d("PositionsViewModel", "syncLocalPositions (withLock): Processing ${positionsToActuallyProcess.size} items this run: ${positionsToActuallyProcess.joinToString { it.name + " (ID: " + it.id + ")" }}.")
+                            val processedDbIds = repository.syncListOfLocalPositionsToFirestore(positionsToActuallyProcess)
+                            itemIdsBeingSynced.removeAll(processedDbIds.toSet()) // Use toSet() for safety if processedDbIds is List
+                            Log.d("PositionsViewModel", "syncLocalPositions (withLock): Repository processed IDs: $processedDbIds. Updated itemIdsBeingSynced: $itemIdsBeingSynced")
+                        }
+                        Log.d("PositionsViewModel", "syncLocalPositions (withLock): Sync logic within lock finished successfully.")
+                    } catch (e: Exception) { // Catch errors from *inside* the withLock critical section
+                        Log.e("PositionsViewModel", "syncLocalPositions (withLock): Error during sync logic", e)
+                        _errorMessage.value = "Error syncing positions: ${e.message}"
+                        // If an error occurred in this specific run *after* adding to itemIdsBeingSynced,
+                        // remove them to allow retrying them cleanly in the next sync attempt.
+                        itemIdsBeingSynced.removeAll(idsAddedToItemIdsBeingSyncedThisRun.toSet())
+                        Log.d("PositionsViewModel", "syncLocalPositions (withLock): Cleared items added in this failed run from itemIdsBeingSynced: $idsAddedToItemIdsBeingSyncedThisRun")
+                    }
+                } // Mutex released here automatically by withLock
+                Log.d("PositionsViewModel", "syncLocalPositions: Mutex released by withLock.")
+            } catch (e: Exception) { // Catch errors from withLock itself (e.g. cancellation if scope is cancelled) or other unexpected issues
+                Log.e("PositionsViewModel", "syncLocalPositions: Error with Mutex operation or outer scope", e)
+                _errorMessage.value = "Syncing system error: ${e.message}"
+            } finally {
+                _isSyncing.value = false
+                Log.d("PositionsViewModel", "syncLocalPositions: Sync process fully ended. _isSyncing set to false. Final itemIdsBeingSynced: $itemIdsBeingSynced")
             }
         }
     }
