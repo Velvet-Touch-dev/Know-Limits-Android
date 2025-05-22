@@ -74,7 +74,8 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var libraryTabContent: View
     private lateinit var positionsLibraryRecyclerView: RecyclerView
     private lateinit var positionLibraryAdapter: PositionLibraryAdapter
-    private var allPositionItems: MutableList<PositionItem> = mutableListOf()
+    private var allPositionItems: MutableList<PositionItem> = mutableListOf() // Source of truth from ViewModel
+    private var randomizablePositions: List<PositionItem> = emptyList() // Filtered list for Randomize tab
     private lateinit var positionSearchView: SearchView
     private lateinit var resetButton: ExtendedFloatingActionButton // Changed for Reset to Default ExtendedFAB styling
     private lateinit var libraryFabContainer: LinearLayout
@@ -468,29 +469,28 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             positionsViewModel.allPositions.collect { positions ->
                 allPositionItems.clear()
                 allPositionItems.addAll(positions)
+                
+                updateRandomizablePositions() // This updates the list and may trigger a display update.
+
                 if (::positionLibraryAdapter.isInitialized) {
-                    positionLibraryAdapter.updatePositions(ArrayList(positions))
+                    positionLibraryAdapter.updatePositions(ArrayList(allPositionItems)) // Library always shows all
                 }
-                // The Randomize tab will now use allPositionItems directly.
-                // The positionImages list is no longer the primary source for the Randomize tab.
-                // If positionImages is still used elsewhere exclusively for assets, it can remain,
-                // but displayCurrentPosition and related logic will use allPositionItems.
-                // For now, let's assume positionImages might be used by other legacy parts if they exist,
-                // but we will ensure our main display logic uses allPositionItems.
-                // If positionImages is truly only for the old randomize logic, this can be removed:
-                // val assetBasedPositions = positions.filter { it.isAsset }
-                // positionImages = assetBasedPositions.map { it.imageName }
-
-
-                // After positions are loaded, handle any pending navigation or initial display
-                if (pendingPositionNavigationName == null && positionsTabs.selectedTabPosition == 0 && currentPosition == -1) { // Only if not already displaying something
-                     displayInitialRandomPosition() // This will now use allPositionItems
-                } else if (pendingPositionNavigationName != null) {
-                    navigateToPositionInRandomizeView(pendingPositionNavigationName!!) // This will also use allPositionItems
-                    pendingPositionNavigationName = null
+                
+                // Handle pending navigation or ensure randomize tab is correctly displayed
+                if (positionsTabs.selectedTabPosition == 0) {
+                    if (pendingPositionNavigationName != null) {
+                        navigateToPositionInRandomizeView(pendingPositionNavigationName!!)
+                        pendingPositionNavigationName = null
+                    } else if (randomizablePositions.isEmpty()) {
+                        displayEmptyRandomizeState()
+                    } else if (currentPosition == -1 || currentPosition >= randomizablePositions.size) {
+                        // If current selection is invalid after list update
+                        displayInitialRandomPosition()
+                    }
+                    // If currentPosition is valid, updateRandomizablePositions should have handled display if item changed.
                 }
-                filterPositionsLibrary(positionSearchView.query?.toString()) // Re-filter
-                updateNavigationButtonStates() // Update nav buttons based on new data
+                filterPositionsLibrary(positionSearchView.query?.toString()) // For the library tab
+                updateNavigationButtonStates()
             }
         }
 
@@ -512,6 +512,79 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 }
             }
         }
+    }
+
+    private fun displayEmptyRandomizeState() {
+        positionNameTextView.text = getString(R.string.no_positions_to_randomize)
+        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+        speakPositionName(getString(R.string.no_positions_to_randomize))
+        currentPosition = -1
+        positionHistory.clear()
+        positionHistoryPosition = -1
+        updateNavigationButtonStates()
+    }
+
+    private fun updateRandomizablePositions() {
+        val previouslyDisplayedRandomItem = if (currentPosition != -1 && currentPosition < randomizablePositions.size) {
+            randomizablePositions[currentPosition]
+        } else {
+            null
+        }
+
+        Log.d("PositionsActivity", "Before filtering randomizablePositions: hiddenDefaultPositionNames = $hiddenDefaultPositionNames")
+        randomizablePositions = allPositionItems.filterNot { item ->
+            val isHidden = item.isAsset && item.name in hiddenDefaultPositionNames
+            if (item.isAsset) { // Log details only for assets to reduce noise
+                Log.d("PositionsActivity", "Filtering item: Name='${item.name}', isAsset=${item.isAsset}, Name in hiddenDefaultPositionNames='${item.name in hiddenDefaultPositionNames}', Should be hidden=$isHidden")
+            }
+            isHidden
+        }
+        Log.d("PositionsActivity", "Updated randomizablePositions. New count: ${randomizablePositions.size}. Filtered Names: ${randomizablePositions.joinToString { it.name }}. All hidden names: $hiddenDefaultPositionNames")
+
+        if (randomizablePositions.isEmpty()) {
+            currentPosition = -1
+            positionHistory.clear()
+            positionHistoryPosition = -1
+            if (positionsTabs.selectedTabPosition == 0) {
+                displayEmptyRandomizeState()
+            }
+        } else {
+            // If there was a previously displayed item, try to find it in the new list
+            if (previouslyDisplayedRandomItem != null) {
+                val newIndexOfPrevious = randomizablePositions.indexOfFirst { it.id == previouslyDisplayedRandomItem.id }
+                if (newIndexOfPrevious != -1) {
+                    // Item still exists, update currentPosition
+                    currentPosition = newIndexOfPrevious
+                    // Naive history update: if the item at the current history pointer is no longer our currentPosition,
+                    // or if history pointer is out of bounds, reset history focused on the current item.
+                    // A more sophisticated history re-mapping could be done but is complex.
+                    if (positionHistoryPosition < 0 || positionHistoryPosition >= positionHistory.size || positionHistory[positionHistoryPosition] != currentPosition) {
+                        positionHistory.clear()
+                        positionHistory.add(currentPosition)
+                        positionHistoryPosition = 0
+                    } else {
+                        // Trim any "future" history if we jumped back and then the list changed
+                        if (positionHistory.size > positionHistoryPosition + 1) {
+                           positionHistory = positionHistory.subList(0, positionHistoryPosition + 1)
+                        }
+                    }
+                } else {
+                    // Previously displayed item is no longer in the randomizable list (it was hidden)
+                    // Reset to a new initial position if on randomize tab
+                    if (positionsTabs.selectedTabPosition == 0) {
+                        displayInitialRandomPosition() // This will pick a new one and reset history
+                    } else {
+                        currentPosition = -1 // Mark as invalid if not on randomize tab
+                        positionHistory.clear()
+                        positionHistoryPosition = -1
+                    }
+                }
+            } else if (currentPosition == -1 && positionsTabs.selectedTabPosition == 0) {
+                 // No item was selected, and we are on randomize tab, display initial if list is not empty
+                displayInitialRandomPosition()
+            }
+        }
+        // updateNavigationButtonStates() // Usually called by display functions or observer
     }
 
     private fun updateProgressIndicatorVisibility() {
@@ -668,15 +741,25 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // If you need to delete all user's positions from Firestore, a specific ViewModel function would be required.
         // Example: positionsViewModel.deleteAllUserPositions()
 
-        // Reload positions from ViewModel. This will fetch current user positions from Firestore
+        // Immediately update the randomizable positions list based on the cleared hidden names
+        updateRandomizablePositions()
+        // Immediately update the library view as well
+        filterPositionsLibrary(positionSearchView.query?.toString())
+
+        // Reload all positions from ViewModel. This will fetch current user positions from Firestore
         // and any default/asset positions managed by the ViewModel.
+        // This also triggers observers which will call updateRandomizablePositions again,
+        // and filterPositionsLibrary.
         positionsViewModel.loadPositions()
 
-        // UI will update via observers.
-        // The filterPositionsLibrary() called by the observer will respect the now-empty hiddenDefaultPositionNames.
-        // displayInitialRandomPosition() might also be called by the observer if the list changes.
+        // If the randomize tab is currently active, refresh its display.
+        if (positionsTabs.selectedTabPosition == 0) {
+            displayInitialRandomPosition() // This will pick a new random position or show empty state.
+        }
+        // The library tab has been updated by the direct call to filterPositionsLibrary above.
+        // It will also be updated again by the observer on positionsViewModel.allPositions.
 
-        Toast.makeText(this, "Positions list refreshed. Hidden items restored.", Toast.LENGTH_SHORT).show()
+        // Toast.makeText(this, "Positions list refreshed. Hidden items restored.", Toast.LENGTH_SHORT).show() // Removed as per request
         invalidateOptionsMenu() // Update favorite icon if current position changed due to reset
     }
 
@@ -800,7 +883,8 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
     private fun saveHiddenDefaultPositionNames() {
         val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
-        prefs.edit().putStringSet("hidden_names", hiddenDefaultPositionNames).commit() // Changed to commit()
+        prefs.edit().putStringSet("hidden_names", hiddenDefaultPositionNames).commit()
+        updateRandomizablePositions() // This will re-filter and update UI if needed.
     }
     
     private fun toggleFavorite() {
@@ -1244,18 +1328,22 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     }
 
     private fun displayCurrentPosition() {
-        if (currentPosition < 0 || currentPosition >= allPositionItems.size) {
-            Log.w("PositionsActivity", "displayCurrentPosition: Invalid index $currentPosition for allPositionItems size ${allPositionItems.size}")
-            positionImageView.setImageResource(R.drawable.ic_image_24)
-            positionNameTextView.text = "No position selected (Add to strings.xml)" // Use string resource placeholder
-            invalidateOptionsMenu()
-            updateNavigationButtonStates()
+        if (randomizablePositions.isEmpty()) {
+            Log.w("PositionsActivity", "displayCurrentPosition: randomizablePositions is empty. Displaying empty state.")
+            displayEmptyRandomizeState() // Handles UI for empty list
             return
         }
 
-        val positionItem = allPositionItems[currentPosition]
+        if (currentPosition < 0 || currentPosition >= randomizablePositions.size) {
+            Log.w("PositionsActivity", "displayCurrentPosition: Invalid index $currentPosition for randomizablePositions size ${randomizablePositions.size}. Resetting to initial.")
+            // Attempt to reset to a valid initial position if current is bad
+            displayInitialRandomPosition() // This should pick a valid one or handle empty state again.
+            return // displayInitialRandomPosition will call displayCurrentPosition again if successful.
+        }
+
+        val positionItem = randomizablePositions[currentPosition]
         positionNameTextView.text = positionItem.name
-        Log.d("PositionsActivity", "Randomize tab: Displaying ${positionItem.name}, Image: ${positionItem.imageName}, IsAsset: ${positionItem.isAsset}")
+        Log.d("PositionsActivity", "Randomize tab: Displaying (Index $currentPosition): '${positionItem.name}', Image: '${positionItem.imageName}', IsAsset: ${positionItem.isAsset} from randomizablePositions.")
 
         positionImageView.setImageResource(R.drawable.ic_image_24) // Default placeholder
 
@@ -1439,8 +1527,8 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
             }
             .setPositiveButton("HIDE") { _, _ ->
                 hiddenDefaultPositionNames.add(positionName)
-                saveHiddenDefaultPositionNames()
-                filterPositionsLibrary(positionSearchView.query?.toString())
+                saveHiddenDefaultPositionNames() // This now calls updateRandomizablePositions() internally
+                filterPositionsLibrary(positionSearchView.query?.toString()) // Updates the library tab
                 Toast.makeText(this@PositionsActivity, "\"$positionName\" hidden.", Toast.LENGTH_SHORT).show()
             }
              .setOnCancelListener {
