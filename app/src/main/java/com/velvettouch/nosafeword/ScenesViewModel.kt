@@ -30,6 +30,71 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         private const val TAG = "ScenesViewModel"
         private const val SCENES_ASSET_FILENAME = "scenes.json"
         private const val PREF_DEFAULT_SCENES_SEEDED = "default_scenes_seeded_"
+        private const val PREFS_APP_NAME = "NoSafeWordAppPrefs" // General app prefs
+        private const val KEY_DELETED_LOGGED_OUT_SCENE_IDS = "deleted_logged_out_scene_ids" // Tracks default scenes deleted locally
+        private const val KEY_LOGGED_OUT_LOCAL_SCENES_JSON = "logged_out_local_scenes_json" // Stores the full list of local scenes
+    }
+
+    private val gson = Gson() // For JSON serialization
+
+    private fun saveLocalScenesToPrefs(context: Context, scenes: List<Scene>) {
+        try {
+            val jsonString = gson.toJson(scenes)
+            val prefs = context.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
+            prefs.edit().putString(KEY_LOGGED_OUT_LOCAL_SCENES_JSON, jsonString).apply()
+            Log.d(TAG, "Saved ${scenes.size} local scenes to SharedPreferences.")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving local scenes to SharedPreferences", e)
+        }
+    }
+
+    private fun loadLocalScenesFromPrefs(context: Context): MutableList<Scene>? {
+        val prefs = context.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
+        val jsonString = prefs.getString(KEY_LOGGED_OUT_LOCAL_SCENES_JSON, null)
+        return if (jsonString != null) {
+            try {
+                val typeToken = object : TypeToken<MutableList<Scene>>() {}.type
+                val loadedScenes = gson.fromJson<MutableList<Scene>>(jsonString, typeToken)
+                Log.d(TAG, "Loaded ${loadedScenes?.size ?: 0} local scenes from SharedPreferences.")
+                loadedScenes
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading local scenes from SharedPreferences", e)
+                null
+            }
+        } else {
+            Log.d(TAG, "No local scenes found in SharedPreferences.")
+            null
+        }
+    }
+
+    private fun getDeletedLoggedOutSceneIds(context: Context): MutableSet<String> {
+        val prefs = context.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
+        return prefs.getStringSet(KEY_DELETED_LOGGED_OUT_SCENE_IDS, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+    }
+
+    private fun saveDeletedLoggedOutSceneIds(context: Context, ids: Set<String>) {
+        val prefs = context.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putStringSet(KEY_DELETED_LOGGED_OUT_SCENE_IDS, ids).apply()
+    }
+
+    // Helper to get a storable, unique ID for a scene when it's managed locally (logged out)
+    // This ID is used for tracking deletions in SharedPreferences.
+    private fun getPersistentIdentifierForLocalScene(scene: Scene): String? {
+        return if (scene.firestoreId.startsWith("local_")) {
+            scene.firestoreId // It's a locally created or an asset scene that was edited and got a local_ ID
+        } else if (scene.id != 0 && scene.firestoreId.isBlank()) {
+            // It's a pristine default scene from assets, use its original int ID to form a key
+            "default_${scene.id}"
+        } else if (scene.id != 0 && !scene.firestoreId.isBlank() && !scene.firestoreId.startsWith("local_")) {
+            // This case might occur if a scene from Firestore (synced default) is somehow in local list during logged out.
+            // Unlikely, but if so, its original ID is still the best bet for "default" nature.
+             Log.w(TAG, "getPersistentIdentifierForLocalScene: Scene '${scene.title}' has non-local firestoreId ('${scene.firestoreId}') but also original id '${scene.id}' in local context. Using default_id.")
+            "default_${scene.id}"
+        }
+        else {
+            Log.e(TAG, "getPersistentIdentifierForLocalScene: Could not determine persistent ID for scene: title='${scene.title}', firestoreId='${scene.firestoreId}', id='${scene.id}'")
+            null // Cannot determine a reliable persistent ID for deletion tracking
+        }
     }
 
     private val _scenes = MutableStateFlow<List<Scene>>(emptyList())
@@ -90,13 +155,23 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                 // This path also handles initial seeding if necessary via loadScenesFromFirestore.
                 loadScenesFromFirestore() // This is a suspend function
             }
-        } else {
-            Log.d(TAG, "User is logged out. Loading default scenes from assets.")
-            // Ensure any ongoing Firestore operations for a previous user are handled or cancelled.
-            // collectLatest on _firebaseUser helps with this.
-            _scenes.value = emptyList() // Clear scenes for logged-out state immediately
-            localScenesWhenLoggedOut.clear() // Clear any pending local scenes
-            loadDefaultScenesForLoggedOutUser() // This launches its own coroutine
+        } else { // User is logged out
+            Log.d(TAG, "Auth state: User is logged out.")
+            // Try to load the entire local list (including custom additions/edits) from SharedPreferences
+            val savedLocalList = loadLocalScenesFromPrefs(appContext)
+            if (savedLocalList != null) {
+                Log.d(TAG, "Successfully loaded ${savedLocalList.size} scenes from SharedPreferences for logged-out state.")
+                localScenesWhenLoggedOut.clear()
+                localScenesWhenLoggedOut.addAll(savedLocalList)
+                _scenes.value = ArrayList(localScenesWhenLoggedOut)
+                _isLoading.value = false // Assuming loading from prefs is quick
+            } else {
+                // No saved list in SharedPreferences, or error loading it.
+                // Fall back to loading from assets (which respects the separate list of deleted *default* scene IDs).
+                Log.d(TAG, "No valid list in SharedPreferences, or this is the first load. Initializing from assets for logged-out user.")
+                localScenesWhenLoggedOut.clear() // Ensure it's empty before loadDefaultScenesForLoggedOutUser populates it
+                loadDefaultScenesForLoggedOutUser() // This populates localScenesWhenLoggedOut and _scenes
+            }
         }
     }
 
@@ -218,14 +293,35 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
     private fun loadDefaultScenesForLoggedOutUser() {
         viewModelScope.launch {
             _isLoading.value = true
-            localScenesWhenLoggedOut.clear()
+            // localScenesWhenLoggedOut is cleared by the caller (handleAuthState) if it decides a full reload is needed.
+            // Or, if handleAuthState finds it populated, it uses it as is.
+            // This function's job is to populate it from assets, respecting deletions.
+            if (localScenesWhenLoggedOut.isNotEmpty()){
+                 Log.d(TAG, "loadDefaultScenesForLoggedOutUser: localScenesWhenLoggedOut not empty, assuming it's managed by handleAuthState. Size: ${localScenesWhenLoggedOut.size}")
+                 _scenes.value = ArrayList(localScenesWhenLoggedOut) // Ensure UI is synced
+                 _isLoading.value = false
+                 return@launch
+            }
+
+            Log.d(TAG, "loadDefaultScenesForLoggedOutUser: localScenesWhenLoggedOut is empty, proceeding to load from assets.")
             val assetScenes = loadScenesFromAssets(appContext)
-            localScenesWhenLoggedOut.addAll(assetScenes.map {
-                it.copy(userId = "", isCustom = it.isCustom) // Ensure no userId, respect isCustom from JSON or default
-            })
-            _scenes.value = ArrayList(localScenesWhenLoggedOut) // Emit a new list
+            val deletedIds = getDeletedLoggedOutSceneIds(appContext)
+            Log.d(TAG, "loadDefaultScenesForLoggedOutUser: Found ${deletedIds.size} locally deleted IDs: $deletedIds")
+
+            val scenesToDisplay = assetScenes.filter { assetScene ->
+                val persistentId = "default_${assetScene.id}" // Default scenes from assets are identified by their original int id
+                val isDeleted = deletedIds.contains(persistentId)
+                if(isDeleted) Log.d(TAG, "loadDefaultScenesForLoggedOutUser: Filtering out deleted asset scene '${assetScene.title}' (ID: $persistentId)")
+                !isDeleted
+            }.map {
+                // Ensure pristine state for scenes loaded from assets
+                it.copy(userId = "", isCustom = false, firestoreId = "")
+            }
+
+            localScenesWhenLoggedOut.addAll(scenesToDisplay)
+            _scenes.value = ArrayList(localScenesWhenLoggedOut)
             _isLoading.value = false
-            Log.d(TAG, "Loaded ${localScenesWhenLoggedOut.size} default scenes for logged out user.")
+            Log.d(TAG, "Loaded ${localScenesWhenLoggedOut.size} default scenes for logged out user (after filtering).")
         }
     }
 
@@ -317,8 +413,9 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                 val localScene = scene.copy(userId = "", isCustom = true, firestoreId = localId)
                 localScenesWhenLoggedOut.add(localScene)
                 _scenes.value = ArrayList(localScenesWhenLoggedOut) // Emit updated list
+                saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut) // Persist changes
                 _isLoading.value = false
-                Log.d(TAG, "Scene '${scene.title}' added to local list (logged out). Local ID: $localId")
+                Log.d(TAG, "Scene '${scene.title}' added to local list (logged out) and saved to Prefs. Local ID: $localId")
             }
         }
     }
@@ -356,7 +453,8 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                             isCustom = true // Ensure it's marked custom
                         )
                         _scenes.value = ArrayList(localScenesWhenLoggedOut)
-                        Log.d(TAG, "Updated existing local scene '${sceneFromDialog.title}' (ID: ${sceneFromDialog.firestoreId}).")
+                        saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut) // Persist changes
+                        Log.d(TAG, "Updated existing local scene '${sceneFromDialog.title}' (ID: ${sceneFromDialog.firestoreId}) and saved to Prefs.")
                         sceneUpdatedSuccessfully = true
                     }
                 } else {
@@ -373,7 +471,8 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                             isCustom = true // Mark as custom
                         )
                         _scenes.value = ArrayList(localScenesWhenLoggedOut)
-                        Log.d(TAG, "Updated default scene '${sceneFromDialog.title}' (OriginalIntID: ${originalIntId}) as new local scene (NewLocalFirestoreID: ${newLocalFirestoreId}).")
+                        saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut) // Persist changes
+                        Log.d(TAG, "Updated default scene '${sceneFromDialog.title}' (OriginalIntID: ${originalIntId}) as new local scene (NewLocalFirestoreID: ${newLocalFirestoreId}) and saved to Prefs.")
                         sceneUpdatedSuccessfully = true
                     }
                 }
@@ -381,36 +480,63 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                 if (!sceneUpdatedSuccessfully) {
                     _error.value = "Local scene not found for update (Passed ID: ${sceneFromDialog.firestoreId}, OriginalIntID: ${sceneFromDialog.id})."
                     Log.w(TAG, "Local scene (PassedID: ${sceneFromDialog.firestoreId}, OriginalIntID: ${sceneFromDialog.id}) not found for update.")
+                    // Do not save to prefs if update failed to find the scene
                 }
                 _isLoading.value = false
             }
         }
     }
 
-    fun deleteScene(sceneId: String) { // sceneId is firestoreId or local_...
+    fun deleteScene(sceneToDelete: Scene) {
         val currentUser = auth.currentUser
         if (currentUser != null) { // Logged in
             viewModelScope.launch {
                 _isLoading.value = true; _error.value = null
-                if (sceneId.startsWith("local_")) {
-                     _error.value = "Cannot delete local scene from Firestore."; _isLoading.value = false; return@launch
+                if (sceneToDelete.firestoreId.isBlank()) {
+                     _error.value = "Cannot delete scene from Firestore without a valid Firestore ID."; _isLoading.value = false; return@launch
                 }
-                val result = repository.deleteScene(sceneId)
+                if (sceneToDelete.firestoreId.startsWith("local_")) {
+                     _error.value = "Cannot delete a 'local_' prefixed scene directly from Firestore this way."; _isLoading.value = false; return@launch
+                }
+                val result = repository.deleteScene(sceneToDelete.firestoreId)
                 result.fold(
-                    onSuccess = { Log.d(TAG, "Scene deleted from Firestore."); _isLoading.value = false },
-                    onFailure = { e -> _error.value = "Failed to delete scene: ${e.localizedMessage}"; _isLoading.value = false; Log.e(TAG, "Error deleting scene",e) }
+                    onSuccess = { Log.d(TAG, "Scene '${sceneToDelete.title}' deleted from Firestore."); _isLoading.value = false },
+                    onFailure = { e -> _error.value = "Failed to delete scene '${sceneToDelete.title}': ${e.localizedMessage}"; _isLoading.value = false; Log.e(TAG, "Error deleting scene",e) }
                 )
             }
-        } else { // Logged out
+        } else { // Logged out - delete from local list
              viewModelScope.launch {
                 _isLoading.value = true
-                val removed = localScenesWhenLoggedOut.removeIf { it.firestoreId == sceneId && sceneId.startsWith("local_") }
-                if (removed) {
-                    _scenes.value = ArrayList(localScenesWhenLoggedOut)
-                    Log.d(TAG, "Local scene with ID $sceneId deleted (logged out).")
+                var removed = false
+                val persistentId = getPersistentIdentifierForLocalScene(sceneToDelete)
+
+                if (persistentId != null) {
+                    if (sceneToDelete.firestoreId.startsWith("local_")) {
+                        removed = localScenesWhenLoggedOut.removeIf { it.firestoreId == sceneToDelete.firestoreId }
+                    } else if (sceneToDelete.id != 0 && sceneToDelete.firestoreId.isBlank()) {
+                        // Pristine default scene
+                        removed = localScenesWhenLoggedOut.removeIf { it.id == sceneToDelete.id && it.firestoreId.isBlank() }
+                    }
+
+                    if (removed) {
+                        Log.d(TAG, "Local scene '${sceneToDelete.title}' (PersistentID: $persistentId) removed from list.")
+                        val deletedIds = getDeletedLoggedOutSceneIds(appContext) // This tracks *default* scenes deleted.
+                        if (persistentId.startsWith("default_")) { // Only add to this specific list if it was originally a default scene.
+                            deletedIds.add(persistentId)
+                            saveDeletedLoggedOutSceneIds(appContext, deletedIds)
+                            Log.d(TAG, "Added $persistentId to SharedPreferences *default* deleted list. New list: $deletedIds")
+                        }
+                        _scenes.value = ArrayList(localScenesWhenLoggedOut)
+                        saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut) // Persist the entire modified list
+                        Log.d(TAG, "Saved updated localScenesWhenLoggedOut to Prefs after deletion.")
+                    } else {
+                        _error.value = "Local scene '${sceneToDelete.title}' not found for deletion in memory."
+                        Log.w(TAG, "Local scene '${sceneToDelete.title}' (PersistentID: $persistentId) not found for deletion in memory.")
+                        // Do not save to prefs if deletion failed to find the scene
+                    }
                 } else {
-                    _error.value = "Local scene not found for deletion."
-                    Log.w(TAG, "Local scene with ID $sceneId not found for deletion.")
+                    _error.value = "Could not determine persistent ID for scene '${sceneToDelete.title}' to mark as deleted."
+                    Log.e(TAG, "deleteScene (logged out): Failed to get persistent ID for '${sceneToDelete.title}'")
                 }
                 _isLoading.value = false
             }
@@ -512,6 +638,91 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                 _error.value = "$scenesFailed operations failed during reset."
             }
             // The ViewModel's `scenes` StateFlow should automatically update due to Firestore listener in `loadScenesFromFirestore`.
+        }
+    }
+
+    fun resetLocalScenesToDefault() {
+        viewModelScope.launch {
+            if (auth.currentUser != null) {
+                Log.w(TAG, "resetLocalScenesToDefault called while user is logged in. This function is for logged-out state.")
+                _error.value = "Reset for logged out state called inappropriately."
+                _isLoading.value = false // Ensure loading is reset if we exit early
+                return@launch
+            }
+            _isLoading.value = true
+            _error.value = null
+            Log.d(TAG, "Resetting local scenes to default (logged out), preserving custom scenes.")
+
+            // 1. Get current local scenes (could be from memory or try loading from prefs if memory is empty)
+            var currentLocalScenesInMemory = ArrayList(localScenesWhenLoggedOut) // Work with a copy of in-memory list
+            val loadedFromPrefs = loadLocalScenesFromPrefs(appContext)
+
+            val effectiveCurrentLocalScenes: MutableList<Scene> = if (loadedFromPrefs != null) {
+                Log.d(TAG, "ResetLocal: Using scenes loaded from SharedPreferences. Count: ${loadedFromPrefs.size}")
+                loadedFromPrefs
+            } else {
+                Log.d(TAG, "ResetLocal: No scenes in SharedPreferences, using current in-memory list. Count: ${currentLocalScenesInMemory.size}")
+                currentLocalScenesInMemory
+            }
+            Log.d(TAG, "ResetLocal: Effective current local scenes count before filtering: ${effectiveCurrentLocalScenes.size}")
+
+            // 2. Identify and preserve custom scenes created while logged out
+            val customScenesToKeep = effectiveCurrentLocalScenes.filter {
+                // A scene is custom if it was explicitly marked as such,
+                // or if it has a 'local_' firestoreId and isn't just an edited default scene
+                // (edited defaults are reset, new local ones are kept).
+                // A simple check: if it has a 'local_' prefix and its original 'id' is 0 (or not a known default pattern)
+                // OR if isCustom is true.
+                // For simplicity here, we assume scenes with local_ prefix that were NOT originally defaults are custom.
+                // Default scenes have non-zero 'id' and initially blank 'firestoreId'.
+                // When a default scene is edited locally, it gets a 'local_' firestoreId AND isCustom=true.
+                // When a new scene is added locally, it gets 'local_' firestoreId, id=0 (usually), and isCustom=true.
+                (it.isCustom && it.firestoreId.startsWith("local_")) || (it.id == 0 && it.firestoreId.startsWith("local_"))
+            }.distinctBy { it.firestoreId.ifEmpty { "new_${it.title}_${it.content.hashCode()}" } } // Ensure uniqueness for new scenes not yet saved
+            Log.d(TAG, "ResetLocal: Found ${customScenesToKeep.size} custom scenes to preserve.")
+
+
+            // 3. Clear the tracking of deleted *default* scenes, so all defaults are reloaded from assets
+            saveDeletedLoggedOutSceneIds(appContext, mutableSetOf())
+            Log.d(TAG, "ResetLocal: Cleared SharedPreferences for deleted *default* scene IDs.")
+
+            // 4. Load original default scenes from assets
+            val assetDefaultScenes = loadScenesFromAssets(appContext).map {
+                it.copy(userId = "", isCustom = false, firestoreId = "") // Ensure pristine state
+            }
+            Log.d(TAG, "ResetLocal: Loaded ${assetDefaultScenes.size} scenes from assets.")
+
+            // 5. Construct the new list: original defaults + preserved custom scenes
+            localScenesWhenLoggedOut.clear()
+            localScenesWhenLoggedOut.addAll(assetDefaultScenes)
+            // Add custom scenes, ensuring no duplicates if a custom scene somehow shares an identifier with a default (unlikely)
+            // A more robust way would be to ensure custom scenes have unique IDs not overlapping with default `id`s.
+            // For now, simple add, assuming custom scenes (especially new ones) won't clash with default asset scenes by content.
+            customScenesToKeep.forEach { customScene ->
+                // Avoid adding a custom scene if an identical default scene (by content/title) was just added.
+                // This is a basic check. A true "originalId" for custom scenes would be better.
+                if (!assetDefaultScenes.any { ds -> ds.title == customScene.title && ds.content == customScene.content }) {
+                    localScenesWhenLoggedOut.add(customScene)
+                } else {
+                     Log.d(TAG, "ResetLocal: Custom scene '${customScene.title}' seems to be a duplicate of an asset scene, not re-adding.")
+                }
+            }
+            // Ensure no duplicates in the final list based on a reliable unique property if possible
+            // For local scenes, firestoreId (if local_) or a combination of title/content for new ones.
+             val distinctLocalScenes = localScenesWhenLoggedOut.distinctBy {
+                if (it.firestoreId.startsWith("local_")) it.firestoreId
+                else if (it.id != 0 && it.firestoreId.isBlank()) "default_${it.id}" // Pristine default
+                else "${it.title}_${it.content.hashCode()}" // Fallback for other cases
+            }
+            localScenesWhenLoggedOut.clear()
+            localScenesWhenLoggedOut.addAll(distinctLocalScenes)
+
+
+            // 6. Save the new combined list and update UI
+            saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut)
+            _scenes.value = ArrayList(localScenesWhenLoggedOut)
+            _isLoading.value = false
+            Log.i(TAG, "Local scenes reset: Default scenes restored, ${customScenesToKeep.size} custom scenes preserved. Total: ${localScenesWhenLoggedOut.size}")
         }
     }
 

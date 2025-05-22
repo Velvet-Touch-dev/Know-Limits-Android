@@ -816,12 +816,26 @@ class MainActivity : BaseActivity() {
             .setTitle("Delete Scene") 
             .setMessage("Are you sure you want to delete \"${scene.title}\"?") 
             .setNegativeButton("Cancel", null) 
-            .setPositiveButton("Delete") { _, _ -> 
-                if (scene.firestoreId.isBlank()) { showMaterialToast("Error: Scene ID missing.", false); return@setPositiveButton }
-                scenesViewModel.deleteScene(scene.firestoreId)
-                val sceneIdentifier = scene.firestoreId.takeIf { it.isNotBlank() } ?: scene.title
-                if (favorites.contains(sceneIdentifier)) { favorites.remove(sceneIdentifier); saveFavoritesToPrefs() }
-                showMaterialToast("Scene '${scene.title}' deleted.", false) 
+            .setPositiveButton("Delete") { _, _ ->
+                // ViewModel's deleteScene now takes the whole Scene object
+                scenesViewModel.deleteScene(scene)
+
+                // Remove from favorites if it was there.
+                // Use a consistent identifier: firestoreId if present, otherwise original id for defaults.
+                val identifierForFavorites: String = if (scene.firestoreId.isNotBlank()) {
+                    scene.firestoreId
+                } else if (scene.id != 0) {
+                    "default_${scene.id}" // Create a consistent string key for default scenes based on original ID
+                } else {
+                    scene.title // Fallback, less reliable
+                }
+                if (favorites.contains(identifierForFavorites)) {
+                    favorites.remove(identifierForFavorites)
+                    saveFavoritesToPrefs()
+                    Log.d(TAG, "Removed '${scene.title}' (ID: $identifierForFavorites) from favorites after deletion.")
+                }
+                // ViewModel will handle specific error/success logging. MainActivity can show a generic attempt message.
+                showMaterialToast("Attempting to delete \"${scene.title}\".", false)
             }
             .show()
     }
@@ -834,9 +848,11 @@ class MainActivity : BaseActivity() {
             .setPositiveButton("Reset") { _, _ ->
                 if (auth.currentUser != null) {
                     scenesViewModel.resetDefaultScenesForCurrentUser()
-                    showMaterialToast("Resetting default scenes...", false)
+                    showMaterialToast("Resetting default scenes for your account...", false)
                 } else {
-                    showMaterialToast("Please log in to reset scenes.", false)
+                    // User is logged out, reset local scenes
+                    scenesViewModel.resetLocalScenesToDefault()
+                    showMaterialToast("Resetting local scenes to default...", false)
                 }
             }
             .show()
