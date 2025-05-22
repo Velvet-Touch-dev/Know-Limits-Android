@@ -22,7 +22,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:title="@string/app_name"
-                app:navigationIcon="@drawable/ic_menu" />
+                app:navigationIcon="@drawable/ic_menu"
+                android:background="?attr/colorSurface"
+                app:titleTextColor="?attr/colorOnSurface"
+                app:navigationIconTint="?attr/colorOnSurface"
+                android:theme="@style/ThemeOverlay.Material3.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.Material3.Light"
+                app:itemIconTint="?attr/colorOnSurface" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

@@ -965,6 +965,20 @@ class MainActivity : BaseActivity() {
         
         signInSignOutItem?.title = if (auth.currentUser == null) "Sign In" else "Sign Out"
         updateFavoriteIcon(menu) // This already handles visibility based on mode for favorite icon
+
+        // Programmatically tint icons to respect theme, using colorOnSurface like in PositionsActivity
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+        val iconColor = typedValue.data
+
+        try {
+            searchItem?.icon?.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_ATOP)
+            addToPlanToolbarItem?.icon?.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_ATOP)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error applying color filter to menu icons", e)
+        }
+        // Favorite icon is handled by updateFavoriteIcon.
+
         return super.onPrepareOptionsMenu(menu)
     }
 

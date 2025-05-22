@@ -12,7 +12,7 @@
     <!-- This will be the dedicated calendar button - now appearing first -->
     <item
         android:id="@+id/action_add_to_plan_toolbar"
-        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:icon="@drawable/ic_calendar_today_24"
         android:title="Add to Plan"
         app:showAsAction="ifRoom" />
 
