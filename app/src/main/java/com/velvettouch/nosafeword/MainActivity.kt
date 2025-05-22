@@ -240,7 +240,7 @@ class MainActivity : BaseActivity() {
 
     private fun setupAdapters() {
         editAdapter = EditScenesAdapter(
-            onEditClick = { scene -> showEditDialog(scene) },
+            onEditClick = { scene -> switchToRandomMode(scene) },
             onDeleteClick = { scene -> showDeleteConfirmation(scene) }
         )
         editRecyclerView.apply {
