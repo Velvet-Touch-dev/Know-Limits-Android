@@ -344,18 +344,43 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         } else { // Logged out - update local list
             viewModelScope.launch {
                 _isLoading.value = true
-                val index = localScenesWhenLoggedOut.indexOfFirst { it.firestoreId == scene.firestoreId && it.firestoreId.startsWith("local_") }
-                if (index != -1) {
-                    // When a scene (even a default one) is edited offline, it becomes custom.
-                    localScenesWhenLoggedOut[index] = scene.copy(
-                        userId = "", // Ensure no userId for local scenes
-                        isCustom = true // Mark as custom because it has been edited
-                    )
-                    _scenes.value = ArrayList(localScenesWhenLoggedOut)
-                    Log.d(TAG, "Local scene '${scene.title}' updated (logged out) and marked as custom.")
+                var sceneUpdatedSuccessfully = false
+                val sceneFromDialog = scene // scene passed to updateScene
+
+                // Attempt to find and update if it's an existing local scene (ID starts with "local_")
+                if (sceneFromDialog.firestoreId.startsWith("local_")) {
+                    val index = localScenesWhenLoggedOut.indexOfFirst { it.firestoreId == sceneFromDialog.firestoreId }
+                    if (index != -1) {
+                        localScenesWhenLoggedOut[index] = sceneFromDialog.copy(
+                            userId = "", // Ensure no userId
+                            isCustom = true // Ensure it's marked custom
+                        )
+                        _scenes.value = ArrayList(localScenesWhenLoggedOut)
+                        Log.d(TAG, "Updated existing local scene '${sceneFromDialog.title}' (ID: ${sceneFromDialog.firestoreId}).")
+                        sceneUpdatedSuccessfully = true
+                    }
                 } else {
-                    _error.value = "Local scene not found for update."
-                    Log.w(TAG, "Local scene with ID ${scene.firestoreId} not found for update.")
+                    // Attempt to find and update if it was a default scene (identified by original Int id)
+                    // This scene is now being customized locally.
+                    val originalIntId = sceneFromDialog.id
+                    // Find by original 'id' and ensure it's not already a 'local_' prefixed scene we missed.
+                    val index = localScenesWhenLoggedOut.indexOfFirst { it.id == originalIntId && !it.firestoreId.startsWith("local_") }
+                    if (index != -1) {
+                        val newLocalFirestoreId = "local_${System.currentTimeMillis()}"
+                        localScenesWhenLoggedOut[index] = sceneFromDialog.copy(
+                            firestoreId = newLocalFirestoreId, // Assign a new local-specific firestoreId
+                            userId = "",
+                            isCustom = true // Mark as custom
+                        )
+                        _scenes.value = ArrayList(localScenesWhenLoggedOut)
+                        Log.d(TAG, "Updated default scene '${sceneFromDialog.title}' (OriginalIntID: ${originalIntId}) as new local scene (NewLocalFirestoreID: ${newLocalFirestoreId}).")
+                        sceneUpdatedSuccessfully = true
+                    }
+                }
+
+                if (!sceneUpdatedSuccessfully) {
+                    _error.value = "Local scene not found for update (Passed ID: ${sceneFromDialog.firestoreId}, OriginalIntID: ${sceneFromDialog.id})."
+                    Log.w(TAG, "Local scene (PassedID: ${sceneFromDialog.firestoreId}, OriginalIntID: ${sceneFromDialog.id}) not found for update.")
                 }
                 _isLoading.value = false
             }

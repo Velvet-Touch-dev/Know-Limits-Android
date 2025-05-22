@@ -82,6 +82,8 @@ class MainActivity : BaseActivity() {
     private lateinit var sceneFilterChipGroup: ChipGroup
     private lateinit var chipDefaultScenes: Chip
     private lateinit var chipCustomScenes: Chip
+    private lateinit var baseTextChipDefaultScenes: String
+    private lateinit var baseTextChipCustomScenes: String
 
     private val scenesViewModel: ScenesViewModel by viewModels()
     private var displayedScenes: List<Scene> = listOf()
@@ -201,6 +203,8 @@ class MainActivity : BaseActivity() {
         sceneFilterChipGroup = findViewById(R.id.scene_filter_chip_group)
         chipDefaultScenes = findViewById(R.id.chip_default_scenes)
         chipCustomScenes = findViewById(R.id.chip_custom_scenes)
+        baseTextChipDefaultScenes = chipDefaultScenes.text.toString()
+        baseTextChipCustomScenes = chipCustomScenes.text.toString()
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         titleTextView.movementMethod = LinkMovementMethod.getInstance()
@@ -481,12 +485,54 @@ class MainActivity : BaseActivity() {
 
         if (currentMode == MODE_RANDOM) {
             if (displayedScenes.isNotEmpty()) {
-                val newIndexOfOldScene = if (previouslyDisplayedSceneObject != null) displayedScenes.indexOf(previouslyDisplayedSceneObject) else -1
-                currentSceneIndex = if (newIndexOfOldScene != -1) newIndexOfOldScene else -1
-                if (currentSceneIndex == -1) displayRandomScene() 
-            } else { 
+                var sceneToRedisplay: Scene? = null
+                if (previouslyDisplayedSceneObject != null) {
+                    if (previouslyDisplayedSceneObject.firestoreId.isNotEmpty()) {
+                        // Case 1: Previously displayed scene had a non-empty firestoreId (Firestore scene or already localized local scene)
+                        sceneToRedisplay = displayedScenes.find { it.firestoreId == previouslyDisplayedSceneObject.firestoreId }
+                        Log.d(TAG, "FilterScenes: Attempting to find by existing firestoreId '${previouslyDisplayedSceneObject.firestoreId}'. Found: ${sceneToRedisplay != null}")
+                    } else {
+                        // Case 2: Previously displayed scene was a pristine default scene (empty firestoreId, but valid original 'id')
+                        // The updated version in displayedScenes should now have this same original 'id' and a 'local_' prefixed firestoreId.
+                        sceneToRedisplay = displayedScenes.find {
+                            it.id == previouslyDisplayedSceneObject.id && // Match original integer ID
+                            it.firestoreId.startsWith("local_")      // And ensure it's the one that got localized by the ViewModel
+                        }
+                        Log.d(TAG, "FilterScenes: Attempting to find by originalIntId '${previouslyDisplayedSceneObject.id}' and local_ prefix. Found: ${sceneToRedisplay != null}")
+
+                        // Fallback: If somehow the scene was updated but didn't get a local_ ID (e.g., error in ViewModel or very quick succession of events)
+                        // and it's still identifiable by its original ID and still has an empty firestoreId. This is less likely.
+                        if (sceneToRedisplay == null) {
+                            sceneToRedisplay = displayedScenes.find {
+                                it.id == previouslyDisplayedSceneObject.id &&
+                                previouslyDisplayedSceneObject.firestoreId.isEmpty() && // Original was pristine
+                                it.firestoreId.isEmpty() // Current is still pristine (implies update failed to assign local_ ID)
+                            }
+                            if (sceneToRedisplay != null) {
+                                Log.d(TAG, "FilterScenes: Fallback - Found by originalIntId '${previouslyDisplayedSceneObject.id}' and still empty firestoreId.")
+                            }
+                        }
+                    }
+                }
+
+                if (sceneToRedisplay != null) {
+                    currentSceneIndex = displayedScenes.indexOf(sceneToRedisplay)
+                    if (currentSceneIndex != -1) {
+                        displayScene(sceneToRedisplay)
+                        Log.d(TAG, "FilterScenes: Redisplaying scene '${sceneToRedisplay.title}' at index $currentSceneIndex.")
+                    } else {
+                        // This should ideally not happen if sceneToRedisplay was found in displayedScenes.
+                        Log.w(TAG, "FilterScenes: Scene '${sceneToRedisplay.title}' was resolved but indexOf failed. Displaying random.")
+                        displayRandomScene()
+                    }
+                } else {
+                    // No specific scene to re-display (e.g., it was filtered out, deleted, initial app load, or ID logic failed).
+                    Log.d(TAG, "FilterScenes: No specific scene to redisplay. Displaying random scene.")
+                    displayRandomScene() // This will set currentSceneIndex and call displayScene.
+                }
+            } else { // displayedScenes is empty
                 clearSceneDisplay()
-                if (allUserScenes.isNotEmpty()) { 
+                if (allUserScenes.isNotEmpty()) {
                     titleTextView.text = "No Scenes Match Filter" // Hardcoded
                     contentTextView.text = "Try adjusting filters or search." // Hardcoded
                 }
@@ -495,6 +541,12 @@ class MainActivity : BaseActivity() {
         updatePreviousButtonState()
         updateFavoritesList()
         updateEditList()
+
+        // Update chip counts
+        val customCountInDisplayed = displayedScenes.count { it.isCustom }
+        val defaultCountInDisplayed = displayedScenes.count { !it.isCustom }
+        chipCustomScenes.text = "$baseTextChipCustomScenes ($customCountInDisplayed)"
+        chipDefaultScenes.text = "$baseTextChipDefaultScenes ($defaultCountInDisplayed)"
     }
 
     private fun updateUI() {
@@ -736,9 +788,21 @@ class MainActivity : BaseActivity() {
                             content = content,
                             isCustom = true, // Always mark edited scenes as custom
                             userId = scene.userId.ifBlank { currentUid }
+                            // scene.id (original Int ID) is preserved by .copy()
                         )
-                        if (updatedScene.firestoreId.isBlank()) showMaterialToast("Error: Scene ID missing.", false)
-                        else { scenesViewModel.updateScene(updatedScene); showMaterialToast("Updating scene: ${updatedScene.title}", false) }
+
+                        // If firestoreId is blank, it could be a default scene (id != 0) being edited locally (ViewModel will assign local_ ID),
+                        // or an error for a custom scene (id == 0) that lost its ID.
+                        if (updatedScene.firestoreId.isBlank() && updatedScene.id == 0) {
+                            // This is an error: a non-default (custom) scene has a blank firestoreId.
+                            showMaterialToast("Error: Scene ID missing for custom scene.", false)
+                        } else {
+                            // Proceed with update.
+                            // If it's a default scene (updatedScene.id != 0 && updatedScene.firestoreId.isBlank()),
+                            // the ViewModel is responsible for assigning a "local_" prefixed firestoreId.
+                            scenesViewModel.updateScene(updatedScene)
+                            showMaterialToast("Updating scene: ${updatedScene.title}", false)
+                        }
                     }
                     dialog.dismiss()
                 }
