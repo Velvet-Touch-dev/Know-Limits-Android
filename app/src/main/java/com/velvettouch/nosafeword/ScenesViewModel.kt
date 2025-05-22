@@ -421,6 +421,100 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         _error.value = null
     }
 
+    fun resetDefaultScenesForCurrentUser() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                _error.value = "User not logged in. Cannot reset scenes."
+                _isLoading.value = false
+                Log.w(TAG, "resetDefaultScenesForCurrentUser: User not logged in.")
+                return@launch
+            }
+            val userId = currentUser.uid
+
+            // 1. Load original default scenes from assets
+            val assetScenes = loadScenesFromAssets(appContext)
+            if (assetScenes.isEmpty()) {
+                _error.value = "No default scenes found in assets to reset to."
+                _isLoading.value = false
+                Log.w(TAG, "resetDefaultScenesForCurrentUser: No scenes in assets file.")
+                return@launch
+            }
+
+            // 2. Get all current user scenes from Firestore
+            val firestoreScenesResult = repository.getAllUserScenesOnce(userId)
+            if (firestoreScenesResult.isFailure) {
+                _error.value = "Failed to fetch current scenes: ${firestoreScenesResult.exceptionOrNull()?.message}"
+                _isLoading.value = false
+                Log.e(TAG, "resetDefaultScenesForCurrentUser: Failed to get all user scenes.", firestoreScenesResult.exceptionOrNull())
+                return@launch
+            }
+            val firestoreScenes = firestoreScenesResult.getOrNull() ?: emptyList()
+            val firestoreScenesMapByOriginalId = firestoreScenes
+                .filter { !it.isCustom && it.id != 0 } // Consider only scenes that were originally default
+                .associateBy { it.id }
+
+            var scenesAdded = 0
+            var scenesUpdated = 0
+            var scenesFailed = 0
+
+            // 3. Compare and update/add
+            for (assetScene in assetScenes) {
+                val firestoreMatch = firestoreScenesMapByOriginalId[assetScene.id]
+
+                if (firestoreMatch == null) {
+                    // Default scene from assets is missing in Firestore, add it back.
+                    val sceneToAdd = assetScene.copy(
+                        userId = userId,
+                        isCustom = false, // Ensure it's marked as not custom
+                        firestoreId = "" // Let Firestore generate ID
+                    )
+                    Log.d(TAG, "Reset: Adding missing default scene '${sceneToAdd.title}' (Original ID: ${sceneToAdd.id})")
+                    val addResult = repository.addScene(sceneToAdd)
+                    if (addResult.isSuccess) scenesAdded++ else scenesFailed++
+                } else {
+                    // Default scene exists in Firestore. Check if it was modified.
+                    val needsUpdate = firestoreMatch.title != assetScene.title ||
+                                      firestoreMatch.content != assetScene.content ||
+                                      firestoreMatch.isCustom // If it was marked as custom, it's a modification
+
+                    if (needsUpdate) {
+                        val sceneToUpdate = assetScene.copy(
+                            firestoreId = firestoreMatch.firestoreId, // Use existing Firestore ID
+                            userId = userId,
+                            isCustom = false // Ensure it's marked as not custom
+                        )
+                        Log.d(TAG, "Reset: Updating modified default scene '${sceneToUpdate.title}' (Original ID: ${sceneToUpdate.id})")
+                        val updateResult = repository.updateScene(sceneToUpdate)
+                        if (updateResult.isSuccess) scenesUpdated++ else scenesFailed++
+                    }
+                }
+            }
+
+            // 4. Handle scenes in Firestore that were originally default but are not in assets (should not happen if assets are source of truth)
+            // This part is more about cleanup if Firestore has orphaned "default" scenes.
+            // For now, the request is to restore asset defaults.
+
+            _isLoading.value = false
+            val summary = "Reset complete. Added: $scenesAdded, Updated: $scenesUpdated, Failed: $scenesFailed."
+            Log.i(TAG, summary)
+            // Optionally, set a success message or rely on the flow to update the UI.
+            // Forcing a refresh of the scenes list:
+            if (scenesAdded > 0 || scenesUpdated > 0 || scenesFailed > 0) {
+                 // The existing flow collection in loadScenesFromFirestore should pick up changes.
+                 // If not, a manual trigger might be needed, but Firestore listeners usually handle this.
+                 // Forcing a re-evaluation by the flow if it's not immediate:
+                 // loadScenesFromFirestore() // This might be redundant if listeners are quick.
+            }
+            if (scenesFailed > 0) {
+                _error.value = "$scenesFailed operations failed during reset."
+            }
+            // The ViewModel's `scenes` StateFlow should automatically update due to Firestore listener in `loadScenesFromFirestore`.
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         firebaseAuthListener?.let { auth.removeAuthStateListener(it) } // Clean up the stored listener

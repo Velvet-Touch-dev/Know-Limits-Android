@@ -828,11 +828,16 @@ class MainActivity : BaseActivity() {
 
     private fun showResetConfirmation() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Reset Scenes") 
-            .setMessage("This functionality is under review. Resetting cloud scenes is not yet implemented.") 
-            .setNegativeButton("Cancel", null) 
-            .setPositiveButton("OK") { _, _ -> 
-                lifecycleScope.launch { showMaterialToast("Cloud reset not implemented.", false) } 
+            .setTitle("Reset Default Scenes")
+            .setMessage("Are you sure you want to reset all default scenes to their original content? This will revert any edits you've made to them and re-add any default scenes you may have deleted. Custom scenes you created will not be affected.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Reset") { _, _ ->
+                if (auth.currentUser != null) {
+                    scenesViewModel.resetDefaultScenesForCurrentUser()
+                    showMaterialToast("Resetting default scenes...", false)
+                } else {
+                    showMaterialToast("Please log in to reset scenes.", false)
+                }
             }
             .show()
     }
