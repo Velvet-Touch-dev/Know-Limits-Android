@@ -197,73 +197,93 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val currentUser = firebaseAuth.currentUser
             val isLoggedInAndNotAnonymous = currentUser != null && !currentUser.isAnonymous
-            
-            // Determine if this operation might conflict with background sync
-            // i.e., if it's a local item (new or existing local) being saved by a logged-in user for Firestore.
-            val isOnlinePromotionOfLocalItem = (position.id.isBlank() || position.id.startsWith("local_")) && isLoggedInAndNotAnonymous
 
-            if (isOnlinePromotionOfLocalItem) {
-                Log.d("PositionsViewModel", "addOrUpdatePosition: Attempting synchronized save for local item '${position.name}' (ID: ${position.id}) by logged-in user.")
-                if (syncMutex.tryLock()) {
-                    // Use the item's actual ID if it's a local_ ID. If it's blank (new item),
-                    // this specific addOrUpdatePosition call doesn't need a temporary tracking ID in itemIdsBeingSynced
-                    // because the mutex itself serializes it against syncLocalPositions.
-                    // The main concern is an existing local_ID being processed by both paths.
-                    val idToPotentiallyCheck = if (position.id.startsWith("local_")) position.id else null
-
-                    if (idToPotentiallyCheck != null && itemIdsBeingSynced.contains(idToPotentiallyCheck)) {
-                        Log.w("PositionsViewModel", "addOrUpdatePosition: Item ID '$idToPotentiallyCheck' (${position.name}) is already in itemIdsBeingSynced (background sync). Aborting direct save.")
-                        _errorMessage.value = "Item is currently being synced in the background. Please try again shortly."
-                        _isLoading.value = false // Ensure isLoading is reset
-                        syncMutex.unlock()
-                        return@launch
-                    }
-                    
-                    // If it's a new item (blank ID), it won't be in itemIdsBeingSynced.
-                    // If it's an existing local_ item not yet in itemIdsBeingSynced, add it.
-                    idToPotentiallyCheck?.let { itemIdsBeingSynced.add(it) }
-                    _isSyncing.value = true // Show general syncing indicator
-
-                    try {
-                        _isLoading.value = true
-                        _errorMessage.value = null
-                        Log.d("PositionsViewModel", "addOrUpdatePosition (synchronized path): Calling repository for '${position.name}'.")
-                        repository.addOrUpdatePosition(position, imageUriToUpload)
-                        refreshPositionsState() // Await state refresh
-                        Log.d("PositionsViewModel", "addOrUpdatePosition (synchronized path): Repository call done, state refreshed for '${position.name}'.")
-                    } catch (e: Exception) {
-                        Log.e("PositionsViewModel", "addOrUpdatePosition (synchronized path): Error saving '${position.name}'", e)
-                        _errorMessage.value = "Error saving position: ${e.message}"
-                    } finally {
-                        idToPotentiallyCheck?.let { itemIdsBeingSynced.remove(it) }
-                        _isSyncing.value = false
-                        _isLoading.value = false
-                        syncMutex.unlock()
-                        Log.d("PositionsViewModel", "addOrUpdatePosition (synchronized path): Mutex unlocked for '${position.name}'. itemIdsBeingSynced size: ${itemIdsBeingSynced.size}")
-                    }
-                } else {
-                    Log.w("PositionsViewModel", "addOrUpdatePosition: Sync mutex was locked. Save for '${position.name}' (ID: ${position.id}) deferred/failed.")
-                    _errorMessage.value = "Data sync in progress. Please try saving again in a moment."
-                    _isLoading.value = false // Ensure isLoading is reset if we don't proceed.
-                }
-            } else {
-                // Standard path: Item is already a Firestore item, or user is anonymous, or not logged in.
-                // No need for full syncMutex, but still manage isLoading.
-                Log.d("PositionsViewModel", "addOrUpdatePosition (direct path): Saving '${position.name}' (ID: ${position.id}). LoggedIn: $isLoggedInAndNotAnonymous")
+            // Case 1: New position with an image for a logged-in user (Cloud Function flow)
+            if (position.id.isBlank() && imageUriToUpload != null && isLoggedInAndNotAnonymous && currentUser?.uid != null) {
+                Log.d("PositionsViewModel", "addOrUpdatePosition: New item with image for logged-in user '${currentUser.uid}'. Using Cloud Function flow for '${position.name}'.")
                 _isLoading.value = true
+                _isSyncing.value = true // Indicate background activity
                 _errorMessage.value = null
                 try {
-                    repository.addOrUpdatePosition(position, imageUriToUpload)
-                    if (isLoggedInAndNotAnonymous) {
-                        refreshPositionsState() // Refresh if online
+                    val success = repository.uploadPositionImageWithMetadata(
+                        imageUriToUpload = imageUriToUpload,
+                        positionName = position.name,
+                        isFavorite = position.isFavorite,
+                        // Pass other relevant PositionItem fields here for metadata
+                        forUserId = currentUser.uid!! // Safe due to isLoggedInAndNotAnonymous and currentUser.uid check
+                    )
+                    if (success) {
+                        Log.d("PositionsViewModel", "Image for '${position.name}' uploaded with metadata. Cloud Function will handle Firestore write.")
+                        // UI will update via Firestore listener. May show a temp "Processing..." state.
+                        // No direct refreshPositionsState() here as Firestore listener will trigger updates.
                     } else {
-                        loadPositions() // Basic refresh if offline
+                        _errorMessage.value = "Failed to upload image for new position."
+                        Log.e("PositionsViewModel", "Failed to upload image with metadata for '${position.name}'.")
                     }
                 } catch (e: Exception) {
-                    Log.e("PositionsViewModel", "addOrUpdatePosition (direct path): Error saving '${position.name}'", e)
-                    _errorMessage.value = "Error saving position: ${e.message}"
+                    Log.e("PositionsViewModel", "Error uploading image with metadata for '${position.name}'", e)
+                    _errorMessage.value = "Error uploading image: ${e.message}"
                 } finally {
                     _isLoading.value = false
+                    _isSyncing.value = false
+                }
+            }
+            // Case 2: Existing item update, or new item without image, or anonymous user (Existing direct save/sync logic)
+            else {
+                val isOnlinePromotionOfLocalItem = (position.id.isBlank() || position.id.startsWith("local_")) && isLoggedInAndNotAnonymous
+                if (isOnlinePromotionOfLocalItem) {
+                    Log.d("PositionsViewModel", "addOrUpdatePosition: Attempting synchronized save for local item '${position.name}' (ID: ${position.id}) by logged-in user.")
+                    if (syncMutex.tryLock()) {
+                        val idToPotentiallyCheck = if (position.id.startsWith("local_")) position.id else null
+                        if (idToPotentiallyCheck != null && itemIdsBeingSynced.contains(idToPotentiallyCheck)) {
+                            Log.w("PositionsViewModel", "addOrUpdatePosition: Item ID '$idToPotentiallyCheck' (${position.name}) is already in itemIdsBeingSynced. Aborting direct save.")
+                            _errorMessage.value = "Item is currently being synced. Please try again."
+                            _isLoading.value = false
+                            syncMutex.unlock()
+                            return@launch
+                        }
+                        idToPotentiallyCheck?.let { itemIdsBeingSynced.add(it) }
+                        _isSyncing.value = true
+                        try {
+                            _isLoading.value = true
+                            _errorMessage.value = null
+                            Log.d("PositionsViewModel", "addOrUpdatePosition (sync path): Calling repository.addOrUpdatePosition for '${position.name}'.")
+                            repository.addOrUpdatePosition(position, imageUriToUpload)
+                            refreshPositionsState()
+                            Log.d("PositionsViewModel", "addOrUpdatePosition (sync path): Repository call done for '${position.name}'.")
+                        } catch (e: Exception) {
+                            Log.e("PositionsViewModel", "addOrUpdatePosition (sync path): Error saving '${position.name}'", e)
+                            _errorMessage.value = "Error saving position: ${e.message}"
+                        } finally {
+                            idToPotentiallyCheck?.let { itemIdsBeingSynced.remove(it) }
+                            _isSyncing.value = false
+                            _isLoading.value = false
+                            syncMutex.unlock()
+                            Log.d("PositionsViewModel", "addOrUpdatePosition (sync path): Mutex unlocked for '${position.name}'.")
+                        }
+                    } else {
+                        Log.w("PositionsViewModel", "addOrUpdatePosition: Sync mutex locked. Save for '${position.name}' deferred.")
+                        _errorMessage.value = "Data sync in progress. Try saving again."
+                        _isLoading.value = false
+                    }
+                } else {
+                    // Standard path: Existing Firestore item, or anonymous user, or new item without image for logged-in user
+                    Log.d("PositionsViewModel", "addOrUpdatePosition (direct path): Saving '${position.name}' (ID: ${position.id}). LoggedIn: $isLoggedInAndNotAnonymous. ImageURI: $imageUriToUpload")
+                    _isLoading.value = true
+                    _errorMessage.value = null
+                    try {
+                        repository.addOrUpdatePosition(position, imageUriToUpload)
+                        if (isLoggedInAndNotAnonymous) {
+                            refreshPositionsState()
+                        } else {
+                            loadPositions()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("PositionsViewModel", "addOrUpdatePosition (direct path): Error saving '${position.name}'", e)
+                        _errorMessage.value = "Error saving position: ${e.message}"
+                    } finally {
+                        _isLoading.value = false
+                    }
                 }
             }
         }
