@@ -5,18 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.velvettouch.nosafeword.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -42,10 +41,7 @@ public final class ActivityTaskListBinding implements ViewBinding {
   public final NavigationView navViewTaskList;
 
   @NonNull
-  public final ProgressBar progressBarTaskList;
-
-  @NonNull
-  public final SwipeRefreshLayout swipeRefreshLayoutTasks;
+  public final LinearProgressIndicator taskListLinearProgressIndicator;
 
   @NonNull
   public final RecyclerView taskListRecyclerView;
@@ -56,8 +52,8 @@ public final class ActivityTaskListBinding implements ViewBinding {
   private ActivityTaskListBinding(@NonNull DrawerLayout rootView,
       @NonNull AppBarLayout appBarLayout, @NonNull DrawerLayout drawerLayoutTaskList,
       @NonNull LinearLayout emptyTaskListView, @NonNull FloatingActionButton fabAddTask,
-      @NonNull NavigationView navViewTaskList, @NonNull ProgressBar progressBarTaskList,
-      @NonNull SwipeRefreshLayout swipeRefreshLayoutTasks,
+      @NonNull NavigationView navViewTaskList,
+      @NonNull LinearProgressIndicator taskListLinearProgressIndicator,
       @NonNull RecyclerView taskListRecyclerView, @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.appBarLayout = appBarLayout;
@@ -65,8 +61,7 @@ public final class ActivityTaskListBinding implements ViewBinding {
     this.emptyTaskListView = emptyTaskListView;
     this.fabAddTask = fabAddTask;
     this.navViewTaskList = navViewTaskList;
-    this.progressBarTaskList = progressBarTaskList;
-    this.swipeRefreshLayoutTasks = swipeRefreshLayoutTasks;
+    this.taskListLinearProgressIndicator = taskListLinearProgressIndicator;
     this.taskListRecyclerView = taskListRecyclerView;
     this.toolbar = toolbar;
   }
@@ -124,15 +119,9 @@ public final class ActivityTaskListBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.progress_bar_task_list;
-      ProgressBar progressBarTaskList = ViewBindings.findChildViewById(rootView, id);
-      if (progressBarTaskList == null) {
-        break missingId;
-      }
-
-      id = R.id.swipe_refresh_layout_tasks;
-      SwipeRefreshLayout swipeRefreshLayoutTasks = ViewBindings.findChildViewById(rootView, id);
-      if (swipeRefreshLayoutTasks == null) {
+      id = R.id.task_list_linear_progress_indicator;
+      LinearProgressIndicator taskListLinearProgressIndicator = ViewBindings.findChildViewById(rootView, id);
+      if (taskListLinearProgressIndicator == null) {
         break missingId;
       }
 
@@ -149,8 +138,8 @@ public final class ActivityTaskListBinding implements ViewBinding {
       }
 
       return new ActivityTaskListBinding((DrawerLayout) rootView, appBarLayout,
-          drawerLayoutTaskList, emptyTaskListView, fabAddTask, navViewTaskList, progressBarTaskList,
-          swipeRefreshLayoutTasks, taskListRecyclerView, toolbar);
+          drawerLayoutTaskList, emptyTaskListView, fabAddTask, navViewTaskList,
+          taskListLinearProgressIndicator, taskListRecyclerView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

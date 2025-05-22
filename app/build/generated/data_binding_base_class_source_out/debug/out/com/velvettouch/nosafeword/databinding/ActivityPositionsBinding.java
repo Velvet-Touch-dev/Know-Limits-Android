@@ -27,6 +27,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.tabs.TabLayout;
 import com.velvettouch.nosafeword.R;
 import java.lang.NullPointerException;
@@ -104,6 +105,9 @@ public final class ActivityPositionsBinding implements ViewBinding {
   public final RecyclerView positionsLibraryRecyclerView;
 
   @NonNull
+  public final LinearProgressIndicator positionsProgressIndicator;
+
+  @NonNull
   public final TabLayout positionsTabs;
 
   @NonNull
@@ -134,7 +138,8 @@ public final class ActivityPositionsBinding implements ViewBinding {
       @NonNull ChipGroup positionFilterChipGroup, @NonNull ImageView positionImageView,
       @NonNull TextView positionNameTextView, @NonNull SearchView positionSearchView,
       @NonNull FrameLayout positionsContentContainer,
-      @NonNull RecyclerView positionsLibraryRecyclerView, @NonNull TabLayout positionsTabs,
+      @NonNull RecyclerView positionsLibraryRecyclerView,
+      @NonNull LinearProgressIndicator positionsProgressIndicator, @NonNull TabLayout positionsTabs,
       @NonNull MaterialButton previousButton, @NonNull MaterialButton randomizeButton,
       @NonNull ConstraintLayout randomizeTabContent, @NonNull TextView timerTextView,
       @NonNull Toolbar toolbar) {
@@ -161,6 +166,7 @@ public final class ActivityPositionsBinding implements ViewBinding {
     this.positionSearchView = positionSearchView;
     this.positionsContentContainer = positionsContentContainer;
     this.positionsLibraryRecyclerView = positionsLibraryRecyclerView;
+    this.positionsProgressIndicator = positionsProgressIndicator;
     this.positionsTabs = positionsTabs;
     this.previousButton = previousButton;
     this.randomizeButton = randomizeButton;
@@ -324,6 +330,12 @@ public final class ActivityPositionsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.positions_progress_indicator;
+      LinearProgressIndicator positionsProgressIndicator = ViewBindings.findChildViewById(rootView, id);
+      if (positionsProgressIndicator == null) {
+        break missingId;
+      }
+
       id = R.id.positions_tabs;
       TabLayout positionsTabs = ViewBindings.findChildViewById(rootView, id);
       if (positionsTabs == null) {
@@ -365,8 +377,9 @@ public final class ActivityPositionsBinding implements ViewBinding {
           chipCustomPositions, controlsContainer, drawerLayout, fabAddPosition, libraryFabContainer,
           libraryTabContent, maxTimeSpinner, minTimeSpinner, navView, positionCardView,
           positionFilterChipGroup, positionImageView, positionNameTextView, positionSearchView,
-          positionsContentContainer, positionsLibraryRecyclerView, positionsTabs, previousButton,
-          randomizeButton, randomizeTabContent, timerTextView, toolbar);
+          positionsContentContainer, positionsLibraryRecyclerView, positionsProgressIndicator,
+          positionsTabs, previousButton, randomizeButton, randomizeTabContent, timerTextView,
+          toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

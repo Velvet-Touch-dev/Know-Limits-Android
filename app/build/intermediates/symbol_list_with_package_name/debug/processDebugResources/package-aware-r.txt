@@ -3739,13 +3739,13 @@ id position_name_text_view
 id position_search_view
 id positions_content_container
 id positions_library_recycler_view
+id positions_progress_indicator
 id positions_tabs
 id postLayout
 id pressed
 id preview_button
 id previousButton
 id previous_button
-id progress_bar_task_list
 id progress_circular
 id progress_horizontal
 id radio
@@ -3861,7 +3861,6 @@ id submit_area
 id supportScrollUp
 id swipe_hint
 id swipe_hint_container
-id swipe_refresh_layout_tasks
 id tabMode
 id tab_layout_item_type
 id tabs
@@ -3880,6 +3879,7 @@ id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
 id task_checkbox
 id task_deadline_textview
+id task_list_linear_progress_indicator
 id task_list_recycler_view
 id task_title_edittext
 id task_title_layout

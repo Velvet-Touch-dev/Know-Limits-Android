@@ -36,6 +36,15 @@
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/positions_progress_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackColor="?attr/colorSurfaceContainerHighest" />
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/positions_tabs"
                 android:layout_width="match_parent"

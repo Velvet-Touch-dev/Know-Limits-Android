@@ -30,21 +30,25 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh_layout_tasks"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <!-- Note: app:layout_behavior is moved here from SwipeRefreshLayout -->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <!-- Note: app:layout_behavior is on SwipeRefreshLayout now -->
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/task_list_linear_progress_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    app:indicatorColor="?attr/colorPrimary"
+                    app:trackColor="?attr/colorSurfaceContainerHighest" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/task_list_recycler_view"
-                android:layout_width="match_parent"
+                    android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:padding="8dp"
@@ -81,17 +85,7 @@
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
             </LinearLayout>
 
-            </LinearLayout>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-        <ProgressBar
-            android:id="@+id/progress_bar_task_list"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:elevation="8dp"/> /* Optional: to ensure it's above other elements if needed */
+        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_task"

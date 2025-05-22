@@ -3738,13 +3738,13 @@ int id position_name_text_view 0x7f0901bf
 int id position_search_view 0x7f0901c0
 int id positions_content_container 0x7f0901c1
 int id positions_library_recycler_view 0x7f0901c2
+int id positions_progress_indicator 0x7f0902a8
 int id positions_tabs 0x7f0901c3
 int id postLayout 0x7f0901c4
 int id pressed 0x7f0901c5
 int id preview_button 0x7f0901c6
 int id previousButton 0x7f0901c7
 int id previous_button 0x7f0901c8
-int id progress_bar_task_list 0x7f0901c9
 int id progress_circular 0x7f0901ca
 int id progress_horizontal 0x7f0901cb
 int id radio 0x7f0901cc
@@ -3860,7 +3860,6 @@ int id submit_area 0x7f090239
 int id supportScrollUp 0x7f09023a
 int id swipe_hint 0x7f09023b
 int id swipe_hint_container 0x7f09023c
-int id swipe_refresh_layout_tasks 0x7f09023d
 int id tabMode 0x7f09023e
 int id tab_layout_item_type 0x7f09023f
 int id tabs 0x7f090240
@@ -3879,6 +3878,7 @@ int id tag_unhandled_key_listeners 0x7f09024c
 int id tag_window_insets_animation_callback 0x7f09024d
 int id task_checkbox 0x7f09024e
 int id task_deadline_textview 0x7f09024f
+int id task_list_linear_progress_indicator 0x7f0902a9
 int id task_list_recycler_view 0x7f090250
 int id task_title_edittext 0x7f090251
 int id task_title_layout 0x7f090252

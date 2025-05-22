@@ -20,7 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout // Ensured import is clean
+// import androidx.swiperefreshlayout.widget.SwipeRefreshLayout // Ensured import is clean
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -28,6 +28,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.velvettouch.nosafeword.data.model.TaskItem // Updated import
 import com.velvettouch.nosafeword.data.repository.TasksRepository
 import com.velvettouch.nosafeword.ui.tasks.TasksViewModel
@@ -53,8 +54,8 @@ class TaskListActivity : BaseActivity() {
     // private val taskItems = mutableListOf<TaskItem>() // Removed: ViewModel will manage this
     private var itemTouchHelper: ItemTouchHelper? = null
     private lateinit var emptyTaskListView: View
-    private lateinit var progressBar: ProgressBar
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout // Added SwipeRefreshLayout
+    private lateinit var taskListProgressIndicator: LinearProgressIndicator
+    // private lateinit var swipeRefreshLayout: SwipeRefreshLayout // Added SwipeRefreshLayout
 
     // ViewModel initialization
     private val tasksViewModel: TasksViewModel by viewModels {
@@ -94,12 +95,12 @@ class TaskListActivity : BaseActivity() {
         recyclerView = findViewById(R.id.task_list_recycler_view)
         fabAddTask = findViewById(R.id.fab_add_task)
         emptyTaskListView = findViewById(R.id.empty_task_list_view)
-        progressBar = findViewById(R.id.progress_bar_task_list)
-        swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh_layout_tasks) // Explicit type for findViewById
+        taskListProgressIndicator = findViewById(R.id.task_list_linear_progress_indicator)
+        // swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh_layout_tasks) // Explicit type for findViewById
 
         setupRecyclerView()
         setupFab()
-        setupSwipeRefresh() // Call new setup method
+        // setupSwipeRefresh() // Call new setup method
         observeViewModel()
 
         // loadTasks() and updateEmptyViewVisibility() will be handled by ViewModel observation
@@ -264,13 +265,11 @@ class TaskListActivity : BaseActivity() {
 
         lifecycleScope.launch {
             tasksViewModel.isLoading.collect { isLoading ->
-                // Control both ProgressBar and SwipeRefreshLayout's refreshing state
-                if (!swipeRefreshLayout.isRefreshing && isLoading) { // Show progress bar only if not already swipe-refreshing
-                    progressBar.visibility = View.VISIBLE
-                } else if (!isLoading) {
-                    progressBar.visibility = View.GONE
-                }
-                swipeRefreshLayout.isRefreshing = isLoading // ViewModel drives SwipeRefreshLayout's animation
+                // Control LinearProgressIndicator visibility
+                taskListProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
+                
+                // ViewModel drives SwipeRefreshLayout's animation, but only show linear progress if not swipe refreshing
+                // swipeRefreshLayout.isRefreshing = isLoading // Removed
             }
         }
 
@@ -294,14 +293,14 @@ class TaskListActivity : BaseActivity() {
         }
     }
 
-    private fun setupSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener {
-            tasksViewModel.loadTasks() // Tell ViewModel to reload tasks
-            // The isRefreshing state will be managed by observing tasksViewModel.isLoading
-        }
-        // Optional: Configure the colors of the refresh indicator (ensure this line is fully commented or valid if used)
-        // swipeRefreshLayout.setColorSchemeResources(R.color.primary, R.color.secondary) // Example if you have these colors
-    }
+    // private fun setupSwipeRefresh() {
+    //     swipeRefreshLayout.setOnRefreshListener {
+    //         tasksViewModel.loadTasks() // Tell ViewModel to reload tasks
+    //         // The isRefreshing state will be managed by observing tasksViewModel.isLoading
+    //     }
+    //     // Optional: Configure the colors of the refresh indicator (ensure this line is fully commented or valid if used)
+    //     // swipeRefreshLayout.setColorSchemeResources(R.color.primary, R.color.secondary) // Example if you have these colors
+    // }
 
     private fun handleNavigationItemSelected(menuItem: MenuItem) {
         drawerLayout.closeDrawer(GravityCompat.START)

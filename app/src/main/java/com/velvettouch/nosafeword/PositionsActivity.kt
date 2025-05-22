@@ -43,6 +43,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -80,6 +81,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionFilterChipGroup: ChipGroup
     private lateinit var chipAllPositions: Chip
     private lateinit var chipCustomPositions: Chip
+    private lateinit var positionsProgressIndicator: LinearProgressIndicator
 
     private lateinit var positionsViewModel: PositionsViewModel
 
@@ -156,6 +158,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         toolbar = findViewById(R.id.toolbar)
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
+        positionsProgressIndicator = findViewById(R.id.positions_progress_indicator)
         
         // Show settings by default initially
         autoPlaySettings.visibility = View.VISIBLE
@@ -493,8 +496,12 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
         lifecycleScope.launch {
             positionsViewModel.isLoading.collect { isLoading ->
-                // Show/hide loading indicator (e.g., a ProgressBar)
-                // findViewById<ProgressBar>(R.id.progressBar).visibility = if (isLoading) View.VISIBLE else View.GONE
+                updateProgressIndicatorVisibility()
+            }
+        }
+        lifecycleScope.launch {
+            positionsViewModel.isSyncing.collect { isSyncing ->
+                updateProgressIndicatorVisibility()
             }
         }
         lifecycleScope.launch {
@@ -505,17 +512,15 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 }
             }
         }
+    }
 
-        lifecycleScope.launch {
-            positionsViewModel.isSyncing.collect { isSyncing ->
-                // Show/hide a specific syncing indicator
-                // For example, a smaller ProgressBar near a "Sync Status" text view
-                // Or change text of a button to "Syncing..."
-                // findViewById<ProgressBar>(R.id.positions_progress_bar_sync)?.visibility = if (isSyncing) View.VISIBLE else View.GONE
-                if (isSyncing) {
-                    Toast.makeText(this@PositionsActivity, "Syncing local positions...", Toast.LENGTH_SHORT).show()
-                }
-            }
+    private fun updateProgressIndicatorVisibility() {
+        val isLoading = positionsViewModel.isLoading.value
+        val isSyncing = positionsViewModel.isSyncing.value
+        // Ensure positionsProgressIndicator is initialized before accessing it.
+        // It should be initialized in onCreate.
+        if (::positionsProgressIndicator.isInitialized) {
+            positionsProgressIndicator.visibility = if (isLoading || isSyncing) View.VISIBLE else View.GONE
         }
     }
 
