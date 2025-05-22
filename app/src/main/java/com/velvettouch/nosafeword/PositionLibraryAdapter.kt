@@ -19,7 +19,7 @@ data class PositionItem(
     val name: String = "",
     val imageName: String = "",
     @get:PropertyName("asset") @set:PropertyName("asset") var isAsset: Boolean = false, // Default to false; true for assets created in code
-    val userId: String = "", // To associate with a Firebase User
+    val userId: String? = null, // To associate with a Firebase User, nullable for anonymous
     @get:PropertyName("favorite") @set:PropertyName("favorite") var isFavorite: Boolean = false // New field for favorite status
 )
 
@@ -27,7 +27,7 @@ class PositionLibraryAdapter(
     private val context: Context,
     private var positions: List<PositionItem>,
     private val onItemClick: (PositionItem) -> Unit,
-    private val onDeleteClick: (PositionItem) -> Unit
+    private val onDeleteClick: (positionId: String, positionName: String) -> Unit
 ) : RecyclerView.Adapter<PositionLibraryAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -87,11 +87,48 @@ class PositionLibraryAdapter(
                                 .placeholder(R.drawable.ic_image_24)
                                 .error(R.drawable.ic_image_24)
                                 .into(positionImageView)
-                        } else {
-                            Log.w("PositionAdapter", "Unknown imageName format for non-asset: ${positionItem.imageName}")
-                            positionImageView.setImageResource(R.drawable.ic_image_24)
-                        }
-                    } else {
+                       } else if (positionItem.imageName.startsWith("/")) {
+                           // Check if it's an absolute file path (our internal storage case)
+                           Log.d("PositionAdapter", "Loading local file with Glide: ${positionItem.imageName}")
+                           val localFile = java.io.File(positionItem.imageName)
+                           if (localFile.exists()) {
+                               Log.d("PositionAdapter", "Attempting to load local file URI: ${Uri.fromFile(localFile)}, Exists: true")
+                               Glide.with(itemView.context)
+                                   .load(Uri.fromFile(localFile)) // Attempt loading via File URI
+                                   .placeholder(R.drawable.ic_image_24)
+                                   .error(R.drawable.ic_image_24) // This will be shown if .load fails
+                                   .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                       override fun onLoadFailed(
+                                           e: com.bumptech.glide.load.engine.GlideException?,
+                                           model: Any?,
+                                           target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, 
+                                           isFirstResource: Boolean
+                                       ): Boolean {
+                                           Log.e("PositionAdapter", "Glide (URI) load failed for ${localFile.path}", e)
+                                           return false // Let Glide handle the error placeholder
+                                       }
+
+                                       override fun onResourceReady(
+                                           resource: android.graphics.drawable.Drawable, // Changed to non-nullable
+                                           model: Any, // Changed to non-nullable
+                                           target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, 
+                                           dataSource: com.bumptech.glide.load.DataSource, // Changed to non-nullable
+                                           isFirstResource: Boolean
+                                       ): Boolean {
+                                           Log.d("PositionAdapter", "Glide (URI) load success for ${localFile.path}")
+                                           return false
+                                       }
+                                   })
+                                   .into(positionImageView)
+                           } else {
+                               Log.e("PositionAdapter", "Local file does not exist: ${positionItem.imageName}")
+                               positionImageView.setImageResource(R.drawable.ic_image_24)
+                           }
+                       } else {
+                           Log.w("PositionAdapter", "Unknown imageName format for non-asset: ${positionItem.imageName}")
+                           positionImageView.setImageResource(R.drawable.ic_image_24)
+                       }
+                   } else {
                         Log.d("PositionAdapter", "ImageName is blank for non-asset item: ${positionItem.name}")
                         positionImageView.setImageResource(R.drawable.ic_image_24)
                     }
@@ -108,7 +145,7 @@ class PositionLibraryAdapter(
                 onItemClick(positionItem)
             }
             deleteButton.setOnClickListener {
-                onDeleteClick(positionItem)
+                onDeleteClick(positionItem.id, positionItem.name)
             }
         }
     }

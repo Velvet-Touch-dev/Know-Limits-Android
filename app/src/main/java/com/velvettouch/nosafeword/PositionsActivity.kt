@@ -3,6 +3,7 @@ package com.velvettouch.nosafeword
 import com.google.firebase.auth.FirebaseAuth
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -91,9 +92,9 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private var voicePitch = 1.0f
     private var voiceSpeed = 0.9f
     
-    private var positionImages: List<String> = emptyList()
-    private var currentPosition: Int = -1
-    private var previousPosition: Int = -1 // Used for non-history based previous, will be replaced by history
+    // private var positionImages: List<String> = emptyList() // Deprecated for Randomize tab logic, use allPositionItems
+    private var currentPosition: Int = -1 // This will be an index for allPositionItems
+    // private var previousPosition: Int = -1 // Deprecated
     private var positionHistory: MutableList<Int> = mutableListOf()
     private var positionHistoryPosition: Int = -1
     private var isAutoPlayOn = false
@@ -131,7 +132,8 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         setContentView(R.layout.activity_positions)
         
         // Initialize ViewModel
-        positionsViewModel = ViewModelProvider(this)[PositionsViewModel::class.java]
+        val factory = PositionsViewModelFactory(application)
+        positionsViewModel = ViewModelProvider(this, factory)[PositionsViewModel::class.java]
 
         // Initialize TextToSpeech
         textToSpeech = TextToSpeech(this, this)
@@ -466,17 +468,22 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 if (::positionLibraryAdapter.isInitialized) {
                     positionLibraryAdapter.updatePositions(ArrayList(positions))
                 }
-                // If asset positions are loaded separately by ViewModel, update positionImages for Randomize tab
-                // This part needs careful handling based on how asset positions are managed by ViewModel
-                val assetBasedPositions = positions.filter { it.isAsset }
-                positionImages = assetBasedPositions.map { it.imageName }
+                // The Randomize tab will now use allPositionItems directly.
+                // The positionImages list is no longer the primary source for the Randomize tab.
+                // If positionImages is still used elsewhere exclusively for assets, it can remain,
+                // but displayCurrentPosition and related logic will use allPositionItems.
+                // For now, let's assume positionImages might be used by other legacy parts if they exist,
+                // but we will ensure our main display logic uses allPositionItems.
+                // If positionImages is truly only for the old randomize logic, this can be removed:
+                // val assetBasedPositions = positions.filter { it.isAsset }
+                // positionImages = assetBasedPositions.map { it.imageName }
 
 
                 // After positions are loaded, handle any pending navigation or initial display
-                if (pendingPositionNavigationName == null && positionsTabs.selectedTabPosition == 0) {
-                     displayInitialRandomPosition() // Ensure this uses the new positionImages
+                if (pendingPositionNavigationName == null && positionsTabs.selectedTabPosition == 0 && currentPosition == -1) { // Only if not already displaying something
+                     displayInitialRandomPosition() // This will now use allPositionItems
                 } else if (pendingPositionNavigationName != null) {
-                    navigateToPositionInRandomizeView(pendingPositionNavigationName!!)
+                    navigateToPositionInRandomizeView(pendingPositionNavigationName!!) // This will also use allPositionItems
                     pendingPositionNavigationName = null
                 }
                 filterPositionsLibrary(positionSearchView.query?.toString()) // Re-filter
@@ -490,131 +497,140 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 // findViewById<ProgressBar>(R.id.progressBar).visibility = if (isLoading) View.VISIBLE else View.GONE
             }
         }
-
         lifecycleScope.launch {
             positionsViewModel.errorMessage.collect { errorMessage ->
                 errorMessage?.let {
                     Toast.makeText(this@PositionsActivity, it, Toast.LENGTH_LONG).show()
-                    // Clear the error message in ViewModel after showing it if needed
+                    positionsViewModel.clearErrorMessage() // Clear the error message
                 }
             }
         }
 
-        // If you still load asset images separately (e.g., from local assets folder)
-        // you might trigger this from here after ViewModel is initialized.
-        // This is a placeholder for how asset positions might be loaded if not part of the main Firestore flow.
-        // Option 1: ViewModel loads them internally.
-        // Option 2: Activity tells ViewModel to load them or provides them.
-        // For now, assuming ViewModel's `loadPositions` also fetches/provides asset data
-        // or `positionImages` gets populated correctly from `allPositions`.
-        // Example:
-        // val localAssetPositionItems = loadPositionImagesFromAssets() // A new function to get List<PositionItem>
-        // positionsViewModel.loadAssetPositions(localAssetPositionItems)
+        lifecycleScope.launch {
+            positionsViewModel.isSyncing.collect { isSyncing ->
+                // Show/hide a specific syncing indicator
+                // For example, a smaller ProgressBar near a "Sync Status" text view
+                // Or change text of a button to "Syncing..."
+                // findViewById<ProgressBar>(R.id.positions_progress_bar_sync)?.visibility = if (isSyncing) View.VISIBLE else View.GONE
+                if (isSyncing) {
+                    Toast.makeText(this@PositionsActivity, "Syncing local positions...", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        intent?.let {
-            setIntent(it) // Update the activity's intent
-            val positionNameToDisplay = it.getStringExtra("DISPLAY_POSITION_NAME")
-            if (positionNameToDisplay != null) {
-                if (::positionsTabs.isInitialized) {
-                    navigateToPositionInRandomizeView(positionNameToDisplay)
-                } else {
-                    // If UI not fully ready, store for onCreate to pick up.
-                    pendingPositionNavigationName = positionNameToDisplay
-                }
+        setIntent(intent) // Update the activity's intent
+
+        val positionNameToDisplay = intent?.getStringExtra("DISPLAY_POSITION_NAME")
+        if (positionNameToDisplay != null) {
+            if (::positionsTabs.isInitialized) {
+                navigateToPositionInRandomizeView(positionNameToDisplay)
+            } else {
+                pendingPositionNavigationName = positionNameToDisplay
             }
         }
     }
 
+
     private fun navigateToPositionInRandomizeView(positionName: String) {
         if (!::positionsTabs.isInitialized) {
-            // Not ready to navigate
+            pendingPositionNavigationName = positionName
             return
         }
-
-        positionsTabs.getTabAt(0)?.select() // Select Randomize tab (index 0)
+        positionsTabs.getTabAt(0)?.select()
 
         val targetPositionItem = allPositionItems.find { it.name.equals(positionName, ignoreCase = true) }
 
         if (targetPositionItem != null) {
             positionNameTextView.text = targetPositionItem.name
+            currentPosition = allPositionItems.indexOf(targetPositionItem) // Set currentPosition to index in allPositionItems
+            positionHistory.clear()
+            if (currentPosition != -1) { // Ensure item was found
+                positionHistory.add(currentPosition)
+                positionHistoryPosition = 0
+            } else {
+                 positionHistoryPosition = -1 // Should not happen if targetPositionItem is not null
+            }
+
             try {
                 if (targetPositionItem.isAsset) {
                     val inputStream = assets.open("positions/${targetPositionItem.imageName}")
                     val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
                     positionImageView.setImageDrawable(drawable)
                     inputStream.close()
-
-                    // If it's an asset, try to update history for Next/Previous consistency
-                    val imageIndexInAssets = positionImages.indexOfFirst { it.equals(targetPositionItem.imageName, ignoreCase = true) }
-                    if (imageIndexInAssets != -1) {
-                        positionHistory.clear()
-                        currentPosition = imageIndexInAssets
-                        positionHistory.add(currentPosition)
-                        positionHistoryPosition = 0
-                    } else {
-                        // Asset from allPositionItems not found in positionImages (consistency issue)
-                        // Treat as if navigation is outside the standard asset sequence
-                        currentPosition = -1
-                        positionHistory.clear()
-                        positionHistoryPosition = -1
-                    }
-                } else {
-                    // Custom position, load image from URI
+                    speakPositionName(targetPositionItem.name)
+                    invalidateOptionsMenu()
+                } else { // Custom position (local or Firestore)
                     if (targetPositionItem.imageName.isNotBlank()) {
-                        if (targetPositionItem.imageName.startsWith("http://") || targetPositionItem.imageName.startsWith("https://")) {
+                        val imagePath = targetPositionItem.imageName
+                        
+                        if (imagePath.startsWith("content://") || imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+                            val imageUriToLoad = Uri.parse(imagePath)
+                            Log.d("PositionsActivity", "navigateToPositionInRandomizeView: Attempting to load URI: $imageUriToLoad, Scheme: ${imageUriToLoad.scheme}")
                             Glide.with(this@PositionsActivity)
-                                .load(targetPositionItem.imageName)
+                                .load(imageUriToLoad)
                                 .placeholder(R.drawable.ic_image_24)
                                 .error(R.drawable.ic_image_24)
+                                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                    override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                        Log.e("PositionsActivity", "navigateToPositionInRandomizeView (URI): Glide load failed for $imageUriToLoad", e)
+                                        return false
+                                    }
+                                    override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                        Log.d("PositionsActivity", "navigateToPositionInRandomizeView (URI): Glide load success for $imageUriToLoad")
+                                        return false
+                                    }
+                                })
                                 .into(positionImageView)
-                        } else if (targetPositionItem.imageName.startsWith("content://")) {
-                            // This case might be less common here if imageName is always a download URL from Firestore
-                            Glide.with(this@PositionsActivity)
-                                .load(Uri.parse(targetPositionItem.imageName))
-                                .placeholder(R.drawable.ic_image_24)
-                                .error(R.drawable.ic_image_24)
-                                .into(positionImageView)
+                        } else if (imagePath.startsWith("/")) { // Absolute file path
+                            val localFile = java.io.File(imagePath)
+                            if (localFile.exists()) {
+                                Log.d("PositionsActivity", "navigateToPositionInRandomizeView: Attempting to load File object: ${localFile.absolutePath}")
+                                Glide.with(this@PositionsActivity)
+                                    .load(localFile) // Use File object directly
+                                    .placeholder(R.drawable.ic_image_24)
+                                    .error(R.drawable.ic_image_24)
+                                    .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                        override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                            Log.e("PositionsActivity", "navigateToPositionInRandomizeView (File): Glide load failed for ${localFile.absolutePath}", e)
+                                            return false
+                                        }
+                                        override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                            Log.d("PositionsActivity", "navigateToPositionInRandomizeView (File): Glide load success for ${localFile.absolutePath}")
+                                            return false
+                                        }
+                                    })
+                                    .into(positionImageView)
+                            } else {
+                                Log.e("PositionsActivity", "navigateToPositionInRandomizeView: Local file does not exist: $imagePath")
+                                positionImageView.setImageResource(R.drawable.ic_image_24)
+                            }
                         } else {
-                            positionImageView.setImageResource(R.drawable.ic_image_24) // Unknown format
+                            Log.w("PositionsActivity", "navigateToPositionInRandomizeView: Unknown image path format: $imagePath")
+                            positionImageView.setImageResource(R.drawable.ic_image_24)
                         }
                     } else {
-                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder if URI is blank
+                        positionImageView.setImageResource(R.drawable.ic_image_24)
                     }
-                    // For custom items, Next/Previous based on asset list is not directly applicable
-                    currentPosition = -1
-                    positionHistory.clear()
-                    positionHistoryPosition = -1
+                    speakPositionName(targetPositionItem.name)
+                    invalidateOptionsMenu()
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
-                // If image loading fails, also reset position tracking
-                currentPosition = -1
-                positionHistory.clear()
-                positionHistoryPosition = -1
-            } catch (e: SecurityException) {
-                e.printStackTrace()
-                positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
-                Toast.makeText(this, "Failed to load image: Permission denied.", Toast.LENGTH_SHORT).show()
-                // If image loading fails, also reset position tracking
-                currentPosition = -1
-                positionHistory.clear()
-                positionHistoryPosition = -1
+            } catch (e: Exception) { // Catch IOException, SecurityException, etc.
+                android.util.Log.e("PositionsActivity", "Error loading image for ${targetPositionItem.name}: ${e.message}")
+                positionImageView.setImageResource(R.drawable.ic_image_24)
+                invalidateOptionsMenu()
+                if (e is SecurityException) {
+                    Toast.makeText(this, "Permission denied to load image.", Toast.LENGTH_SHORT).show()
+                }
             }
-
-            updateFavoriteIcon() // Update favorite status for the newly displayed item
-            updateNavigationButtonStates() // Update Next/Previous buttons based on new history state
-
+            updateNavigationButtonStates()
         } else {
-            // Position name not found in allPositionItems
             Toast.makeText(this, "Position '${positionName}' not found.", Toast.LENGTH_LONG).show()
-            displayInitialRandomPosition() // Display a new random (asset) position as a fallback
+            displayInitialRandomPosition()
         }
     }
-
     private fun setupResetButton() {
         resetButton.setOnClickListener {
             showResetConfirmationDialog()
@@ -668,25 +684,39 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
         // Ensure user is logged in before attempting to get UID
         val currentFirebaseUser = FirebaseAuth.getInstance().currentUser
-        if (currentFirebaseUser == null) {
-            Toast.makeText(this, "You must be logged in to add custom positions.", Toast.LENGTH_LONG).show()
-            return
+        val userId = currentFirebaseUser?.uid // Will be null if not logged in
+
+        // Determine what to store in PositionItem.imageName based on login state
+        val imageNameForPositionItem = if (userId == null) {
+            // Offline: Store the local image URI string directly.
+            // The ViewModel/Repository will use this for local display.
+            imageUri?.toString() ?: ""
+        } else {
+            // Online: Clear imageName; ViewModel/Repository will upload image from imageUri
+            // and populate imageName with the Firebase Storage download URL.
+            ""
         }
-        val userId = currentFirebaseUser.uid
 
         val newPosition = PositionItem(
-            id = "", // Firestore will generate ID for new items
+            id = "", // Firestore will generate ID if online; local store might generate one
             name = name,
-            imageName = "", // This will be replaced by the download URL after upload
+            imageName = imageNameForPositionItem,
             isAsset = false, // Custom positions are not assets
-            userId = userId, // Associate with the current user
+            userId = userId, // Associate with the current user, or null if not logged in
             isFavorite = false // Default to not favorite
         )
 
-        positionsViewModel.addOrUpdatePosition(newPosition, imageUri) // Pass the original imageUri for upload
-        Toast.makeText(this, "Adding position: $name", Toast.LENGTH_SHORT).show()
-        // The actual image file handling (saving locally, uploading to cloud) needs to be
-        // decided and implemented, likely involving the Repository.
+        // ViewModel handles saving to Firestore (and uploading image if URI present & online)
+        // or saving to local storage (if offline).
+        positionsViewModel.addOrUpdatePosition(newPosition, imageUri) // Pass original imageUri for processing
+
+        if (userId == null) {
+            Toast.makeText(this, "Position saved locally. Log in to sync.", Toast.LENGTH_LONG).show()
+        } else {
+            // Keep existing toast for online mode
+            Toast.makeText(this, "Adding position: $name", Toast.LENGTH_SHORT).show()
+        }
+        // The ViewModel/Repository will now handle image processing and storage.
     }
 
     // Helper to generate a placeholder name if URI is null, or for other temporary uses.
@@ -697,6 +727,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     private fun setupFab() {
         val fab: FloatingActionButton = findViewById(R.id.fab_add_position)
         fab.setOnClickListener {
+            Log.d("PositionsActivity", "FAB Clicked - Showing AddPositionDialog. Current User: ${FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous"}")
             val dialog = AddPositionDialogFragment()
             dialog.listener = this
             dialog.show(supportFragmentManager, "AddPositionDialogFragment")
@@ -1030,6 +1061,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
     }
     
+    /* // Method is now obsolete as ViewModel and prepareAssetPositionItems handle asset loading
     private fun loadPositionImages() {
         try {
             positionImages = assets.list("positions")?.filter { 
@@ -1058,38 +1090,74 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             ).show()
         }
     }
+    */
     
     private fun displayPositionByName(targetPositionName: String) {
         val positionItem = allPositionItems.find { it.name.equals(targetPositionName, ignoreCase = true) }
 
         if (positionItem != null) {
             positionNameTextView.text = positionItem.name
+            currentPosition = allPositionItems.indexOf(positionItem) // Index in allPositionItems
+            // Reset history to this position
+            positionHistory.clear()
+            if (currentPosition != -1) {
+                positionHistory.add(currentPosition)
+                positionHistoryPosition = 0
+            } else {
+                positionHistoryPosition = -1 // Should not happen if positionItem is not null
+            }
+
             try {
                 if (positionItem.isAsset) {
-                    // Find the asset in positionImages and call displayCurrentPosition
-                    val assetIndex = positionImages.indexOfFirst { assetFilename ->
-                        assetFilename.equals(positionItem.imageName, ignoreCase = true)
-                    }
-                    if (assetIndex != -1) {
-                        currentPosition = assetIndex
-                        displayCurrentPosition() // Handles image loading, TTS, and invalidateOptionsMenu
-                    } else {
-                        // Asset item from allPositionItems not found in positionImages list, this is an inconsistency
-                        Toast.makeText(this, "Asset '${positionItem.name}' not found in preloaded assets.", Toast.LENGTH_SHORT).show()
-                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
-                        currentPosition = -1
-                        invalidateOptionsMenu()
-                    }
+                    displayCurrentPosition() // Handles image loading, TTS, and invalidateOptionsMenu
                 } else {
                     // Custom position (not an asset)
-                    val imageFile = File(positionItem.imageName) // imageName is absolute path
-                    if (imageFile.exists()) {
-                        positionImageView.setImageURI(Uri.fromFile(imageFile))
+                    val imagePath = positionItem.imageName
+                     if (imagePath.isNotBlank()) {
+                        if (imagePath.startsWith("content://") || imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+                            val imageUriToLoad = Uri.parse(imagePath)
+                            Log.d("PositionsActivity", "displayPositionByName: Attempting to load URI: $imageUriToLoad, Scheme: ${imageUriToLoad.scheme}")
+                            Glide.with(this).load(imageUriToLoad)
+                                .placeholder(R.drawable.ic_image_24).error(R.drawable.ic_image_24)
+                                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                    override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                        Log.e("PositionsActivity", "displayPositionByName (URI): Glide load failed for $imageUriToLoad", e)
+                                        return false
+                                    }
+                                    override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                        Log.d("PositionsActivity", "displayPositionByName (URI): Glide load success for $imageUriToLoad")
+                                        return false
+                                    }
+                                })
+                                .into(positionImageView)
+                        } else if (imagePath.startsWith("/")) { // Absolute file path
+                            val localFile = java.io.File(imagePath)
+                            if (localFile.exists()) {
+                                Log.d("PositionsActivity", "displayPositionByName: Attempting to load File object: ${localFile.absolutePath}")
+                                Glide.with(this).load(localFile) // Use File object directly
+                                    .placeholder(R.drawable.ic_image_24).error(R.drawable.ic_image_24)
+                                    .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                        override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                            Log.e("PositionsActivity", "displayPositionByName (File): Glide load failed for ${localFile.absolutePath}", e)
+                                            return false
+                                        }
+                                        override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                            Log.d("PositionsActivity", "displayPositionByName (File): Glide load success for ${localFile.absolutePath}")
+                                            return false
+                                        }
+                                    })
+                                    .into(positionImageView)
+                            } else {
+                                Log.e("PositionsActivity", "displayPositionByName: Local file does not exist: $imagePath")
+                                positionImageView.setImageResource(R.drawable.ic_image_24)
+                            }
+                        } else {
+                            Log.w("PositionsActivity", "displayPositionByName: Unknown image path format: $imagePath")
+                            positionImageView.setImageResource(R.drawable.ic_image_24)
+                        }
                     } else {
                         positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
-                        Toast.makeText(this, "Image file not found for ${positionItem.name}", Toast.LENGTH_SHORT).show()
                     }
-                    currentPosition = -1 // Indicate it's not a default asset for favoriting via currentPosition
                     speakPositionName(positionItem.name)
                     invalidateOptionsMenu() // Update favorite icon status
                 }
@@ -1097,18 +1165,17 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 e.printStackTrace()
                 positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
                 Toast.makeText(this, "Error loading image for ${positionItem.name}", Toast.LENGTH_SHORT).show()
-                currentPosition = -1
                 invalidateOptionsMenu()
             }
+            updateNavigationButtonStates()
         } else {
             Toast.makeText(this, "Position '$targetPositionName' not found.", Toast.LENGTH_SHORT).show()
-            // Fallback to a random position if the named position isn't found in allPositionItems
             displayInitialRandomPosition()
         }
     }
 
     private fun displayNextPositionWithHistory() {
-        if (positionImages.isEmpty()) {
+        if (allPositionItems.isEmpty()) { // Use allPositionItems
             updateNavigationButtonStates()
             return
         }
@@ -1118,14 +1185,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             positionHistoryPosition++
             currentPosition = positionHistory[positionHistoryPosition]
         } else {
-            // No "forward" history, get a new random position
+            // No "forward" history, get a new random position from allPositionItems
             var newRandomIndex: Int
-            if (positionImages.size == 1) {
+            if (allPositionItems.size == 1) { // Use allPositionItems
                 newRandomIndex = 0 // Only one image
             } else {
                 do {
-                    newRandomIndex = Random.nextInt(positionImages.size)
-                } while (newRandomIndex == currentPosition) // Ensure it's different from current
+                    newRandomIndex = Random.nextInt(allPositionItems.size) // Use allPositionItems
+                } while (newRandomIndex == currentPosition && allPositionItems.size > 1) // Ensure it's different from current if possible
             }
             currentPosition = newRandomIndex
 
@@ -1155,65 +1222,126 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     
     // Renamed from displayRandomPosition to reflect it's now for initial/fallback
     private fun displayInitialRandomPosition() {
-        if (positionImages.isEmpty()) {
-            positionNameTextView.text = "No Positions Available"
+        if (allPositionItems.isEmpty()) {
+            positionNameTextView.text = "No positions available (Add to strings.xml)" // Use string resource placeholder
             positionImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_image_24))
             currentPosition = -1
             positionHistory.clear()
             positionHistoryPosition = -1
+        } else {
+            currentPosition = Random.nextInt(allPositionItems.size) // Use allPositionItems
+            positionHistory.clear()
+            positionHistory.add(currentPosition)
+            positionHistoryPosition = 0
+            displayCurrentPosition()
+        }
+        updateNavigationButtonStates()
+    }
+
+    private fun displayCurrentPosition() {
+        if (currentPosition < 0 || currentPosition >= allPositionItems.size) {
+            Log.w("PositionsActivity", "displayCurrentPosition: Invalid index $currentPosition for allPositionItems size ${allPositionItems.size}")
+            positionImageView.setImageResource(R.drawable.ic_image_24)
+            positionNameTextView.text = "No position selected (Add to strings.xml)" // Use string resource placeholder
+            invalidateOptionsMenu()
             updateNavigationButtonStates()
             return
         }
 
-        currentPosition = Random.nextInt(positionImages.size)
-        positionHistory.clear()
-        positionHistory.add(currentPosition)
-        positionHistoryPosition = 0
-        displayCurrentPosition()
-        updateNavigationButtonStates()
-    }
+        val positionItem = allPositionItems[currentPosition]
+        positionNameTextView.text = positionItem.name
+        Log.d("PositionsActivity", "Randomize tab: Displaying ${positionItem.name}, Image: ${positionItem.imageName}, IsAsset: ${positionItem.isAsset}")
 
-    // This function is now primarily for displaying the image/name based on currentPosition
-    private fun displayCurrentPosition() {
-        if (currentPosition < 0 || currentPosition >= positionImages.size) return
-        
-        val imageName = positionImages[currentPosition]
-        
+        positionImageView.setImageResource(R.drawable.ic_image_24) // Default placeholder
+
         try {
-            // Load and display the image
-            val inputStream = assets.open("positions/$imageName")
-            val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
-            positionImageView.setImageDrawable(drawable)
-            
-            // Display the image name without the extension
-            val nameWithoutExtension = imageName.substringBeforeLast(".")
-            val positionName = nameWithoutExtension.replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            positionNameTextView.text = positionName
-            
-            // Speak the position name with TTS
-            speakPositionName(positionName)
-            
-            // Apply dynamic tint to the randomize button based on your theme
-            val typedValue = android.util.TypedValue()
-            theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-            randomizeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-            
-            // Update favorite icon
-            invalidateOptionsMenu()
-            
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(
-                this, 
-                "Error loading image: ${e.message}", 
-                Toast.LENGTH_SHORT
-            ).show()
+            if (positionItem.imageName.isNotBlank()) {
+                if (positionItem.isAsset) {
+                    val inputStream = assets.open("positions/${positionItem.imageName}")
+                    val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
+                    positionImageView.setImageDrawable(drawable)
+                    inputStream.close()
+                } else { // Not an asset, could be URL, content URI, or file path
+                    val imagePath = positionItem.imageName
+                    when {
+                        imagePath.startsWith("http://") || imagePath.startsWith("https://") -> {
+                            Log.d("PositionsActivity", "displayCurrentPosition: Attempting to load URL: $imagePath")
+                            Glide.with(this).load(imagePath)
+                                .placeholder(R.drawable.ic_image_24).error(R.drawable.ic_image_24)
+                                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                    override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                        Log.e("PositionsActivity", "displayCurrentPosition (URL): Glide load failed for $imagePath", e)
+                                        return false
+                                    }
+                                    override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                        Log.d("PositionsActivity", "displayCurrentPosition (URL): Glide load success for $imagePath")
+                                        return false
+                                    }
+                                })
+                                .into(positionImageView)
+                        }
+                        imagePath.startsWith("content://") -> {
+                            val contentUri = Uri.parse(imagePath)
+                            Log.d("PositionsActivity", "displayCurrentPosition: Attempting to load content URI: $contentUri, Scheme: ${contentUri.scheme}")
+                            Glide.with(this).load(contentUri)
+                                .placeholder(R.drawable.ic_image_24).error(R.drawable.ic_image_24)
+                                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                    override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                        Log.e("PositionsActivity", "displayCurrentPosition (Content URI): Glide load failed for $contentUri", e)
+                                        return false
+                                    }
+                                    override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                        Log.d("PositionsActivity", "displayCurrentPosition (Content URI): Glide load success for $contentUri")
+                                        return false
+                                    }
+                                })
+                                .into(positionImageView)
+                        }
+                        imagePath.startsWith("/") -> { // Absolute file path
+                            val localFile = java.io.File(imagePath)
+                            if (localFile.exists()){
+                                Log.d("PositionsActivity", "displayCurrentPosition: Attempting to load File object: ${localFile.absolutePath}")
+                                Glide.with(this).load(localFile) // Use File object directly
+                                    .placeholder(R.drawable.ic_image_24).error(R.drawable.ic_image_24)
+                                    .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                        override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                                            Log.e("PositionsActivity", "displayCurrentPosition (File): Glide load failed for ${localFile.absolutePath}", e)
+                                            return false
+                                        }
+                                        override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                                            Log.d("PositionsActivity", "displayCurrentPosition (File): Glide load success for ${localFile.absolutePath}")
+                                            return false
+                                        }
+                                    })
+                                    .into(positionImageView)
+                            } else {
+                                Log.e("PositionsActivity", "displayCurrentPosition: Local file does not exist: $imagePath")
+                                positionImageView.setImageResource(R.drawable.ic_image_24)
+                            }
+                        }
+                        else -> {
+                            Log.w("PositionsActivity", "Randomize tab: Unknown non-asset imageName format: $imagePath")
+                            positionImageView.setImageResource(R.drawable.ic_image_24)
+                        }
+                    }
+                }
+            } else {
+                Log.w("PositionsActivity", "Randomize tab: ImageName is blank for ${positionItem.name}")
+                 positionImageView.setImageResource(R.drawable.ic_image_24)
+            }
+        } catch (e: Exception) {
+            Log.e("PositionsActivity", "Error loading image for ${positionItem.name} (${positionItem.imageName}) on Randomize tab", e)
+            positionImageView.setImageResource(R.drawable.ic_image_24)
         }
+
+        speakPositionName(positionItem.name)
+        invalidateOptionsMenu() // Update favorite icon status
+        updateNavigationButtonStates() // Update nav buttons based on new history/list state
     }
     
     private fun updateNavigationButtonStates() {
         previousButton.isEnabled = positionHistoryPosition > 0
-        randomizeButton.isEnabled = positionImages.isNotEmpty() // Next is always enabled if there are images
+        randomizeButton.isEnabled = allPositionItems.isNotEmpty() // Use allPositionItems
     }
 
 private fun setupLibraryRecyclerView() {
@@ -1229,8 +1357,24 @@ private fun setupLibraryRecyclerView() {
             positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
             invalidateOptionsMenu() // Ensure favorite icon updates
         },
-        onDeleteClick = { positionItem -> // This is for the explicit delete button on the card
-            handlePositionDeletionOrHiding(positionItem, -1) // -1 as adapterPosition is not from swipe
+        onDeleteClick = { positionId, positionName -> // Updated lambda signature
+            // Find the full PositionItem to pass to handlePositionDeletionOrHiding
+            // This is a bit inefficient; ideally, handlePositionDeletionOrHiding would also accept id/name.
+            // For now, we find it. Or, we can modify handlePositionDeletionOrHiding further.
+            // Let's assume we want to keep handlePositionDeletionOrHiding taking PositionItem for its asset check.
+            val positionItem = allPositionItems.find { it.id == positionId && it.name == positionName }
+            if (positionItem != null) {
+                handlePositionDeletionOrHiding(positionItem, -1) // -1 as adapterPosition is not from swipe
+            } else {
+                // Fallback if only ID is available (e.g. if name wasn't unique for some reason, though it should be for custom)
+                val itemById = allPositionItems.find { it.id == positionId }
+                if (itemById != null) {
+                     handlePositionDeletionOrHiding(itemById, -1)
+                } else {
+                    Log.e("PositionsActivity", "DeleteClick: Could not find PositionItem for ID $positionId, Name $positionName")
+                    Toast.makeText(this, "Error: Could not find item to delete.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     )
     positionsLibraryRecyclerView.adapter = positionLibraryAdapter
@@ -1244,6 +1388,7 @@ private fun setupLibraryRecyclerView() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val positionSwiped = positionLibraryAdapter.getPositionAt(viewHolder.adapterPosition)
+            // Pass the full item to handlePositionDeletionOrHiding, which will then call ViewModel with id and name
             handlePositionDeletionOrHiding(positionSwiped, viewHolder.adapterPosition)
         }
     }
@@ -1253,20 +1398,25 @@ private fun setupLibraryRecyclerView() {
 private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPosition: Int) {
     val positionName = positionItem.name
 
-    if (!positionItem.isAsset) { // It's a user's custom position (from Firestore)
+    if (!positionItem.isAsset) { // It's a user's custom position
         MaterialAlertDialogBuilder(this@PositionsActivity)
             .setTitle("Delete Position")
-            .setMessage("Are you sure you want to delete your custom position \"$positionName\"?")
+            .setMessage("Are you sure you want to delete your custom position \"$positionName\"? This will remove it from local storage and, if synced, from the cloud.")
             .setNegativeButton("CANCEL") { dialog, _ ->
                 if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition) // Rebind if from swipe
                 dialog.dismiss()
             }
             .setPositiveButton("DELETE") { _, _ ->
                 if (positionItem.id.isNotBlank()) {
-                    positionsViewModel.deletePosition(positionItem.id)
+                    // Call ViewModel with both ID and Name
+                    positionsViewModel.deletePosition(positionItem.id, positionItem.name)
                     Toast.makeText(this@PositionsActivity, "\"$positionName\" deleted.", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@PositionsActivity, "Error: Position ID missing.", Toast.LENGTH_SHORT).show()
+                    // This case should ideally not happen if items always have IDs.
+                    // If it's a local item that somehow lost its ID before sync, deleting by name might be an option.
+                    // However, the current ViewModel deletePosition requires an ID.
+                    Log.e("PositionsActivity", "Attempted to delete custom position with blank ID: $positionName")
+                    Toast.makeText(this@PositionsActivity, "Error: Position ID missing. Cannot delete.", Toast.LENGTH_SHORT).show()
                     if (adapterPosition != -1) positionLibraryAdapter.notifyItemChanged(adapterPosition)
                 }
             }
@@ -1275,7 +1425,7 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
             }
             .show()
     } else { // It's a default/asset position
-         MaterialAlertDialogBuilder(this@PositionsActivity)
+        MaterialAlertDialogBuilder(this@PositionsActivity)
             .setTitle("Hide Position")
             .setMessage("Are you sure you want to hide the default position \"$positionName\"? This can be undone by resetting positions.")
             .setNegativeButton("CANCEL") { dialog, _ ->
@@ -1305,7 +1455,7 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
 
     // Helper function to capitalize first letter of each word - This can be moved to a utils file or kept if still used by other local logic
     fun String.capitalizeWords(): String = split(" ").joinToString(" ") { word ->
-        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        word.replaceFirstChar { char -> if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString() }
     }
 
     // Example helper to load custom positions from SharedPreferences - OBSOLETE with Firestore
@@ -1443,11 +1593,9 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
                 textToSpeech.setSpeechRate(voiceSpeed)
                 
                 // If position already displayed, speak it
-                if (currentPosition >= 0 && currentPosition < positionImages.size) {
-                    val imageName = positionImages[currentPosition]
-                    val nameWithoutExtension = imageName.substringBeforeLast(".")
-                    val positionName = nameWithoutExtension.replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                    speakPositionName(positionName)
+                if (currentPosition >= 0 && currentPosition < allPositionItems.size) { // Use allPositionItems
+                    val positionToSpeak = allPositionItems[currentPosition]
+                    speakPositionName(positionToSpeak.name) // Use PositionItem.name directly
                 }
             }
         } else {

@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.bumptech.glide.Glide
 
 class AddPositionDialogFragment : DialogFragment() {
 
@@ -32,7 +33,14 @@ class AddPositionDialogFragment : DialogFragment() {
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             selectedImageUri = result.data?.data
-            positionImagePreview.setImageURI(selectedImageUri)
+            // Use Glide to load the image into the preview, which handles downscaling
+            selectedImageUri?.let { uri ->
+                Glide.with(this)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_image_24) // Optional: a placeholder
+                    .error(R.drawable.ic_image_24) // Optional: an error image
+                    .into(positionImagePreview)
+            }
         }
     }
 

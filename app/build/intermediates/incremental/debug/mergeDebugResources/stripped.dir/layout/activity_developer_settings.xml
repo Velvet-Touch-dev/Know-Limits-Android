@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voice Settings"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Pitch Controls -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voice Pitch"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/pitch_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1.0"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:layout_marginBottom="8dp" />
+
+    <SeekBar
+        android:id="@+id/pitch_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="20"
+        android:progress="10"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Speed Controls -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voice Speed"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/speed_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1.0"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:layout_marginBottom="8dp" />
+
+    <SeekBar
+        android:id="@+id/speed_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="20"
+        android:progress="10"
+        android:layout_marginBottom="24dp" />
+        
+    <!-- Test Sample -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test Sample"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:layout_marginBottom="8dp" />
+        
+    <EditText
+        android:id="@+id/test_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter text to speak"
+        android:text="Kiss her inner thighs"
+        android:inputType="text"
+        android:layout_marginBottom="16dp" />
+        
+    <Button
+        android:id="@+id/test_button"
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content"
+        android:text="Test Voice"
+        style="@style/Widget.Material3.Button" />
+        
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content"
+        android:text="Save Settings"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Material3.Button.OutlinedButton" />
+        
+    <Button
+        android:id="@+id/reset_button"
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content"
+        android:text="Reset to Default"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Material3.Button.TonalButton" />
+        
+</LinearLayout>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RadioGroup
+        android:id="@+id/seductiveness_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/seductiveness_low_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/seductiveness_level_low"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+        <RadioButton
+            android:id="@+id/seductiveness_medium_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/seductiveness_level_medium"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+        <RadioButton
+            android:id="@+id/seductiveness_high_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/seductiveness_level_high"
+            android:paddingVertical="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+        <TextView
+            android:id="@+id/seductiveness_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Adjust how the voice speaks instructions"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textStyle="italic" />
+
+        <Button
+            android:id="@+id/preview_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="end"
+            android:text="Preview Voice"
+            style="@style/Widget.Material3.Button.TextButton" />
+    </RadioGroup>
+</LinearLayout>
