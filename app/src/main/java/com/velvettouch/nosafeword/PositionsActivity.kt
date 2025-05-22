@@ -1525,7 +1525,14 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
             } else {
                 position.name.contains(query, ignoreCase = true)
             }
-            typeMatchLogic && queryMatch
+
+            val hiddenMatch = if (position.isAsset) {
+                !hiddenDefaultPositionNames.contains(position.name) // Show if NOT in hidden set
+            } else {
+                true // Non-assets are not affected by this specific hiding mechanism
+            }
+
+            typeMatchLogic && queryMatch && hiddenMatch
         }
         positionLibraryAdapter.updatePositions(ArrayList(filteredList))
         // Scroll to top after filtering

@@ -101,11 +101,14 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
                     _errorMessage.value = null
                     Log.d("PositionsViewModel", "syncLocalPositions: Starting sync (mutex acquired).")
 
-                    val rawLocalPositions = repository.getAllLocalPositionsForSync()
+                    val rawLocalPositionsFromPrefs = repository.getAllLocalPositionsForSync()
+                    // Step 1: Absolutely ensure no duplicate IDs from the start.
+                    val allLocalPositions = rawLocalPositionsFromPrefs.distinctBy { it.id }
+                    Log.d("PositionsViewModel", "syncLocalPositions: Raw from prefs: ${rawLocalPositionsFromPrefs.size}, After distinctById: ${allLocalPositions.size}")
 
                     // Separate local items (those needing potential name de-duplication before sync)
-                    val itemsWithLocalId = rawLocalPositions.filter { it.id.startsWith("local_") }
-                    val otherItems = rawLocalPositions.filterNot { it.id.startsWith("local_") } // These are Firestore or asset items
+                    val itemsWithLocalId = allLocalPositions.filter { it.id.startsWith("local_") }
+                    val otherItems = allLocalPositions.filterNot { it.id.startsWith("local_") } // These are Firestore or asset items
 
                     // Get names of items that are already synced (non-local)
                     val nonLocalItemNames = otherItems.map { it.name }.toSet()
@@ -113,18 +116,26 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
                     // For items with local_ IDs:
                     // 1. Filter out any local item whose name already exists in nonLocalItemNames.
                     // 2. Then, from the remainder, ensure only one item per name is considered for this sync run.
-                    val localItemsToConsider = itemsWithLocalId.filterNot { localItem ->
-                        localItem.name in nonLocalItemNames
-                    }
-                    val distinctLocalItemsByName = localItemsToConsider.distinctBy { it.name }
-                    
-                    Log.d("PositionsViewModel", "syncLocalPositions: Raw local items: ${itemsWithLocalId.size}. Non-local items: ${otherItems.size}. Non-local names: $nonLocalItemNames")
-                    Log.d("PositionsViewModel", "syncLocalPositions: Local items to consider (after filtering by non-local names): ${localItemsToConsider.size}. Distinct local items by name: ${distinctLocalItemsByName.size}")
+                    // Normalize names for comparison: lowercase and remove all whitespace
+                    fun String.normalizeForComparison() = this.toLowerCase().replace("\\s".toRegex(), "")
 
-                    // Combine the de-duplicated (by name and filtered against non-local names) local items with the other (non-local) items.
-                    // Then, ensure overall ID uniqueness as a final safeguard.
+                    val normalizedNonLocalItemNames = nonLocalItemNames.map { it.normalizeForComparison() }.toSet()
+
+                    val localItemsToConsider = itemsWithLocalId.filterNot { localItem ->
+                        localItem.name.normalizeForComparison() in normalizedNonLocalItemNames
+                    }
+                    Log.d("PositionsViewModel", "syncLocalPositions: Local items to consider (IDs: ${localItemsToConsider.joinToString { it.id + " ('" + it.name + "')" }}), count: ${localItemsToConsider.size}")
+
+                    // De-duplicate by normalized name
+                    val distinctLocalItemsByName = localItemsToConsider.distinctBy { it.name.normalizeForComparison() }
+                    
+                    Log.d("PositionsViewModel", "syncLocalPositions: Items with local_ prefix: ${itemsWithLocalId.size}. Non-local items: ${otherItems.size}. Normalized non-local names: $normalizedNonLocalItemNames")
+                    Log.d("PositionsViewModel", "syncLocalPositions: Distinct local items by normalized name (IDs: ${distinctLocalItemsByName.joinToString { it.id + " ('" + it.name + "')" }}), count: ${distinctLocalItemsByName.size}")
+
+                    // Combine the de-duplicated local items with the other (non-local) items.
+                    // Ensure final list is distinct by ID.
                     val candidatePositionsForSync = (distinctLocalItemsByName + otherItems).distinctBy { it.id }
-                    Log.d("PositionsViewModel", "syncLocalPositions: Total candidate positions for sync after all deduplication: ${candidatePositionsForSync.size}")
+                    Log.d("PositionsViewModel", "syncLocalPositions: Total candidate positions for sync (IDs: ${candidatePositionsForSync.joinToString { it.id + " ('" + it.name + "')" }}), count: ${candidatePositionsForSync.size}")
 
 
                     val positionsToProcessThisRun = candidatePositionsForSync.filter { candidateItem ->

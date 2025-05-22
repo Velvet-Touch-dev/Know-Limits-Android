@@ -144,28 +144,60 @@ class PositionsRepository(private val context: Context) {
 
 
     // Upload image to Firebase Storage and get download URL
-    suspend fun uploadImage(imageUri: Uri, forUserId: String?): String? {
-        if (forUserId == null) { // Anonymous or unspecified users cannot upload to a user-specific path
-            // Potentially could upload to a temporary path if needed, but for now, prevent.
+    suspend fun uploadImage(
+        imageFileUriToUpload: Uri, // Should be a file URI for the actual file to upload
+        forUserId: String?,
+        deterministicFileName: String // The name (e.g., UUID.jpg) to use in Firebase Storage
+    ): String? {
+        if (forUserId == null) {
+            Log.w("PositionsRepository", "uploadImage: forUserId is null, cannot upload.")
             return null
         }
-        val filename = UUID.randomUUID().toString()
-        val imageRef = storage.reference.child("$POSITION_IMAGES_STORAGE_PATH/$forUserId/$filename")
+        if (deterministicFileName.isBlank()) {
+            Log.e("PositionsRepository", "uploadImage: deterministicFileName is blank.")
+            return null
+        }
 
-        return try {
-            val uploadTask = imageRef.putFile(imageUri).await()
-            val downloadUrl = uploadTask.storage.downloadUrl.await()
-            downloadUrl.toString()
+        val imageRef = storage.reference.child("$POSITION_IMAGES_STORAGE_PATH/$forUserId/$deterministicFileName")
+
+        try {
+            // Attempt to get metadata to check if the file already exists
+            Log.d("PositionsRepository", "uploadImage: Checking metadata for $imageRef")
+            imageRef.metadata.await() // Throws exception if not found
+            // If metadata fetch succeeds, file exists. Get its download URL.
+            Log.d("PositionsRepository", "uploadImage: File already exists at $imageRef. Fetching download URL.")
+            val downloadUrl = imageRef.downloadUrl.await().toString()
+            Log.d("PositionsRepository", "uploadImage: Existing file URL: $downloadUrl")
+            return downloadUrl
         } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            if (e is com.google.firebase.storage.StorageException && e.errorCode == com.google.firebase.storage.StorageException.ERROR_OBJECT_NOT_FOUND) {
+                // File does not exist, proceed with upload
+                Log.d("PositionsRepository", "uploadImage: File not found at $imageRef. Proceeding with upload.")
+                return try {
+                    imageRef.putFile(imageFileUriToUpload).await() // Use the passed file URI
+                    val downloadUrl = imageRef.downloadUrl.await().toString()
+                    Log.d("PositionsRepository", "uploadImage: File uploaded successfully to $imageRef. New URL: $downloadUrl")
+                    downloadUrl
+                } catch (uploadException: Exception) {
+                    Log.e("PositionsRepository", "uploadImage: Upload failed for $imageRef", uploadException)
+                    null // Upload failed
+                }
+            } else {
+                // Other error during metadata fetch (e.g., permission issues, network error)
+                Log.e("PositionsRepository", "uploadImage: Error fetching metadata for $imageRef", e)
+                return null
+            }
         }
     }
 
     // Add a new position or update an existing one.
     // Returns the PositionItem as saved/updated in Firestore, or null on failure for online operations.
     // For offline operations, it implies local save success but returns null as no Firestore interaction.
-    suspend fun addOrUpdatePosition(position: PositionItem, imageUriToUpload: Uri? = null): PositionItem? {
+    suspend fun addOrUpdatePosition(
+        position: PositionItem,
+        imageUriToUpload: Uri? = null,
+        uploadedImageCache: MutableMap<String, String>? = null // Cache for local path -> remote URL
+    ): PositionItem? {
         val currentProcessingUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         if (currentProcessingUserId == null) { // Anonymous user, save locally
@@ -237,10 +269,21 @@ class PositionsRepository(private val context: Context) {
 
             if (imageUriToUpload != null && !positionForFirestore.isAsset) {
                 // New image provided via content URI (e.g., user picked a new image)
-                android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): imageUriToUpload ($imageUriToUpload) is present. Uploading from content URI.")
-                val uploadedUrl = uploadImage(imageUriToUpload, currentProcessingUserId)
-                finalImageNameForFirestore = uploadedUrl ?: existingFirestorePosition?.imageName ?: "" // Fallback to existing remote or blank
-                android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Content URI Uploaded. New imageName: $finalImageNameForFirestore")
+                android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): imageUriToUpload ($imageUriToUpload) is present. Copying and uploading.")
+                val tempLocalPathForUpload = copyImageToInternalStorage(imageUriToUpload) // This creates a file with UUID name
+                if (tempLocalPathForUpload != null) {
+                    val tempLocalFile = File(tempLocalPathForUpload)
+                    val uploadedUrl = uploadImage(
+                        Uri.fromFile(tempLocalFile),
+                        currentProcessingUserId,
+                        tempLocalFile.name // Use the UUID-based name from the copied file
+                    )
+                    finalImageNameForFirestore = uploadedUrl ?: existingFirestorePosition?.imageName ?: ""
+                    android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Content URI copied to $tempLocalPathForUpload, then Uploaded. New imageName: $finalImageNameForFirestore")
+                } else {
+                    android.util.Log.e("PositionsRepository", "addOrUpdatePosition (online): Failed to copy content URI $imageUriToUpload to internal storage.")
+                    finalImageNameForFirestore = existingFirestorePosition?.imageName ?: "" // Fallback to existing or blank
+                }
             } else if (!positionForFirestore.isAsset &&
                        positionForFirestore.imageName.isNotBlank() &&
                        !positionForFirestore.imageName.startsWith("http") &&
@@ -254,9 +297,23 @@ class PositionsRepository(private val context: Context) {
                     android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): imageName (${positionForFirestore.imageName}) is a local path. Uploading.")
                     val internalFile = File(positionForFirestore.imageName)
                     if (internalFile.exists()) {
-                        val uploadedUrl = uploadImage(Uri.fromFile(internalFile), currentProcessingUserId)
-                        finalImageNameForFirestore = uploadedUrl ?: ""
-                        android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Local Path Uploaded. New imageName: $finalImageNameForFirestore")
+                        val localPathKey = internalFile.absolutePath // Cache key is the full local path
+                        if (uploadedImageCache != null && uploadedImageCache.containsKey(localPathKey)) {
+                            finalImageNameForFirestore = uploadedImageCache[localPathKey] ?: ""
+                            android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Used cached URL for $localPathKey: $finalImageNameForFirestore")
+                        } else {
+                            val uploadedUrl = uploadImage(
+                                Uri.fromFile(internalFile),
+                                currentProcessingUserId,
+                                internalFile.name // Use the existing UUID-based name of the local file
+                            )
+                            finalImageNameForFirestore = uploadedUrl ?: ""
+                            if (uploadedUrl != null && uploadedImageCache != null) {
+                                uploadedImageCache[localPathKey] = uploadedUrl
+                                android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Uploaded and cached $localPathKey -> $uploadedUrl")
+                            }
+                            android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Local Path Uploaded. New imageName: $finalImageNameForFirestore")
+                        }
                     } else {
                         android.util.Log.e("PositionsRepository", "addOrUpdatePosition (online): Internal file for imageName not found: ${positionForFirestore.imageName}")
                         finalImageNameForFirestore = "" // File not found
@@ -276,14 +333,38 @@ class PositionsRepository(private val context: Context) {
                     .await()
                 finalPositionToSet
             } else { // Item is new to Firestore - Reverting to non-transactional add due to persistent compiler issues.
-                 Log.d("PositionsRepository", "addOrUpdatePosition (online): No existing found by ID or name. Adding new (non-transactional). Name: '${positionForFirestore.name}', Final ImageName: ${positionForFirestore.imageName}")
+                 Log.d("PositionsRepository", "addOrUpdatePosition (online): No existing found by ID or name. Adding new (non-transactional). Original Name: '${position.name}', Final ImageName: ${positionForFirestore.imageName}")
                 try {
+                    // Last-minute check: Query by name again right before adding.
+                    // Use the original 'position.name' for the query to ensure we're checking against the correct item.
+                    val checkQuery = db.collection(POSITIONS_COLLECTION)
+                        .whereEqualTo("userId", currentProcessingUserId)
+                        .whereEqualTo("name", position.name)
+                        .limit(1).get().await()
+
+                    if (!checkQuery.isEmpty) {
+                        val docSnapshot = checkQuery.documents.first()
+                        Log.w("PositionsRepository", "addOrUpdatePosition (non-transactional): Item with original name '${position.name}' found (ID: ${docSnapshot.id}) during pre-add check. Updating it with current image and original name.")
+                        // We found an existing document by name.
+                        // `positionForFirestore` has the correct imageName.
+                        // Ensure we use the original 'position.name' and the existing docSnapshot.id.
+                        val finalPositionToSet = positionForFirestore.copy(id = docSnapshot.id, name = position.name)
+                        db.collection(POSITIONS_COLLECTION).document(docSnapshot.id)
+                            .set(finalPositionToSet)
+                            .await()
+                        return finalPositionToSet // Return the data that was actually set
+                    }
+                    
+                    // If still not found, then proceed with the add.
+                    // Ensure we use the original 'position.name' for the new item.
+                    Log.d("PositionsRepository", "addOrUpdatePosition (non-transactional): Pre-add check found no existing item. Proceeding to add '${position.name}'.")
                     val newDocRef = db.collection(POSITIONS_COLLECTION)
-                        .add(positionForFirestore.copy(id = "")) // Let Firestore generate ID
+                        .add(positionForFirestore.copy(id = "", name = position.name)) // Let Firestore generate ID, ensure original name
                         .await()
-                    positionForFirestore.copy(id = newDocRef.id)
+                    // Return the item with its new Firestore ID and original name.
+                    positionForFirestore.copy(id = newDocRef.id, name = position.name)
                 } catch (e: Exception) {
-                    Log.e("PositionsRepository", "addOrUpdatePosition (online): Error adding new position non-transactionally for name '${positionForFirestore.name}'", e)
+                    Log.e("PositionsRepository", "addOrUpdatePosition (online): Error adding new position non-transactionally for name '${position.name}'", e)
                     null // Indicate failure
                 }
             }
@@ -332,16 +413,26 @@ class PositionsRepository(private val context: Context) {
             return@withContext
         }
 
-        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: User $currentSyncingUserId. Processing ${itemsToSyncThisRun.size} specific local items for sync.")
+        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: User $currentSyncingUserId. Received ${itemsToSyncThisRun.size} items to process.")
         
+        // Final safeguard: ensure the list to iterate over is distinct by ID.
+        val distinctItemsToSync = itemsToSyncThisRun.distinctBy { it.id }
+        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: After distinctBy ID, processing ${distinctItemsToSync.size} items.")
+
         // Load ALL current local positions from SP to merge results correctly.
         // Use a map for efficient update/removal. Key by original ID.
         val allCurrentLocalPositionsMap = loadLocalPositions().associateBy { it.id }.toMutableMap()
 
-        itemsToSyncThisRun.forEach { localPositionToSync ->
+        val imageUploadCache = mutableMapOf<String, String>() // Cache for this sync operation
+
+        distinctItemsToSync.forEach { localPositionToSync ->
             Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Processing item ID ${localPositionToSync.id}, Name: ${localPositionToSync.name}, Original ImageName: ${localPositionToSync.imageName}")
             
-            val syncedPosition = addOrUpdatePosition(position = localPositionToSync, imageUriToUpload = null)
+            val syncedPosition = addOrUpdatePosition(
+                position = localPositionToSync,
+                imageUriToUpload = null,
+                uploadedImageCache = imageUploadCache
+            )
 
             if (syncedPosition != null) {
                 // Successfully synced (or updated existing in Firestore).
