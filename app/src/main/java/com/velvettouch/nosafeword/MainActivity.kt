@@ -580,7 +580,7 @@ class MainActivity : BaseActivity() {
 
     private fun showMaterialToast(message: String, isAddedToFavorite: Boolean) {
         currentToast?.cancel()
-        val iconText = if (isAddedToFavorite) "❤️ " else "💔 "
+        val iconText = if (isAddedToFavorite) "❤️ " else "" // Remove heartbreak emoji, keep heart for favorite
         currentToast = Toast.makeText(applicationContext, iconText + message, Toast.LENGTH_SHORT).apply {
             setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
             show()

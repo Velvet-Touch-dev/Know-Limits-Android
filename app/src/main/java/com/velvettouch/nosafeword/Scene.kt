@@ -4,12 +4,14 @@ package com.velvettouch.nosafeword
  * Data model for representing a scene from the JSON file
  */
 import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.PropertyName
 
 data class Scene(
     @DocumentId var firestoreId: String = "", // Firestore document ID
     val id: Int = 0, // Original ID, if applicable
     val title: String = "",
     val content: String = "",
+    @get:PropertyName("isCustom") // Ensures correct mapping for Firestore
     val isCustom: Boolean = false,
     var userId: String = "" // User ID for Firestore security rules
 ) {

@@ -102,11 +102,12 @@ class ScenesRepository {
                 if (snapshot != null) {
                     Log.d(TAG, "Snapshot received. Document count: ${snapshot.size()}")
                     val scenes = snapshot.documents.mapNotNull { document ->
-                        document.toObject<Scene>()?.apply {
+                        val scene = document.toObject<Scene>()
+                        scene?.apply {
                             firestoreId = document.id
-                            // Log each scene being mapped
-                            // Log.d(TAG, "Mapping scene: $title, id: $firestoreId, userId: ${this.userId}")
+                            Log.d(TAG, "Mapping scene: '${title}', id: $firestoreId, originalId: ${this.id}, isCustom: ${this.isCustom}, userId: ${this.userId}")
                         }
+                        scene // return the scene or null
                     }
                     Log.d(TAG, "Successfully mapped ${scenes.size} scenes. Trying to send to flow.")
                     val sendResult = trySend(scenes)

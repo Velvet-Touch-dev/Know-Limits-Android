@@ -188,19 +188,28 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                     val currentUser = auth.currentUser // Cache for consistent check
                     Log.d(TAG, "Collected scenes from Firestore. Count: ${sceneList.size}. User: ${currentUser?.uid}")
 
-                    if (currentUser != null && sceneList.isEmpty() && !areDefaultScenesSeeded(currentUser.uid)) {
-                        Log.d(TAG, "Firestore scene list is empty for user ${currentUser.uid} and not yet seeded. Triggering seed.")
-                        // Set isLoading true before calling suspend function that might take time
-                        _isLoading.value = true
-                        checkAndSeedDefaultScenes()
-                        // After seeding, the Firestore listener in getUserScenesFlow should emit the new list.
-                        // _isLoading will be set to false when that new list is collected.
-                    } else {
+                    if (currentUser != null && !areDefaultScenesSeeded(currentUser.uid)) {
+                        Log.d(TAG, "Default scenes not yet seeded for user ${currentUser.uid}. Triggering seed check.")
+                        // isSeedingInProgress flag will be managed by checkAndSeedDefaultScenes
+                        // _isLoading will be managed by checkAndSeedDefaultScenes and the flow collection
+                        checkAndSeedDefaultScenes() // This will internally check and add only missing defaults
+                        // The flow from getUserScenesFlow will eventually emit the updated list including seeded scenes.
+                        // We should still update the current _scenes.value with what we have for now.
                         _scenes.value = sceneList
-                        _isLoading.value = false // Set loading to false if not seeding or if already seeded
-                        if (currentUser != null && sceneList.isEmpty() && areDefaultScenesSeeded(currentUser.uid)) {
-                            Log.d(TAG, "Firestore scene list is empty for user ${currentUser.uid}, but defaults were already seeded.")
-                        }
+                        // If checkAndSeedDefaultScenes runs, it will manage isLoading. If not, we need to manage it.
+                        // However, the flow will re-emit, so this isLoading=false might be premature if seeding happens.
+                        // Let's rely on the flow to update isLoading after seeding.
+                        // If seeding doesn't run (because areDefaultScenesSeeded was true, though we entered this block),
+                        // then we need to set isLoading false.
+                        // This logic path is now simpler: if not seeded, attempt seed. The flow will update.
+                    }
+                    // Always update scenes with the latest from Firestore, regardless of seeding attempt.
+                    _scenes.value = sceneList
+                    _isLoading.value = false // Set loading to false after processing current emission.
+                                            // If seeding was triggered, the flow will emit again and update isLoading.
+
+                    if (currentUser != null && sceneList.isEmpty() && areDefaultScenesSeeded(currentUser.uid)) {
+                        Log.d(TAG, "Firestore scene list is empty for user ${currentUser.uid}, but defaults were already seeded (this is unusual).")
                     }
                 }
         }
@@ -289,10 +298,15 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         if (currentUser != null) { // User is logged in
             viewModelScope.launch {
                 _isLoading.value = true; _error.value = null
-                val sceneWithUser = scene.copy(userId = currentUser.uid, firestoreId = if(scene.firestoreId.startsWith("local_")) "" else scene.firestoreId)
+                val sceneWithUser = scene.copy(
+                    userId = currentUser.uid,
+                    isCustom = true, // Explicitly ensure isCustom is true for new scenes added when logged in
+                    firestoreId = if(scene.firestoreId.startsWith("local_")) "" else scene.firestoreId
+                )
+                Log.d(TAG, "Adding scene to Firestore: ${sceneWithUser.title}, isCustom: ${sceneWithUser.isCustom}, originalId: ${sceneWithUser.id}")
                 val result = repository.addScene(sceneWithUser) // addScene in repo handles new ID generation if firestoreId is empty
                 result.fold(
-                    onSuccess = { Log.d(TAG, "Scene added to Firestore."); _isLoading.value = false },
+                    onSuccess = { Log.d(TAG, "Scene '${sceneWithUser.title}' added to Firestore."); _isLoading.value = false },
                     onFailure = { e -> _error.value = "Failed to add scene: ${e.localizedMessage}"; _isLoading.value = false; Log.e(TAG, "Error adding scene",e) }
                 )
             }
