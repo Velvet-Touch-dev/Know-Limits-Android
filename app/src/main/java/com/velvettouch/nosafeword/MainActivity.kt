@@ -30,6 +30,9 @@ import androidx.core.view.GravityCompat
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.collectLatest // Already imported but good to ensure
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,7 +56,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.collectLatest
+// kotlinx.coroutines.flow.collectLatest is now imported earlier
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -313,33 +316,25 @@ class MainActivity : BaseActivity() {
                 Log.d(TAG, "Displayed scenes after filter. Count: ${displayedScenes.size}")
 
                 // Handle pending navigation now that allUserScenes is populated
-                if (pendingSceneIdNavigation != null) {
-                    Log.d(TAG, "observeViewModel: Handling pending navigation to scene ID: $pendingSceneIdNavigation")
-                    navigateToSceneByIdInRandomView(pendingSceneIdNavigation)
-                    pendingSceneIdNavigation = null // Reset after handling
-                    pendingSceneTitleNavigation = null
-                } else if (pendingSceneTitleNavigation != null) {
-                    Log.d(TAG, "observeViewModel: Handling pending navigation to scene Title: $pendingSceneTitleNavigation")
-                    navigateToSceneInRandomView(pendingSceneTitleNavigation!!)
-                    pendingSceneTitleNavigation = null
-                    pendingSceneIdNavigation = null // Reset after handling
-                } else {
-                    // Only proceed with default random display logic if no pending navigation
-                    val currentActuallyDisplayedScene = getCurrentScene() // Use consistent helper
-                    if (currentMode == MODE_RANDOM) {
-                        if (displayedScenes.isNotEmpty() && (currentActuallyDisplayedScene == null || !displayedScenes.contains(currentActuallyDisplayedScene))) {
-                            Log.d(TAG, "Condition met to displayRandomScene in ViewModel observer (no pending nav).")
-                            displayRandomScene()
-                        } else if (displayedScenes.isEmpty()) {
-                            Log.d(TAG, "DisplayedScenes is empty in ViewModel observer, calling clearSceneDisplay (no pending nav).")
-                            clearSceneDisplay()
-                            if(allUserScenes.isNotEmpty()) {
-                                titleTextView.text = "No Scenes Match Filter" // Hardcoded
-                                contentTextView.text = "Try adjusting filters or search." // Hardcoded
-                            }
-                        } else {
-                            Log.d(TAG, "ViewModel observer: Displayed scenes not empty, current scene is: ${currentActuallyDisplayedScene?.title} (no pending nav)")
-                        }
+                processPendingNavigation() // Centralized logic to handle pending navigation
+
+                // Default display logic if no navigation occurred or if current scene is still null
+                val sceneAfterPendingNav = getCurrentScene()
+                if (currentMode == MODE_RANDOM) {
+                    if (sceneAfterPendingNav == null && displayedScenes.isNotEmpty()) {
+                        Log.d(TAG, "ViewModel observer: No scene set by pending nav or otherwise, displaying random.")
+                        displayRandomScene()
+                    } else if (displayedScenes.isEmpty() && allUserScenes.isNotEmpty()) { // Check allUserScenes to distinguish from no scenes at all
+                        Log.d(TAG, "ViewModel observer: DisplayedScenes empty (likely due to filter), but allUserScenes not. Clearing display for filter message.")
+                        clearSceneDisplay()
+                        titleTextView.text = getString(R.string.no_scenes_match_filter_title)
+                        contentTextView.text = getString(R.string.no_scenes_match_filter_content)
+                    } else if (displayedScenes.isEmpty() && allUserScenes.isEmpty()) { // Truly no scenes
+                         Log.d(TAG, "ViewModel observer: Both displayedScenes and allUserScenes are empty. Clearing display.")
+                         clearSceneDisplay() // This will show "No Scenes Available"
+                    } else if (sceneAfterPendingNav != null) {
+                        Log.d(TAG, "ViewModel observer: Scene already set: ${sceneAfterPendingNav.title}")
+                        // displayScene(sceneAfterPendingNav) // Navigation methods already call displayScene
                     }
                 }
                 updateFavoritesList()
@@ -415,23 +410,61 @@ class MainActivity : BaseActivity() {
     }
     
     private fun handleInitialIntentNavigation() {
-        intent.getStringExtra("SELECTED_SCENE_TITLE")?.let { title ->
-            pendingSceneTitleNavigation = title
-            pendingSceneIdNavigation = null // Clear ID navigation if title is provided
-        }
-        // Check for ID after title, ID takes precedence if both somehow present
+        var navigationAttempted = false
+        // ID navigation takes precedence
         intent.getStringExtra("DISPLAY_SCENE_ID")?.let { sceneIdString ->
             if (sceneIdString.isNotBlank()) {
                 pendingSceneIdNavigation = sceneIdString
                 pendingSceneTitleNavigation = null // Clear title navigation if ID is provided
                 Log.d(TAG, "handleInitialIntentNavigation: Set pendingSceneIdNavigation to $sceneIdString")
+                if (allUserScenes.isNotEmpty()) { // If scenes are already loaded
+                    Log.d(TAG, "handleInitialIntentNavigation: allUserScenes not empty, calling processPendingNavigation for ID.")
+                    processPendingNavigation()
+                }
+                navigationAttempted = true // Mark that we've processed an ID intent
+            }
+        }
+
+        // Only process title if ID wasn't found or wasn't provided
+        if (!navigationAttempted) {
+            intent.getStringExtra("SELECTED_SCENE_TITLE")?.let { title ->
+                pendingSceneTitleNavigation = title
+                pendingSceneIdNavigation = null // Clear ID navigation if title is provided
+                Log.d(TAG, "handleInitialIntentNavigation: Set pendingSceneTitleNavigation to $title")
+                if (allUserScenes.isNotEmpty()) { // If scenes are already loaded
+                    Log.d(TAG, "handleInitialIntentNavigation: allUserScenes not empty, calling processPendingNavigation for Title.")
+                    processPendingNavigation()
+                }
+            }
+        }
+        // Clear intent extras after processing to prevent re-navigation on config change if not desired
+        intent.removeExtra("DISPLAY_SCENE_ID")
+        intent.removeExtra("SELECTED_SCENE_TITLE")
+    }
+
+    private fun processPendingNavigation() {
+        if (pendingSceneIdNavigation != null) {
+            val idToNavigate = pendingSceneIdNavigation // Copy to avoid issues if it's cleared mid-process by another thread (unlikely here but good practice)
+            pendingSceneIdNavigation = null // Clear before navigation to prevent re-entry
+            pendingSceneTitleNavigation = null
+            Log.d(TAG, "processPendingNavigation: Handling pending navigation to scene ID: $idToNavigate")
+            navigateToSceneByIdInRandomView(idToNavigate)
+        } else if (pendingSceneTitleNavigation != null) {
+            val titleToNavigate = pendingSceneTitleNavigation
+            pendingSceneTitleNavigation = null // Clear before navigation
+            pendingSceneIdNavigation = null
+            if (titleToNavigate != null) { // Add null check here
+                Log.d(TAG, "processPendingNavigation: Handling pending navigation to scene Title: $titleToNavigate")
+                navigateToSceneInRandomView(titleToNavigate)
+            } else {
+                Log.w(TAG, "processPendingNavigation: pendingSceneTitleNavigation was set but became null before navigation call.")
             }
         }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        setIntent(intent)
+        setIntent(intent) // Important to update the activity's intent
         handleInitialIntentNavigation()
     }
 
@@ -440,12 +473,38 @@ class MainActivity : BaseActivity() {
             Log.w(TAG, "navigateToSceneByIdInRandomView: sceneIdToFind is null.")
             return
         }
-        // Find by Firestore ID first, then by "asset_ID"
-        val sceneToNavigate = allUserScenes.find { scene -> scene.firestoreId == sceneIdToFind }
-            ?: allUserScenes.find { scene -> "asset_${scene.id}" == sceneIdToFind }
+        Log.d(TAG, "navigateToSceneByIdInRandomView: Attempting to find scene with ID: '$sceneIdToFind'")
+        Log.d(TAG, "navigateToSceneByIdInRandomView: Current allUserScenes count: ${allUserScenes.size}")
+        if (allUserScenes.isEmpty()) {
+            Log.w(TAG, "navigateToSceneByIdInRandomView: allUserScenes is empty. Cannot find scene.")
+            // Consider re-triggering load or waiting if this happens often, though processPendingNavigation should handle timing.
+        }
+
+        var foundScene: Scene? = null
+
+        // Log details of the search
+        for (scene in allUserScenes) {
+            val assetIdFormatted = "asset_${scene.id}"
+            Log.d(TAG, "navigateToSceneByIdInRandomView: Checking scene: Title='${scene.title}', ID=${scene.id}, FirestoreID='${scene.firestoreId}', AssetIDFormat='$assetIdFormatted'")
+            if (scene.firestoreId.isNotBlank() && scene.firestoreId == sceneIdToFind) {
+                Log.d(TAG, "navigateToSceneByIdInRandomView: Match found on scene.firestoreId: '${scene.firestoreId}' for scene '${scene.title}'")
+                foundScene = scene
+                break
+            }
+            if (assetIdFormatted == sceneIdToFind) {
+                Log.d(TAG, "navigateToSceneByIdInRandomView: Match found on asset_ID format: '$assetIdFormatted' for scene '${scene.title}'")
+                foundScene = scene
+                break
+            }
+        }
+        
+        // Original find logic as a fallback or confirmation, now with foundScene from loop
+        val sceneToNavigate = foundScene ?: allUserScenes.find { scene -> scene.firestoreId == sceneIdToFind }
+                                  ?: allUserScenes.find { scene -> "asset_${scene.id}" == sceneIdToFind }
+
 
         if (sceneToNavigate != null) {
-            Log.d(TAG, "Navigating to scene by ID: ${sceneToNavigate.title} (Searched ID: $sceneIdToFind)")
+            Log.d(TAG, "navigateToSceneByIdInRandomView: Successfully found scene: '${sceneToNavigate.title}' for ID: '$sceneIdToFind'. Navigating.")
             currentMode = MODE_RANDOM
             bottomNavigation.selectedItemId = R.id.navigation_random
 
@@ -455,7 +514,7 @@ class MainActivity : BaseActivity() {
                 displayScene(displayedScenes[currentSceneIndex])
             } else {
                 displayScene(sceneToNavigate)
-                currentSceneIndex = -1 // Mark as not directly in the filtered list's sequence
+                currentSceneIndex = -1
             }
 
             if (sceneHistory.isEmpty() || sceneHistory.last() != sceneToNavigate) {
@@ -466,8 +525,15 @@ class MainActivity : BaseActivity() {
             updatePreviousButtonState()
             updateUI()
         } else {
+            Log.w(TAG, "navigateToSceneByIdInRandomView: Scene with ID '$sceneIdToFind' ultimately NOT FOUND in allUserScenes.")
+            // Log allUserScenes content if not found, for easier debugging
+            if (allUserScenes.isNotEmpty()) {
+                val sceneDetails = allUserScenes.joinToString(separator = "\n") { s -> "  Title: ${s.title}, ID: ${s.id}, FirestoreID: ${s.firestoreId}, AssetFmt: asset_${s.id}" }
+                Log.w(TAG, "navigateToSceneByIdInRandomView: Contents of allUserScenes at time of failure:\n$sceneDetails")
+            } else {
+                Log.w(TAG, "navigateToSceneByIdInRandomView: allUserScenes was empty at time of failure.")
+            }
             showMaterialToast("Scene with ID '$sceneIdToFind' not found.", false)
-            Log.w(TAG, "Scene with ID '$sceneIdToFind' not found for navigation.")
         }
     }
     
@@ -665,6 +731,14 @@ class MainActivity : BaseActivity() {
         editAdapter.submitList(displayedScenes.toList())
     }
 
+    private fun getSceneIdentifier(scene: Scene): String {
+        return if (scene.firestoreId.isNotBlank()) {
+            scene.firestoreId
+        } else {
+            "asset_${scene.id}"
+        }
+    }
+
     private fun toggleFavorite() {
         val currentScene = getCurrentScene()
         if (currentScene == null) {
@@ -673,64 +747,59 @@ class MainActivity : BaseActivity() {
         }
         Log.d(TAG, "toggleFavorite: Current Scene: Title='${currentScene.title}', ID='${currentScene.id}', FirestoreID='${currentScene.firestoreId}', isCustom='${currentScene.isCustom}'")
 
-        val sceneIdentifier = if (currentScene.firestoreId.isNotBlank()) {
-            currentScene.firestoreId
-        } else {
-            // For scenes from assets that might not have a firestoreId yet, use a stable local ID.
-            // Assuming currentScene.id is the original unique ID from assets.
-            "asset_${currentScene.id}"
-        }
+        val sceneIdentifier = getSceneIdentifier(currentScene)
         Log.d(TAG, "toggleFavorite: Using sceneIdentifier: '$sceneIdentifier'")
 
-        if (favorites.contains(sceneIdentifier)) {
-            // It IS a favorite, so REMOVE it
+        val isCurrentlyFavorite = favorites.contains(sceneIdentifier)
+
+        if (isCurrentlyFavorite) {
             favorites.remove(sceneIdentifier)
-            Log.d(TAG, "toggleFavorite: Removed '$sceneIdentifier' from local favorites. Current favorites: $favorites")
-            lifecycleScope.launch {
-                favoritesViewModel.removeFavorite(sceneIdentifier, "scene") // Assuming "scene" as itemType
-                Log.d(TAG, "toggleFavorite: Attempted to remove '$sceneIdentifier' from Firestore.")
+            Log.d(TAG, "toggleFavorite: Removed '$sceneIdentifier' from local SharedPreferences.")
+            if (auth.currentUser != null) { // Only interact with Firestore if logged in
+                lifecycleScope.launch {
+                    favoritesViewModel.removeFavorite(sceneIdentifier, "scene")
+                    Log.d(TAG, "toggleFavorite: Attempted to remove '$sceneIdentifier' from Firestore.")
+                }
             }
             showMaterialToast("'${currentScene.title}' removed from favorites", false)
         } else {
-            // It IS NOT a favorite, so ADD it
             favorites.add(sceneIdentifier)
-            Log.d(TAG, "toggleFavorite: Added '$sceneIdentifier' to local favorites. Current favorites: $favorites")
-            lifecycleScope.launch {
-                favoritesViewModel.addFavorite(sceneIdentifier, "scene") // Assuming "scene" as itemType
-                Log.d(TAG, "toggleFavorite: Attempted to add '$sceneIdentifier' to Firestore.")
+            Log.d(TAG, "toggleFavorite: Added '$sceneIdentifier' to local SharedPreferences.")
+            if (auth.currentUser != null) { // Only interact with Firestore if logged in
+                lifecycleScope.launch {
+                    favoritesViewModel.addFavorite(sceneIdentifier, "scene")
+                    Log.d(TAG, "toggleFavorite: Attempted to add '$sceneIdentifier' to Firestore.")
+                }
             }
             showMaterialToast("'${currentScene.title}' added to favorites", true)
         }
-        saveFavoritesToPrefs() // Keep SharedPreferences for local/quick access if desired
+        saveFavoritesToPrefs() // Always save to local SharedPreferences for quick UI updates & logged-out state
         updateFavoriteIcon()
-        updateFavoritesList() // This updates the local adapter list
+        updateFavoritesList()
     }
 
     private fun removeFromFavorites(scene: Scene) {
-        val sceneIdentifier = if (scene.firestoreId.isNotBlank()) {
-            scene.firestoreId
-        } else {
-            "asset_${scene.id}"
-        }
+        val sceneIdentifier = getSceneIdentifier(scene)
+
         if (favorites.contains(sceneIdentifier)) {
             favorites.remove(sceneIdentifier)
-            saveFavoritesToPrefs() // Keep SharedPreferences for local/quick access
+            saveFavoritesToPrefs() // Always update local SharedPreferences
 
-            // Remove from Firestore
-            lifecycleScope.launch {
-                favoritesViewModel.removeFavorite(sceneIdentifier, "scene") // Assuming "scene" as itemType
-                Log.d(TAG, "removeFromFavorites: Attempted to remove '$sceneIdentifier' from Firestore.")
+            if (auth.currentUser != null) { // Only interact with Firestore if logged in
+                lifecycleScope.launch {
+                    favoritesViewModel.removeFavorite(sceneIdentifier, "scene")
+                    Log.d(TAG, "removeFromFavorites: Attempted to remove '$sceneIdentifier' from Firestore.")
+                }
             }
 
             showMaterialToast("'${scene.title}' removed from favorites", false)
-            updateFavoritesList() // This updates the local adapter list
-            // Check if the scene being removed is the one currently displayed to update its favorite icon
+            updateFavoritesList()
+
             val currentDisplayedScene = getCurrentScene()
-            val currentDisplayedSceneIdentifier = currentDisplayedScene?.let {
-                if (it.firestoreId.isNotBlank()) it.firestoreId else "asset_${it.id}"
-            }
-            if (currentDisplayedSceneIdentifier == sceneIdentifier) {
-                updateFavoriteIcon()
+            currentDisplayedScene?.let {
+                if (getSceneIdentifier(it) == sceneIdentifier) {
+                    updateFavoriteIcon()
+                }
             }
         }
     }
@@ -749,11 +818,7 @@ class MainActivity : BaseActivity() {
             val current = getCurrentScene()
             if (current != null && currentMode == MODE_RANDOM) {
                 item.isVisible = true
-                val sceneIdentifier = if (current.firestoreId.isNotBlank()) {
-                    current.firestoreId
-                } else {
-                    "asset_${current.id}"
-                }
+                val sceneIdentifier = getSceneIdentifier(current)
                 if (favorites.contains(sceneIdentifier)) {
                     item.icon = ContextCompat.getDrawable(this, R.drawable.ic_favorite_filled)
                     item.title = "Remove from Favorites" 
@@ -930,13 +995,7 @@ class MainActivity : BaseActivity() {
 
                 // Remove from favorites if it was there.
                 // Use a consistent identifier: firestoreId if present, otherwise original id for defaults.
-                val identifierForFavorites: String = if (scene.firestoreId.isNotBlank()) {
-                    scene.firestoreId
-                } else if (scene.id != 0) {
-                    "default_${scene.id}" // Create a consistent string key for default scenes based on original ID
-                } else {
-                    scene.title // Fallback, less reliable
-                }
+                val identifierForFavorites = getSceneIdentifier(scene)
                 if (favorites.contains(identifierForFavorites)) {
                     favorites.remove(identifierForFavorites)
                     saveFavoritesToPrefs()
@@ -992,6 +1051,7 @@ class MainActivity : BaseActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "Firebase Auth successful. User: ${auth.currentUser?.email}")
                     Toast.makeText(this, "Firebase Authentication successful.", Toast.LENGTH_SHORT).show()
+                    // updateUIForCurrentUser will be called, which now handles sync
                     updateUIForCurrentUser()
                 } else {
                     Log.w(TAG, "Firebase Auth failed.", task.exception)
@@ -1002,16 +1062,97 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateUIForCurrentUser() {
-        invalidateOptionsMenu() 
+        invalidateOptionsMenu() // Existing
+        auth.currentUser?.let {
+            // User is logged in
+            Log.d(TAG, "updateUIForCurrentUser: User is logged in. Starting favorite sync.")
+            syncFavoritesOnLogin()
+        } ?: run {
+            // User is logged out (e.g. app start, not yet logged in)
+            Log.d(TAG, "updateUIForCurrentUser: User is not logged in. Loading favorites from prefs.")
+            loadFavoritesFromPrefs() // Ensure local favorites are loaded
+            updateFavoriteIcon()
+            updateFavoritesList()
+        }
     }
 
+    private fun syncFavoritesOnLogin() {
+        val currentUser = auth.currentUser ?: return
+        Log.d(TAG, "syncFavoritesOnLogin: Starting for user ${currentUser.uid}")
+
+        val localFavoritesSnapshot = HashSet(this.favorites) // Create a copy from SharedPreferences
+        Log.d(TAG, "syncFavoritesOnLogin: Local favorites snapshot from Prefs: $localFavoritesSnapshot")
+
+        lifecycleScope.launch {
+            if (!favoritesViewModel.isLoading.value) {
+                favoritesViewModel.loadFavorites() // Trigger load of Firestore favorites
+            }
+
+            favoritesViewModel.favorites
+                .filter { favoriteList -> favoriteList.isNotEmpty() || !favoritesViewModel.isLoading.value }
+                .take(1)
+                .collectLatest { firestoreFavoriteObjects ->
+                    Log.d(TAG, "syncFavoritesOnLogin: Collected Firestore favorites. Count: ${firestoreFavoriteObjects.size}")
+                    val firestoreFavoriteIds = firestoreFavoriteObjects.map { it.itemId }.toSet()
+                    Log.d(TAG, "syncFavoritesOnLogin: Firestore favorite IDs: $firestoreFavoriteIds")
+
+                    var firestoreWasModified = false
+                    for (localFavId in localFavoritesSnapshot) {
+                        if (!firestoreFavoriteIds.contains(localFavId)) {
+                            Log.d(TAG, "syncFavoritesOnLogin: Local favorite '$localFavId' not in Firestore. Adding.")
+                            favoritesViewModel.addFavorite(localFavId, "scene")
+                            firestoreWasModified = true
+                        }
+                    }
+
+                    if (firestoreWasModified) {
+                        // If Firestore was modified, re-fetch to get the absolute latest state
+                        favoritesViewModel.loadFavorites()
+                        favoritesViewModel.favorites
+                            .filter { updatedList -> updatedList.isNotEmpty() || !favoritesViewModel.isLoading.value }
+                            .take(1)
+                            .collectLatest { updatedFirestoreFavorites ->
+                                Log.d(TAG, "syncFavoritesOnLogin: Re-collected Firestore favorites after potential adds. Count: ${updatedFirestoreFavorites.size}")
+                                val finalFirestoreIds = updatedFirestoreFavorites.map { it.itemId }.toSet()
+                                updateLocalStoreWithFirestoreData(finalFirestoreIds)
+                            }
+                    } else {
+                        // No modifications to Firestore, just update local SharedPreferences from current Firestore state
+                        updateLocalStoreWithFirestoreData(firestoreFavoriteIds)
+                    }
+                }
+        }
+    }
+
+    private fun updateLocalStoreWithFirestoreData(firestoreFavoriteIds: Set<String>) {
+        Log.d(TAG, "updateLocalStoreWithFirestoreData: Updating local SharedPreferences with Firestore data: $firestoreFavoriteIds")
+        this.favorites.clear()
+        this.favorites.addAll(firestoreFavoriteIds)
+        saveFavoritesToPrefs()
+
+        updateFavoriteIcon()
+        updateFavoritesList()
+        Log.d(TAG, "syncFavoritesOnLogin: Synchronization complete. Local 'favorites' set updated to: ${this.favorites}")
+    }
+
+
     private fun updateUIForSignedOutUser() {
-        allUserScenes = emptyList(); displayedScenes = emptyList(); sceneHistory.clear()
-        historyPosition = -1; currentSceneIndex = -1
-        filterScenes(null) 
-        clearSceneDisplay()
-        invalidateOptionsMenu()
-        Toast.makeText(this, "You are signed out.", Toast.LENGTH_LONG).show() 
+        Log.d(TAG, "updateUIForSignedOutUser: User signed out.")
+        loadFavoritesFromPrefs() // Ensure local SharedPreferences favorites are active
+        Log.d(TAG, "updateUIForSignedOutUser: Loaded favorites from prefs: ${this.favorites}")
+
+        // scenesViewModel.scenes.collectLatest in observeViewModel() will re-fetch/re-filter scenes
+        // based on the null currentUser.uid, showing defaults/assets.
+
+        currentSceneIndex = -1 // Reset current scene view
+        sceneHistory.clear()
+        historyPosition = -1
+        // updateUI() will be called by the ViewModel observer chain eventually,
+        // but call it here to ensure menu and other immediate elements are refreshed.
+        updateUI()
+
+        invalidateOptionsMenu() // For Sign In/Out button text
+        Toast.makeText(this, "You are signed out.", Toast.LENGTH_LONG).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

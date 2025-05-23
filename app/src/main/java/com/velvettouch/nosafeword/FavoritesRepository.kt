@@ -52,34 +52,40 @@ class FavoritesRepository {
     fun getFavorites(): Flow<List<Favorite>> = callbackFlow {
         val userId = auth.currentUser?.uid
         if (userId == null) {
+            Log.d("FavoritesRepository", "getFavorites: User not logged in. Sending empty list and closing channel.")
             trySend(emptyList())
-            close(Exception("User not logged in"))
+            channel.close() // Close successfully without an error
             return@callbackFlow
         }
 
+        Log.d("FavoritesRepository", "getFavorites: User $userId logged in. Setting up Firestore listener.")
         val listenerRegistration = getFavoritesCollection()
             .whereEqualTo("user_id", userId)
-            .orderBy("timestamp") // Assuming you want them in order of addition
+            .orderBy("timestamp")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    Log.e("FavoritesRepository", "getFavorites listener error", error)
-                    close(error)
+                    Log.e("FavoritesRepository", "getFavorites listener error for user $userId", error)
+                    channel.close(error) // Close with actual Firestore error
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    Log.d("FavoritesRepository", "getFavorites snapshot received. Documents count: ${snapshot.size()}")
+                    Log.d("FavoritesRepository", "getFavorites snapshot for user $userId. Documents: ${snapshot.size()}")
                     val favorites = snapshot.documents.mapNotNull { doc ->
-                        val favorite = doc.toObject<Favorite>()?.apply { id = doc.id }
-                        Log.d("FavoritesRepository", "Mapping doc: ${doc.id} to $favorite")
-                        favorite
+                        doc.toObject<Favorite>()?.apply { id = doc.id }
                     }
-                    Log.d("FavoritesRepository", "Mapped favorites list. Size: ${favorites.size}. Sending to flow.")
-                    trySend(favorites).isSuccess
+                    trySend(favorites)
                 } else {
-                    Log.d("FavoritesRepository", "getFavorites snapshot was null.")
+                    Log.d("FavoritesRepository", "getFavorites snapshot for user $userId was null.")
+                    // Optionally send empty list if null snapshot means no favorites,
+                    // or let it be if the listener will fire again.
+                    // For safety, sending empty list if snapshot is null and no error might be good.
+                    trySend(emptyList())
                 }
             }
-        awaitClose { listenerRegistration.remove() }
+        awaitClose {
+            Log.d("FavoritesRepository", "getFavorites: awaitClose for user $userId, removing listener.")
+            listenerRegistration.remove()
+        }
     }
 
     suspend fun isItemFavorited(itemId: String, itemType: String): Result<Boolean> {
