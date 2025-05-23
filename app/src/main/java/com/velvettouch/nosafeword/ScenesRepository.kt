@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import android.content.Context
 import android.util.Log // Import Android Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -8,11 +9,16 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 
-class ScenesRepository {
+class ScenesRepository(private val applicationContext: Context) { // Added context
 
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -327,6 +333,30 @@ class ScenesRepository {
         } catch (e: Exception) {
             Log.e(TAG, "Error in getUserDefaultScenesOnce for userId $userId", e)
             Result.failure(e)
+        }
+    }
+
+    // New function to get original asset scene details
+    // This is a blocking function, call from a coroutine with Dispatchers.IO
+    fun getAssetSceneDetailsByOriginalId(originalId: Int): Scene? {
+        Log.d(TAG, "Attempting to load asset scene details for originalId: $originalId")
+        return try {
+            val jsonString = applicationContext.assets.open("scenes.json").bufferedReader().use { it.readText() }
+            val listSceneType = object : TypeToken<List<Scene>>() {}.type
+            val allAssetScenes: List<Scene> = Gson().fromJson(jsonString, listSceneType)
+            val foundScene = allAssetScenes.find { it.id == originalId }
+            if (foundScene == null) {
+                Log.w(TAG, "Asset scene with originalId $originalId not found in scenes.json.")
+            } else {
+                Log.d(TAG, "Found asset scene details for originalId $originalId: ${foundScene.title}")
+            }
+            foundScene
+        } catch (e: IOException) {
+            Log.e(TAG, "Error loading scenes.json from assets", e)
+            null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing scenes.json for originalId $originalId", e)
+            null
         }
     }
 }

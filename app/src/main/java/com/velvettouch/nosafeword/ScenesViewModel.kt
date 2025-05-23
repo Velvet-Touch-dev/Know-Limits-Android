@@ -19,7 +19,7 @@ import java.io.IOException
 
 class ScenesViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ScenesRepository()
+    private val repository = ScenesRepository(application.applicationContext) // Pass context
     private val auth = FirebaseAuth.getInstance()
     private val appContext = application.applicationContext
     private var localScenesWhenLoggedOut: MutableList<Scene> = mutableListOf()

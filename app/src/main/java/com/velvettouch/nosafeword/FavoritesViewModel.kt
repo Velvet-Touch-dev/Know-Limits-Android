@@ -15,8 +15,10 @@ import kotlinx.coroutines.tasks.await // Added import
 
 class FavoritesViewModel(application: Application) : AndroidViewModel(application) { // Changed to AndroidViewModel for context
 
-    private val cloudRepository = FavoritesRepository() // Renamed for clarity
-    private val localFavoritesRepository = LocalFavoritesRepository(application.applicationContext) // For merge
+    private val cloudRepository = FavoritesRepository()
+    private val localFavoritesRepository = LocalFavoritesRepository(application.applicationContext)
+    private val scenesRepository = ScenesRepository(application.applicationContext) // Pass context
+    // private val applicationContext = application.applicationContext // No longer needed directly here
 
     private val _favorites = MutableStateFlow<List<Favorite>>(emptyList())
     val favorites: StateFlow<List<Favorite>> = _favorites.asStateFlow()
@@ -30,8 +32,30 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    private var hasMergedThisSession = false
+    private var currentUserIdForMerge: String? = null
+
+
     init {
-        // loadFavorites() // Let Activity trigger this after potential merge
+        // Listen to auth changes to reset merge flag if user logs out and back in
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            val newUser = auth.currentUser
+            if (newUser == null) {
+                // User logged out, reset merge flag for next login
+                if (currentUserIdForMerge != null) { // Only reset if there was a logged-in user
+                    Log.d("FavoritesViewModel", "User logged out. Resetting merge flag.")
+                    hasMergedThisSession = false
+                    currentUserIdForMerge = null
+                }
+            } else {
+                // User logged in or changed
+                if (currentUserIdForMerge != newUser.uid) {
+                    Log.d("FavoritesViewModel", "User changed or logged in (${newUser.uid}). Resetting merge flag.")
+                    hasMergedThisSession = false
+                    currentUserIdForMerge = newUser.uid
+                }
+            }
+        }
     }
 
     fun loadCloudFavorites(performMerge: Boolean = false) {
@@ -43,12 +67,25 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 Log.d("FavoritesViewModel", "loadCloudFavorites: User not logged in. Emitting empty list.")
                 _favorites.value = emptyList()
                 _isLoading.value = false
+                hasMergedThisSession = false // Reset merge flag if user becomes null
+                currentUserIdForMerge = null
                 return@launch
             }
 
-            if (performMerge) {
-                mergeLocalFavoritesWithCloud() // Attempt merge before loading cloud
+            // Update currentUserIdForMerge if it's different (e.g., first load after login)
+            if (currentUserIdForMerge != currentUser.uid) {
+                Log.d("FavoritesViewModel", "User ID changed to ${currentUser.uid}. Resetting merge flag.")
+                hasMergedThisSession = false
+                currentUserIdForMerge = currentUser.uid
             }
+
+            if (performMerge && !hasMergedThisSession) {
+                Log.d("FavoritesViewModel", "performMerge is true and hasMergedThisSession is false. Calling mergeLocalFavoritesWithCloud.")
+                mergeLocalFavoritesWithCloud() // Attempt merge
+            } else if (performMerge && hasMergedThisSession) {
+                Log.d("FavoritesViewModel", "performMerge is true but hasMergedThisSession is true. Skipping merge.")
+            }
+
 
             // Proceed to load cloud favorites
             _favorites.value = emptyList() // Clear before collecting from cloud
@@ -72,9 +109,15 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private suspend fun mergeLocalFavoritesWithCloud() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Should not be null due to check in loadCloudFavorites
+
+        if (hasMergedThisSession) {
+            Log.d("FavoritesViewModel", "mergeLocalFavoritesWithCloud called, but hasMergedThisSession is true. Skipping actual merge logic.")
+            return // Already merged in this session for this user
+        }
+
         _isMerging.value = true
-        Log.d("FavoritesViewModel", "Starting merge of local favorites to cloud for user $userId.")
+        Log.d("FavoritesViewModel", "Starting actual merge of local favorites to cloud for user $userId.")
 
         try {
             val localFavoriteIds = localFavoritesRepository.getLocalFavoriteSceneIds()
@@ -103,11 +146,79 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             Log.d("FavoritesViewModel", "Current cloud favorite item IDs: $currentCloudItemIds")
 
             val favoritesToUpload = mutableListOf<Favorite>()
-            for (localId in localFavoriteIds) {
-                if (!currentCloudItemIds.contains(localId)) {
-                    // Assuming all local favorites are "scene" type for now.
-                    // If you have other types, this logic needs to be more robust.
-                    favoritesToUpload.add(Favorite(itemId = localId, itemType = "scene", userId = userId))
+            val sceneIdPattern = "asset_(\\d+)".toRegex()
+
+            for (localIdString in localFavoriteIds) {
+                var finalItemIdForFavorite = localIdString
+                var sceneToEnsureExists: Scene? = null
+
+                // Check if it's an asset scene that needs its Firestore ID resolved or to be created
+                val matchResult = sceneIdPattern.matchEntire(localIdString)
+                if (matchResult != null) {
+                    val originalAssetId = matchResult.groupValues[1].toIntOrNull()
+                    if (originalAssetId != null) {
+                        Log.d("FavoritesViewModel", "Local favorite '$localIdString' is an asset scene (original ID: $originalAssetId). Checking its Firestore status.")
+                        // Check if this asset scene already has a user-specific instance in Firestore
+                        val existingSceneResult = scenesRepository.getSceneByOriginalId(originalAssetId, userId)
+
+                        if (existingSceneResult.isSuccess) {
+                            val existingFirestoreScene = existingSceneResult.getOrNull()
+                            if (existingFirestoreScene?.firestoreId?.isNotBlank() == true) {
+                                finalItemIdForFavorite = existingFirestoreScene.firestoreId
+                                Log.d("FavoritesViewModel", "Asset scene $originalAssetId already exists in Firestore for user $userId with firestoreId ${finalItemIdForFavorite}. Using this ID for favorite.")
+                            } else {
+                                // Asset scene does not exist for this user in Firestore.
+                                // We need to create it first.
+                                Log.d("FavoritesViewModel", "Asset scene $originalAssetId does not exist in Firestore for user $userId. Will create it.")
+                                // Load the original asset scene details using the new method in ScenesRepository
+                                val originalAssetSceneDetails = scenesRepository.getAssetSceneDetailsByOriginalId(originalAssetId)
+
+                                if (originalAssetSceneDetails != null) {
+                                    Log.d("FavoritesViewModel", "Found asset details for originalId $originalAssetId: ${originalAssetSceneDetails.title}")
+                                    sceneToEnsureExists = originalAssetSceneDetails.copy(
+                                        userId = userId,
+                                        isCustom = false, // It's a user's instance of a default scene
+                                        firestoreId = "" // Let addScene generate a new Firestore ID
+                                    )
+                                } else {
+                                    Log.e("FavoritesViewModel", "Could not find details for asset scene original ID $originalAssetId in assets. Skipping merge for this item.")
+                                    continue // Skip this local favorite
+                                }
+                            }
+                        } else {
+                            Log.e("FavoritesViewModel", "Failed to check Firestore for asset scene $originalAssetId. Error: ${existingSceneResult.exceptionOrNull()?.message}. Skipping merge for this item.")
+                            continue // Skip this local favorite
+                        }
+                    }
+                }
+
+                // If sceneToEnsureExists is not null, it means we need to add/update it in the scenes collection first
+                if (sceneToEnsureExists != null) {
+                    Log.d("FavoritesViewModel", "Adding/ensuring asset scene copy in Firestore: ${sceneToEnsureExists.title}")
+                    val addSceneResult = scenesRepository.addScene(sceneToEnsureExists) // addScene handles if firestoreId is blank (new) or present (update)
+                    if (addSceneResult.isSuccess) {
+                        // We need the new firestoreId if it was generated.
+                        // Re-fetch the scene by original ID to get its new firestoreId.
+                        val newlyAddedSceneResult = scenesRepository.getSceneByOriginalId(sceneToEnsureExists.id, userId)
+                        if (newlyAddedSceneResult.isSuccess && newlyAddedSceneResult.getOrNull()?.firestoreId?.isNotBlank() == true) {
+                            finalItemIdForFavorite = newlyAddedSceneResult.getOrNull()!!.firestoreId
+                            Log.d("FavoritesViewModel", "Successfully added/ensured asset scene. New/confirmed firestoreId for favorite: $finalItemIdForFavorite")
+                        } else {
+                            Log.e("FavoritesViewModel", "Failed to retrieve scene after adding to get its firestoreId. Skipping favorite for ${sceneToEnsureExists.title}")
+                            continue
+                        }
+                    } else {
+                        Log.e("FavoritesViewModel", "Failed to add asset scene ${sceneToEnsureExists.title} to scenes collection. Error: ${addSceneResult.exceptionOrNull()?.message}. Skipping favorite.")
+                        continue
+                    }
+                }
+
+                // Now, check if this finalItemIdForFavorite is already in cloud favorites
+                if (!currentCloudItemIds.contains(finalItemIdForFavorite)) {
+                    favoritesToUpload.add(Favorite(itemId = finalItemIdForFavorite, itemType = "scene", userId = userId))
+                    Log.d("FavoritesViewModel", "Queued favorite for upload: itemId=$finalItemIdForFavorite")
+                } else {
+                    Log.d("FavoritesViewModel", "Favorite for itemId=$finalItemIdForFavorite already exists in cloud. Skipping add to batch.")
                 }
             }
 
@@ -116,24 +227,28 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 val batchResult = cloudRepository.addFavoritesBatch(favoritesToUpload)
                 batchResult.onSuccess {
                     Log.d("FavoritesViewModel", "Successfully merged ${favoritesToUpload.size} local favorites to cloud.")
-                    localFavoritesRepository.clearLocalFavoriteScenes() // Clear local after successful merge
+                    localFavoritesRepository.clearLocalFavoriteScenes()
                     Log.d("FavoritesViewModel", "Cleared local favorites after successful merge.")
+                    hasMergedThisSession = true // Set flag after successful merge and clear
+                    Log.d("FavoritesViewModel", "hasMergedThisSession set to true.")
                 }.onFailure { e ->
                     _error.value = "Failed to merge some local favorites to cloud: ${e.message}"
                     Log.e("FavoritesViewModel", "Error merging local favorites to cloud", e)
-                    // Decide on retry strategy or how to handle partial failure.
-                    // For now, local won't be cleared if batch fails.
+                    // Do not set hasMergedThisSession to true if merge fails, to allow retry.
                 }
             } else {
                 Log.d("FavoritesViewModel", "All local favorites already exist in the cloud. Clearing local.")
-                localFavoritesRepository.clearLocalFavoriteScenes() // Clear if all were already present
+                localFavoritesRepository.clearLocalFavoriteScenes()
+                hasMergedThisSession = true // Set flag as effectively merged (or nothing to merge)
+                Log.d("FavoritesViewModel", "hasMergedThisSession set to true (no new items to upload).")
             }
         } catch (e: Exception) {
             _error.value = "Error during merge process: ${e.message}"
             Log.e("FavoritesViewModel", "Exception during mergeLocalFavoritesWithCloud", e)
+            // Do not set hasMergedThisSession to true on general exception
         } finally {
             _isMerging.value = false
-            Log.d("FavoritesViewModel", "Merge process finished.")
+            Log.d("FavoritesViewModel", "Merge process finished. hasMergedThisSession = $hasMergedThisSession")
         }
     }
 
