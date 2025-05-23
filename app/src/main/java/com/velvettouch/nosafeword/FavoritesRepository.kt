@@ -3,7 +3,8 @@ package com.velvettouch.nosafeword
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.Source
+import com.google.firebase.firestore.ktx.toObjects // Correct KTX import for lists
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -58,7 +59,33 @@ class FavoritesRepository {
             return@callbackFlow
         }
 
-        Log.d("FavoritesRepository", "getFavorites: User $userId logged in. Setting up Firestore listener.")
+        Log.d("FavoritesRepository", "getFavorites: User $userId logged in. Performing priming read from server.")
+
+        // Perform a priming read from the server first
+        try {
+            val initialSnapshot = getFavoritesCollection()
+                .whereEqualTo("user_id", userId)
+                .orderBy("timestamp")
+                .get(Source.SERVER) // Force fetch from server for priming read
+                .await()
+            // Using toObjects KTX for cleaner mapping, though individual mapping with ID setting is also fine.
+            // If 'id' field is critical and not directly part of Firestore doc, manual map is better.
+            // For now, assuming Favorite data class matches Firestore structure or 'id' is handled.
+            val initialFavorites = initialSnapshot.toObjects<Favorite>().mapNotNull { fav ->
+                // If doc.id needs to be mapped to fav.id, we'd iterate documents:
+                // initialSnapshot.documents.mapNotNull { doc -> doc.toObject<Favorite>()?.apply { id = doc.id } }
+                fav // Assuming Favorite class is directly mappable or ID is handled elsewhere/not needed here
+            }
+            Log.d("FavoritesRepository", "getFavorites priming read for user $userId. Documents: ${initialFavorites.size}")
+            trySend(initialFavorites) // Send initial server data
+        } catch (e: Exception) {
+            Log.e("FavoritesRepository", "getFavorites priming read error for user $userId", e)
+            // Don't close the channel on priming read failure, listener might still work or recover.
+            // Or, if priming read is critical, you might choose to channel.close(e)
+            // For now, we'll let the listener try.
+        }
+
+        Log.d("FavoritesRepository", "getFavorites: User $userId. Setting up Firestore listener for subsequent updates.")
         val listenerRegistration = getFavoritesCollection()
             .whereEqualTo("user_id", userId)
             .orderBy("timestamp")
@@ -69,19 +96,31 @@ class FavoritesRepository {
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    Log.d("FavoritesRepository", "getFavorites snapshot for user $userId. Documents: ${snapshot.size()}")
-                    val favorites = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject<Favorite>()?.apply { id = doc.id }
+                    // Only process if metadata indicates it's not from cache,
+                    // or if you want all updates including local cache changes.
+                    // For simplicity here, we process all snapshots after the initial priming read.
+                    // if (!snapshot.metadata.hasPendingWrites() && !snapshot.metadata.isFromCache) {
+                    Log.d("FavoritesRepository", "getFavorites listener update for user $userId. Documents: ${snapshot.size()}. FromCache: ${snapshot.metadata.isFromCache}")
+                    val favorites = snapshot.toObjects<Favorite>().mapNotNull { fav ->
+                        // fav.id = find corresponding document id if necessary, or ensure Favorite has @DocumentId
+                        fav
                     }
+                    // If you need to set the document ID on your Favorite objects:
+                    // val favorites = snapshot.documents.mapNotNull { doc ->
+                    //    doc.toObject<Favorite>()?.apply { id = doc.id }
+                    // }
                     trySend(favorites)
+                    // } else {
+                    //    Log.d("FavoritesRepository", "getFavorites listener update for user $userId skipped (pending writes or from cache).")
+                    // }
                 } else {
-                    Log.d("FavoritesRepository", "getFavorites snapshot for user $userId was null.")
-                    // Optionally send empty list if null snapshot means no favorites,
-                    // or let it be if the listener will fire again.
-                    // For safety, sending empty list if snapshot is null and no error might be good.
+                    Log.d("FavoritesRepository", "getFavorites listener snapshot for user $userId was null.")
+                    // Consider if sending emptyList() here is appropriate if snapshot is null post-priming.
+                    // It might mean data was deleted.
                     trySend(emptyList())
                 }
             }
+
         awaitClose {
             Log.d("FavoritesRepository", "getFavorites: awaitClose for user $userId, removing listener.")
             listenerRegistration.remove()
@@ -96,10 +135,52 @@ class FavoritesRepository {
                 .whereEqualTo("item_id", itemId)
                 .whereEqualTo("item_type", itemType)
                 .limit(1)
-                .get()
+                .get(Source.SERVER) // Force fetch from server
                 .await()
             Result.success(!querySnapshot.isEmpty)
         } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addFavoritesBatch(favoritesToAdd: List<Favorite>): Result<Unit> {
+        val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in"))
+        if (favoritesToAdd.isEmpty()) return Result.success(Unit)
+
+        return try {
+            val batch = firestore.batch()
+            val favoritesCollection = getFavoritesCollection()
+
+            for (favorite in favoritesToAdd) {
+                // Ensure the favorite has the correct userId, though it should be set by the caller
+                val docRef = favoritesCollection.document() // Create new document for each favorite
+                batch.set(docRef, favorite.copy(userId = userId))
+            }
+            batch.commit().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("FavoritesRepository", "Error adding favorites in batch for user $userId", e)
+            Result.failure(e)
+        }
+    }
+
+    // New function to get a one-time snapshot of cloud favorites for the current user
+    suspend fun getCloudFavoritesListSnapshot(): Result<List<Favorite>> {
+        val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in for snapshot"))
+        return try {
+            val snapshot = getFavoritesCollection()
+                .whereEqualTo("user_id", userId)
+                .orderBy("timestamp") // Keep consistent with the Flow's ordering
+                .get(Source.SERVER) // Crucial: fetch from server
+                .await()
+            // val favorites = snapshot.documents.mapNotNull { doc ->
+            //    doc.toObject<Favorite>()?.apply { id = doc.id }
+            // }
+            // Using KTX toObjects for cleaner conversion
+            val favorites = snapshot.toObjects<Favorite>()
+            Result.success(favorites)
+        } catch (e: Exception) {
+            Log.e("FavoritesRepository", "Error getting cloud favorites snapshot for user $userId", e)
             Result.failure(e)
         }
     }

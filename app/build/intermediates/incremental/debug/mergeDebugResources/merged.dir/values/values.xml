@@ -2134,11 +2134,13 @@
     <string name="abc_shareactionprovider_share_with_application">Share with <ns2:g example="Mail" id="application_name">%s</ns2:g></string>
     <string name="abc_toolbar_collapse_description">Collapse</string>
     <string name="add">Add</string>
+    <string name="add_button_text">Add</string>
     <string name="add_favorites">Add scenes to favorites by tapping the heart icon</string>
     <string name="add_new_position">Add new position</string>
     <string name="add_new_task">Add new task</string>
     <string name="add_planned_item">Add Item to Plan</string>
     <string name="add_tasks_prompt">Click the + icon to add new tasks</string>
+    <string name="add_to_favorites">Add to Favorites</string>
     <string name="add_to_plan_night">Add to Plan</string>
     <string name="all_positions">Default Positions</string>
     <string name="android.credentials.TYPE_PASSWORD_CREDENTIAL">Password</string>
@@ -2157,6 +2159,7 @@
     <string description="An accessibility feedback when the bottom sheet drag handle is clicked [CHAR LIMIT=NONE]" name="bottomsheet_drag_handle_clicked">Drag handle double-tapped</string>
     <string description="The content description of bottom sheet drag handles [CHAR LIMIT=NONE]" name="bottomsheet_drag_handle_content_description">Drag handle</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_button_text">Cancel</string>
     <string name="cd_delete_item">Delete item</string>
     <string name="cd_drag_to_reorder">Drag to reorder item</string>
     <string name="cd_plan_your_night_empty">Empty plan illustration</string>
@@ -2197,12 +2200,16 @@
     <string name="default_scenes">Default Scenes</string>
     <string name="default_web_client_id" translatable="false">292459432661-7rihhk5th27cpqmvnhpu1hltrkfiadl7.apps.googleusercontent.com</string>
     <string name="delete">Delete</string>
+    <string name="delete_button_text">Delete</string>
+    <string name="delete_scene_confirmation">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="delete_scene_title">Delete Scene</string>
     <string name="delete_task">Delete task</string>
     <string name="drag_to_reorder">Drag to reorder</string>
     <string name="drawer_close">Close Navigation Drawer</string>
     <string name="drawer_open">Open Navigation Drawer</string>
     <string name="edit">Library</string>
     <string name="edit_scene">Edit Scene</string>
+    <string name="edit_scene_dialog_title">Edit Scene</string>
     <string name="edit_scenes">Library</string>
     <string description="Screen reader announcement for when a checkbox is on error. [CHAR LIMIT=NONE]" name="error_a11y_label">
     Error: invalid
@@ -2338,6 +2345,7 @@
     <string description="Button text to indicate that the widget will ignore the user&apos;s selection [CHAR_LIMIT=16]" name="mtrl_timepicker_cancel">Cancel</string>
     <string description="Button text to indicate that the widget will save the user&apos;s selection [CHAR_LIMIT=16]" name="mtrl_timepicker_confirm">OK</string>
     <string name="new_scene">New Scene</string>
+    <string name="new_scene_dialog_title">New Scene</string>
     <string name="next">Next</string>
     <string name="next_task">Next task</string>
     <string name="no_favorites">No favorites yet</string>
@@ -2372,11 +2380,16 @@
     <string name="random">Scenes</string>
     <string name="random_scene">Random Scene</string>
     <string name="randomize">Randomize</string>
+    <string name="remove_from_favorites">Remove from Favorites</string>
     <string name="reset">Reset</string>
+    <string name="reset_button_text">Reset</string>
     <string name="reset_confirm">Are you sure you want to reset all scenes to default? This will delete any custom scenes you have created.</string>
+    <string name="reset_default_scenes_message">Are you sure you want to reset all default scenes to their original content? This will revert any edits you\'ve made to them and re-add any default scenes you may have deleted. Custom scenes you created will not be affected.</string>
+    <string name="reset_default_scenes_title">Reset Default Scenes</string>
     <string name="reset_positions_confirm_message">Are you sure you want to reset to default positions? This will delete all custom positions and remove any default positions hidden from the list.</string>
     <string name="reset_to_default">Reset to Default</string>
     <string name="save">Save</string>
+    <string name="save_button_text">Save</string>
     <string name="scene_content">Scene Content</string>
     <string name="scene_deleted">Scene deleted</string>
     <string name="scene_saved">Scene saved successfully</string>
@@ -2406,6 +2419,8 @@
     <string name="share_via">Share via</string>
     <string description="Title of the side sheet&apos;s accessibility pane that is spoken by TalkBack when the side sheet appears on screen. [CHAR_LIMIT=NONE]" name="side_sheet_accessibility_pane_title">Side Sheet</string>
     <string name="side_sheet_behavior" translatable="false">com.google.android.material.sidesheet.SideSheetBehavior</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="task_title_hint">Task title</string>
     <string name="theme">Theme</string>

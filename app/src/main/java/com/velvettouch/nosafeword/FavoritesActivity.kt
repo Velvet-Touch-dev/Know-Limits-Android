@@ -15,7 +15,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import com.velvettouch.nosafeword.BaseActivity
+import com.velvettouch.nosafeword.BaseActivity // Keep BaseActivity if it's your custom base
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -46,8 +46,11 @@ class FavoritesActivity : BaseActivity() {
     private lateinit var positionFavoritesRecyclerView: RecyclerView
     private lateinit var emptyFavoritesView: View
 
-    private val favoritesViewModel: FavoritesViewModel by viewModels()
-    private val scenesViewModel: ScenesViewModel by viewModels() // Add ScenesViewModel
+    // Renaming favoritesViewModel to cloudFavoritesViewModel for clarity in logic,
+    // but keeping original name for by viewModels() to avoid breaking existing ViewModel creation.
+    private val cloudFavoritesViewModel: FavoritesViewModel by viewModels()
+    private val localFavoritesViewModel: LocalFavoritesViewModel by viewModels()
+    private val scenesViewModel: ScenesViewModel by viewModels()
 
     // private var allScenes: List<Scene> = emptyList()
     private var positions: MutableList<Position> = mutableListOf()
@@ -56,12 +59,13 @@ class FavoritesActivity : BaseActivity() {
     private lateinit var positionFavoritesAdapter: FavoritePositionsAdapter
 
     private lateinit var auth: FirebaseAuth
-    private var localSceneFavoriteIds: MutableSet<String> = mutableSetOf()
+    // private var localSceneFavoriteIds: MutableSet<String> = mutableSetOf() // Now managed by LocalFavoritesViewModel
+    private var authStateListener: FirebaseAuth.AuthStateListener? = null
 
     companion object {
         private const val SCENES_FILENAME = "scenes.json" // Keep if still used for positions or other logic
-        private const val FAVORITES_PREFS_NAME = "FavoritesPrefs" // From MainActivity
-        private const val FAVORITE_SCENE_IDS_KEY = "favoriteSceneIds" // From MainActivity
+        // private const val FAVORITES_PREFS_NAME = "FavoritesPrefs" // No longer directly used here
+        // private const val FAVORITE_SCENE_IDS_KEY = "favoriteSceneIds" // No longer directly used here
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +73,7 @@ class FavoritesActivity : BaseActivity() {
         setContentView(R.layout.activity_favorites)
 
         auth = FirebaseAuth.getInstance()
+        // setupAuthStateListener() will be called in onStart to ensure ViewModels are ready
 
         toolbar = findViewById(R.id.toolbar)
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -160,41 +165,15 @@ class FavoritesActivity : BaseActivity() {
                     0 -> { // Scenes tab
                         sceneFavoritesRecyclerView.visibility = View.VISIBLE
                         positionFavoritesRecyclerView.visibility = View.GONE
-                        if (auth.currentUser != null) {
-                            // Logged In
-                            updateSceneFavoritesListFromFirestore(favoritesViewModel.favorites.value, scenesViewModel.scenes.value)
-                            // updatePositionFavoritesListFromFirestore(favoritesViewModel.favorites.value) // Not strictly needed if only scenes tab is active, but good for overall state
-                        } else {
-                            // Logged Out
-                            val localFavoriteSceneObjects = scenesViewModel.scenes.value.filter { scene ->
-                                localSceneFavoriteIds.contains(getSceneIdentifier(scene))
-                            }
-                            displayLocalSceneFavorites(localFavoriteSceneObjects)
-                        }
+                        // This logic will be handled by updateCurrentTabContent based on auth state
+                        updateCurrentTabContent()
                     }
                     1 -> { // Positions tab
-                        sceneFavoritesRecyclerView.visibility = View.GONE
-                        positionFavoritesRecyclerView.visibility = View.VISIBLE
-                        if (auth.currentUser != null) {
-                            // Logged In
-                            // updateSceneFavoritesListFromFirestore(favoritesViewModel.favorites.value, scenesViewModel.scenes.value) // Not strictly needed if only positions tab is active
-                            updatePositionFavoritesListFromFirestore(favoritesViewModel.favorites.value)
-                        } else {
-                            // Logged Out - Positions are not shown from local
-                            positionFavoritesAdapter.submitList(emptyList())
-                            updateOverallEmptyStateForLocal(emptyList(), emptyList()) // Reflects empty positions
-                        }
+                        // This logic will be handled by updateCurrentTabContent based on auth state
+                        updateCurrentTabContent()
                     }
                 }
-                // Call the appropriate overall empty state check after tab switch
-                if (auth.currentUser != null) {
-                    updateOverallEmptyStateForFirestore(favoritesViewModel.favorites.value, scenesViewModel.scenes.value)
-                } else {
-                     val localFavoriteSceneObjects = scenesViewModel.scenes.value.filter { scene ->
-                        localSceneFavoriteIds.contains(getSceneIdentifier(scene))
-                    }
-                    updateOverallEmptyStateForLocal(localFavoriteSceneObjects, emptyList())
-                }
+                // updateCurrentTabContent already handles empty state updates.
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -211,18 +190,9 @@ class FavoritesActivity : BaseActivity() {
             finish()
         }, { scene -> // onRemove
             if (auth.currentUser != null) {
-                favoritesViewModel.removeFavorite(getSceneIdentifier(scene), "scene")
+                cloudFavoritesViewModel.removeCloudFavorite(getSceneIdentifier(scene), "scene")
             } else {
-                // Logged out: Remove from local SharedPreferences
-                val sceneId = getSceneIdentifier(scene)
-                if (localSceneFavoriteIds.contains(sceneId)) {
-                    localSceneFavoriteIds.remove(sceneId)
-                    saveLocalSceneFavoritesToPrefs()
-                    // Re-filter and update adapter for scenes
-                    val currentAllScenes = scenesViewModel.scenes.value
-                    val updatedLocalFavoriteScenes = currentAllScenes.filter { s -> localSceneFavoriteIds.contains(getSceneIdentifier(s)) }
-                    displayLocalSceneFavorites(updatedLocalFavoriteScenes)
-                }
+                localFavoritesViewModel.removeLocalFavorite(getSceneIdentifier(scene), scenesViewModel.scenes.value)
             }
         })
 
@@ -239,7 +209,9 @@ class FavoritesActivity : BaseActivity() {
             startActivity(intent)
             finish()
         }, { position ->
-            favoritesViewModel.removeFavorite(position.name, "position")
+            // Positions are assumed to be cloud-only for now.
+            // If local position favorites were a thing, similar logic to scenes would apply.
+            cloudFavoritesViewModel.removeCloudFavorite(position.name, "position")
         })
 
         positionFavoritesRecyclerView.apply {
@@ -253,15 +225,14 @@ class FavoritesActivity : BaseActivity() {
         // Load local positions data (scenes will be loaded from ScenesViewModel)
         loadPositions()
 
-        if (auth.currentUser == null) {
-            loadLocalSceneFavoritesFromPrefs()
-        }
+        // loadLocalSceneFavoritesFromPrefs() // Removed, handled by LocalFavoritesViewModel
 
         observeViewModels()
-        if (auth.currentUser != null) { // Only load from Firestore if logged in
-            favoritesViewModel.loadFavorites()
-        }
+        // Initial load will be triggered by AuthStateListener in onStart
+
         // scenesViewModel loads its scenes internally via its init block or other triggers.
+        // Ensure scenesViewModel is ready before localFavoritesViewModel tries to use its scenes.
+        // This might require observing scenesViewModel.scenes first in localFavoritesViewModel's load.
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -275,73 +246,197 @@ class FavoritesActivity : BaseActivity() {
         })
     }
 
-    private fun observeViewModels() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            // Logged Out: Use local SharedPreferences for scenes
-            Log.d("FavoritesActivity", "User is logged out. Observing local scenes for favorites.")
+    override fun onStart() {
+        super.onStart()
+        // Initialize AuthStateListener here, after ViewModels are available.
+        setupAuthStateListener()
+        authStateListener?.let { auth.addAuthStateListener(it) }
+        // Trigger initial check in case user is already logged in/out when activity starts
+        handleAuthStateChange(auth.currentUser)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        authStateListener?.let { auth.removeAuthStateListener(it) }
+    }
+
+    private fun setupAuthStateListener() {
+        authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            handleAuthStateChange(firebaseAuth.currentUser)
+        }
+    }
+
+    private fun handleAuthStateChange(user: com.google.firebase.auth.FirebaseUser?) {
+        Log.d("FavoritesActivity", "AuthStateListener: User changed. Current user: ${user?.uid}")
+        if (user == null) {
+            // User is signed out
+            Log.d("FavoritesActivity", "AuthStateListener: User signed out. Loading local favorites.")
+            // Ensure scenes are loaded before trying to map local favorite IDs to Scene objects
             lifecycleScope.launch {
                 scenesViewModel.scenes.collectLatest { allScenes ->
-                    Log.d("FavoritesActivity", "Logged out: scenesViewModel.scenes collected. Count: ${allScenes.size}")
-                    val localFavoriteSceneObjects = allScenes.filter { scene ->
-                        localSceneFavoriteIds.contains(getSceneIdentifier(scene))
+                    if (auth.currentUser == null) { // Double check, as this is a collecting flow
+                         localFavoritesViewModel.refreshLocalFavorites(allScenes) // Use refresh to re-evaluate with current allScenes
                     }
-                    Log.d("FavoritesActivity", "Logged out: Filtered localFavoriteSceneObjects. Count: ${localFavoriteSceneObjects.size}")
-                    displayLocalSceneFavorites(localFavoriteSceneObjects)
-                    // For positions, when logged out, the list will be empty as we don't load position favorites from SharedPreferences here.
-                    positionFavoritesAdapter.submitList(emptyList()) // Explicitly clear position favorites
-                    updateOverallEmptyStateForLocal(localFavoriteSceneObjects, emptyList())
                 }
             }
+             // Initial load for local favorites if scenes are already present
+            if (scenesViewModel.scenes.value.isNotEmpty()) {
+                 localFavoritesViewModel.refreshLocalFavorites(scenesViewModel.scenes.value)
+            }
+
+
         } else {
-            // Logged In: Use Firestore (existing logic)
-            Log.d("FavoritesActivity", "User is logged in. Observing Firestore favorites.")
-            lifecycleScope.launch {
-                combine(
-                    favoritesViewModel.favorites, // Firestore favorites
-                    scenesViewModel.scenes
-                ) { firestoreFavoritesList, allScenesList ->
-                    Log.d("FavoritesActivity", "Logged in: Combined event: firestoreFavorites.size=${firestoreFavoritesList.size}, allScenes.size=${allScenesList.size}")
-                    updateSceneFavoritesListFromFirestore(firestoreFavoritesList, allScenesList)
-                    updatePositionFavoritesListFromFirestore(firestoreFavoritesList) // Uses positions member variable
-                }.collectLatest {
-                    Log.d("FavoritesActivity", "Logged in: collectLatest triggered after combine.")
+            // User is signed in
+            Log.d("FavoritesActivity", "AuthStateListener: User signed in. Triggering merge and loading cloud favorites.")
+            // The cloudFavoritesViewModel will handle the merge internally if performMerge is true
+            cloudFavoritesViewModel.loadCloudFavorites(performMerge = true)
+        }
+        updateCurrentTabContent() // Refresh UI based on new auth state
+    }
+
+
+    private fun updateCurrentTabContent() {
+        val selectedTabPosition = tabLayout.selectedTabPosition
+        // Ensure a tab is selected, default to 0 if not
+        val currentPosition = if (selectedTabPosition == -1 && tabLayout.tabCount > 0) 0 else selectedTabPosition
+
+        if (currentPosition == -1) {
+            Log.d("FavoritesActivity", "updateCurrentTabContent: No tab selected and no tabs available.")
+            emptyFavoritesView.visibility = View.VISIBLE // Show empty state if no tabs
+            sceneFavoritesRecyclerView.visibility = View.GONE
+            positionFavoritesRecyclerView.visibility = View.GONE
+            return
+        }
+        
+        // Ensure the correct tab is visually selected if we defaulted
+        if (selectedTabPosition == -1 && tabLayout.tabCount > 0) {
+            tabLayout.getTabAt(0)?.select()
+        }
+
+
+        if (auth.currentUser == null) { // Logged Out
+            Log.d("FavoritesActivity", "updateCurrentTabContent: User Logged Out.")
+            val localFavScenes = localFavoritesViewModel.localFavoriteScenes.value
+            if (currentPosition == 0) { // Scenes tab
+                sceneFavoritesRecyclerView.visibility = View.VISIBLE
+                positionFavoritesRecyclerView.visibility = View.GONE
+                displayLocalSceneFavorites(localFavScenes)
+            } else { // Positions tab (assuming empty for local)
+                sceneFavoritesRecyclerView.visibility = View.GONE
+                positionFavoritesRecyclerView.visibility = View.VISIBLE
+                positionFavoritesAdapter.submitList(emptyList()) // Positions are not local
+            }
+            updateOverallEmptyStateForLocal(localFavScenes, emptyList())
+        } else { // Logged In
+            Log.d("FavoritesActivity", "updateCurrentTabContent: User Logged In.")
+            val cloudFavs = cloudFavoritesViewModel.favorites.value
+            val allAppScenes = scenesViewModel.scenes.value // All scenes from app assets/repository
+
+            if (currentPosition == 0) { // Scenes tab
+                sceneFavoritesRecyclerView.visibility = View.VISIBLE
+                positionFavoritesRecyclerView.visibility = View.GONE
+                updateSceneFavoritesListFromFirestore(cloudFavs, allAppScenes)
+            } else { // Positions tab
+                sceneFavoritesRecyclerView.visibility = View.GONE
+                positionFavoritesRecyclerView.visibility = View.VISIBLE
+                updatePositionFavoritesListFromFirestore(cloudFavs)
+            }
+            updateOverallEmptyStateForFirestore(cloudFavs, allAppScenes)
+        }
+    }
+
+
+    private fun observeViewModels() {
+        // Observe Cloud Favorites (for logged-in state)
+        lifecycleScope.launch {
+            cloudFavoritesViewModel.favorites.collectLatest { cloudFavoriteList ->
+                if (auth.currentUser != null) {
+                    Log.d("FavoritesActivity", "Cloud favorites updated. Count: ${cloudFavoriteList.size}")
+                    updateCurrentTabContent() // Re-render based on new cloud data
                 }
             }
         }
-
-        // Common observers for isLoading and error, regardless of login state for favoritesViewModel
         lifecycleScope.launch {
-            favoritesViewModel.isLoading.collectLatest { isLoading ->
-                Log.d("FavoritesActivity", "Favorites isLoading: $isLoading")
-                // Handle loading UI if needed
+            cloudFavoritesViewModel.isLoading.collectLatest { isLoading ->
+                Log.d("FavoritesActivity", "Cloud isLoading: $isLoading")
+                // TODO: Show/hide global loading indicator for cloud operations
             }
         }
         lifecycleScope.launch {
-            favoritesViewModel.error.collectLatest { errorMessage ->
+            cloudFavoritesViewModel.isMerging.collectLatest { isMerging ->
+                Log.d("FavoritesActivity", "Cloud isMerging: $isMerging")
+                // TODO: Show/hide specific merging indicator
+            }
+        }
+        lifecycleScope.launch {
+            cloudFavoritesViewModel.error.collectLatest { errorMessage ->
                 errorMessage?.let {
-                    // Only show Firestore-related errors if logged in, or if it's a generic error not tied to "user not logged in"
                     if (auth.currentUser != null || !it.contains("User not logged in", ignoreCase = true)) {
-                        Toast.makeText(this@FavoritesActivity, "Favorites Error: $it", Toast.LENGTH_LONG).show()
-                        Log.e("FavoritesActivity", "Favorites Error: $it")
+                        Toast.makeText(this@FavoritesActivity, "Cloud Favorites Error: $it", Toast.LENGTH_LONG).show()
+                        Log.e("FavoritesActivity", "Cloud Favorites Error: $it")
                     }
-                    favoritesViewModel.clearError()
+                    cloudFavoritesViewModel.clearError()
                 }
             }
         }
 
-        // ScenesViewModel observers (these are general)
+        // Observe Local Favorites (for logged-out state)
+        lifecycleScope.launch {
+            localFavoritesViewModel.localFavoriteScenes.collectLatest { localFavoriteList ->
+                if (auth.currentUser == null) {
+                    Log.d("FavoritesActivity", "Local favorites updated. Count: ${localFavoriteList.size}")
+                    updateCurrentTabContent() // Re-render based on new local data
+                }
+            }
+        }
+         lifecycleScope.launch {
+            localFavoritesViewModel.isLoading.collectLatest { isLoading ->
+                 if (auth.currentUser == null) { // Only show for local context
+                    Log.d("FavoritesActivity", "Local isLoading: $isLoading")
+                    // TODO: Show/hide global loading indicator for local operations (if any become async)
+                 }
+            }
+        }
+        lifecycleScope.launch {
+            localFavoritesViewModel.error.collectLatest { errorMessage ->
+                errorMessage?.let {
+                    if (auth.currentUser == null) { // Only show for local context
+                        Toast.makeText(this@FavoritesActivity, "Local Favorites Error: $it", Toast.LENGTH_LONG).show()
+                        Log.e("FavoritesActivity", "Local Favorites Error: $it")
+                    }
+                    localFavoritesViewModel.clearError()
+                }
+            }
+        }
+
+
+        // Observe All Scenes (needed by both local and cloud to map IDs to Scene objects)
+        lifecycleScope.launch {
+            scenesViewModel.scenes.collectLatest { allScenes ->
+                Log.d("FavoritesActivity", "All scenes updated. Count: ${allScenes.size}")
+                // When all scenes change, we might need to refresh both local and cloud views
+                // as they depend on this list to map IDs to full Scene objects.
+                if (auth.currentUser == null) {
+                    localFavoritesViewModel.refreshLocalFavorites(allScenes)
+                } else {
+                    // Cloud favorites are collected directly, but the mapping to Scene objects happens here.
+                    // So, a refresh of the current tab content is good.
+                    updateCurrentTabContent()
+                }
+            }
+        }
         lifecycleScope.launch {
             scenesViewModel.isLoading.collectLatest { isLoading ->
                 Log.d("FavoritesActivity", "Scenes isLoading: $isLoading")
+                // TODO: Handle scenes loading indicator
             }
         }
         lifecycleScope.launch {
             scenesViewModel.error.collectLatest { errorMessage ->
                 errorMessage?.let {
-                    Toast.makeText(this@FavoritesActivity, "Scenes Error: $it", Toast.LENGTH_LONG).show()
-                    Log.e("FavoritesActivity", "Scenes Error: $it")
-                    // scenesViewModel.clearError()
+                    Toast.makeText(this@FavoritesActivity, "All Scenes Error: $it", Toast.LENGTH_LONG).show()
+                    Log.e("FavoritesActivity", "All Scenes Error: $it")
+                    // scenesViewModel.clearError() // If ScenesViewModel has this
                 }
             }
         }
@@ -351,21 +446,12 @@ class FavoritesActivity : BaseActivity() {
         return if (scene.firestoreId.isNotBlank()) {
             scene.firestoreId
         } else {
-            "asset_${scene.id}" // Consistent with MainActivity
+            "asset_${scene.id}" // Consistent with LocalFavoritesViewModel
         }
     }
 
-    private fun loadLocalSceneFavoritesFromPrefs() {
-        val prefs = getSharedPreferences(FAVORITES_PREFS_NAME, Context.MODE_PRIVATE)
-        localSceneFavoriteIds = prefs.getStringSet(FAVORITE_SCENE_IDS_KEY, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-        Log.d("FavoritesActivity", "Loaded local scene favorite IDs from Prefs: $localSceneFavoriteIds")
-    }
-
-    private fun saveLocalSceneFavoritesToPrefs() {
-        val prefs = getSharedPreferences(FAVORITES_PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putStringSet(FAVORITE_SCENE_IDS_KEY, localSceneFavoriteIds).apply()
-        Log.d("FavoritesActivity", "Saved local scene favorite IDs to Prefs: $localSceneFavoriteIds")
-    }
+    // Removed loadLocalSceneFavoritesFromPrefs - handled by LocalFavoritesRepository/ViewModel
+    // Removed saveLocalSceneFavoritesToPrefs - handled by LocalFavoritesRepository/ViewModel
 
 
     private fun displayLocalSceneFavorites(localFavoriteScenes: List<Scene>) {
