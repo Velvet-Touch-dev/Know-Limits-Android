@@ -193,6 +193,16 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         var scenesSyncedOrUpdatedCount = 0
         var syncFailedCount = 0
 
+        // Fetch existing default scenes from Firestore ONCE to avoid multiple reads in the loop
+        val existingUserDefaultScenesResult = repository.getUserDefaultScenesOnce(userId)
+        val existingUserDefaultScenesMap = if (existingUserDefaultScenesResult.isSuccess) {
+            existingUserDefaultScenesResult.getOrNull()?.associateBy { it.id } ?: emptyMap()
+        } else {
+            Log.e(TAG, "Failed to fetch existing default scenes for user $userId during sync: ${existingUserDefaultScenesResult.exceptionOrNull()?.message}")
+            // Proceed with empty map, individual adds might still work or fail gracefully.
+            emptyMap<Int, Scene>()
+        }
+
         for (localScene in scenesToProcess) {
             // All scenes here are localScene.isCustom == true
             val sceneToSync = localScene.copy(
@@ -202,31 +212,23 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
 
             if (localScene.id != 0) { // This was originally a default scene, but edited offline (so isCustom=true)
                 Log.d(TAG, "Syncing edited default scene (now custom): '${sceneToSync.title}' (originalId: ${sceneToSync.id}).")
-                val existingFirestoreSceneResult = repository.getSceneByOriginalId(localScene.id, userId)
-
-                if (existingFirestoreSceneResult.isSuccess) {
-                    val firestoreScene = existingFirestoreSceneResult.getOrNull()
-                    val sceneWithCorrectFirestoreId = if (firestoreScene != null) {
-                        Log.d(TAG, "Found existing Firestore doc (Id: ${firestoreScene.firestoreId}) for originalId ${localScene.id} (edited default). Will update.")
-                        sceneToSync.copy(firestoreId = firestoreScene.firestoreId) // Use existing Firestore ID for update
-                    } else {
-                        // This case should be rare if default scenes are seeded properly.
-                        // It means a default scene was edited offline, but its original counterpart never made it to Firestore.
-                        // We'll add it as a new custom scene, but it retains its originalId.
-                        Log.w(TAG, "No existing Firestore doc for originalId ${localScene.id} (edited default). Adding as new custom scene, preserving originalId.")
-                        sceneToSync.copy(firestoreId = "") // Let Firestore generate new ID
-                    }
-                    
-                    val result = repository.addScene(sceneWithCorrectFirestoreId) // addScene handles upsert
-                    if (result.isSuccess) {
-                        scenesSyncedOrUpdatedCount++
-                    } else {
-                        syncFailedCount++
-                        Log.e(TAG, "Failed to sync/update edited default scene '${sceneToSync.title}': ${result.exceptionOrNull()?.message}")
-                    }
+                
+                val firestoreSceneMatch = existingUserDefaultScenesMap[localScene.id]
+                
+                val sceneWithCorrectFirestoreId = if (firestoreSceneMatch != null) {
+                    Log.d(TAG, "Found existing Firestore doc (Id: ${firestoreSceneMatch.firestoreId}) for originalId ${localScene.id} (edited default) from pre-fetched list. Will update.")
+                    sceneToSync.copy(firestoreId = firestoreSceneMatch.firestoreId) // Use existing Firestore ID for update
+                } else {
+                    Log.w(TAG, "No existing Firestore doc for originalId ${localScene.id} (edited default) in pre-fetched list. Adding as new custom scene, preserving originalId.")
+                    sceneToSync.copy(firestoreId = "") // Let Firestore generate new ID
+                }
+                
+                val result = repository.addScene(sceneWithCorrectFirestoreId) // addScene handles upsert
+                if (result.isSuccess) {
+                    scenesSyncedOrUpdatedCount++
                 } else {
                     syncFailedCount++
-                    Log.e(TAG, "Failed to query for existing default scene (originalId: ${localScene.id}) before syncing edited version: ${existingFirestoreSceneResult.exceptionOrNull()?.message}")
+                    Log.e(TAG, "Failed to sync/update edited default scene '${sceneToSync.title}': ${result.exceptionOrNull()?.message}")
                 }
             } else { // This is a purely new custom scene (originalId is 0 or was never a default)
                 Log.d(TAG, "Syncing new custom scene: '${sceneToSync.title}'.")

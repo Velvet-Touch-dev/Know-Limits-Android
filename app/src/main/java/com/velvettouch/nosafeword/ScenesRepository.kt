@@ -298,4 +298,35 @@ class ScenesRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun getUserDefaultScenesOnce(userId: String): Result<List<Scene>> {
+        return try {
+            if (userId.isEmpty()) {
+                Log.w(TAG, "getUserDefaultScenesOnce called with empty userId.")
+                return Result.failure(IllegalArgumentException("User ID cannot be empty"))
+            }
+            Log.d(TAG, "Fetching all default scenes once for userId: $userId")
+            val snapshot = getScenesCollection()
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("isCustom", false) // Only get default scenes
+                .get()
+                .await()
+            
+            val scenes = snapshot.documents.mapNotNull { document ->
+                try {
+                    document.toObject<Scene>()?.apply {
+                        firestoreId = document.id
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error converting document ${document.id} to Scene in getUserDefaultScenesOnce", e)
+                    null // Skip problematic document
+                }
+            }
+            Log.d(TAG, "Successfully fetched ${scenes.size} default scenes once for userId: $userId")
+            Result.success(scenes)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getUserDefaultScenesOnce for userId $userId", e)
+            Result.failure(e)
+        }
+    }
 }

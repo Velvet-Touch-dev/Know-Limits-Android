@@ -48,7 +48,10 @@ class FavoritesActivity : BaseActivity() {
     
     companion object {
         private const val SCENES_FILENAME = "scenes.json"
-        private const val SCENE_FAVORITES_PREF = "favorites"
+        // SCENE_FAVORITES_PREF should match MainActivity's favoritesPrefsName
+        private const val SCENE_FAVORITES_PREF_NAME = "FavoritesPrefs"
+        // SCENE_FAVORITES_KEY should match MainActivity's favoriteSceneIdsKey
+        private const val SCENE_FAVORITES_KEY = "favoriteSceneIds"
         private const val POSITION_FAVORITES_PREF = "position_favorites"
     }
     
@@ -251,8 +254,8 @@ class FavoritesActivity : BaseActivity() {
     }
     
     private fun loadSceneFavorites() {
-        val prefs = getSharedPreferences(SCENE_FAVORITES_PREF, Context.MODE_PRIVATE)
-        sceneFavorites = prefs.getStringSet("favorite_ids", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        val prefs = getSharedPreferences(SCENE_FAVORITES_PREF_NAME, Context.MODE_PRIVATE)
+        sceneFavorites = prefs.getStringSet(SCENE_FAVORITES_KEY, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
     }
     
     private fun loadPositionFavorites() {
@@ -285,8 +288,8 @@ class FavoritesActivity : BaseActivity() {
     }
     
     private fun saveSceneFavorites() {
-        val prefs = getSharedPreferences(SCENE_FAVORITES_PREF, Context.MODE_PRIVATE)
-        prefs.edit().putStringSet("favorite_ids", sceneFavorites).apply()
+        val prefs = getSharedPreferences(SCENE_FAVORITES_PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putStringSet(SCENE_FAVORITES_KEY, sceneFavorites).apply()
     }
     
     private fun savePositionFavorites() {
@@ -296,7 +299,14 @@ class FavoritesActivity : BaseActivity() {
     
     private fun updateSceneFavoritesList() {
         // Get favorite scenes
-        val favoriteScenes = scenes.filter { sceneFavorites.contains(it.id.toString()) }
+        // This logic needs to check against the identifiers stored by MainActivity
+        val favoriteScenes = scenes.filter { scene ->
+            val assetIdentifier = "asset_${scene.id}"
+            // Check if either the asset_id version or potentially a firestoreId (if we had it) or title is in favorites.
+            // Since `scenes` here are loaded locally and don't have firestoreId, we primarily check assetIdentifier.
+            // We also check by title as a fallback for older favorites, though this is not robust.
+            sceneFavorites.contains(assetIdentifier) || sceneFavorites.contains(scene.title)
+        }
         
         if (favoriteScenes.isEmpty()) {
             sceneFavoritesRecyclerView.visibility = View.GONE

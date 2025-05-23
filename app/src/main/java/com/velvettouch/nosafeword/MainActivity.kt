@@ -604,7 +604,13 @@ class MainActivity : BaseActivity() {
 
     private fun toggleFavorite() { 
         val currentScene = getCurrentScene() ?: return
-        val sceneIdentifier = currentScene.firestoreId.takeIf { it.isNotBlank() } ?: currentScene.title
+        val sceneIdentifier = if (currentScene.firestoreId.isNotBlank()) {
+            currentScene.firestoreId
+        } else {
+            // For scenes from assets that might not have a firestoreId yet, use a stable local ID.
+            // Assuming currentScene.id is the original unique ID from assets.
+            "asset_${currentScene.id}"
+        }
         if (favorites.contains(sceneIdentifier)) {
             favorites.remove(sceneIdentifier)
             showMaterialToast("'${currentScene.title}' removed from favorites", false)
@@ -618,7 +624,11 @@ class MainActivity : BaseActivity() {
     }
 
     private fun removeFromFavorites(scene: Scene) { 
-        val sceneIdentifier = scene.firestoreId.takeIf { it.isNotBlank() } ?: scene.title
+        val sceneIdentifier = if (scene.firestoreId.isNotBlank()) {
+            scene.firestoreId
+        } else {
+            "asset_${scene.id}"
+        }
         if (favorites.contains(sceneIdentifier)) {
             favorites.remove(sceneIdentifier)
             saveFavoritesToPrefs()
@@ -634,7 +644,6 @@ class MainActivity : BaseActivity() {
         currentToast?.cancel()
         val iconText = if (isAddedToFavorite) "❤️ " else "" // Remove heartbreak emoji, keep heart for favorite
         currentToast = Toast.makeText(applicationContext, iconText + message, Toast.LENGTH_SHORT).apply {
-            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
             show()
         }
     }
@@ -645,7 +654,11 @@ class MainActivity : BaseActivity() {
             val current = getCurrentScene()
             if (current != null && currentMode == MODE_RANDOM) {
                 item.isVisible = true
-                val sceneIdentifier = current.firestoreId.takeIf { it.isNotBlank() } ?: current.title
+                val sceneIdentifier = if (current.firestoreId.isNotBlank()) {
+                    current.firestoreId
+                } else {
+                    "asset_${current.id}"
+                }
                 if (favorites.contains(sceneIdentifier)) {
                     item.icon = ContextCompat.getDrawable(this, R.drawable.ic_favorite_filled)
                     item.title = "Remove from Favorites" 
