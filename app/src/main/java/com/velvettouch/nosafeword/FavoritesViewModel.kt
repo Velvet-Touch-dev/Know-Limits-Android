@@ -79,15 +79,21 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 currentUserIdForMerge = currentUser.uid
             }
 
-            if (performMerge && !hasMergedThisSession) {
-                Log.d("FavoritesViewModel", "performMerge is true and hasMergedThisSession is false. Calling mergeLocalFavoritesWithCloud.")
-                mergeLocalFavoritesWithCloud() // Attempt merge
-            } else if (performMerge && hasMergedThisSession) {
-                Log.d("FavoritesViewModel", "performMerge is true but hasMergedThisSession is true. Skipping merge.")
+            if (performMerge) {
+                if (!hasMergedThisSession) {
+                    if (!_isMerging.value) { // Check if another merge is already in progress
+                        Log.d("FavoritesViewModel", "performMerge is true, not merged this session, and not currently merging. Calling mergeLocalFavoritesWithCloud.")
+                        mergeLocalFavoritesWithCloud() // This is a suspend function
+                    } else {
+                        Log.d("FavoritesViewModel", "performMerge is true, not merged this session, but a merge is already in progress. Skipping new merge call.")
+                    }
+                } else {
+                    Log.d("FavoritesViewModel", "performMerge is true but hasMergedThisSession is true. Skipping merge.")
+                }
             }
 
-
-            // Proceed to load cloud favorites
+            // Proceed to load cloud favorites regardless of merge status (merge might be ongoing or skipped)
+            // The collection of getFavorites() will pick up changes once the merge (if any) is done and data propagates.
             _favorites.value = emptyList() // Clear before collecting from cloud
             Log.d("FavoritesViewModel", "loadCloudFavorites: User ${currentUser.uid} logged in. Cleared _favorites, fetching from cloud repository.")
             try {
@@ -111,13 +117,21 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     private suspend fun mergeLocalFavoritesWithCloud() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Should not be null due to check in loadCloudFavorites
 
-        if (hasMergedThisSession) {
-            Log.d("FavoritesViewModel", "mergeLocalFavoritesWithCloud called, but hasMergedThisSession is true. Skipping actual merge logic.")
-            return // Already merged in this session for this user
+        // This check is now done in loadCloudFavorites before calling mergeLocalFavoritesWithCloud
+        // if (hasMergedThisSession) {
+        //     Log.d("FavoritesViewModel", "mergeLocalFavoritesWithCloud called, but hasMergedThisSession is true. Skipping actual merge logic.")
+        //     return // Already merged in this session for this user
+        // }
+
+        // Double check _isMerging in case of rapid calls, though the primary check is in loadCloudFavorites
+        if (_isMerging.value && !hasMergedThisSession) { // If a merge started but hasn't set hasMergedThisSession yet
+            Log.w("FavoritesViewModel", "mergeLocalFavoritesWithCloud called while another merge might be in progress and not yet completed. Bailing to avoid race condition on _isMerging.")
+            // This scenario should be rare if loadCloudFavorites's check is effective.
+            return
         }
 
         _isMerging.value = true
-        Log.d("FavoritesViewModel", "Starting actual merge of local favorites to cloud for user $userId.")
+        Log.d("FavoritesViewModel", "Starting actual merge of local favorites to cloud for user $userId. hasMergedThisSession = $hasMergedThisSession")
 
         try {
             val localFavoriteIds = localFavoritesRepository.getLocalFavoriteSceneIds()
