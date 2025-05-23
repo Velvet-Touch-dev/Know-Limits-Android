@@ -1,15 +1,17 @@
 package com.velvettouch.nosafeword
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log // Added Log import
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.velvettouch.nosafeword.BaseActivity
@@ -17,18 +19,22 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine // Added combine import
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.io.File
 import java.io.IOException
 import org.json.JSONArray
 
 class FavoritesActivity : BaseActivity() {
-    
+
     private lateinit var toolbar: Toolbar
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -37,29 +43,25 @@ class FavoritesActivity : BaseActivity() {
     private lateinit var sceneFavoritesRecyclerView: RecyclerView
     private lateinit var positionFavoritesRecyclerView: RecyclerView
     private lateinit var emptyFavoritesView: View
-    
-    private var sceneFavorites: MutableSet<String> = mutableSetOf()
-    private var positionFavorites: MutableSet<String> = mutableSetOf()
-    private var scenes: MutableList<Scene> = mutableListOf()
-    private var positions: MutableList<Position> = mutableListOf()
-    
+
+    private val favoritesViewModel: FavoritesViewModel by viewModels()
+    private val scenesViewModel: ScenesViewModel by viewModels() // Add ScenesViewModel
+
+    // private var allScenes: List<Scene> = emptyList() // No longer needed as a direct member, will be passed by combine
+    private var positions: MutableList<Position> = mutableListOf() // Still needed to map Favorite to Position object
+
     private lateinit var sceneFavoritesAdapter: FavoriteScenesAdapter
     private lateinit var positionFavoritesAdapter: FavoritePositionsAdapter
-    
+
     companion object {
         private const val SCENES_FILENAME = "scenes.json"
-        // SCENE_FAVORITES_PREF should match MainActivity's favoritesPrefsName
-        private const val SCENE_FAVORITES_PREF_NAME = "FavoritesPrefs"
-        // SCENE_FAVORITES_KEY should match MainActivity's favoriteSceneIdsKey
-        private const val SCENE_FAVORITES_KEY = "favoriteSceneIds"
-        private const val POSITION_FAVORITES_PREF = "position_favorites"
+        // Constants for SharedPreferences are no longer needed here for favorites
     }
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
-        
-        // Initialize views
+
         toolbar = findViewById(R.id.toolbar)
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
@@ -67,12 +69,10 @@ class FavoritesActivity : BaseActivity() {
         sceneFavoritesRecyclerView = findViewById(R.id.scene_favorites_recycler_view)
         positionFavoritesRecyclerView = findViewById(R.id.position_favorites_recycler_view)
         emptyFavoritesView = findViewById(R.id.empty_favorites_view)
-        
-        // Set up toolbar
+
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.favorites)
-        
-        // Set up drawer toggle
+
         drawerToggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
@@ -83,35 +83,31 @@ class FavoritesActivity : BaseActivity() {
         drawerToggle.isDrawerIndicatorEnabled = true
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
-        
-        // Set up navigation view listener
+
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_scenes -> {
-                    // Navigate to main activity (scenes)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
-                    finish() // Close this activity
+                    finish()
                     true
                 }
                 R.id.nav_positions -> {
-                    // Launch positions activity
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, PositionsActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
-                    finish() // Close this activity
+                    finish()
                     true
                 }
                 R.id.nav_body_worship -> {
-                    // Launch body worship activity
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, BodyWorshipActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
-                    finish() // Close this activity
+                    finish()
                     true
                 }
                 R.id.nav_task_list -> {
@@ -119,24 +115,22 @@ class FavoritesActivity : BaseActivity() {
                     val intent = Intent(this, TaskListActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
-                    finish() // Close this activity
+                    finish()
                     true
                 }
                 R.id.nav_plan_night -> {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, PlanNightActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
-                    finish() // Close this activity
+                    finish()
                     true
                 }
                 R.id.nav_favorites -> {
-                    // Already on favorites page, just close drawer
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 R.id.nav_settings -> {
-                    // Launch settings activity
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, SettingsActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -146,101 +140,79 @@ class FavoritesActivity : BaseActivity() {
                 else -> false
             }
         }
-        
-        // Set the correct item as selected in the navigation drawer
+
         navigationView.setCheckedItem(R.id.nav_favorites)
-        
-        // Remove header view if needed
         if (navigationView.headerCount > 0) {
             navigationView.removeHeaderView(navigationView.getHeaderView(0))
         }
-        
-        // Set up tab layout
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                // Switch between scenes and positions favorites
                 when (tab.position) {
                     0 -> { // Scenes tab
                         sceneFavoritesRecyclerView.visibility = View.VISIBLE
                         positionFavoritesRecyclerView.visibility = View.GONE
-                        updateSceneFavoritesList()
+                        // Ensure lists are updated with current data
+                        updateSceneFavoritesList(favoritesViewModel.favorites.value, scenesViewModel.scenes.value)
+                        updatePositionFavoritesList(favoritesViewModel.favorites.value) // This already calls updateOverallEmptyState
                     }
                     1 -> { // Positions tab
                         sceneFavoritesRecyclerView.visibility = View.GONE
                         positionFavoritesRecyclerView.visibility = View.VISIBLE
-                        updatePositionFavoritesList()
+                        // Ensure lists are updated with current data
+                        updateSceneFavoritesList(favoritesViewModel.favorites.value, scenesViewModel.scenes.value) // Call to ensure overall empty state is accurate
+                        updatePositionFavoritesList(favoritesViewModel.favorites.value)
                     }
                 }
             }
-            
-            override fun onTabUnselected(tab: TabLayout.Tab) {
-                // Not needed
-            }
-            
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                // Not needed
-            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
         })
-        
-        // Set up RecyclerView for scene favorites
+
         sceneFavoritesAdapter = FavoriteScenesAdapter({ scene ->
-            // Handle scene favorite click - switching to random mode and displaying the scene
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("DISPLAY_SCENE_ID", scene.id)
+            // MainActivity needs to know if it's a firestoreId or a local asset based id.
+            // For now, assuming MainActivity can handle firestoreId if that's what we are favoriting.
+            intent.putExtra("DISPLAY_SCENE_ID", scene.firestoreId) // Use firestoreId
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-            finish() // Close favorites activity to prevent navigation issues
+            finish()
         }, { scene ->
-            // Handle remove scene from favorites
-            removeSceneFromFavorites(scene)
+            favoritesViewModel.removeFavorite(scene.firestoreId, "scene") // Use firestoreId
         })
-        
+
         sceneFavoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@FavoritesActivity)
             adapter = sceneFavoritesAdapter
-            
-            // Set up swipe to delete functionality
             setupSceneSwipeToDelete(this)
         }
-        
-        // Set up RecyclerView for position favorites
+
         positionFavoritesAdapter = FavoritePositionsAdapter({ position ->
-            // Handle position favorite click - switching to positions page and displaying the position
             val intent = Intent(this, PositionsActivity::class.java)
             intent.putExtra("DISPLAY_POSITION_NAME", position.name)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-            finish() // Close favorites activity to prevent navigation issues
+            finish()
         }, { position ->
-            // Handle remove position from favorites
-            removePositionFromFavorites(position)
+            favoritesViewModel.removeFavorite(position.name, "position")
         })
-        
+
         positionFavoritesRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@FavoritesActivity)
             adapter = positionFavoritesAdapter
-            
-            // Set up swipe to delete functionality for position favorites
             setupPositionSwipeToDelete(this)
-            
-            // Add swipe hint at activity level, not from inside the RecyclerView
         }
-        
-        // Show the swipe hint
-        findViewById<androidx.cardview.widget.CardView>(R.id.swipe_hint_container).visibility = View.VISIBLE
-        
-        // Load favorites
-        loadSceneFavorites()
-        loadPositionFavorites()
-        
-        // Load scenes and positions data
-        loadScenes()
-        loadPositions()
-        
-        // Update UI
-        updateSceneFavoritesList()
 
-        // Setup custom back press handling
+        findViewById<androidx.cardview.widget.CardView>(R.id.swipe_hint_container).visibility = View.VISIBLE
+
+        // Load local positions data (scenes will be loaded from ScenesViewModel)
+        loadPositions()
+
+        observeViewModels() // Renamed to reflect observing multiple ViewModels
+        favoritesViewModel.loadFavorites() // Initial load
+        // scenesViewModel.loadScenes() // This call is not needed; ScenesViewModel loads internally.
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -252,143 +224,139 @@ class FavoritesActivity : BaseActivity() {
             }
         })
     }
-    
-    private fun loadSceneFavorites() {
-        val prefs = getSharedPreferences(SCENE_FAVORITES_PREF_NAME, Context.MODE_PRIVATE)
-        sceneFavorites = prefs.getStringSet(SCENE_FAVORITES_KEY, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-    }
-    
-    private fun loadPositionFavorites() {
-        val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
-        positionFavorites = prefs.getStringSet("favorite_position_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-    }
-    
-    private fun removeSceneFromFavorites(scene: Scene) {
-        val sceneId = scene.id.toString()
-        
-        if (sceneFavorites.contains(sceneId)) {
-            // Remove from favorites
-            sceneFavorites.remove(sceneId)
-            saveSceneFavorites()
-            
-            // Update the list
-            updateSceneFavoritesList()
+
+    private fun observeViewModels() {
+        lifecycleScope.launch {
+            combine( // Use combine directly
+                favoritesViewModel.favorites,
+                scenesViewModel.scenes
+            ) { favoritesList, scenesList ->
+                Log.d("FavoritesActivity", "observeViewModels: Combined event: favorites.size=${favoritesList.size}, allScenes.size=${scenesList.size}")
+                // Pass both lists to updateSceneFavoritesList
+                updateSceneFavoritesList(favoritesList, scenesList)
+                // Positions list doesn't depend on allScenes from ViewModel for its own items,
+                // but updateOverallEmptyState (called within updatePositionFavoritesList) will need it.
+                updatePositionFavoritesList(favoritesList)
+            }.collectLatest {
+                // This block is primarily to trigger the collection.
+                // The main logic is in the transformation block of combine.
+                Log.d("FavoritesActivity", "observeViewModels: collectLatest triggered after combine.")
+            }
+        }
+
+        lifecycleScope.launch {
+            favoritesViewModel.isLoading.collectLatest { isLoading ->
+                Log.d("FavoritesActivity", "Favorites isLoading: $isLoading")
+                // Optionally update a global loading indicator
+            }
+        }
+        lifecycleScope.launch {
+            favoritesViewModel.error.collectLatest { errorMessage ->
+                errorMessage?.let {
+                    Toast.makeText(this@FavoritesActivity, "Favorites Error: $it", Toast.LENGTH_LONG).show()
+                    Log.e("FavoritesActivity", "Favorites Error: $it")
+                    favoritesViewModel.clearError()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            scenesViewModel.isLoading.collectLatest { isLoading ->
+                Log.d("FavoritesActivity", "Scenes isLoading: $isLoading")
+                // Optionally update a global loading indicator
+            }
+        }
+        lifecycleScope.launch {
+            scenesViewModel.error.collectLatest { errorMessage ->
+                errorMessage?.let {
+                    Toast.makeText(this@FavoritesActivity, "Scenes Error: $it", Toast.LENGTH_LONG).show()
+                    Log.e("FavoritesActivity", "Scenes Error: $it")
+                    // scenesViewModel.clearError() // If ScenesViewModel has this
+                }
+            }
         }
     }
-    
-    private fun removePositionFromFavorites(position: Position) {
-        if (positionFavorites.contains(position.name)) {
-            // Remove from favorites
-            positionFavorites.remove(position.name)
-            savePositionFavorites()
-            
-            // Update the list
-            updatePositionFavoritesList()
+
+    private fun updateSceneFavoritesList(allFavorites: List<Favorite>, currentAllScenes: List<Scene>) {
+        Log.d("FavoritesActivity", "updateSceneFavoritesList BEGIN - allFavorites.size: ${allFavorites.size}, currentAllScenes.size: ${currentAllScenes.size}")
+        val favoriteSceneIds = allFavorites.filter { it.itemType == "scene" }.map { it.itemId }.toSet()
+        Log.d("FavoritesActivity", "updateSceneFavoritesList - favoriteSceneIds.size: ${favoriteSceneIds.size}, IDs: $favoriteSceneIds")
+
+        val favoriteSceneObjects = currentAllScenes.filter { scene ->
+            val isFav = favoriteSceneIds.contains(scene.firestoreId)
+            if (isFav) Log.d("FavoritesActivity", "updateSceneFavoritesList - Match found: Scene Title='${scene.title}', firestoreId='${scene.firestoreId}'")
+            isFav
         }
-    }
-    
-    private fun saveSceneFavorites() {
-        val prefs = getSharedPreferences(SCENE_FAVORITES_PREF_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putStringSet(SCENE_FAVORITES_KEY, sceneFavorites).apply()
-    }
-    
-    private fun savePositionFavorites() {
-        val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
-        prefs.edit().putStringSet("favorite_position_names", positionFavorites).apply()
-    }
-    
-    private fun updateSceneFavoritesList() {
-        // Get favorite scenes
-        // This logic needs to check against the identifiers stored by MainActivity
-        val favoriteScenes = scenes.filter { scene ->
-            val assetIdentifier = "asset_${scene.id}"
-            // Check if either the asset_id version or potentially a firestoreId (if we had it) or title is in favorites.
-            // Since `scenes` here are loaded locally and don't have firestoreId, we primarily check assetIdentifier.
-            // We also check by title as a fallback for older favorites, though this is not robust.
-            sceneFavorites.contains(assetIdentifier) || sceneFavorites.contains(scene.title)
+        Log.d("FavoritesActivity", "updateSceneFavoritesList - favoriteSceneObjects.size: ${favoriteSceneObjects.size}")
+        sceneFavoritesAdapter.submitList(favoriteSceneObjects.toList())
+
+        if (tabLayout.selectedTabPosition == 0) {
+            sceneFavoritesRecyclerView.visibility = if (favoriteSceneObjects.isEmpty()) View.GONE else View.VISIBLE
+            Log.d("FavoritesActivity", "updateSceneFavoritesList - ScenesTab selected. RecyclerView visible: ${sceneFavoritesRecyclerView.visibility == View.VISIBLE}")
         }
-        
-        if (favoriteScenes.isEmpty()) {
+        updateOverallEmptyState(allFavorites, currentAllScenes)
+    }
+
+    private fun updatePositionFavoritesList(allFavorites: List<Favorite>) {
+        Log.d("FavoritesActivity", "updatePositionFavoritesList BEGIN - allFavorites.size: ${allFavorites.size}")
+        val favoritePositionNames = allFavorites.filter { it.itemType == "position" }.map { it.itemId }.toSet()
+        Log.d("FavoritesActivity", "updatePositionFavoritesList - favoritePositionNames.size: ${favoritePositionNames.size}, Names: $favoritePositionNames")
+
+        val favoritePositionObjects = positions.filter { position -> favoritePositionNames.contains(position.name) }
+        Log.d("FavoritesActivity", "updatePositionFavoritesList - favoritePositionObjects.size: ${favoritePositionObjects.size}")
+        positionFavoritesAdapter.submitList(favoritePositionObjects.toList())
+
+        if (tabLayout.selectedTabPosition == 1) {
+            positionFavoritesRecyclerView.visibility = if (favoritePositionObjects.isEmpty()) View.GONE else View.VISIBLE
+            Log.d("FavoritesActivity", "updatePositionFavoritesList - PositionsTab selected. RecyclerView visible: ${positionFavoritesRecyclerView.visibility == View.VISIBLE}")
+        }
+        // Pass the current scenes list to updateOverallEmptyState
+        updateOverallEmptyState(allFavorites, scenesViewModel.scenes.value)
+    }
+
+    private fun updateOverallEmptyState(allFavorites: List<Favorite>, currentAllScenes: List<Scene>) {
+        Log.d("FavoritesActivity", "updateOverallEmptyState BEGIN - allFavorites.size: ${allFavorites.size}, currentAllScenes.size: ${currentAllScenes.size}")
+        val sceneFavoriteItemIds = allFavorites.filter { it.itemType == "scene" }.map { it.itemId }.toSet()
+        val actualFavoriteScenes = currentAllScenes.filter { scene -> sceneFavoriteItemIds.contains(scene.firestoreId) }
+
+        val positionFavoriteItemIds = allFavorites.filter { it.itemType == "position" }.map { it.itemId }.toSet()
+        val actualFavoritePositions = positions.filter { pos -> positionFavoriteItemIds.contains(pos.name) }
+        Log.d("FavoritesActivity", "updateOverallEmptyState - actualFavoriteScenes.size: ${actualFavoriteScenes.size}, actualFavoritePositions.size: ${actualFavoritePositions.size}")
+
+        val noSceneFavorites = actualFavoriteScenes.isEmpty()
+        val noPositionFavorites = actualFavoritePositions.isEmpty()
+
+        if (noSceneFavorites && noPositionFavorites) {
+            emptyFavoritesView.visibility = View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
-            emptyFavoritesView.visibility = View.VISIBLE
-        } else {
-            sceneFavoritesRecyclerView.visibility = View.VISIBLE
-            emptyFavoritesView.visibility = View.GONE
-            sceneFavoritesAdapter.submitList(favoriteScenes)
-        }
-    }
-    
-    private fun updatePositionFavoritesList() {
-        // Get favorite positions
-        val favoritePositions = positions.filter { positionFavorites.contains(it.name) }
-        
-        if (favoritePositions.isEmpty()) {
             positionFavoritesRecyclerView.visibility = View.GONE
-            emptyFavoritesView.visibility = View.VISIBLE
+            Log.d("FavoritesActivity", "updateOverallEmptyState - All empty. EmptyView VISIBLE. Both RVs GONE.")
         } else {
-            positionFavoritesRecyclerView.visibility = View.VISIBLE
             emptyFavoritesView.visibility = View.GONE
-            positionFavoritesAdapter.submitList(favoritePositions)
-        }
-    }
-    
-    private fun loadScenes() {
-        val internalFile = File(filesDir, SCENES_FILENAME)
-        var scenesLoadedFromFile = false
-
-        if (internalFile.exists()) {
-            try {
-                val jsonString = internalFile.bufferedReader().use { it.readText() }
-                if (jsonString.isNotBlank()) {
-                    val jsonArray = JSONArray(jsonString)
-                    val scenesList = mutableListOf<Scene>()
-                    for (i in 0 until jsonArray.length()) {
-                        val jsonObject = jsonArray.getJSONObject(i)
-                        scenesList.add(Scene(
-                            id = jsonObject.getInt("id"),
-                            title = jsonObject.getString("title"),
-                            content = jsonObject.getString("content")
-                        ))
-                    }
-                    scenes = scenesList
-                    scenesLoadedFromFile = true
-                }
-            } catch (e: Exception) {
-                e.printStackTrace() // Log error, then fallback to assets
-            }
-        }
-
-        if (!scenesLoadedFromFile) {
-            try {
-                val jsonString = loadJSONFromAsset(SCENES_FILENAME)
-                val jsonArray = JSONArray(jsonString)
-                val scenesList = mutableListOf<Scene>()
-                for (i in 0 until jsonArray.length()) {
-                    val jsonObject = jsonArray.getJSONObject(i)
-                    scenesList.add(Scene(
-                        id = jsonObject.getInt("id"),
-                        title = jsonObject.getString("title"),
-                        content = jsonObject.getString("content")
-                    ))
-                }
-                scenes = scenesList
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Consider showing an error to the user or logging
+            Log.d("FavoritesActivity", "updateOverallEmptyState - Not all empty. EmptyView GONE.")
+            // Visibility for the selected tab's RecyclerView is handled by its respective updateXxxList method.
+            // Here, we just ensure the non-selected tab's RecyclerView is hidden if it's empty.
+            if (tabLayout.selectedTabPosition == 0) { // Scenes tab selected
+                positionFavoritesRecyclerView.visibility = View.GONE // Hide positions RV
+                sceneFavoritesRecyclerView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
+            } else { // Positions tab selected
+                sceneFavoritesRecyclerView.visibility = View.GONE // Hide scenes RV
+                positionFavoritesRecyclerView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
             }
         }
     }
     
+    // loadScenes() is no longer needed as scenes are provided by ScenesViewModel
+    // private fun loadScenes() { ... }
+
     private fun loadPositions() {
         val loadedPositions = mutableListOf<Position>()
-        // Load from assets
         try {
             val assetManager = assets
             val assetFiles = assetManager.list("positions")
             assetFiles?.forEach { fileName ->
                 if (fileName.endsWith(".webp", ignoreCase = true) || fileName.endsWith(".png", ignoreCase = true) || fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true)) {
                     val nameWithoutExtension = fileName.substringBeforeLast(".")
-                    // Ensure consistent capitalization with how names are stored in favorites
                     val displayName = nameWithoutExtension.replace("_", " ").split(" ").joinToString(" ") { word ->
                         word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
                     }
@@ -397,16 +365,13 @@ class FavoritesActivity : BaseActivity() {
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            // Handle error, e.g., show a toast
         }
 
-        // Load custom positions from app's external files directory
         val customPositionsDir = getExternalFilesDir("positions")
         if (customPositionsDir != null && customPositionsDir.exists()) {
             customPositionsDir.listFiles()?.forEach { file ->
                 if (file.isFile && (file.name.endsWith(".jpg", ignoreCase = true) || file.name.endsWith(".png", ignoreCase = true) || file.name.endsWith(".webp", ignoreCase = true) || file.name.endsWith(".jpeg", ignoreCase = true))) {
                     val parts = file.nameWithoutExtension.split("_")
-                    // Ensure consistent capitalization
                     val displayName = if (parts.size > 2 && parts.first() == "position" && parts.last().toLongOrNull() != null) {
                         parts.drop(1).dropLast(1).joinToString(" ").split(" ").joinToString(" ") { word ->
                            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
@@ -420,7 +385,7 @@ class FavoritesActivity : BaseActivity() {
                 }
             }
         }
-        positions = loadedPositions // Assign the combined list
+        positions = loadedPositions
     }
 
     private fun loadJSONFromAsset(fileName: String): String {
