@@ -241,7 +241,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 val batchResult = cloudRepository.addFavoritesBatch(favoritesToUpload)
                 batchResult.onSuccess {
                     Log.d("FavoritesViewModel", "Successfully merged ${favoritesToUpload.size} local favorites to cloud.")
-                    localFavoritesRepository.clearLocalFavoriteScenes()
+                    localFavoritesRepository.clearAllLocalFavorites() // Corrected method name
                     Log.d("FavoritesViewModel", "Cleared local favorites after successful merge.")
                     hasMergedThisSession = true // Set flag after successful merge and clear
                     Log.d("FavoritesViewModel", "hasMergedThisSession set to true.")
@@ -252,7 +252,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             } else {
                 Log.d("FavoritesViewModel", "All local favorites already exist in the cloud. Clearing local.")
-                localFavoritesRepository.clearLocalFavoriteScenes()
+                localFavoritesRepository.clearAllLocalFavorites() // Corrected method name
                 hasMergedThisSession = true // Set flag as effectively merged (or nothing to merge)
                 Log.d("FavoritesViewModel", "hasMergedThisSession set to true (no new items to upload).")
             }

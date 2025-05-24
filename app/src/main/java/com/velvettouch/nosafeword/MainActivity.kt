@@ -336,7 +336,7 @@ class MainActivity : BaseActivity() {
                 }
                 // When all scenes change, local favorites might need re-filtering if user is logged out
                 if (auth.currentUser == null) {
-                    localFavoritesViewModel.refreshLocalFavorites(allUserScenes)
+                    localFavoritesViewModel.refreshLocalFavoriteScenes(allUserScenes)
                 }
                 updateUI()
             }
@@ -703,10 +703,10 @@ class MainActivity : BaseActivity() {
         } else {
             isCurrentlyFavorite = localFavoritesViewModel.localFavoriteScenes.value.any { getSceneIdentifier(it) == sceneIdentifier }
             if (isCurrentlyFavorite) {
-                localFavoritesViewModel.removeLocalFavorite(sceneIdentifier, allUserScenes)
+                localFavoritesViewModel.removeLocalFavoriteScene(sceneIdentifier, allUserScenes)
                 showMaterialToast("'${currentScene.title}' removed from local favorites", false)
             } else {
-                localFavoritesViewModel.addLocalFavorite(sceneIdentifier, allUserScenes)
+                localFavoritesViewModel.addLocalFavoriteScene(sceneIdentifier, allUserScenes)
                 showMaterialToast("'${currentScene.title}' added to local favorites", true)
             }
         }
@@ -718,7 +718,7 @@ class MainActivity : BaseActivity() {
             cloudFavoritesViewModel.removeCloudFavorite(sceneIdentifier, "scene")
             showMaterialToast("'${scene.title}' removed from cloud favorites", false)
         } else {
-            localFavoritesViewModel.removeLocalFavorite(sceneIdentifier, allUserScenes)
+            localFavoritesViewModel.removeLocalFavoriteScene(sceneIdentifier, allUserScenes)
             showMaterialToast("'${scene.title}' removed from local favorites", false)
         }
     }
@@ -986,7 +986,7 @@ class MainActivity : BaseActivity() {
         } else {
             Log.d(TAG, "handleAuthStateChange: User is SIGNED OUT. Initial: $isInitialCheck")
             if (allUserScenes.isNotEmpty() || !isInitialCheck) { // Avoid refreshing if scenes aren't loaded yet on initial cold start
-                localFavoritesViewModel.refreshLocalFavorites(allUserScenes)
+                localFavoritesViewModel.refreshLocalFavoriteScenes(allUserScenes)
             }
         }
         updateUI()
@@ -1008,7 +1008,7 @@ class MainActivity : BaseActivity() {
     private fun updateUIForSignedOutUser() { // Potentially called after specific actions if needed
         Log.d(TAG, "updateUIForSignedOutUser: (Manual call if needed) User is signed out.")
         if (allUserScenes.isNotEmpty()) { // Ensure allUserScenes is populated before refreshing
-            localFavoritesViewModel.refreshLocalFavorites(allUserScenes)
+            localFavoritesViewModel.refreshLocalFavoriteScenes(allUserScenes)
         }
         currentSceneIndex = -1 // Reset current scene view
         sceneHistory.clear()

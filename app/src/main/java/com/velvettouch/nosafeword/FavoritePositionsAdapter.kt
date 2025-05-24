@@ -9,11 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide // Added for image loading
+import android.net.Uri // Added for Uri parsing
 
 class FavoritePositionsAdapter(
-    private val onPositionClick: (FavoritesActivity.Position) -> Unit,
-    private val onRemoveClick: (FavoritesActivity.Position) -> Unit
-) : ListAdapter<FavoritesActivity.Position, FavoritePositionsAdapter.ViewHolder>(PositionDiffCallback()) {
+    private val onPositionClick: (PositionItem) -> Unit, // Changed to PositionItem
+    private val onRemoveClick: (PositionItem) -> Unit   // Changed to PositionItem
+) : ListAdapter<PositionItem, FavoritePositionsAdapter.ViewHolder>(PositionDiffCallback()) { // Changed to PositionItem
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -32,61 +34,88 @@ class FavoritePositionsAdapter(
 
     class ViewHolder(
         itemView: View,
-        private val onPositionClick: (FavoritesActivity.Position) -> Unit,
-        private val onRemoveClick: (FavoritesActivity.Position) -> Unit
+        private val onPositionClick: (PositionItem) -> Unit, // Changed to PositionItem
+        private val onRemoveClick: (PositionItem) -> Unit    // Changed to PositionItem
     ) : RecyclerView.ViewHolder(itemView) {
         
         private val positionNameTextView: TextView = itemView.findViewById(R.id.position_name)
         private val positionImageView: ImageView = itemView.findViewById(R.id.position_image)
-        private lateinit var currentPosition: FavoritesActivity.Position
+        private lateinit var currentPositionItem: PositionItem // Changed to PositionItem
 
         init {
             // Set click listener for the card
             itemView.setOnClickListener {
-                if (::currentPosition.isInitialized) {
-                    onPositionClick(currentPosition)
+                if (::currentPositionItem.isInitialized) {
+                    onPositionClick(currentPositionItem)
                 }
             }
         }
 
-        fun bind(position: FavoritesActivity.Position) {
-            currentPosition = position
+        fun bind(positionItem: PositionItem) { // Changed to positionItem
+            currentPositionItem = positionItem
             
             // Set position name
-            positionNameTextView.text = position.name
+            positionNameTextView.text = positionItem.name
             
             // Load position image
+            positionImageView.setImageResource(R.drawable.ic_image_24) // Default placeholder
             try {
                 val context = itemView.context
-                if (position.isAsset) {
-                    val inputStream = context.assets.open(position.imagePath) // imagePath is "positions/asset.webp"
-                    val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
-                    positionImageView.setImageDrawable(drawable)
-                    inputStream.close()
-                } else {
-                    // imagePath is an absolute file path for custom positions
-                    val imageFile = java.io.File(position.imagePath)
-                    if (imageFile.exists()) {
-                        positionImageView.setImageURI(android.net.Uri.fromFile(imageFile))
+                if (positionItem.imageName.isNotBlank()) {
+                    if (positionItem.isAsset) {
+                        val inputStream = context.assets.open("positions/${positionItem.imageName}")
+                        val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
+                        positionImageView.setImageDrawable(drawable)
+                        inputStream.close()
                     } else {
-                        positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                        // Not an asset, could be URL or local file path (though less likely for synced favorites)
+                        val imagePath = positionItem.imageName
+                        when {
+                            imagePath.startsWith("http://") || imagePath.startsWith("https://") -> {
+                                Glide.with(context).load(imagePath)
+                                    .placeholder(R.drawable.ic_image_24)
+                                    .error(R.drawable.ic_image_24)
+                                    .into(positionImageView)
+                            }
+                            imagePath.startsWith("content://") -> {
+                                Glide.with(context).load(Uri.parse(imagePath))
+                                    .placeholder(R.drawable.ic_image_24)
+                                    .error(R.drawable.ic_image_24)
+                                    .into(positionImageView)
+                            }
+                            imagePath.startsWith("/") -> { // Absolute file path
+                                val localFile = java.io.File(imagePath)
+                                if (localFile.exists()) {
+                                    Glide.with(context).load(localFile)
+                                        .placeholder(R.drawable.ic_image_24)
+                                        .error(R.drawable.ic_image_24)
+                                        .into(positionImageView)
+                                } else {
+                                    positionImageView.setImageResource(R.drawable.ic_image_24)
+                                }
+                            }
+                            else -> { // Fallback for unknown path, or if it's just a filename for a non-asset (should not happen)
+                                positionImageView.setImageResource(R.drawable.ic_image_24)
+                            }
+                        }
                     }
+                } else {
+                     positionImageView.setImageResource(R.drawable.ic_image_24)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Set placeholder if image loading fails
                 positionImageView.setImageResource(R.drawable.ic_image_24)
             }
         }
     }
 
-    class PositionDiffCallback : DiffUtil.ItemCallback<FavoritesActivity.Position>() {
-        override fun areItemsTheSame(oldItem: FavoritesActivity.Position, newItem: FavoritesActivity.Position): Boolean {
-            return oldItem.name == newItem.name
+    class PositionDiffCallback : DiffUtil.ItemCallback<PositionItem>() { // Changed to PositionItem
+        override fun areItemsTheSame(oldItem: PositionItem, newItem: PositionItem): Boolean {
+            return oldItem.id == newItem.id // Compare by ID
         }
 
-        override fun areContentsTheSame(oldItem: FavoritesActivity.Position, newItem: FavoritesActivity.Position): Boolean {
-            return oldItem == newItem // Since Position is a data class, this checks all properties
+        override fun areContentsTheSame(oldItem: PositionItem, newItem: PositionItem): Boolean {
+            return oldItem == newItem
         }
     }
 }

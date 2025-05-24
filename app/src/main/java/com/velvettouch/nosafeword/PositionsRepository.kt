@@ -35,6 +35,8 @@ class PositionsRepository(private val context: Context) {
     private val storage = Firebase.storage
     private val gson = Gson()
 
+    private var assetPositionsList: List<PositionItem> = emptyList()
+
     // Observe auth state to update userId dynamically
     private var userId: String? = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -42,6 +44,8 @@ class PositionsRepository(private val context: Context) {
         FirebaseAuth.getInstance().addAuthStateListener { firebaseAuth ->
             userId = firebaseAuth.currentUser?.uid
         }
+        // Load asset positions upon initialization
+        assetPositionsList = loadAssetsFromDisk(context)
     }
 
     companion object {
@@ -634,26 +638,94 @@ class PositionsRepository(private val context: Context) {
         return loadLocalPositions()
     }
 
+    // Helper function to load asset positions from the assets directory
+    private fun loadAssetsFromDisk(context: Context): List<PositionItem> {
+        val items = mutableListOf<PositionItem>()
+        try {
+            val imageFileNames = context.assets.list("positions")?.filter {
+                it.endsWith(".jpg", ignoreCase = true) ||
+                it.endsWith(".jpeg", ignoreCase = true) ||
+                it.endsWith(".png", ignoreCase = true)
+            } ?: emptyList()
 
-    // Get a specific position by its ID (checks local then Firestore)
+            for (fileName in imageFileNames) {
+                val nameWithoutExtension = fileName.substringBeforeLast(".")
+                // Consistent naming: Replace underscores, then capitalize words.
+                // This capitalization should ideally be a shared utility if used in multiple places for display names.
+                // For ID matching, the raw filename is more critical.
+                val displayName = nameWithoutExtension.replace("_", " ").split(" ").joinToString(" ") { word ->
+                    word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
+                }
+                val assetId = "asset_$fileName" // e.g., asset_Lazyman.jpg
+
+                items.add(
+                    PositionItem(
+                        id = assetId,
+                        name = displayName,
+                        imageName = fileName, // Filename like "Lazyman.jpg"
+                        isAsset = true,
+                        userId = "", // Assets don't have a userId
+                        isFavorite = false // Default, actual favorite status comes from Favorites system
+                    )
+                )
+            }
+            Log.d("PositionsRepository", "Loaded ${items.size} asset positions from disk.")
+        } catch (e: IOException) {
+            Log.e("PositionsRepository", "Error loading asset positions from disk", e)
+        }
+        return items
+    }
+
+    // Get a specific position by its ID (checks assets, local, then Firestore)
     suspend fun getPositionById(positionId: String): PositionItem? {
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid
-        if (positionId.startsWith("local_")) {
-            return loadLocalPositions().find { it.id == positionId && it.userId == null } // Local items belong to anonymous
+
+        // 1. Check asset positions first (these are global and don't depend on login state)
+        // Assuming asset IDs are prefixed with "asset_" or match a known asset naming convention.
+        // The check `it.id == positionId` should suffice if IDs are consistent.
+        // The problem description implies IDs like "asset_Flatiron.jpg" are used.
+        val assetPosition = assetPositionsList.find { it.id == positionId }
+        if (assetPosition != null) {
+            Log.d("PositionsRepository", "getPositionById: Found '$positionId' in assetPositionsList.")
+            return assetPosition
         }
-        // If not a local ID, try Firestore only if user is logged in
-        if (currentUid != null) {
-            return try {
-                db.collection(POSITIONS_COLLECTION)
+
+        // 2. Check local positions (SharedPreferences) if ID starts with "local_"
+        if (positionId.startsWith("local_")) {
+            val localPosition = loadLocalPositions().find { it.id == positionId && it.userId == null } // Local items belong to anonymous
+            if (localPosition != null) {
+                Log.d("PositionsRepository", "getPositionById: Found '$positionId' in local SharedPreferences.")
+                return localPosition
+            }
+        }
+
+        // 3. Check Firestore if user is logged in and ID is not local_ (could be Firestore ID)
+        if (currentUid != null && !positionId.startsWith("local_")) {
+            try {
+                val firestoreDoc = db.collection(POSITIONS_COLLECTION)
                     .document(positionId)
                     .get()
                     .await()
-                    .toObject(PositionItem::class.java)?.takeIf { it.userId == currentUid }?.copy(id = positionId)
+                if (firestoreDoc.exists()) {
+                    val firestorePositionItem = firestoreDoc.toObject(PositionItem::class.java)?.copy(id = firestoreDoc.id)
+                    // Ensure the fetched position belongs to the current user
+                    if (firestorePositionItem?.userId == currentUid) {
+                        Log.d("PositionsRepository", "getPositionById: Found '$positionId' in Firestore for user '$currentUid'.")
+                        return firestorePositionItem
+                    } else {
+                        Log.d("PositionsRepository", "getPositionById: Firestore document '$positionId' found, but userId mismatch (docUser: ${firestorePositionItem?.userId}, currentUser: $currentUid).")
+                    }
+                } else {
+                     Log.d("PositionsRepository", "getPositionById: Firestore document '$positionId' not found.")
+                }
             } catch (e: Exception) {
-                null
+                Log.e("PositionsRepository", "getPositionById: Error fetching '$positionId' from Firestore", e)
+                return null // Error during Firestore fetch
             }
         }
-        return null // Not found locally, or user is anonymous and ID is not local, or ID doesn't belong to user
+        
+        Log.d("PositionsRepository", "getPositionById: Position '$positionId' not found in assets, local, or user's Firestore.")
+        return null // Not found
     }
 
     // Delete a position

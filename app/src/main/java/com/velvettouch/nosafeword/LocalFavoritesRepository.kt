@@ -8,6 +8,7 @@ class LocalFavoritesRepository(private val context: Context) {
     companion object {
         private const val FAVORITES_PREFS_NAME = "FavoritesPrefs" // Consistent with existing
         private const val FAVORITE_SCENE_IDS_KEY = "favoriteSceneIds" // Consistent with existing
+        private const val FAVORITE_POSITION_IDS_KEY = "favoritePositionIds" // New key for positions
         private const val TAG = "LocalFavoritesRepo"
     }
 
@@ -45,8 +46,56 @@ class LocalFavoritesRepository(private val context: Context) {
         return isFav
     }
 
-    fun clearLocalFavoriteScenes() {
-        sharedPreferences.edit().remove(FAVORITE_SCENE_IDS_KEY).apply()
-        Log.d(TAG, "Cleared all local favorite scene IDs.")
+    // Methods for Positions
+    fun getLocalFavoritePositionIds(): Set<String> {
+        val ids = sharedPreferences.getStringSet(FAVORITE_POSITION_IDS_KEY, emptySet()) ?: emptySet()
+        Log.d(TAG, "Loaded local favorite position IDs: $ids")
+        return ids
+    }
+
+    fun addLocalFavoritePosition(positionId: String) {
+        val currentFavorites = getLocalFavoritePositionIds().toMutableSet()
+        if (currentFavorites.add(positionId)) {
+            sharedPreferences.edit().putStringSet(FAVORITE_POSITION_IDS_KEY, currentFavorites).apply()
+            Log.d(TAG, "Added local favorite position ID: $positionId. Current IDs: $currentFavorites")
+        } else {
+            Log.d(TAG, "Position ID $positionId already a local favorite.")
+        }
+    }
+
+    fun removeLocalFavoritePosition(positionId: String) {
+        val currentFavorites = getLocalFavoritePositionIds().toMutableSet()
+        if (currentFavorites.remove(positionId)) {
+            sharedPreferences.edit().putStringSet(FAVORITE_POSITION_IDS_KEY, currentFavorites).apply()
+            Log.d(TAG, "Removed local favorite position ID: $positionId. Current IDs: $currentFavorites")
+        } else {
+            Log.d(TAG, "Position ID $positionId was not in local favorites to remove.")
+        }
+    }
+
+    fun isLocalFavoritePosition(positionId: String): Boolean {
+        val isFav = getLocalFavoritePositionIds().contains(positionId)
+        Log.d(TAG, "Is position ID $positionId a local favorite? $isFav")
+        return isFav
+    }
+
+    fun getAllLocalFavoritesAsFavoriteObjects(): List<Favorite> {
+        val localFavorites = mutableListOf<Favorite>()
+        getLocalFavoriteSceneIds().forEach { sceneId ->
+            localFavorites.add(Favorite(itemId = sceneId, itemType = "scene", userId = "")) // userId will be set by cloud repo if needed
+        }
+        getLocalFavoritePositionIds().forEach { positionId ->
+            localFavorites.add(Favorite(itemId = positionId, itemType = "position", userId = "")) // userId will be set by cloud repo if needed
+        }
+        Log.d(TAG, "All local favorites as Favorite objects: $localFavorites")
+        return localFavorites
+    }
+
+    fun clearAllLocalFavorites() {
+        sharedPreferences.edit()
+            .remove(FAVORITE_SCENE_IDS_KEY)
+            .remove(FAVORITE_POSITION_IDS_KEY)
+            .apply()
+        Log.d(TAG, "Cleared all local favorite scene and position IDs.")
     }
 }

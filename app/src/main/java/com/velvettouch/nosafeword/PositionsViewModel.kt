@@ -184,6 +184,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
     // Function to load default/asset positions (e.g., from local JSON or assets folder)
     fun loadAssetPositions(assetList: List<PositionItem>) {
         _assetPositions.value = assetList
+        // repository.setAssetPositions(assetList) // No longer needed, repository loads assets itself
         updateAllPositions() // Combine with current user positions
     }
 

@@ -85,6 +85,8 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionsProgressIndicator: LinearProgressIndicator
 
     private lateinit var positionsViewModel: PositionsViewModel
+    private lateinit var favoritesViewModel: FavoritesViewModel // Added
+    private lateinit var localFavoritesRepository: LocalFavoritesRepository // Added
 
     // TTS variables
     private lateinit var textToSpeech: TextToSpeech
@@ -106,9 +108,9 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private var maxTimeSeconds = 60 // Default maximum time in seconds
     private val timeOptions = listOf(10, 15, 20, 30, 45, 60, 90, 120) // Time options in seconds
     
-    // Favorites - SharedPreferences for asset favorites.
+    // Favorites - SharedPreferences for asset favorites. // This is now handled by LocalFavoritesRepository and FavoritesViewModel
     // Non-asset favorites are stored in Firestore via PositionItem.isFavorite.
-    private var assetPositionFavorites: MutableSet<String> = mutableSetOf() // Used for local asset favorites
+    // private var assetPositionFavorites: MutableSet<String> = mutableSetOf() // Removed - Used for local asset favorites
     private var hiddenDefaultPositionNames: MutableSet<String> = mutableSetOf() // For session-persistent hiding
 private var pendingPositionNavigationName: String? = null // For navigating from intent
 
@@ -122,7 +124,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         const val PREF_VOICE_SETTINGS = "voice_settings"
         const val PREF_VOICE_PITCH = "voice_pitch"
         const val PREF_VOICE_SPEED = "voice_speed"
-        const val POSITION_FAVORITES_PREF = "position_favorites"
+        // const val POSITION_FAVORITES_PREF = "position_favorites" // Removed
         const val HIDDEN_DEFAULT_POSITIONS_PREF = "hidden_default_positions" // New pref key
         
         // Default values
@@ -137,6 +139,8 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // Initialize ViewModel
         val factory = PositionsViewModelFactory(application)
         positionsViewModel = ViewModelProvider(this, factory)[PositionsViewModel::class.java]
+        favoritesViewModel = ViewModelProvider(this, FavoritesViewModelFactory(application))[FavoritesViewModel::class.java] // Added
+        localFavoritesRepository = LocalFavoritesRepository(applicationContext) // Added
 
         // Initialize TextToSpeech
         textToSpeech = TextToSpeech(this, this)
@@ -338,12 +342,12 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // loadPositionImages() // ViewModel will handle loading or providing asset positions
 
         // Load position favorites for assets (if any are stored locally)
-        loadAssetPositionFavorites() // This should be called once in onCreate to load initial asset favorites.
+        // loadAssetPositionFavorites() // Removed - will be handled by FavoritesViewModel and LocalFavoritesRepository
         // Asset favorites are loaded by loadAssetPositionFavorites() called from onCreate if still needed for assets.
         // Firestore item's favorite status is part of the PositionItem.
 
         // Prepare and load asset positions into ViewModel
-        val assetItems = prepareAssetPositionItems()
+        val assetItems = prepareAssetPositionItems() // prepareAssetPositionItems will now use localFavoritesRepository
         positionsViewModel.loadAssetPositions(assetItems)
         
         // Check for specific position to display from intent AFTER allPositionItems is populated (or ViewModel provides data)
@@ -490,17 +494,18 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     // If currentPosition is valid, updateRandomizablePositions should have handled display if item changed.
                 }
                 filterPositionsLibrary(positionSearchView.query?.toString()) // For the library tab
-                updateNavigationButtonStates()
+                updateNavigationButtonStates() // This will call updateFavoriteIcon
+                invalidateOptionsMenu() // Explicitly call to update favorite icon
             }
         }
 
         lifecycleScope.launch {
-            positionsViewModel.isLoading.collect { isLoading ->
+            positionsViewModel.isLoading.collect { _ -> // Renamed to _
                 updateProgressIndicatorVisibility()
             }
         }
         lifecycleScope.launch {
-            positionsViewModel.isSyncing.collect { isSyncing ->
+            positionsViewModel.isSyncing.collect { _ -> // Renamed to _
                 updateProgressIndicatorVisibility()
             }
         }
@@ -511,6 +516,39 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     positionsViewModel.clearErrorMessage() // Clear the error message
                 }
             }
+        }
+
+        // Observe FavoritesViewModel
+        lifecycleScope.launch {
+            favoritesViewModel.favorites.collect { favoriteItems ->
+                // This list contains all Favorite objects (scenes and positions)
+                // We can use this to update the favorite icon status
+                Log.d("PositionsActivity", "FavoritesViewModel.favorites collected, count: ${favoriteItems.size}")
+                invalidateOptionsMenu() // Update favorite icon when favorites change
+                // If library items show favorite status, refresh adapter here
+                if (::positionLibraryAdapter.isInitialized) {
+                     // Potentially update items in adapter if they display favorite state directly
+                     // For now, toolbar icon is the main concern.
+                }
+            }
+        }
+        lifecycleScope.launch {
+            favoritesViewModel.isLoading.collect { isLoading ->
+                // Handle loading state for favorites if needed, e.g. a different progress indicator
+                // For now, main progress indicator is tied to positionsViewModel
+            }
+        }
+        lifecycleScope.launch {
+            favoritesViewModel.error.collect { error ->
+                error?.let {
+                    Toast.makeText(this@PositionsActivity, "Favorites Error: $it", Toast.LENGTH_LONG).show()
+                    favoritesViewModel.clearError()
+                }
+            }
+        }
+         // Initial load of cloud favorites if user is logged in
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            favoritesViewModel.loadCloudFavorites(performMerge = true)
         }
     }
 
@@ -768,7 +806,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // The imageUri is a content URI from the image picker.
         // For Firestore, we'd typically upload this image to Firebase Storage and store the download URL.
         // For now, we'll store the URI string.
-        val imageNameOrPath = imageUri?.toString() ?: "" // Store URI as string, or empty if no image
+        // val imageNameOrPath = imageUri?.toString() ?: "" // Store URI as string, or empty if no image // Removed as unused
 
         // Ensure user is logged in before attempting to get UID
         val currentFirebaseUser = FirebaseAuth.getInstance().currentUser
@@ -866,15 +904,15 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
     }
     
-    private fun loadAssetPositionFavorites() {
+    /*private fun loadAssetPositionFavorites() { // Removed
         val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
         assetPositionFavorites = prefs.getStringSet("favorite_position_names", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
     }
 
-    private fun saveAssetPositionFavorites() {
+    private fun saveAssetPositionFavorites() { // Removed
         val prefs = getSharedPreferences(POSITION_FAVORITES_PREF, Context.MODE_PRIVATE)
         prefs.edit().putStringSet("favorite_position_names", assetPositionFavorites).apply()
-    }
+    }*/
 
     private fun loadHiddenDefaultPositionNames() {
         val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
@@ -889,78 +927,73 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     
     private fun toggleFavorite() {
         val displayedPositionName = positionNameTextView.text.toString()
-        if (displayedPositionName.isBlank() || displayedPositionName == getString(R.string.no_position_images_found)) {
+        if (displayedPositionName.isBlank() || displayedPositionName == getString(R.string.no_position_images_found) || currentPosition < 0 || currentPosition >= randomizablePositions.size) {
             Toast.makeText(this, "No position selected to favorite.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val positionToToggle = allPositionItems.find { it.name.equals(displayedPositionName, ignoreCase = true) }
+        val positionToToggle = randomizablePositions[currentPosition] // Get from the currently displayed list
+        val itemId = if (positionToToggle.isAsset) "asset_${positionToToggle.imageName}" else positionToToggle.id
 
-        if (positionToToggle != null) {
-            if (positionToToggle.isAsset) {
-                // Handle asset favorites locally with SharedPreferences
-                if (assetPositionFavorites.contains(positionToToggle.name)) {
-                    assetPositionFavorites.remove(positionToToggle.name)
-                    Toast.makeText(this, "\"${positionToToggle.name}\" removed from asset favorites.", Toast.LENGTH_SHORT).show()
-                } else {
-                    assetPositionFavorites.add(positionToToggle.name)
-                    Toast.makeText(this, "\"${positionToToggle.name}\" added to asset favorites.", Toast.LENGTH_SHORT).show()
-                }
-                saveAssetPositionFavorites()
-                invalidateOptionsMenu() // Update icon immediately
-            } else {
-                // Handle non-asset (Firestore) positions via ViewModel
-                if (positionToToggle.id.isNotBlank()) {
-                    positionsViewModel.toggleFavoriteStatus(positionToToggle)
-                    // Toast message for immediate feedback. ViewModel will trigger data reload.
-                    val actionText = if (!positionToToggle.isFavorite) "added to" else "removed from" // Check current state before toggle
-                    Toast.makeText(this, "\"${positionToToggle.name}\" $actionText Firestore favorites.", Toast.LENGTH_SHORT).show()
-                    // The observer of positionsViewModel.allPositions will call invalidateOptionsMenu()
-                    // once the data is updated and re-collected.
-                    // For a slightly faster visual update of the icon (though data might not be saved yet):
-                    val index = allPositionItems.indexOfFirst { it.id == positionToToggle.id } // Ensure finding by ID for safety
-                    if (index != -1) {
-                        // Create a new updated item to ensure StateFlow detects a change if the object reference was the same.
-                        allPositionItems[index] = positionToToggle.copy(isFavorite = !positionToToggle.isFavorite) // Reflect the toggle for immediate UI
-                        invalidateOptionsMenu()
-                    }
-                } else {
-                    Toast.makeText(this, "Cannot favorite unsaved custom position. Save it first.", Toast.LENGTH_LONG).show()
-                }
-            }
-        } else {
-            Toast.makeText(this, "Could not find position: $displayedPositionName", Toast.LENGTH_SHORT).show()
+        if (itemId.isBlank()) {
+            Toast.makeText(this, "Position has no valid ID to favorite.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val isCurrentlyFavorite: Boolean
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser == null) { // Offline
+            isCurrentlyFavorite = localFavoritesRepository.isLocalFavoritePosition(itemId)
+            if (isCurrentlyFavorite) {
+                localFavoritesRepository.removeLocalFavoritePosition(itemId)
+                Toast.makeText(this, "\"${positionToToggle.name}\" removed from local favorites.", Toast.LENGTH_SHORT).show()
+            } else {
+                localFavoritesRepository.addLocalFavoritePosition(itemId)
+                Toast.makeText(this, "\"${positionToToggle.name}\" added to local favorites.", Toast.LENGTH_SHORT).show()
+            }
+        } else { // Online
+            isCurrentlyFavorite = favoritesViewModel.favorites.value.any { it.itemId == itemId && it.itemType == "position" }
+            if (isCurrentlyFavorite) {
+                favoritesViewModel.removeCloudFavorite(itemId, "position")
+                Toast.makeText(this, "\"${positionToToggle.name}\" removing from cloud favorites...", Toast.LENGTH_SHORT).show()
+            } else {
+                favoritesViewModel.addCloudFavorite(itemId, "position")
+                Toast.makeText(this, "\"${positionToToggle.name}\" adding to cloud favorites...", Toast.LENGTH_SHORT).show()
+            }
+        }
+        invalidateOptionsMenu() // Update icon immediately
     }
 
     private fun updateFavoriteIcon(menu: Menu? = null) {
-        val favoriteItem = menu?.findItem(R.id.action_favorite_position) ?: toolbar.menu.findItem(R.id.action_favorite_position) // Ensure correct menu item ID
-        if (favoriteItem != null) {
-            if (positionsTabs.selectedTabPosition == 0) { // Only on Randomize tab
-                favoriteItem.isVisible = true
-                var isCurrentFavorite = false
-                val displayedPositionName = positionNameTextView.text.toString()
+        val favoriteItem = menu?.findItem(R.id.action_favorite_position) ?: toolbar.menu.findItem(R.id.action_favorite_position)
+        if (favoriteItem == null) return
 
-                if (displayedPositionName.isNotEmpty() && displayedPositionName != getString(R.string.no_position_images_found)) {
-                    val currentDisplayedItem = allPositionItems.find { it.name.equals(displayedPositionName, ignoreCase = true) }
-                    if (currentDisplayedItem != null) {
-                        isCurrentFavorite = if (currentDisplayedItem.isAsset) {
-                            assetPositionFavorites.contains(currentDisplayedItem.name)
-                        } else {
-                            // isFavorite status comes from the PositionItem itself, which is sourced from Firestore via ViewModel
-                            currentDisplayedItem.isFavorite
-                        }
+        if (positionsTabs.selectedTabPosition == 0) { // Only on Randomize tab
+            favoriteItem.isVisible = true
+            var isCurrentFavorite = false
+
+            if (currentPosition >= 0 && currentPosition < randomizablePositions.size) {
+                val currentDisplayedItem = randomizablePositions[currentPosition]
+                val itemId = if (currentDisplayedItem.isAsset) "asset_${currentDisplayedItem.imageName}" else currentDisplayedItem.id
+
+                if (itemId.isNotBlank()) {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    isCurrentFavorite = if (currentUser == null) { // Offline
+                        localFavoritesRepository.isLocalFavoritePosition(itemId)
+                    } else { // Online
+                        favoritesViewModel.favorites.value.any { it.itemId == itemId && it.itemType == "position" }
                     }
                 }
-
-                if (isCurrentFavorite) {
-                    favoriteItem.setIcon(R.drawable.ic_favorite_filled) // Use ic_favorite_filled
-                } else {
-                    favoriteItem.setIcon(R.drawable.ic_favorite) // Use ic_favorite (border)
-                }
-            } else { // Hide on Library tab
-                favoriteItem.isVisible = false
             }
+
+            if (isCurrentFavorite) {
+                favoriteItem.setIcon(R.drawable.ic_favorite_filled)
+            } else {
+                favoriteItem.setIcon(R.drawable.ic_favorite)
+            }
+        } else { // Hide on Library tab
+            favoriteItem.isVisible = false
         }
     }
     
@@ -1539,7 +1572,7 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
 }
 
 
-    private fun loadAllPositionsForLibrary(isReset: Boolean = false) {
+    private fun loadAllPositionsForLibrary(_isReset: Boolean = false) { // Renamed to _isReset
         // This function is largely obsolete as ViewModel now loads data.
         // It should not directly modify `allPositionItems`.
         // Calls to this function have been or should be removed/refactored.
@@ -1741,16 +1774,18 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
                 val displayName = nameWithoutExtension.replace("_", " ").capitalizeWords()
                 // Use a consistent prefix for asset IDs to avoid clashes with Firestore IDs
                 val assetId = "asset_$imageName"
-                val isFavorite = assetPositionFavorites.contains(imageName) // Check against loaded asset favorites
+                // isFavorite for PositionItem is now less critical, true source is Favorite object.
+                // For initial display, we can check local repo.
+                val isFavoriteInitially = localFavoritesRepository.isLocalFavoritePosition(assetId)
     
                 assetPositionItems.add(
                     PositionItem(
-                        id = assetId,
+                        id = assetId, // This ID will be used as itemId for Favorite object
                         name = displayName,
                         imageName = imageName, // Adapter uses this to load from assets/positions/
                         isAsset = true,
                         userId = "", // Not applicable for assets
-                        isFavorite = isFavorite
+                        isFavorite = isFavoriteInitially // Set based on local state for initial UI
                     )
                 )
             }
