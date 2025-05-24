@@ -614,10 +614,11 @@ class MainActivity : BaseActivity() {
             updateEditList() // Refresh edit list based on new displayedScenes
         }
         // Update chip counts regardless of mode
-        val customCountInDisplayed = displayedScenes.count { it.isCustom }
-        val defaultCountInDisplayed = displayedScenes.count { !it.isCustom }
-        chipCustomScenes.text = "$baseTextChipCustomScenes ($customCountInDisplayed)"
-        chipDefaultScenes.text = "$baseTextChipDefaultScenes ($defaultCountInDisplayed)"
+        // Counts should reflect the total number of default/custom scenes available in allUserScenes
+        val totalCustomCount = allUserScenes.count { it.isCustom }
+        val totalDefaultCount = allUserScenes.count { !it.isCustom }
+        chipCustomScenes.text = "$baseTextChipCustomScenes ($totalCustomCount)"
+        chipDefaultScenes.text = "$baseTextChipDefaultScenes ($totalDefaultCount)"
     }
 
     private fun updateUI() {
