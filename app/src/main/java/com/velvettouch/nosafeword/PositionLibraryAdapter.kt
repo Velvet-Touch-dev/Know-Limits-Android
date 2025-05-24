@@ -1,6 +1,7 @@
 package com.velvettouch.nosafeword
 
 import android.util.Log
+import androidx.annotation.Keep // Import @Keep
 import com.bumptech.glide.Glide // Add Glide import
 import com.google.firebase.firestore.PropertyName
 import android.content.Context
@@ -14,6 +15,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.io.IOException
 
+@Keep // Add @Keep annotation
 data class PositionItem(
     val id: String = "", // Document ID from Firestore
     val name: String = "",

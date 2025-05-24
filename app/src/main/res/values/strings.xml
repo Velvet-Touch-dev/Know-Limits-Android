@@ -119,6 +119,8 @@
     <string name="delete_scene_confirmation">Are you sure you want to delete \"%1$s\"?</string>
     <string name="reset_default_scenes_title">Reset Default Scenes</string>
     <string name="reset_default_scenes_message">Are you sure you want to reset all default scenes to their original content? This will revert any edits you\'ve made to them and re-add any default scenes you may have deleted. Custom scenes you created will not be affected.</string>
+    <string name="chip_filter_defaults">Defaults</string>
+    <string name="chip_filter_custom">Custom</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     <string name="new_scene_dialog_title">New Scene</string>

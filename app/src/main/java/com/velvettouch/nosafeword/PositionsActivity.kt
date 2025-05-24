@@ -435,7 +435,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         //     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
         // }
         setupSearch()
-        setupPositionFilterChips() // Setup for the new filter chips
+        // setupPositionFilterChips() will be called after observeViewModel to ensure allPositionItems is populated
         setupFab()
         setupResetButton() // Call setup for reset button
 
@@ -444,6 +444,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
         // Observe ViewModel data - MOVED HERE after all UI is initialized
         observeViewModel()
+        setupPositionFilterChips() // Setup for the new filter chips, now called after observeViewModel
 
         // Handle pending navigation from intent after all UI is set up
         pendingPositionNavigationName?.let { name ->
@@ -479,6 +480,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                 if (::positionLibraryAdapter.isInitialized) {
                     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems)) // Library always shows all
                 }
+                updateFilterChipCounts() // Update chip counts when positions change
                 
                 // Handle pending navigation or ensure randomize tab is correctly displayed
                 if (positionsTabs.selectedTabPosition == 0) {
@@ -1610,23 +1612,39 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
     }
 
     private fun setupPositionFilterChips() {
+        updateFilterChipCounts() // Initial count update
+
         chipAllPositions.setOnCheckedChangeListener { _, _ ->
             if (!chipAllPositions.isChecked && !chipCustomPositions.isChecked) {
                 chipAllPositions.isChecked = true // Keep at least one selected
-                Toast.makeText(this, "At least one filter must be selected.", Toast.LENGTH_SHORT).show()
-            } else {
-                filterPositionsLibrary(positionSearchView.query?.toString())
+                // Toast.makeText(this, "At least one filter must be selected.", Toast.LENGTH_SHORT).show() // Optional: can be annoying
             }
+            filterPositionsLibrary(positionSearchView.query?.toString())
+            updateFilterChipCounts() // Update counts on check change as well, though primary update is from data change
         }
 
         chipCustomPositions.setOnCheckedChangeListener { _, _ ->
             if (!chipAllPositions.isChecked && !chipCustomPositions.isChecked) {
                 chipCustomPositions.isChecked = true // Keep at least one selected
-                Toast.makeText(this, "At least one filter must be selected.", Toast.LENGTH_SHORT).show()
-            } else {
-                filterPositionsLibrary(positionSearchView.query?.toString())
+                // Toast.makeText(this, "At least one filter must be selected.", Toast.LENGTH_SHORT).show() // Optional
             }
+            filterPositionsLibrary(positionSearchView.query?.toString())
+            updateFilterChipCounts() // Update counts on check change
         }
+    }
+
+    private fun updateFilterChipCounts() {
+        if (!::chipAllPositions.isInitialized || !::chipCustomPositions.isInitialized) {
+            Log.d("PositionsActivity", "updateFilterChipCounts: Chips not initialized yet.")
+            return
+        }
+
+        val assetCount = allPositionItems.count { it.isAsset } // Count all asset positions
+        val customCount = allPositionItems.count { !it.isAsset } // Custom positions are not affected by hiddenDefaultPositionNames
+
+        chipAllPositions.text = "${getString(R.string.chip_filter_defaults)} ($assetCount)"
+        chipCustomPositions.text = "${getString(R.string.chip_filter_custom)} ($customCount)"
+        Log.d("PositionsActivity", "Filter chip counts updated: Defaults ($assetCount), Custom ($customCount)")
     }
 
     private fun filterPositionsLibrary(query: String?) {

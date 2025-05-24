@@ -1,7 +1,9 @@
 package com.velvettouch.nosafeword
 
+import androidx.annotation.Keep // Import @Keep
 import com.google.firebase.firestore.PropertyName
 
+@Keep // Add @Keep annotation
 data class Favorite(
     var id: String = "", // Document ID in Firestore
     @get:PropertyName("item_id") @set:PropertyName("item_id")
