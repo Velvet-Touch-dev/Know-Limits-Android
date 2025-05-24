@@ -88,6 +88,7 @@ class MainActivity : BaseActivity() {
     private val scenesViewModel: ScenesViewModel by viewModels()
     private val cloudFavoritesViewModel: FavoritesViewModel by viewModels()
     private val localFavoritesViewModel: LocalFavoritesViewModel by viewModels()
+    private val positionsViewModel: PositionsViewModel by viewModels() // Added PositionsViewModel
     private var displayedScenes: List<Scene> = listOf()
     private var allUserScenes: List<Scene> = listOf()
 
