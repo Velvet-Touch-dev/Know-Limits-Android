@@ -134,14 +134,19 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
         Log.d("FavoritesViewModel", "Starting actual merge of local favorites to cloud for user $userId. hasMergedThisSession = $hasMergedThisSession")
 
         try {
-            val localFavoriteIds = localFavoritesRepository.getLocalFavoriteSceneIds()
-            if (localFavoriteIds.isEmpty()) {
-                Log.d("FavoritesViewModel", "No local favorites to merge.")
+            val localSceneFavoriteIds = localFavoritesRepository.getLocalFavoriteSceneIds()
+            val localPositionFavoriteIds = localFavoritesRepository.getLocalFavoritePositionIds()
+
+            if (localSceneFavoriteIds.isEmpty() && localPositionFavoriteIds.isEmpty()) {
+                Log.d("FavoritesViewModel", "No local scene or position favorites to merge.")
                 _isMerging.value = false
+                hasMergedThisSession = true // Nothing to merge, consider it done for this session
+                Log.d("FavoritesViewModel", "hasMergedThisSession set to true (no local items).")
                 return
             }
 
-            Log.d("FavoritesViewModel", "Local favorite scene IDs to merge: $localFavoriteIds")
+            Log.d("FavoritesViewModel", "Local favorite scene IDs to merge: $localSceneFavoriteIds")
+            Log.d("FavoritesViewModel", "Local favorite position IDs to merge: $localPositionFavoriteIds")
 
             // Fetch current cloud favorites to avoid duplicates
             // Note: This is a one-shot fetch, not using the flow here to avoid complexity during merge.
@@ -160,79 +165,77 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             Log.d("FavoritesViewModel", "Current cloud favorite item IDs: $currentCloudItemIds")
 
             val favoritesToUpload = mutableListOf<Favorite>()
-            val sceneIdPattern = "asset_(\\d+)".toRegex()
+            val sceneIdPattern = "asset_(\\d+)".toRegex() // Regex for asset scene IDs like "asset_123"
+            // Removed redundant declaration of favoritesToUpload
 
-            for (localIdString in localFavoriteIds) {
-                var finalItemIdForFavorite = localIdString
+            // Process Scene Favorites
+            for (localSceneIdString in localSceneFavoriteIds) {
+                var finalSceneItemIdForFavorite = localSceneIdString
                 var sceneToEnsureExists: Scene? = null
 
-                // Check if it's an asset scene that needs its Firestore ID resolved or to be created
-                val matchResult = sceneIdPattern.matchEntire(localIdString)
+                val matchResult = sceneIdPattern.matchEntire(localSceneIdString)
                 if (matchResult != null) {
                     val originalAssetId = matchResult.groupValues[1].toIntOrNull()
                     if (originalAssetId != null) {
-                        Log.d("FavoritesViewModel", "Local favorite '$localIdString' is an asset scene (original ID: $originalAssetId). Checking its Firestore status.")
-                        // Check if this asset scene already has a user-specific instance in Firestore
+                        Log.d("FavoritesViewModel", "Local scene favorite '$localSceneIdString' is an asset (original ID: $originalAssetId). Checking Firestore status.")
                         val existingSceneResult = scenesRepository.getSceneByOriginalId(originalAssetId, userId)
-
                         if (existingSceneResult.isSuccess) {
                             val existingFirestoreScene = existingSceneResult.getOrNull()
                             if (existingFirestoreScene?.firestoreId?.isNotBlank() == true) {
-                                finalItemIdForFavorite = existingFirestoreScene.firestoreId
-                                Log.d("FavoritesViewModel", "Asset scene $originalAssetId already exists in Firestore for user $userId with firestoreId ${finalItemIdForFavorite}. Using this ID for favorite.")
+                                finalSceneItemIdForFavorite = existingFirestoreScene.firestoreId
+                                Log.d("FavoritesViewModel", "Asset scene $originalAssetId already in Firestore for user $userId with firestoreId $finalSceneItemIdForFavorite.")
                             } else {
-                                // Asset scene does not exist for this user in Firestore.
-                                // We need to create it first.
-                                Log.d("FavoritesViewModel", "Asset scene $originalAssetId does not exist in Firestore for user $userId. Will create it.")
-                                // Load the original asset scene details using the new method in ScenesRepository
                                 val originalAssetSceneDetails = scenesRepository.getAssetSceneDetailsByOriginalId(originalAssetId)
-
                                 if (originalAssetSceneDetails != null) {
-                                    Log.d("FavoritesViewModel", "Found asset details for originalId $originalAssetId: ${originalAssetSceneDetails.title}")
-                                    sceneToEnsureExists = originalAssetSceneDetails.copy(
-                                        userId = userId,
-                                        isCustom = false, // It's a user's instance of a default scene
-                                        firestoreId = "" // Let addScene generate a new Firestore ID
-                                    )
+                                    sceneToEnsureExists = originalAssetSceneDetails.copy(userId = userId, isCustom = false, firestoreId = "")
                                 } else {
-                                    Log.e("FavoritesViewModel", "Could not find details for asset scene original ID $originalAssetId in assets. Skipping merge for this item.")
-                                    continue // Skip this local favorite
+                                    Log.e("FavoritesViewModel", "Cannot find details for asset scene original ID $originalAssetId. Skipping.")
+                                    continue
                                 }
                             }
                         } else {
-                            Log.e("FavoritesViewModel", "Failed to check Firestore for asset scene $originalAssetId. Error: ${existingSceneResult.exceptionOrNull()?.message}. Skipping merge for this item.")
-                            continue // Skip this local favorite
+                            Log.e("FavoritesViewModel", "Failed to check Firestore for asset scene $originalAssetId. Error: ${existingSceneResult.exceptionOrNull()?.message}. Skipping.")
+                            continue
                         }
                     }
                 }
 
-                // If sceneToEnsureExists is not null, it means we need to add/update it in the scenes collection first
                 if (sceneToEnsureExists != null) {
-                    Log.d("FavoritesViewModel", "Adding/ensuring asset scene copy in Firestore: ${sceneToEnsureExists.title}")
-                    val addSceneResult = scenesRepository.addScene(sceneToEnsureExists) // addScene handles if firestoreId is blank (new) or present (update)
+                    Log.d("FavoritesViewModel", "Ensuring asset scene copy in Firestore: ${sceneToEnsureExists.title}")
+                    val addSceneResult = scenesRepository.addScene(sceneToEnsureExists)
                     if (addSceneResult.isSuccess) {
-                        // We need the new firestoreId if it was generated.
-                        // Re-fetch the scene by original ID to get its new firestoreId.
                         val newlyAddedSceneResult = scenesRepository.getSceneByOriginalId(sceneToEnsureExists.id, userId)
                         if (newlyAddedSceneResult.isSuccess && newlyAddedSceneResult.getOrNull()?.firestoreId?.isNotBlank() == true) {
-                            finalItemIdForFavorite = newlyAddedSceneResult.getOrNull()!!.firestoreId
-                            Log.d("FavoritesViewModel", "Successfully added/ensured asset scene. New/confirmed firestoreId for favorite: $finalItemIdForFavorite")
+                            finalSceneItemIdForFavorite = newlyAddedSceneResult.getOrNull()!!.firestoreId
+                            Log.d("FavoritesViewModel", "Asset scene ensured. FirestoreId for favorite: $finalSceneItemIdForFavorite")
                         } else {
-                            Log.e("FavoritesViewModel", "Failed to retrieve scene after adding to get its firestoreId. Skipping favorite for ${sceneToEnsureExists.title}")
+                            Log.e("FavoritesViewModel", "Failed to get firestoreId after ensuring asset scene. Skipping favorite for ${sceneToEnsureExists.title}")
                             continue
                         }
                     } else {
-                        Log.e("FavoritesViewModel", "Failed to add asset scene ${sceneToEnsureExists.title} to scenes collection. Error: ${addSceneResult.exceptionOrNull()?.message}. Skipping favorite.")
+                        Log.e("FavoritesViewModel", "Failed to ensure asset scene ${sceneToEnsureExists.title}. Error: ${addSceneResult.exceptionOrNull()?.message}. Skipping favorite.")
                         continue
                     }
                 }
 
-                // Now, check if this finalItemIdForFavorite is already in cloud favorites
-                if (!currentCloudItemIds.contains(finalItemIdForFavorite)) {
-                    favoritesToUpload.add(Favorite(itemId = finalItemIdForFavorite, itemType = "scene", userId = userId))
-                    Log.d("FavoritesViewModel", "Queued favorite for upload: itemId=$finalItemIdForFavorite")
+                if (!currentCloudItemIds.contains(finalSceneItemIdForFavorite)) {
+                    favoritesToUpload.add(Favorite(itemId = finalSceneItemIdForFavorite, itemType = "scene", userId = userId))
+                    Log.d("FavoritesViewModel", "Queued scene favorite for upload: itemId=$finalSceneItemIdForFavorite")
                 } else {
-                    Log.d("FavoritesViewModel", "Favorite for itemId=$finalItemIdForFavorite already exists in cloud. Skipping add to batch.")
+                    Log.d("FavoritesViewModel", "Scene favorite for itemId=$finalSceneItemIdForFavorite already in cloud. Skipping.")
+                }
+            }
+
+            // Process Position Favorites
+            for (localPositionIdString in localPositionFavoriteIds) {
+                // For positions, asset IDs (e.g., "asset_ImageName.jpg") are used directly as itemId.
+                // Non-asset positions will have their Firestore-generated ID.
+                // No special handling like scenes to create user-specific copies of assets.
+                if (!currentCloudItemIds.contains(localPositionIdString)) {
+                    favoritesToUpload.add(Favorite(itemId = localPositionIdString, itemType = "position", userId = userId))
+                    Log.d("FavoritesViewModel", "Queued position favorite for upload: itemId=$localPositionIdString")
+                } else {
+                    Log.d("FavoritesViewModel", "Position favorite for itemId=$localPositionIdString already in cloud. Skipping.")
                 }
             }
 
