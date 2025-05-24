@@ -160,24 +160,35 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         } else { // User is logged out
             Log.d(TAG, "Auth state: User is logged out.")
             _isLoading.value = true
-            // Load scenes and favorite IDs from LocalFavoritesRepository
-            val allLocallySavedScenes = localFavoritesRepository.getLocalScenes()
-            val favoriteSceneIds = localFavoritesRepository.getLocalFavoriteSceneIds()
+            var scenesToDisplay = localFavoritesRepository.getLocalScenes()
+            Log.d(TAG, "Initially loaded ${scenesToDisplay.size} scenes from LocalFavoritesRepository for logged-out state.")
 
-            Log.d(TAG, "Loaded ${allLocallySavedScenes.size} scenes and ${favoriteSceneIds.size} favorite scene IDs from LocalFavoritesRepository for logged-out state.")
+            if (scenesToDisplay.isEmpty()) {
+                Log.d(TAG, "LocalFavoritesRepository is empty for scenes. Loading from assets for logged-out user.")
+                val assetScenes = loadScenesFromAssets(appContext)
+                val deletedDefaultIds = getDeletedLoggedOutSceneIds(appContext)
+                Log.d(TAG, "Found ${deletedDefaultIds.size} locally deleted default scene IDs: $deletedDefaultIds")
 
-            // We don't need to augment Scene with isFavorite here if the UI handles it.
-            // The UI (Adapter) will receive the list of scenes and the set of favorite IDs.
-            // For simplicity, we'll emit the raw list of scenes.
-            // The `localScenesWhenLoggedOut` variable might still be useful if we allow
-            // adding/editing scenes offline, to differentiate them from the backed-up cloud state.
-            // For now, let's assume `LocalFavoritesRepository` is the source of truth when logged out.
+                val filteredAssetScenes = assetScenes.filter { assetScene ->
+                    val persistentId = "default_${assetScene.id}"
+                    !deletedDefaultIds.contains(persistentId)
+                }.map {
+                    // Ensure pristine state for scenes loaded from assets
+                    it.copy(userId = "", isCustom = false, firestoreId = "")
+                }
+
+                Log.d(TAG, "Loaded ${filteredAssetScenes.size} scenes from assets after filtering deleted ones.")
+                localFavoritesRepository.saveLocalScenes(filteredAssetScenes) // Save to SharedPreferences
+                Log.d(TAG, "Saved initial asset scenes to LocalFavoritesRepository.")
+                scenesToDisplay = filteredAssetScenes
+            }
+
             localScenesWhenLoggedOut.clear()
-            localScenesWhenLoggedOut.addAll(allLocallySavedScenes) // Keep a copy if needed for offline edits
+            localScenesWhenLoggedOut.addAll(scenesToDisplay)
 
-            _scenes.value = ArrayList(allLocallySavedScenes) // Emit the scenes
-            // The favorite status will be determined by the UI by checking against favoriteSceneIds.
+            _scenes.value = ArrayList(scenesToDisplay)
             _isLoading.value = false
+            Log.d(TAG, "Final scenes for logged-out state (count: ${scenesToDisplay.size}): ${scenesToDisplay.map { it.title }}")
         }
     }
 

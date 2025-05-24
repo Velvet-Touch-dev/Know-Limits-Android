@@ -4548,7 +4548,6 @@ string theme_light
 string theme_mode
 string theme_settings
 string theme_system
-string title_activity_welcome
 string title_plan_night
 string tts_enabled
 string tts_enabled_summary

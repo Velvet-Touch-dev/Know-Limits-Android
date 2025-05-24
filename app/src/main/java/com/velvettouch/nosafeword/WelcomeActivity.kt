@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -22,16 +23,26 @@ class WelcomeActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
 
     companion object {
-        private const val RC_SIGN_IN = 9002 // Different from MainActivity's to avoid potential conflicts if both are ever active
+        private const val RC_SIGN_IN = 9002
         private const val TAG = "WelcomeActivityAuth"
+        private const val PREFS_NAME = "NoSafeWordPrefs"
+        private const val KEY_WELCOME_COMPLETED = "welcomeCompleted"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
 
-        // Check if user is already signed in
+        // Check if welcome has already been completed
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (sharedPreferences.getBoolean(KEY_WELCOME_COMPLETED, false)) {
+            navigateToMainActivity(false) // Don't set the flag again if already set
+            return
+        }
+
+        // Check if user is already signed in (Firebase Auth)
         if (auth.currentUser != null) {
+            // If user is signed in, mark welcome as completed and navigate
             navigateToMainActivity()
             return // Finish onCreate early
         }
@@ -58,6 +69,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         val skipButton: TextView = findViewById(R.id.skip_button)
         skipButton.setOnClickListener {
+            // User chose to skip/continue without login
             navigateToMainActivity()
         }
     }
@@ -94,7 +106,7 @@ class WelcomeActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "Firebase Auth successful. User: ${auth.currentUser?.email}")
-                    // Sign-in success, update UI accordingly (e.g., navigate to main app screen)
+                    // Sign-in success, mark welcome as completed and navigate
                     navigateToMainActivity()
                 } else {
                     Log.w(TAG, "Firebase Auth failed.", task.exception)
@@ -103,7 +115,15 @@ class WelcomeActivity : AppCompatActivity() {
             }
     }
 
-    private fun navigateToMainActivity() {
+    private fun navigateToMainActivity(setWelcomeCompletedFlag: Boolean = true) {
+        if (setWelcomeCompletedFlag) {
+            val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putBoolean(KEY_WELCOME_COMPLETED, true)
+                apply()
+            }
+            Log.d(TAG, "Welcome completed flag set to true.")
+        }
         startActivity(Intent(this, MainActivity::class.java))
         finish() // Finish WelcomeActivity so user can't navigate back to it
     }

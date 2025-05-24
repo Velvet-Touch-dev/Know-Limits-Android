@@ -166,6 +166,7 @@
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 app:icon="@drawable/ic_google_logo"
+                app:iconTint="?attr/colorOnPrimary"
                 app:iconGravity="textStart"
                 app:iconPadding="12dp"
                 app:iconSize="24dp"
