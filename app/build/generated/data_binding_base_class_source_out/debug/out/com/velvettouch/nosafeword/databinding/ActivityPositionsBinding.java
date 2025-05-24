@@ -12,7 +12,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -96,9 +95,6 @@ public final class ActivityPositionsBinding implements ViewBinding {
   public final TextView positionNameTextView;
 
   @NonNull
-  public final SearchView positionSearchView;
-
-  @NonNull
   public final FrameLayout positionsContentContainer;
 
   @NonNull
@@ -120,6 +116,9 @@ public final class ActivityPositionsBinding implements ViewBinding {
   public final ConstraintLayout randomizeTabContent;
 
   @NonNull
+  public final TextView swipeTipTextView;
+
+  @NonNull
   public final TextView timerTextView;
 
   @NonNull
@@ -136,13 +135,12 @@ public final class ActivityPositionsBinding implements ViewBinding {
       @NonNull Spinner maxTimeSpinner, @NonNull Spinner minTimeSpinner,
       @NonNull NavigationView navView, @NonNull CardView positionCardView,
       @NonNull ChipGroup positionFilterChipGroup, @NonNull ImageView positionImageView,
-      @NonNull TextView positionNameTextView, @NonNull SearchView positionSearchView,
-      @NonNull FrameLayout positionsContentContainer,
+      @NonNull TextView positionNameTextView, @NonNull FrameLayout positionsContentContainer,
       @NonNull RecyclerView positionsLibraryRecyclerView,
       @NonNull LinearProgressIndicator positionsProgressIndicator, @NonNull TabLayout positionsTabs,
       @NonNull MaterialButton previousButton, @NonNull MaterialButton randomizeButton,
-      @NonNull ConstraintLayout randomizeTabContent, @NonNull TextView timerTextView,
-      @NonNull Toolbar toolbar) {
+      @NonNull ConstraintLayout randomizeTabContent, @NonNull TextView swipeTipTextView,
+      @NonNull TextView timerTextView, @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.appBarLayout = appBarLayout;
     this.autoPlayButton = autoPlayButton;
@@ -163,7 +161,6 @@ public final class ActivityPositionsBinding implements ViewBinding {
     this.positionFilterChipGroup = positionFilterChipGroup;
     this.positionImageView = positionImageView;
     this.positionNameTextView = positionNameTextView;
-    this.positionSearchView = positionSearchView;
     this.positionsContentContainer = positionsContentContainer;
     this.positionsLibraryRecyclerView = positionsLibraryRecyclerView;
     this.positionsProgressIndicator = positionsProgressIndicator;
@@ -171,6 +168,7 @@ public final class ActivityPositionsBinding implements ViewBinding {
     this.previousButton = previousButton;
     this.randomizeButton = randomizeButton;
     this.randomizeTabContent = randomizeTabContent;
+    this.swipeTipTextView = swipeTipTextView;
     this.timerTextView = timerTextView;
     this.toolbar = toolbar;
   }
@@ -312,12 +310,6 @@ public final class ActivityPositionsBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.position_search_view;
-      SearchView positionSearchView = ViewBindings.findChildViewById(rootView, id);
-      if (positionSearchView == null) {
-        break missingId;
-      }
-
       id = R.id.positions_content_container;
       FrameLayout positionsContentContainer = ViewBindings.findChildViewById(rootView, id);
       if (positionsContentContainer == null) {
@@ -360,6 +352,12 @@ public final class ActivityPositionsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.swipe_tip_text_view;
+      TextView swipeTipTextView = ViewBindings.findChildViewById(rootView, id);
+      if (swipeTipTextView == null) {
+        break missingId;
+      }
+
       id = R.id.timer_text_view;
       TextView timerTextView = ViewBindings.findChildViewById(rootView, id);
       if (timerTextView == null) {
@@ -376,10 +374,10 @@ public final class ActivityPositionsBinding implements ViewBinding {
           autoPlaySettings, buttonResetToDefault, buttonsContainer, chipAllPositions,
           chipCustomPositions, controlsContainer, drawerLayout, fabAddPosition, libraryFabContainer,
           libraryTabContent, maxTimeSpinner, minTimeSpinner, navView, positionCardView,
-          positionFilterChipGroup, positionImageView, positionNameTextView, positionSearchView,
+          positionFilterChipGroup, positionImageView, positionNameTextView,
           positionsContentContainer, positionsLibraryRecyclerView, positionsProgressIndicator,
-          positionsTabs, previousButton, randomizeButton, randomizeTabContent, timerTextView,
-          toolbar);
+          positionsTabs, previousButton, randomizeButton, randomizeTabContent, swipeTipTextView,
+          timerTextView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

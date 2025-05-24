@@ -3362,6 +3362,7 @@ id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
 id action_search
+id action_search_positions
 id action_settings
 id action_sign_in_out
 id action_text
@@ -3547,6 +3548,7 @@ id favorite_preview
 id favorite_title
 id favorites_container
 id favorites_recycler_view
+id favorites_swipe_tip_text_view
 id fill
 id fill_horizontal
 id fill_vertical
@@ -3735,12 +3737,10 @@ id position_favorites_recycler_view
 id position_filter_chip_group
 id position_image
 id position_image_view
-id position_library_delete_button
 id position_library_image
 id position_library_name
 id position_name
 id position_name_text_view
-id position_search_view
 id positions_content_container
 id positions_library_recycler_view
 id positions_progress_indicator
@@ -3863,8 +3863,7 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
-id swipe_hint
-id swipe_hint_container
+id swipe_tip_text_view
 id tabMode
 id tab_layout_item_type
 id tabs
@@ -4265,6 +4264,8 @@ string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
 string check_json
+string chip_filter_custom
+string chip_filter_defaults
 string clear_deadline_desc
 string clear_text_end_icon_content_description
 string color_default
@@ -4510,6 +4511,8 @@ string side_sheet_behavior
 string sign_in
 string sign_out
 string status_bar_notification_info_overflow
+string swipe_right_to_delete_tip
+string swipe_right_to_remove_favorite_tip
 string task_title_hint
 string theme
 string theme_dark

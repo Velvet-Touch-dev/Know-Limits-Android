@@ -44,24 +44,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@+id/position_library_delete_button"
+                    android:layout_alignParentEnd="true" 
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
                     android:textAppearance="?attr/textAppearanceTitleSmall"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Position Name"
                     android:gravity="start|center_vertical" />
 
-                <ImageButton
-                    android:id="@+id/position_library_delete_button"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_delete"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/delete"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    app:tint="?attr/colorError" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>

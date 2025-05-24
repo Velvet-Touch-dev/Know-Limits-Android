@@ -28,8 +28,8 @@ data class PositionItem(
 class PositionLibraryAdapter(
     private val context: Context,
     private var positions: List<PositionItem>,
-    private val onItemClick: (PositionItem) -> Unit,
-    private val onDeleteClick: (positionId: String, positionName: String) -> Unit
+    private val onItemClick: (PositionItem) -> Unit
+    // private val onDeleteClick: (positionId: String, positionName: String) -> Unit // Removed
 ) : RecyclerView.Adapter<PositionLibraryAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -56,7 +56,7 @@ class PositionLibraryAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val positionNameTextView: TextView = itemView.findViewById(R.id.position_library_name)
         private val positionImageView: ImageView = itemView.findViewById(R.id.position_library_image)
-        private val deleteButton: ImageButton = itemView.findViewById(R.id.position_library_delete_button)
+        // private val deleteButton: ImageButton = itemView.findViewById(R.id.position_library_delete_button) // Removed
 
         fun bind(positionItem: PositionItem) {
             positionNameTextView.text = positionItem.name
@@ -146,9 +146,9 @@ class PositionLibraryAdapter(
             itemView.setOnClickListener {
                 onItemClick(positionItem)
             }
-            deleteButton.setOnClickListener {
-                onDeleteClick(positionItem.id, positionItem.name)
-            }
+            // deleteButton.setOnClickListener { // Removed
+            //     onDeleteClick(positionItem.id, positionItem.name)
+            // }
         }
     }
 }

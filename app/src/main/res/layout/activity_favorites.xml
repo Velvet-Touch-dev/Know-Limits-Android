@@ -51,6 +51,20 @@
                 
             </com.google.android.material.tabs.TabLayout>
 
+            <TextView
+                android:id="@+id/favorites_swipe_tip_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/swipe_right_to_remove_favorite_tip"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:gravity="center_horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone"/>
+
             <!-- Content area for favorites -->
             <FrameLayout
                 android:id="@+id/favorites_container"
@@ -82,31 +96,6 @@
                     android:visibility="gone"
                     tools:listitem="@layout/item_favorite_position" />
                 
-                <!-- Swipe hint -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/swipe_hint_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|bottom"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="#55888888"
-                    android:visibility="invisible"
-                    android:alpha="0.85">
-                
-                    <TextView
-                        android:id="@+id/swipe_hint"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:text="⟩ Swipe right to delete"
-                        android:textAppearance="?attr/textAppearanceBodySmall"
-                        android:textColor="?attr/colorOnSurface" />
-                </androidx.cardview.widget.CardView>
-
                 <!-- Empty Favorites State -->
                 <LinearLayout
                     android:id="@+id/empty_favorites_view"

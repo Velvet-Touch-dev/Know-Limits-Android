@@ -270,20 +270,13 @@
                     android:layout_height="match_parent"
                     android:visibility="gone">
 
-                    <androidx.appcompat.widget.SearchView
-                        android:id="@+id/position_search_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_margin="8dp"
-                        app:iconifiedByDefault="false"
-                        app:queryHint="@string/search_positions" />
+                    <!-- SearchView removed from here, moved to Toolbar menu -->
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/position_filter_chip_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/position_search_view"
+                        android:layout_alignParentTop="true" 
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:paddingTop="8dp"
@@ -307,11 +300,26 @@
                             android:checked="true"/>
                     </com.google.android.material.chip.ChipGroup>
 
+                    <TextView
+                        android:id="@+id/swipe_tip_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/position_filter_chip_group"
+                        android:text="@string/swipe_right_to_delete_tip"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:gravity="center_horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:visibility="visible"/>
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/positions_library_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@id/position_filter_chip_group"
+                        android:layout_below="@id/swipe_tip_text_view"
                         android:layout_above="@+id/library_fab_container"
                         android:clipToPadding="false"
                         android:paddingStart="8dp"

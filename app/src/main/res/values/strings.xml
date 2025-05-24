@@ -130,5 +130,7 @@
     <string name="cancel_button_text">Cancel</string>
     <string name="delete_button_text">Delete</string>
     <string name="reset_button_text">Reset</string>
+    <string name="swipe_right_to_delete_tip">Swipe right to delete.</string>
+    <string name="swipe_right_to_remove_favorite_tip">Swipe right to remove from favorites.</string>
 
 </resources>

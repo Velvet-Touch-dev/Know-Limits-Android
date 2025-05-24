@@ -3361,6 +3361,7 @@ int id action_mode_bar 0x7f090046
 int id action_mode_bar_stub 0x7f090047
 int id action_mode_close_button 0x7f090048
 int id action_search 0x7f090049
+int id action_search_positions 0x7f0902ae
 int id action_settings 0x7f09004a
 int id action_sign_in_out 0x7f09004b
 int id action_text 0x7f09004c
@@ -3546,6 +3547,7 @@ int id favorite_preview 0x7f0900ff
 int id favorite_title 0x7f090100
 int id favorites_container 0x7f090101
 int id favorites_recycler_view 0x7f090102
+int id favorites_swipe_tip_text_view 0x7f0902ad
 int id fill 0x7f090103
 int id fill_horizontal 0x7f090104
 int id fill_vertical 0x7f090105
@@ -3734,12 +3736,10 @@ int id position_favorites_recycler_view 0x7f0901bb
 int id position_filter_chip_group 0x7f0901bc
 int id position_image 0x7f0901bd
 int id position_image_view 0x7f0901be
-int id position_library_delete_button 0x7f0901bf
 int id position_library_image 0x7f0901c0
 int id position_library_name 0x7f0901c1
 int id position_name 0x7f0901c2
 int id position_name_text_view 0x7f0901c3
-int id position_search_view 0x7f0901c4
 int id positions_content_container 0x7f0901c5
 int id positions_library_recycler_view 0x7f0901c6
 int id positions_progress_indicator 0x7f0901c7
@@ -3862,8 +3862,7 @@ int id stretch 0x7f09023b
 int id submenuarrow 0x7f09023c
 int id submit_area 0x7f09023d
 int id supportScrollUp 0x7f09023e
-int id swipe_hint 0x7f09023f
-int id swipe_hint_container 0x7f090240
+int id swipe_tip_text_view 0x7f0902ac
 int id tabMode 0x7f090241
 int id tab_layout_item_type 0x7f090242
 int id tabs 0x7f090243
@@ -4264,6 +4263,8 @@ int string character_counter_content_description 0x7f120036
 int string character_counter_overflowed_content_description 0x7f120037
 int string character_counter_pattern 0x7f120038
 int string check_json 0x7f120039
+int string chip_filter_custom 0x7f12013e
+int string chip_filter_defaults 0x7f12013f
 int string clear_deadline_desc 0x7f12003a
 int string clear_text_end_icon_content_description 0x7f12003b
 int string color_default 0x7f12003c
@@ -4509,6 +4510,8 @@ int string side_sheet_behavior 0x7f120121
 int string sign_in 0x7f12013c
 int string sign_out 0x7f12013d
 int string status_bar_notification_info_overflow 0x7f120122
+int string swipe_right_to_delete_tip 0x7f120140
+int string swipe_right_to_remove_favorite_tip 0x7f120141
 int string task_title_hint 0x7f120123
 int string theme 0x7f120124
 int string theme_dark 0x7f120125

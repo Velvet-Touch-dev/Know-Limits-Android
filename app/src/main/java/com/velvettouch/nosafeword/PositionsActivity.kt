@@ -20,6 +20,9 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -83,6 +86,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var chipAllPositions: Chip
     private lateinit var chipCustomPositions: Chip
     private lateinit var positionsProgressIndicator: LinearProgressIndicator
+    private lateinit var swipeTipTextView: TextView // Added for the swipe tip
 
     private lateinit var positionsViewModel: PositionsViewModel
     private lateinit var favoritesViewModel: FavoritesViewModel // Added
@@ -121,7 +125,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
     // Voice settings constants
     companion object VoiceSettings {
-        const val PREF_VOICE_SETTINGS = "voice_settings"
+        const val PREF_VOICE_SETTINGS = "voice_settings" 
         const val PREF_VOICE_PITCH = "voice_pitch"
         const val PREF_VOICE_SPEED = "voice_speed"
         // const val POSITION_FAVORITES_PREF = "position_favorites" // Removed
@@ -382,12 +386,13 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         positionsTabs = findViewById(R.id.positions_tabs)
         randomizeTabContent = findViewById(R.id.randomize_tab_content)
         libraryTabContent = findViewById(R.id.library_tab_content)
-        positionSearchView = findViewById(R.id.position_search_view) // Initialize SearchView here
+        // positionSearchView = findViewById(R.id.position_search_view) // Removed: Will be initialized from menu
         resetButton = findViewById(R.id.button_reset_to_default) // Initialize Reset Button
         libraryFabContainer = findViewById(R.id.library_fab_container) // Initialize FAB container
         positionFilterChipGroup = findViewById(R.id.position_filter_chip_group)
         chipAllPositions = findViewById(R.id.chip_all_positions)
         chipCustomPositions = findViewById(R.id.chip_custom_positions)
+        swipeTipTextView = findViewById(R.id.swipe_tip_text_view) // Initialize swipe tip TextView
         // RecyclerView initialization is now inside setupLibraryRecyclerView,
         // but ensure the view ID is correct in your XML (positions_library_recycler_view)
 
@@ -398,12 +403,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     0 -> { // Randomize
                         randomizeTabContent.visibility = View.VISIBLE
                         libraryTabContent.visibility = View.GONE
-                        invalidateOptionsMenu() // Re-draw options menu for this tab
+                        swipeTipTextView.visibility = View.GONE
+                        invalidateOptionsMenu() 
                     }
                     1 -> { // Library
                         randomizeTabContent.visibility = View.GONE
                         libraryTabContent.visibility = View.VISIBLE
-                        invalidateOptionsMenu() // Re-draw options menu for this tab
+                        swipeTipTextView.visibility = View.VISIBLE 
+                        invalidateOptionsMenu()
                     }
                 }
             }
@@ -422,9 +429,11 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         if (positionsTabs.selectedTabPosition == 0) {
             randomizeTabContent.visibility = View.VISIBLE
             libraryTabContent.visibility = View.GONE
+            swipeTipTextView.visibility = View.GONE // Ensure tip is hidden initially if Randomize is default
         } else {
             randomizeTabContent.visibility = View.GONE
             libraryTabContent.visibility = View.VISIBLE
+            swipeTipTextView.visibility = View.VISIBLE // Ensure tip is visible if Library is default (or navigated to)
         }
  
         setupLibraryRecyclerView() // Call to setup RecyclerView, adapter will use allPositionItems
@@ -434,13 +443,13 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // if (::positionLibraryAdapter.isInitialized) {
         //     positionLibraryAdapter.updatePositions(ArrayList(allPositionItems))
         // }
-        setupSearch()
+        // setupSearch() // Will be set up in onCreateOptionsMenu
         // setupPositionFilterChips() will be called after observeViewModel to ensure allPositionItems is populated
         setupFab()
         setupResetButton() // Call setup for reset button
 
-        // Initial filter load for the library
-        filterPositionsLibrary(positionSearchView.query?.toString())
+        // Initial filter load for the library - This will be handled by observeViewModel or when search view is set up
+        // filterPositionsLibrary(positionSearchView.query?.toString()) // Removed to prevent crash
 
         // Observe ViewModel data - MOVED HERE after all UI is initialized
         observeViewModel()
@@ -495,7 +504,12 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     }
                     // If currentPosition is valid, updateRandomizablePositions should have handled display if item changed.
                 }
-                filterPositionsLibrary(positionSearchView.query?.toString()) // For the library tab
+                // Ensure positionSearchView is initialized before accessing its query
+                if (::positionSearchView.isInitialized) {
+                    filterPositionsLibrary(positionSearchView.query?.toString()) // For the library tab
+                } else {
+                    filterPositionsLibrary(null) // Or pass null if search view isn't ready
+                }
                 updateNavigationButtonStates() // This will call updateFavoriteIcon
                 invalidateOptionsMenu() // Explicitly call to update favorite icon
             }
@@ -758,7 +772,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     private fun showResetConfirmationDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.reset_to_default))
-            .setMessage("Are you sure you want to reset to default positions? This will delete custom positions and restore default positions.")
+            .setMessage("Are you sure you want to restore all default positions? Your custom positions will not be affected.")
             .setPositiveButton(getString(R.string.reset)) { dialog, _ ->
                 resetToDefaultPositions()
                 dialog.dismiss()
@@ -801,6 +815,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
         // Toast.makeText(this, "Positions list refreshed. Hidden items restored.", Toast.LENGTH_SHORT).show() // Removed as per request
         invalidateOptionsMenu() // Update favorite icon if current position changed due to reset
+        updateFilterChipCounts() // Add this call to update chip counts immediately
     }
 
 
@@ -866,17 +881,26 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         // Inflate the menu
         menuInflater.inflate(R.menu.position_menu, menu)
 
-        // Update icon visibility based on the selected tab
+        val searchItem = menu.findItem(R.id.action_search_positions)
+        positionSearchView = searchItem?.actionView as SearchView // Re-assign to the toolbar's SearchView
+
         val favoriteItem = menu.findItem(R.id.action_favorite_position)
         val addToPlanItem = menu.findItem(R.id.action_add_to_plan_position)
 
         if (positionsTabs.selectedTabPosition == 0) { // Randomize tab
-            updateFavoriteIcon(menu) // Update favorite icon state (filled/empty)
+            searchItem?.isVisible = false
+            updateFavoriteIcon(menu) 
             favoriteItem?.isVisible = true
             addToPlanItem?.isVisible = true
+            // Collapse search view if it was open from another tab
+            if (searchItem?.isActionViewExpanded == true) {
+                searchItem.collapseActionView()
+            }
         } else { // Library tab
+            searchItem?.isVisible = true
             favoriteItem?.isVisible = false
             addToPlanItem?.isVisible = false
+            setupSearch() // Setup listener for toolbar search view
         }
         
         return true
@@ -889,19 +913,18 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         
         return when (item.itemId) {
             R.id.action_favorite_position -> {
-                // Only allow favorite if on randomize tab and the item is visible
                 if (positionsTabs.selectedTabPosition == 0 && item.isVisible) {
                     toggleFavorite()
                 }
                 true
             }
             R.id.action_add_to_plan_position -> {
-                // Only allow add to plan if on randomize tab and the item is visible
                 if (positionsTabs.selectedTabPosition == 0 && item.isVisible) {
                     addCurrentPositionToPlan()
                 }
                 true
             }
+            // R.id.action_search_positions will be handled by SearchView listeners
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -925,6 +948,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         val prefs = getSharedPreferences(HIDDEN_DEFAULT_POSITIONS_PREF, Context.MODE_PRIVATE)
         prefs.edit().putStringSet("hidden_names", hiddenDefaultPositionNames).commit()
         updateRandomizablePositions() // This will re-filter and update UI if needed.
+        updateFilterChipCounts() // Add this call to update chip counts immediately
     }
     
     private fun toggleFavorite() {
@@ -1484,40 +1508,84 @@ private fun setupLibraryRecyclerView() {
             navigateToPositionInRandomizeView(positionItem.name) // Updated to use the correct navigation
             positionsTabs.getTabAt(0)?.select() // Switch to Randomize tab
             invalidateOptionsMenu() // Ensure favorite icon updates
-        },
-        onDeleteClick = { positionId, positionName -> // Updated lambda signature
-            // Find the full PositionItem to pass to handlePositionDeletionOrHiding
-            // This is a bit inefficient; ideally, handlePositionDeletionOrHiding would also accept id/name.
-            // For now, we find it. Or, we can modify handlePositionDeletionOrHiding further.
-            // Let's assume we want to keep handlePositionDeletionOrHiding taking PositionItem for its asset check.
-            val positionItem = allPositionItems.find { it.id == positionId && it.name == positionName }
-            if (positionItem != null) {
-                handlePositionDeletionOrHiding(positionItem, -1) // -1 as adapterPosition is not from swipe
-            } else {
-                // Fallback if only ID is available (e.g. if name wasn't unique for some reason, though it should be for custom)
-                val itemById = allPositionItems.find { it.id == positionId }
-                if (itemById != null) {
-                     handlePositionDeletionOrHiding(itemById, -1)
-                } else {
-                    Log.e("PositionsActivity", "DeleteClick: Could not find PositionItem for ID $positionId, Name $positionName")
-                    Toast.makeText(this, "Error: Could not find item to delete.", Toast.LENGTH_SHORT).show()
-                }
-            }
         }
+        // onDeleteClick lambda removed as the button is gone and swipe handles deletion directly
     )
     positionsLibraryRecyclerView.adapter = positionLibraryAdapter
     positionsLibraryRecyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
 
     // Setup ItemTouchHelper for swipe-to-delete/hide
-    val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+    val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) { // Changed to RIGHT only
         override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
             return false // We don't want to handle move
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            val positionSwiped = positionLibraryAdapter.getPositionAt(viewHolder.adapterPosition)
-            // Pass the full item to handlePositionDeletionOrHiding, which will then call ViewModel with id and name
-            handlePositionDeletionOrHiding(positionSwiped, viewHolder.adapterPosition)
+            if (direction == ItemTouchHelper.RIGHT) { // Ensure action is only for right swipe
+                val positionSwiped = positionLibraryAdapter.getPositionAt(viewHolder.adapterPosition)
+                handlePositionDeletionOrHiding(positionSwiped, viewHolder.adapterPosition)
+            }
+        }
+
+        override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+            val itemView = viewHolder.itemView
+            val background = ColorDrawable(Color.parseColor("#F44336")) // Red background
+            val deleteIcon = ContextCompat.getDrawable(this@PositionsActivity, R.drawable.ic_delete)?.apply { setTint(Color.WHITE) }
+            
+            val cornerRadiusInPx = 16f * resources.displayMetrics.density // 16dp corner radius
+
+            val iconIntrinsicHeight = deleteIcon?.intrinsicHeight ?: 0
+            val iconIntrinsicWidth = deleteIcon?.intrinsicWidth ?: 0
+            
+            val iconVerticalMargin = ((itemView.height - iconIntrinsicHeight) / 2).coerceAtLeast(0)
+            val iconTop = itemView.top + iconVerticalMargin
+            val iconBottom = iconTop + iconIntrinsicHeight
+
+            val fixedIconHorizontalPaddingInPx = (16f * resources.displayMetrics.density).toInt()
+            val clipPath = android.graphics.Path()
+
+            if (dX > 0) { // Swiping to the right (revealing background on the left)
+                val revealedWidth = dX.coerceAtMost(itemView.width.toFloat())
+                val bgLeft = itemView.left.toFloat()
+                val bgTop = itemView.top.toFloat()
+                val bgRight = itemView.left + revealedWidth
+                val bgBottom = itemView.bottom.toFloat()
+
+                val radii = floatArrayOf(
+                    cornerRadiusInPx, cornerRadiusInPx, // Top-left
+                    0f, 0f,                             // Top-right (flat unless fully revealed)
+                    0f, 0f,                             // Bottom-right (flat unless fully revealed)
+                    cornerRadiusInPx, cornerRadiusInPx  // Bottom-left
+                )
+                if (revealedWidth == itemView.width.toFloat()) {
+                    radii[2] = cornerRadiusInPx; radii[3] = cornerRadiusInPx // Top-right
+                    radii[4] = cornerRadiusInPx; radii[5] = cornerRadiusInPx // Bottom-right
+                }
+
+                clipPath.reset()
+                clipPath.addRoundRect(bgLeft, bgTop, bgRight, bgBottom, radii, android.graphics.Path.Direction.CW)
+                
+                c.save()
+                c.clipPath(clipPath)
+                background.setBounds(bgLeft.toInt(), bgTop.toInt(), bgRight.toInt(), bgBottom.toInt())
+                background.draw(c)
+
+                if (deleteIcon != null && revealedWidth >= iconIntrinsicWidth + fixedIconHorizontalPaddingInPx) {
+                    val iconActualLeft = itemView.left + fixedIconHorizontalPaddingInPx
+                    val iconActualRight = iconActualLeft + iconIntrinsicWidth
+                    if (iconActualRight <= bgRight) {
+                         deleteIcon.setBounds(iconActualLeft, iconTop, iconActualRight, iconBottom)
+                         deleteIcon.draw(c)
+                    }
+                }
+                c.restore()
+            // No need for dX < 0 block for drawing delete UI, as swipe is right-only for delete action
+            } else {
+                // If dX is not > 0 (e.g., 0 or negative from a non-delete swipe),
+                // ensure super.onChildDraw is called to handle default view drawing/reset.
+                // No custom background/icon drawing needed here for left swipe.
+            }
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
     }
     ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(positionsLibraryRecyclerView)
@@ -1597,16 +1665,36 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
         android.util.Log.w("PositionsActivity", "saveCustomPositions() called. This is obsolete with Firestore.")
     }
 
-    private fun setupSearch() {
+    private fun setupSearch() { // This will now setup the toolbar's SearchView
+        if (!::positionSearchView.isInitialized) {
+            Log.e("PositionsActivity", "setupSearch: positionSearchView not initialized. Cannot set up search.")
+            return
+        }
+        positionSearchView.queryHint = getString(R.string.search_positions)
         positionSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                filterPositionsLibrary(query) // Use new filter method
-                return false
+                filterPositionsLibrary(query)
+                positionSearchView.clearFocus() // Hide keyboard
+                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterPositionsLibrary(newText) // Use new filter method
-                return false
+                filterPositionsLibrary(newText)
+                return true
+            }
+        })
+        // Optional: Handle search view expansion/collapse if needed
+        val searchMenuItem = toolbar.menu.findItem(R.id.action_search_positions)
+        searchMenuItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                // Potentially hide other elements or adjust layout
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                // Restore elements or layout, clear filter if desired
+                filterPositionsLibrary(null) // Clear filter on collapse
+                return true
             }
         })
     }
@@ -1639,7 +1727,7 @@ private fun handlePositionDeletionOrHiding(positionItem: PositionItem, adapterPo
             return
         }
 
-        val assetCount = allPositionItems.count { it.isAsset } // Count all asset positions
+        val assetCount = allPositionItems.count { it.isAsset && !hiddenDefaultPositionNames.contains(it.name) }
         val customCount = allPositionItems.count { !it.isAsset } // Custom positions are not affected by hiddenDefaultPositionNames
 
         chipAllPositions.text = "${getString(R.string.chip_filter_defaults)} ($assetCount)"

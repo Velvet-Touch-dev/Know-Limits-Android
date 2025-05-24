@@ -568,6 +568,11 @@ class MainActivity : BaseActivity() {
         }
         // Ensure correct menu state
         invalidateOptionsMenu()
+        
+        // Explicitly set "Scenes" as checked in the navigation drawer
+        if (::navigationView.isInitialized) {
+            navigationView.setCheckedItem(R.id.nav_scenes)
+        }
         // Check if user is logged in and update UI accordingly
         // This is also handled by AuthStateListener, but an explicit call can ensure immediate UI consistency
         // if the listener hasn't fired yet or if there are subtle timing issues.

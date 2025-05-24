@@ -41,6 +41,7 @@ class FavoritesActivity : BaseActivity() {
     private lateinit var sceneFavoritesRecyclerView: RecyclerView
     private lateinit var positionFavoritesRecyclerView: RecyclerView
     private lateinit var emptyFavoritesView: View
+    private lateinit var favoritesSwipeTipTextView: TextView // Added for the swipe tip
 
     private val cloudFavoritesViewModel: FavoritesViewModel by viewModels { FavoritesViewModelFactory(application) }
     private val localFavoritesViewModel: LocalFavoritesViewModel by viewModels()
@@ -71,6 +72,7 @@ class FavoritesActivity : BaseActivity() {
         sceneFavoritesRecyclerView = findViewById(R.id.scene_favorites_recycler_view)
         positionFavoritesRecyclerView = findViewById(R.id.position_favorites_recycler_view)
         emptyFavoritesView = findViewById(R.id.empty_favorites_view)
+        favoritesSwipeTipTextView = findViewById(R.id.favorites_swipe_tip_text_view) // Initialize tip TextView
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.favorites)
@@ -113,13 +115,15 @@ class FavoritesActivity : BaseActivity() {
                     0 -> { // Scenes tab
                         sceneFavoritesRecyclerView.visibility = View.VISIBLE
                         positionFavoritesRecyclerView.visibility = View.GONE
+                        favoritesSwipeTipTextView.visibility = View.VISIBLE // Show tip
                     }
                     1 -> { // Positions tab
                         sceneFavoritesRecyclerView.visibility = View.GONE
                         positionFavoritesRecyclerView.visibility = View.VISIBLE
+                        favoritesSwipeTipTextView.visibility = View.VISIBLE // Show tip
                     }
                 }
-                updateCurrentTabContent()
+                updateCurrentTabContent() // This will also adjust tip visibility based on content
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
@@ -166,7 +170,8 @@ class FavoritesActivity : BaseActivity() {
             setupPositionSwipeToDelete(this)
         }
 
-        findViewById<androidx.cardview.widget.CardView>(R.id.swipe_hint_container).visibility = View.VISIBLE
+        // The old swipe_hint_container CardView was removed from XML.
+        // Visibility of the new favoritesSwipeTipTextView is handled by onTabSelected and updateOverallEmptyState... methods.
         observeViewModels()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -394,14 +399,17 @@ class FavoritesActivity : BaseActivity() {
             emptyFavoritesView.visibility = if (noSceneFavorites) View.VISIBLE else View.GONE
             sceneFavoritesRecyclerView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
             positionFavoritesRecyclerView.visibility = View.GONE
+            favoritesSwipeTipTextView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
         } else if (isPositionsTabSelected) {
             emptyFavoritesView.visibility = if (noPositionFavorites) View.VISIBLE else View.GONE
             positionFavoritesRecyclerView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
+            favoritesSwipeTipTextView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
         } else { // No tab selected or invalid state
             emptyFavoritesView.visibility = View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
             positionFavoritesRecyclerView.visibility = View.GONE
+            favoritesSwipeTipTextView.visibility = View.GONE
         }
     }
 
@@ -414,26 +422,26 @@ class FavoritesActivity : BaseActivity() {
         val isScenesTabSelected = tabLayout.selectedTabPosition == 0
         val isPositionsTabSelected = tabLayout.selectedTabPosition == 1
 
-        // Determine if there are any scene favorites from the Firestore list
         val favoriteSceneIds = firestoreFavorites.filter { it.itemType == "scene" }.map { it.itemId }.toSet()
         val actualFavoriteScenes = currentAllScenes.filter { scene -> favoriteSceneIds.contains(getSceneIdentifier(scene)) }
         val noSceneFavorites = actualFavoriteScenes.isEmpty()
-
-        // Position favorites are already provided as actualFavoritePositions
         val noPositionFavorites = actualFavoritePositions.isEmpty()
 
         if (isScenesTabSelected) {
             emptyFavoritesView.visibility = if (noSceneFavorites) View.VISIBLE else View.GONE
             sceneFavoritesRecyclerView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
             positionFavoritesRecyclerView.visibility = View.GONE
+            favoritesSwipeTipTextView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
         } else if (isPositionsTabSelected) {
             emptyFavoritesView.visibility = if (noPositionFavorites) View.VISIBLE else View.GONE
             positionFavoritesRecyclerView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
+            favoritesSwipeTipTextView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
         } else { // No tab selected or invalid state
             emptyFavoritesView.visibility = View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
             positionFavoritesRecyclerView.visibility = View.GONE
+            favoritesSwipeTipTextView.visibility = View.GONE
         }
     }
 
@@ -476,27 +484,55 @@ class FavoritesActivity : BaseActivity() {
             }
             override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
                 val itemView = viewHolder.itemView
-                val background = ColorDrawable(Color.parseColor("#F44336"))
-                val deleteIcon = ContextCompat.getDrawable(this@FavoritesActivity, R.drawable.ic_delete)?.apply { setTint(Color.WHITE) }
-                val cornerRadius = 16f * resources.displayMetrics.density
-                val iconMargin = (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
-                val iconTop = itemView.top + iconMargin
-                val iconBottom = iconTop + (deleteIcon?.intrinsicHeight ?: 0)
+                val backgroundDrawable = ColorDrawable(Color.parseColor("#F44336")) // Renamed for clarity
+                val icon = ContextCompat.getDrawable(this@FavoritesActivity, R.drawable.ic_delete)?.apply { setTint(Color.WHITE) } // Renamed for clarity
+                
+                val cornerRadiusInPx = 16f * resources.displayMetrics.density
+
+                val iconIntrinsicHeight = icon?.intrinsicHeight ?: 0
+                val iconIntrinsicWidth = icon?.intrinsicWidth ?: 0
+                
+                val iconVerticalMargin = ((itemView.height - iconIntrinsicHeight) / 2).coerceAtLeast(0)
+                val iconTopPosition = itemView.top + iconVerticalMargin // Renamed for clarity
+                val iconBottomPosition = iconTopPosition + iconIntrinsicHeight // Renamed for clarity
+
+                val fixedIconHorizontalPadding = (16f * resources.displayMetrics.density).toInt() // Renamed for clarity
+                val clipPath = android.graphics.Path()
 
                 if (dX > 0) { // Swiping to the right
-                    val iconLeft = itemView.left + iconMargin
-                    val iconRight = iconLeft + (deleteIcon?.intrinsicWidth ?: 0)
-                    deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    val backgroundPath = android.graphics.Path().apply {
-                        addRoundRect(android.graphics.RectF(itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + dX, itemView.bottom.toFloat()), cornerRadius, cornerRadius, android.graphics.Path.Direction.CW)
+                    val revealedWidth = dX.coerceAtMost(itemView.width.toFloat())
+                    val bgLeft = itemView.left.toFloat()
+                    val bgTop = itemView.top.toFloat()
+                    val bgRight = itemView.left + revealedWidth
+                    val bgBottom = itemView.bottom.toFloat()
+
+                    val radii = floatArrayOf(
+                        cornerRadiusInPx, cornerRadiusInPx, 0f, 0f,
+                        0f, 0f, cornerRadiusInPx, cornerRadiusInPx
+                    )
+                    if (revealedWidth == itemView.width.toFloat()) {
+                        radii[2] = cornerRadiusInPx; radii[3] = cornerRadiusInPx
+                        radii[4] = cornerRadiusInPx; radii[5] = cornerRadiusInPx
                     }
+
+                    clipPath.reset()
+                    clipPath.addRoundRect(bgLeft, bgTop, bgRight, bgBottom, radii, android.graphics.Path.Direction.CW)
+                    
                     c.save()
-                    c.clipPath(backgroundPath)
-                    background.setBounds(itemView.left, itemView.top, itemView.left + dX.toInt(), itemView.bottom)
-                    background.draw(c)
+                    c.clipPath(clipPath)
+                    backgroundDrawable.setBounds(bgLeft.toInt(), bgTop.toInt(), bgRight.toInt(), bgBottom.toInt())
+                    backgroundDrawable.draw(c)
+
+                    if (icon != null && revealedWidth >= iconIntrinsicWidth + fixedIconHorizontalPadding) {
+                        val iconActualLeft = itemView.left + fixedIconHorizontalPadding
+                        val iconActualRight = iconActualLeft + iconIntrinsicWidth
+                        if (iconActualRight <= bgRight) {
+                             icon.setBounds(iconActualLeft, iconTopPosition, iconActualRight, iconBottomPosition)
+                             icon.draw(c)
+                        }
+                    }
                     c.restore()
                 }
-                deleteIcon?.draw(c)
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }
@@ -513,27 +549,54 @@ class FavoritesActivity : BaseActivity() {
             }
             override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
                 val itemView = viewHolder.itemView
-                val background = ColorDrawable(Color.parseColor("#F44336"))
-                val deleteIcon = ContextCompat.getDrawable(this@FavoritesActivity, R.drawable.ic_delete)?.apply { setTint(Color.WHITE) }
-                val cornerRadius = 16f * resources.displayMetrics.density
-                val iconMargin = (itemView.height - (deleteIcon?.intrinsicHeight ?: 0)) / 2
-                val iconTop = itemView.top + iconMargin
-                val iconBottom = iconTop + (deleteIcon?.intrinsicHeight ?: 0)
+                val backgroundDrawable = ColorDrawable(Color.parseColor("#F44336")) // Renamed
+                val icon = ContextCompat.getDrawable(this@FavoritesActivity, R.drawable.ic_delete)?.apply { setTint(Color.WHITE) } // Renamed
+                val cornerRadiusInPx = 16f * resources.displayMetrics.density
+
+                val iconIntrinsicHeight = icon?.intrinsicHeight ?: 0
+                val iconIntrinsicWidth = icon?.intrinsicWidth ?: 0
+
+                val iconVerticalMargin = ((itemView.height - iconIntrinsicHeight) / 2).coerceAtLeast(0)
+                val iconTopPosition = itemView.top + iconVerticalMargin // Renamed
+                val iconBottomPosition = iconTopPosition + iconIntrinsicHeight // Renamed
+                
+                val fixedIconHorizontalPadding = (16f * resources.displayMetrics.density).toInt() // Renamed
+                val clipPath = android.graphics.Path()
 
                 if (dX > 0) { // Swiping to the right
-                    val iconLeft = itemView.left + iconMargin
-                    val iconRight = iconLeft + (deleteIcon?.intrinsicWidth ?: 0)
-                    deleteIcon?.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                     val backgroundPath = android.graphics.Path().apply {
-                        addRoundRect(android.graphics.RectF(itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + dX, itemView.bottom.toFloat()), cornerRadius, cornerRadius, android.graphics.Path.Direction.CW)
+                    val revealedWidth = dX.coerceAtMost(itemView.width.toFloat())
+                    val bgLeft = itemView.left.toFloat()
+                    val bgTop = itemView.top.toFloat()
+                    val bgRight = itemView.left + revealedWidth
+                    val bgBottom = itemView.bottom.toFloat()
+
+                    val radii = floatArrayOf(
+                        cornerRadiusInPx, cornerRadiusInPx, 0f, 0f,
+                        0f, 0f, cornerRadiusInPx, cornerRadiusInPx
+                    )
+                    if (revealedWidth == itemView.width.toFloat()) {
+                        radii[2] = cornerRadiusInPx; radii[3] = cornerRadiusInPx
+                        radii[4] = cornerRadiusInPx; radii[5] = cornerRadiusInPx
                     }
+
+                    clipPath.reset()
+                    clipPath.addRoundRect(bgLeft, bgTop, bgRight, bgBottom, radii, android.graphics.Path.Direction.CW)
+
                     c.save()
-                    c.clipPath(backgroundPath)
-                    background.setBounds(itemView.left, itemView.top, itemView.left + dX.toInt(), itemView.bottom)
-                    background.draw(c)
+                    c.clipPath(clipPath)
+                    backgroundDrawable.setBounds(bgLeft.toInt(), bgTop.toInt(), bgRight.toInt(), bgBottom.toInt())
+                    backgroundDrawable.draw(c)
+
+                    if (icon != null && revealedWidth >= iconIntrinsicWidth + fixedIconHorizontalPadding) {
+                        val iconActualLeft = itemView.left + fixedIconHorizontalPadding
+                        val iconActualRight = iconActualLeft + iconIntrinsicWidth
+                        if (iconActualRight <= bgRight) {
+                            icon.setBounds(iconActualLeft, iconTopPosition, iconActualRight, iconBottomPosition)
+                            icon.draw(c)
+                        }
+                    }
                     c.restore()
                 }
-                deleteIcon?.draw(c)
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }
