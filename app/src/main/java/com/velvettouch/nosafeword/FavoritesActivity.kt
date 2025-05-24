@@ -383,43 +383,57 @@ class FavoritesActivity : BaseActivity() {
     }
 
     private fun updateOverallEmptyStateForLocal(localFavoriteScenes: List<Scene>, localFavoritePositions: List<PositionItem>) {
-        Log.d("FavoritesActivity", "updateOverallEmptyStateForLocal - localFavoriteScenes.size: ${localFavoriteScenes.size}, localFavoritePositions.size: ${localFavoritePositions.size}")
+        Log.d("FavoritesActivity", "updateOverallEmptyStateForLocal - Scenes: ${localFavoriteScenes.size}, Positions: ${localFavoritePositions.size}, Selected Tab: ${tabLayout.selectedTabPosition}")
+        val isScenesTabSelected = tabLayout.selectedTabPosition == 0
+        val isPositionsTabSelected = tabLayout.selectedTabPosition == 1
+
         val noSceneFavorites = localFavoriteScenes.isEmpty()
         val noPositionFavorites = localFavoritePositions.isEmpty()
 
-        val showEmpty = noSceneFavorites && noPositionFavorites
-        emptyFavoritesView.visibility = if (showEmpty) View.VISIBLE else View.GONE
-        
-        if (tabLayout.selectedTabPosition == 0) { // Scenes tab
-            sceneFavoritesRecyclerView.visibility = if (noSceneFavorites || showEmpty) View.GONE else View.VISIBLE
+        if (isScenesTabSelected) {
+            emptyFavoritesView.visibility = if (noSceneFavorites) View.VISIBLE else View.GONE
+            sceneFavoritesRecyclerView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
             positionFavoritesRecyclerView.visibility = View.GONE
-        } else { // Positions tab
-            positionFavoritesRecyclerView.visibility = if (noPositionFavorites || showEmpty) View.GONE else View.VISIBLE
+        } else if (isPositionsTabSelected) {
+            emptyFavoritesView.visibility = if (noPositionFavorites) View.VISIBLE else View.GONE
+            positionFavoritesRecyclerView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
+        } else { // No tab selected or invalid state
+            emptyFavoritesView.visibility = View.VISIBLE
+            sceneFavoritesRecyclerView.visibility = View.GONE
+            positionFavoritesRecyclerView.visibility = View.GONE
         }
     }
 
     private fun updateOverallEmptyStateForFirestore(
-        firestoreFavorites: List<Favorite>,
-        currentAllScenes: List<Scene>,
-        actualFavoritePositions: List<PositionItem>
+        firestoreFavorites: List<Favorite>, // All favorite objects from Firestore
+        currentAllScenes: List<Scene>,     // All available scenes in the app
+        actualFavoritePositions: List<PositionItem> // List of PositionItem objects that are favorites
     ) {
-        Log.d("FavoritesActivity", "updateOverallEmptyStateForFirestore - firestoreFavorites.size: ${firestoreFavorites.size}, actualFavoritePositions.size: ${actualFavoritePositions.size}")
-        val sceneFavoriteItemIds = firestoreFavorites.filter { it.itemType == "scene" }.map { it.itemId }.toSet()
-        val actualFavoriteScenes = currentAllScenes.filter { scene -> sceneFavoriteItemIds.contains(getSceneIdentifier(scene)) }
+        Log.d("FavoritesActivity", "updateOverallEmptyStateForFirestore - Firestore Favs: ${firestoreFavorites.size}, All Scenes: ${currentAllScenes.size}, Actual Fav Positions: ${actualFavoritePositions.size}, Selected Tab: ${tabLayout.selectedTabPosition}")
+        val isScenesTabSelected = tabLayout.selectedTabPosition == 0
+        val isPositionsTabSelected = tabLayout.selectedTabPosition == 1
 
+        // Determine if there are any scene favorites from the Firestore list
+        val favoriteSceneIds = firestoreFavorites.filter { it.itemType == "scene" }.map { it.itemId }.toSet()
+        val actualFavoriteScenes = currentAllScenes.filter { scene -> favoriteSceneIds.contains(getSceneIdentifier(scene)) }
         val noSceneFavorites = actualFavoriteScenes.isEmpty()
-        val noPositionFavorites = actualFavoritePositions.isEmpty()
-        
-        val showEmpty = noSceneFavorites && noPositionFavorites
-        emptyFavoritesView.visibility = if (showEmpty) View.VISIBLE else View.GONE
 
-        if (tabLayout.selectedTabPosition == 0) { // Scenes tab
-            sceneFavoritesRecyclerView.visibility = if (noSceneFavorites || showEmpty) View.GONE else View.VISIBLE
+        // Position favorites are already provided as actualFavoritePositions
+        val noPositionFavorites = actualFavoritePositions.isEmpty()
+
+        if (isScenesTabSelected) {
+            emptyFavoritesView.visibility = if (noSceneFavorites) View.VISIBLE else View.GONE
+            sceneFavoritesRecyclerView.visibility = if (noSceneFavorites) View.GONE else View.VISIBLE
             positionFavoritesRecyclerView.visibility = View.GONE
-        } else { // Positions tab
-            positionFavoritesRecyclerView.visibility = if (noPositionFavorites || showEmpty) View.GONE else View.VISIBLE
+        } else if (isPositionsTabSelected) {
+            emptyFavoritesView.visibility = if (noPositionFavorites) View.VISIBLE else View.GONE
+            positionFavoritesRecyclerView.visibility = if (noPositionFavorites) View.GONE else View.VISIBLE
             sceneFavoritesRecyclerView.visibility = View.GONE
+        } else { // No tab selected or invalid state
+            emptyFavoritesView.visibility = View.VISIBLE
+            sceneFavoritesRecyclerView.visibility = View.GONE
+            positionFavoritesRecyclerView.visibility = View.GONE
         }
     }
 
