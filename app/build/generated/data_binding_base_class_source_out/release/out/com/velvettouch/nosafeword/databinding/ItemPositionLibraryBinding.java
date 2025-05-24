@@ -4,7 +4,6 @@ package com.velvettouch.nosafeword.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,9 +22,6 @@ public final class ItemPositionLibraryBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
-  public final ImageButton positionLibraryDeleteButton;
-
-  @NonNull
   public final ImageView positionLibraryImage;
 
   @NonNull
@@ -35,10 +31,9 @@ public final class ItemPositionLibraryBinding implements ViewBinding {
   public final LinearLayout textContentArea;
 
   private ItemPositionLibraryBinding(@NonNull MaterialCardView rootView,
-      @NonNull ImageButton positionLibraryDeleteButton, @NonNull ImageView positionLibraryImage,
-      @NonNull TextView positionLibraryName, @NonNull LinearLayout textContentArea) {
+      @NonNull ImageView positionLibraryImage, @NonNull TextView positionLibraryName,
+      @NonNull LinearLayout textContentArea) {
     this.rootView = rootView;
-    this.positionLibraryDeleteButton = positionLibraryDeleteButton;
     this.positionLibraryImage = positionLibraryImage;
     this.positionLibraryName = positionLibraryName;
     this.textContentArea = textContentArea;
@@ -71,12 +66,6 @@ public final class ItemPositionLibraryBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.position_library_delete_button;
-      ImageButton positionLibraryDeleteButton = ViewBindings.findChildViewById(rootView, id);
-      if (positionLibraryDeleteButton == null) {
-        break missingId;
-      }
-
       id = R.id.position_library_image;
       ImageView positionLibraryImage = ViewBindings.findChildViewById(rootView, id);
       if (positionLibraryImage == null) {
@@ -95,8 +84,8 @@ public final class ItemPositionLibraryBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemPositionLibraryBinding((MaterialCardView) rootView,
-          positionLibraryDeleteButton, positionLibraryImage, positionLibraryName, textContentArea);
+      return new ItemPositionLibraryBinding((MaterialCardView) rootView, positionLibraryImage,
+          positionLibraryName, textContentArea);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

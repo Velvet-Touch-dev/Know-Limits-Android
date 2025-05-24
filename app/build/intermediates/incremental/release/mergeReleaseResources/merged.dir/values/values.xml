@@ -2424,6 +2424,8 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     <string name="status_bar_notification_info_overflow">999+</string>
+    <string name="swipe_right_to_delete_tip">Swipe right to delete.</string>
+    <string name="swipe_right_to_remove_favorite_tip">Swipe right to remove from favorites.</string>
     <string name="task_title_hint">Task title</string>
     <string name="theme">Theme</string>
     <string name="theme_dark">Dark</string>

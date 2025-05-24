@@ -194,7 +194,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                     // Navigate to main activity (scenes)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                     startActivity(intent)
                     finish() // Close this activity after starting MainActivity
                     true

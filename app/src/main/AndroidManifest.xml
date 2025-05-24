@@ -18,6 +18,7 @@
         android:theme="@style/Theme.RandomSceneApp">
         <activity 
             android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -47,7 +47,8 @@
         android:theme="@style/Theme.RandomSceneApp" >
         <activity
             android:name="com.velvettouch.nosafeword.MainActivity"
-            android:exported="true" >
+            android:exported="true"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

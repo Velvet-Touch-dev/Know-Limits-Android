@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
@@ -40,6 +39,9 @@ public final class ActivityFavoritesBinding implements ViewBinding {
   public final FrameLayout favoritesContainer;
 
   @NonNull
+  public final TextView favoritesSwipeTipTextView;
+
+  @NonNull
   public final NavigationView navView;
 
   @NonNull
@@ -47,12 +49,6 @@ public final class ActivityFavoritesBinding implements ViewBinding {
 
   @NonNull
   public final RecyclerView sceneFavoritesRecyclerView;
-
-  @NonNull
-  public final TextView swipeHint;
-
-  @NonNull
-  public final CardView swipeHintContainer;
 
   @NonNull
   public final TabLayout tabs;
@@ -63,19 +59,19 @@ public final class ActivityFavoritesBinding implements ViewBinding {
   private ActivityFavoritesBinding(@NonNull DrawerLayout rootView,
       @NonNull AppBarLayout appBarLayout, @NonNull DrawerLayout drawerLayout,
       @NonNull LinearLayout emptyFavoritesView, @NonNull FrameLayout favoritesContainer,
-      @NonNull NavigationView navView, @NonNull RecyclerView positionFavoritesRecyclerView,
-      @NonNull RecyclerView sceneFavoritesRecyclerView, @NonNull TextView swipeHint,
-      @NonNull CardView swipeHintContainer, @NonNull TabLayout tabs, @NonNull Toolbar toolbar) {
+      @NonNull TextView favoritesSwipeTipTextView, @NonNull NavigationView navView,
+      @NonNull RecyclerView positionFavoritesRecyclerView,
+      @NonNull RecyclerView sceneFavoritesRecyclerView, @NonNull TabLayout tabs,
+      @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.appBarLayout = appBarLayout;
     this.drawerLayout = drawerLayout;
     this.emptyFavoritesView = emptyFavoritesView;
     this.favoritesContainer = favoritesContainer;
+    this.favoritesSwipeTipTextView = favoritesSwipeTipTextView;
     this.navView = navView;
     this.positionFavoritesRecyclerView = positionFavoritesRecyclerView;
     this.sceneFavoritesRecyclerView = sceneFavoritesRecyclerView;
-    this.swipeHint = swipeHint;
-    this.swipeHintContainer = swipeHintContainer;
     this.tabs = tabs;
     this.toolbar = toolbar;
   }
@@ -127,6 +123,12 @@ public final class ActivityFavoritesBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.favorites_swipe_tip_text_view;
+      TextView favoritesSwipeTipTextView = ViewBindings.findChildViewById(rootView, id);
+      if (favoritesSwipeTipTextView == null) {
+        break missingId;
+      }
+
       id = R.id.nav_view;
       NavigationView navView = ViewBindings.findChildViewById(rootView, id);
       if (navView == null) {
@@ -145,18 +147,6 @@ public final class ActivityFavoritesBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.swipe_hint;
-      TextView swipeHint = ViewBindings.findChildViewById(rootView, id);
-      if (swipeHint == null) {
-        break missingId;
-      }
-
-      id = R.id.swipe_hint_container;
-      CardView swipeHintContainer = ViewBindings.findChildViewById(rootView, id);
-      if (swipeHintContainer == null) {
-        break missingId;
-      }
-
       id = R.id.tabs;
       TabLayout tabs = ViewBindings.findChildViewById(rootView, id);
       if (tabs == null) {
@@ -170,8 +160,8 @@ public final class ActivityFavoritesBinding implements ViewBinding {
       }
 
       return new ActivityFavoritesBinding((DrawerLayout) rootView, appBarLayout, drawerLayout,
-          emptyFavoritesView, favoritesContainer, navView, positionFavoritesRecyclerView,
-          sceneFavoritesRecyclerView, swipeHint, swipeHintContainer, tabs, toolbar);
+          emptyFavoritesView, favoritesContainer, favoritesSwipeTipTextView, navView,
+          positionFavoritesRecyclerView, sceneFavoritesRecyclerView, tabs, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
