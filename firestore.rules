@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Scenes: Users can only read, create, update, and delete their own scenes.
+    match /scenes/{sceneId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Positions: Users can only read, create, update, and delete their own positions.
+    // Asset positions are not stored in Firestore, so these rules apply to user-created positions.
+    match /positions/{positionId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Favorites: Users can only read, create, and delete their own favorites.
+    // Favorites are typically not updated, only created or deleted.
+    // Note: The field name in the repository queries is "user_id".
+    match /favorites/{favoriteId} {
+      allow read: if request.auth != null && resource.data.user_id == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.user_id == request.auth.uid;
+      // No update rule, as favorites are usually added/removed, not modified in place.
+      allow delete: if request.auth != null && resource.data.user_id == request.auth.uid;
+    }
+  }
+}

@@ -76,16 +76,16 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable/circle_default_color.xml"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/drawable_ic_add.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable/ic_add.xml"
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/layout_activity_task_list.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/layout/activity_task_list.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/mipmap-hdpi/ic_launcher_foreground.webp"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/layout_activity_task_list.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/layout/activity_task_list.xml"
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/drawable_ic_add.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable/ic_add.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/layout_dialog_add_planned_item.xml.flat",
@@ -120,12 +120,12 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable-night/circle_default_color.xml"
     },
     {
-        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/drawable_ic_favorite_filled.xml.flat",
-        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable/ic_favorite_filled.xml"
-    },
-    {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/drawable_ic_pause_24.xml.flat",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable/ic_pause_24.xml"
+    },
+    {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/drawable_ic_favorite_filled.xml.flat",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/drawable/ic_favorite_filled.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-debug-48:/layout_item_favorite_scene.xml.flat",

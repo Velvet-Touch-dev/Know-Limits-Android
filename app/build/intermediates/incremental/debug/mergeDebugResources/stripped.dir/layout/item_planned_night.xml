@@ -91,11 +91,11 @@
             android:padding="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/cd_delete_item"
-            app:srcCompat="@drawable/ic_close_24"
+            app:srcCompat="@drawable/ic_delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="?android:attr/textColorSecondary" />
+            app:tint="?attr/colorError" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
