@@ -315,18 +315,24 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
                 when (item.type.lowercase(Locale.getDefault())) {
                     "scene" -> {
                         val intent = Intent(this, MainActivity::class.java)
-                        val sceneIdString = item.id
+                        val sceneIdString = item.id // This is the original asset ID (e.g., "1", "27") or Firestore UUID
 
+                        // MainActivity's navigateToSceneByIdInRandomView expects "asset_ID" for assets
+                        // or a Firestore UUID.
                         if (!sceneIdString.isNullOrBlank()) {
-                            try {
-                                val sceneIdInt = sceneIdString.toInt()
-                                intent.putExtra("DISPLAY_SCENE_ID", sceneIdInt)
-                            } catch (e: NumberFormatException) {
-                                // ID is not an integer (e.g., UUID), send title instead
-                                intent.putExtra("DISPLAY_SCENE_TITLE", item.name)
+                            // Check if it's likely an asset ID (integer string) vs a Firestore UUID
+                            val isLikelyAssetId = sceneIdString.all { it.isDigit() }
+
+                            if (isLikelyAssetId) {
+                                // It's an asset scene, format the ID as "asset_ID"
+                                intent.putExtra("DISPLAY_SCENE_ID", "asset_$sceneIdString")
+                            } else {
+                                // It's likely a Firestore UUID, pass it directly
+                                intent.putExtra("DISPLAY_SCENE_ID", sceneIdString)
                             }
                         } else {
                             // ID is null or blank, try sending title as a last resort
+                            // This fallback might still be problematic if titles are not unique
                             intent.putExtra("DISPLAY_SCENE_TITLE", item.name)
                         }
                         startActivity(intent)
@@ -360,7 +366,7 @@ class PlanNightActivity : BaseActivity(), NavigationView.OnNavigationItemSelecte
 
         val callback = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN, // Drag directions
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // Swipe directions
+            0 // No swipe directions
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
