@@ -3573,6 +3573,7 @@ id google_sign_in_button_settings
 id graph
 id graph_wrap
 id group_divider
+id group_settings
 id grouping
 id groups
 id header_title

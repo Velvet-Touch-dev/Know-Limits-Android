@@ -3572,6 +3572,7 @@ int id google_sign_in_button_settings 0x7f090117
 int id graph 0x7f090118
 int id graph_wrap 0x7f090119
 int id group_divider 0x7f09011a
+int id group_settings 0x7f0902af
 int id grouping 0x7f09011b
 int id groups 0x7f09011c
 int id header_title 0x7f09011d
