@@ -174,6 +174,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         
         // Set up toolbar with Material 3 style
         setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.positions) // Set title to "Positions"
         
         // Set up ActionBarDrawerToggle
         drawerToggle = ActionBarDrawerToggle(
@@ -973,19 +974,19 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             isCurrentlyFavorite = localFavoritesRepository.isLocalFavoritePosition(itemId)
             if (isCurrentlyFavorite) {
                 localFavoritesRepository.removeLocalFavoritePosition(itemId)
-                Toast.makeText(this, "\"${positionToToggle.name}\" removed from local favorites.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "💔 \"${positionToToggle.name}\" removed from favorites.", Toast.LENGTH_SHORT).show()
             } else {
                 localFavoritesRepository.addLocalFavoritePosition(itemId)
-                Toast.makeText(this, "\"${positionToToggle.name}\" added to local favorites.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "❤️ \"${positionToToggle.name}\" added to favorites.", Toast.LENGTH_SHORT).show()
             }
         } else { // Online
             isCurrentlyFavorite = favoritesViewModel.favorites.value.any { it.itemId == itemId && it.itemType == "position" }
             if (isCurrentlyFavorite) {
                 favoritesViewModel.removeCloudFavorite(itemId, "position")
-                Toast.makeText(this, "\"${positionToToggle.name}\" removing from cloud favorites...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "💔 \"${positionToToggle.name}\" removing from favorites...", Toast.LENGTH_SHORT).show()
             } else {
                 favoritesViewModel.addCloudFavorite(itemId, "position")
-                Toast.makeText(this, "\"${positionToToggle.name}\" adding to cloud favorites...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "❤️ \"${positionToToggle.name}\" adding to favorites...", Toast.LENGTH_SHORT).show()
             }
         }
         invalidateOptionsMenu() // Update icon immediately

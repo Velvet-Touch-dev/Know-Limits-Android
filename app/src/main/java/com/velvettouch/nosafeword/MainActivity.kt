@@ -207,6 +207,7 @@ class MainActivity : BaseActivity() {
         shareButton = findViewById(R.id.shareButton)
         topAppBar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
+        supportActionBar?.title = getString(R.string.random) // Set title to "Scenes"
         bottomNavigation = findViewById(R.id.bottom_navigation)
         randomContent = findViewById(R.id.random_content)
         favoritesContainer = findViewById(R.id.favorites_container)
@@ -700,19 +701,19 @@ class MainActivity : BaseActivity() {
             isCurrentlyFavorite = cloudFavoritesViewModel.favorites.value.any { it.itemId == sceneIdentifier && it.itemType == "scene" }
             if (isCurrentlyFavorite) {
                 cloudFavoritesViewModel.removeCloudFavorite(sceneIdentifier, "scene")
-                showMaterialToast("'${currentScene.title}' removed from cloud favorites", false)
+                Toast.makeText(applicationContext, "💔 '${currentScene.title}' removed from cloud favorites", Toast.LENGTH_SHORT).show()
             } else {
                 cloudFavoritesViewModel.addCloudFavorite(sceneIdentifier, "scene")
-                showMaterialToast("'${currentScene.title}' added to cloud favorites", true)
+                Toast.makeText(applicationContext, "❤️ '${currentScene.title}' added to cloud favorites", Toast.LENGTH_SHORT).show()
             }
         } else {
             isCurrentlyFavorite = localFavoritesViewModel.localFavoriteScenes.value.any { getSceneIdentifier(it) == sceneIdentifier }
             if (isCurrentlyFavorite) {
                 localFavoritesViewModel.removeLocalFavoriteScene(sceneIdentifier, allUserScenes)
-                showMaterialToast("'${currentScene.title}' removed from local favorites", false)
+                Toast.makeText(applicationContext, "💔 '${currentScene.title}' removed from local favorites", Toast.LENGTH_SHORT).show()
             } else {
                 localFavoritesViewModel.addLocalFavoriteScene(sceneIdentifier, allUserScenes)
-                showMaterialToast("'${currentScene.title}' added to local favorites", true)
+                Toast.makeText(applicationContext, "❤️ '${currentScene.title}' added to local favorites", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -721,17 +722,17 @@ class MainActivity : BaseActivity() {
         val sceneIdentifier = getSceneIdentifier(scene)
         if (auth.currentUser != null) {
             cloudFavoritesViewModel.removeCloudFavorite(sceneIdentifier, "scene")
-            showMaterialToast("'${scene.title}' removed from cloud favorites", false)
+            Toast.makeText(applicationContext, "💔 '${scene.title}' removed from favorites", Toast.LENGTH_SHORT).show()
         } else {
             localFavoritesViewModel.removeLocalFavoriteScene(sceneIdentifier, allUserScenes)
-            showMaterialToast("'${scene.title}' removed from local favorites", false)
+            Toast.makeText(applicationContext, "💔 '${scene.title}' removed from favorites", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun showMaterialToast(message: String, isAddedToFavorite: Boolean) {
+    private fun showMaterialToast(message: String, isAddedToFavorite: Boolean) { // Parameter isAddedToFavorite might be misleading now
         currentToast?.cancel()
-        val iconText = if (isAddedToFavorite) "❤️ " else ""
-        currentToast = Toast.makeText(applicationContext, iconText + message, Toast.LENGTH_SHORT).apply {
+        // Reverted: Emoji logic will be specific to favorite actions
+        currentToast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).apply {
             show()
         }
     }
@@ -913,7 +914,7 @@ class MainActivity : BaseActivity() {
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 scenesViewModel.deleteScene(scene)
                 removeFromFavorites(scene) // Ensure it's removed from local/cloud favorites as well
-                showMaterialToast("Attempting to delete \"${scene.title}\".", false)
+                showMaterialToast("Deleted \"${scene.title}\".", false)
             }
             .show()
     }
@@ -929,7 +930,7 @@ class MainActivity : BaseActivity() {
                     showMaterialToast("Resetting default scenes for your account...", false)
                 } else {
                     scenesViewModel.resetLocalScenesToDefault()
-                    showMaterialToast("Resetting local scenes to default...", false)
+                    showMaterialToast("Resetting scenes to default...", false)
                 }
             }
             .show()
