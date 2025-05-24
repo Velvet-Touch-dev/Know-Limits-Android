@@ -246,10 +246,49 @@ class PositionsRepository(private val context: Context) {
 
         val tempLocalFile = File(tempLocalPathForUpload)
         val fileExtension = tempLocalFile.extension.ifBlank { "jpg" }
-        val storageFileName = "${UUID.randomUUID()}.$fileExtension"
+
+        // Generate a deterministic file name based on user ID and sanitized position name
+        val sanitizedPositionName = positionName
+            .replace(Regex("[^a-zA-Z0-9\\-_]"), "_") // Allow alphanumeric, hyphen, underscore
+            .lowercase()
+            .take(100) // Limit length
+        val storageFileName = "${sanitizedPositionName}.$fileExtension"
+
+        Log.d("PositionsRepository", "uploadPositionImageWithMetadata: Inputs -- forUserId: '$forUserId', original positionName: '$positionName', sanitizedPositionName: '$sanitizedPositionName', fileExtension: '$fileExtension', final storageFileName: '$storageFileName'")
+        
         // Using a path that the Cloud Function will listen to
         val imageRef = storage.reference.child("$POSITION_IMAGES_STORAGE_PATH/$forUserId/$storageFileName")
+        Log.d("PositionsRepository", "uploadPositionImageWithMetadata: Determined storage path: ${imageRef.path}")
 
+        // Check if file already exists at the deterministic path
+        Log.d("PositionsRepository", "uploadPositionImageWithMetadata: Attempting to get metadata for ${imageRef.path}")
+        try {
+            imageRef.metadata.await()
+            // File exists, log and skip upload. Assume CF will handle or has handled.
+            Log.i("PositionsRepository", "uploadPositionImageWithMetadata: METADATA CHECK SUCCESS - File already exists at ${imageRef.path}. Skipping upload.")
+            // Even if file exists, we might want the CF to re-evaluate metadata if it changed,
+            // but the CF should be idempotent on Firestore document creation.
+            // For now, we consider this "successful" from client's perspective of ensuring image is there.
+            tempLocalFile.delete() // Delete the temporary local copy
+            return true // Indicate success as image is present or will be processed
+        } catch (e: com.google.firebase.storage.StorageException) {
+            if (e.errorCode == com.google.firebase.storage.StorageException.ERROR_OBJECT_NOT_FOUND) {
+                // File does not exist, proceed with upload
+                Log.i("PositionsRepository", "uploadPositionImageWithMetadata: METADATA CHECK INFO - File not found at ${imageRef.path} (ERROR_OBJECT_NOT_FOUND). Proceeding with upload.")
+            } else {
+                // Other storage error during metadata check
+                Log.e("PositionsRepository", "uploadPositionImageWithMetadata: METADATA CHECK STORAGE EXCEPTION for ${imageRef.path}. ErrorCode: ${e.errorCode}, Message: ${e.message}", e)
+                tempLocalFile.delete() // Delete temp local copy
+                return false
+            }
+        } catch (e: Exception) {
+            // Other unexpected error during metadata check
+            Log.e("PositionsRepository", "uploadPositionImageWithMetadata: METADATA CHECK UNEXPECTED EXCEPTION for ${imageRef.path}. Message: ${e.message}", e)
+            tempLocalFile.delete()
+            return false
+        }
+
+        Log.d("PositionsRepository", "uploadPositionImageWithMetadata: Proceeding to build metadata and upload for ${imageRef.path}")
         val metadataBuilder = com.google.firebase.storage.StorageMetadata.Builder()
         metadataBuilder.setCustomMetadata("positionName", positionName)
         metadataBuilder.setCustomMetadata("isFavorite", isFavorite.toString())
