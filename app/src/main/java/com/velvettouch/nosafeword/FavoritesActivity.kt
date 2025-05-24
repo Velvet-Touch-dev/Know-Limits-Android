@@ -217,7 +217,7 @@ class FavoritesActivity : BaseActivity() {
             }
         } else {
             Log.d("FavoritesActivity", "AuthStateListener: User signed in. Triggering merge and loading cloud favorites.")
-            cloudFavoritesViewModel.loadCloudFavorites(performMerge = true)
+            cloudFavoritesViewModel.refreshCloudFavorites(performMergeIfNeeded = true)
         }
         updateCurrentTabContent() // This needs to be called after state might have changed
     }

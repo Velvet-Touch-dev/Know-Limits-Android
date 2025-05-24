@@ -30,8 +30,21 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import java.util.Locale
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.velvettouch.nosafeword.LocalFavoritesRepository
+import com.velvettouch.nosafeword.FavoritesRepository
+import com.velvettouch.nosafeword.Favorite
+import com.velvettouch.nosafeword.ScenesRepository // Added
+import com.velvettouch.nosafeword.PositionsRepository // Added
+// Assuming Scene and PositionItem data classes are in com.velvettouch.nosafeword or imported
 
 class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
+
+    private val localFavoritesRepository by lazy { LocalFavoritesRepository(applicationContext) }
+    private val cloudFavoritesRepository by lazy { FavoritesRepository() }
+    private val scenesRepository by lazy { ScenesRepository(applicationContext) } // Added
+    private val positionsRepository by lazy { PositionsRepository(applicationContext) } // Added
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -653,14 +666,119 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
     private fun signOut() {
         Log.d(TAG, "signOut: Attempting to sign out.")
-        // Firebase sign out
-        auth.signOut()
+        lifecycleScope.launch {
+            val user = auth.currentUser
+            if (user != null) {
+                Log.d(TAG, "Backing up cloud favorites to local before sign-out for user ${user.uid}")
+                val backupResult = backupCloudDataToLocal()
+                if (backupResult.isSuccess) {
+                    Log.d(TAG, "Cloud data successfully backed up to local.")
+                } else {
+                    Log.w(TAG, "Failed to back up cloud data to local. Proceeding with sign-out anyway.", backupResult.exceptionOrNull())
+                    Toast.makeText(this@SettingsActivity, "Note: Could not save cloud data locally before sign out.", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                Log.d(TAG, "No user logged in, no cloud data to back up. Clearing local favorites.")
+                // If no user was logged in, but signOut was somehow called, ensure local is clean.
+                // This case might be rare if UI prevents sign-out when not signed-in.
+                localFavoritesRepository.clearAllLocalFavorites()
+            }
 
-        // Google sign out
-        googleSignInClient.signOut().addOnCompleteListener(this) {
-            Log.d(TAG, "signOut: Google Sign-Out complete.")
-            Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show()
-            updateAuthButtonUI() // Update button to "Sign In"
+            // Firebase sign out
+            auth.signOut()
+
+            // Google sign out
+            googleSignInClient.signOut().addOnCompleteListener(this@SettingsActivity) {
+                Log.d(TAG, "signOut: Google Sign-Out complete.")
+                Toast.makeText(this@SettingsActivity, "Signed Out", Toast.LENGTH_SHORT).show()
+                updateAuthButtonUI() // Update button to "Sign In"
+                // Consider if a broadcast or event is needed to tell other parts of the app to refresh local data.
+            }
+        }
+    }
+
+    // New suspend function in SettingsActivity
+    private suspend fun backupCloudDataToLocal(): Result<Unit> {
+        // auth.currentUser should be checked by the caller (signOut method)
+        // This function uses auth.currentUser internally via cloudFavoritesRepository
+        Log.d(TAG, "backupCloudDataToLocal: Fetching cloud data for current user.")
+
+        val currentUserId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in for backup"))
+
+        // Clear all previous local data first
+        localFavoritesRepository.clearAllLocalFavorites()
+        Log.d(TAG, "Cleared all local data before backup.")
+
+        var overallSuccess = true
+        var errorMessage = ""
+
+        // 1. Backup Favorite IDs
+        val cloudFavoritesResult = cloudFavoritesRepository.getCloudFavoritesListSnapshot() // This is the first, correct call
+        if (cloudFavoritesResult.isSuccess) {
+            val cloudFavorites = cloudFavoritesResult.getOrNull()
+            if (!cloudFavorites.isNullOrEmpty()) {
+                Log.d(TAG, "Fetched ${cloudFavorites.size} cloud favorites for backup.")
+                cloudFavorites.forEach { favorite ->
+                    when (favorite.itemType?.lowercase()) { // Use lowercase for robust matching
+                        "scene" -> localFavoritesRepository.addLocalFavoriteScene(favorite.itemId)
+                        "position" -> localFavoritesRepository.addLocalFavoritePosition(favorite.itemId)
+                        // Add other itemTypes if they exist for favorites, e.g., "custom_scene", "custom_position"
+                        // For now, assuming custom items are favorited with "scene" or "position" type
+                        // and their specific data is handled by scene/position backup below.
+                        else -> Log.w(TAG, "Unknown favorite itemType during backup: ${favorite.itemType} for itemId ${favorite.itemId}")
+                    }
+                }
+                Log.d(TAG, "Finished populating local favorite IDs from cloud backup.")
+            } else {
+                Log.d(TAG, "No cloud favorites found to back up (IDs).")
+            }
+        } else {
+            overallSuccess = false
+            errorMessage += "Failed to backup favorite IDs. "
+            Log.e(TAG, "Failed to fetch cloud favorites for backup", cloudFavoritesResult.exceptionOrNull())
+        }
+
+        // 2. Backup Scene Data (all scenes for the user)
+        val allUserScenesResult = scenesRepository.getAllUserScenesOnce(currentUserId)
+        if (allUserScenesResult.isSuccess) {
+            val userScenes = allUserScenesResult.getOrNull()
+            if (!userScenes.isNullOrEmpty()) {
+                localFavoritesRepository.saveLocalScenes(userScenes)
+                Log.d(TAG, "Successfully backed up ${userScenes.size} scenes to local.")
+            } else {
+                Log.d(TAG, "No scenes found for user $currentUserId to back up.")
+                localFavoritesRepository.saveLocalScenes(emptyList()) // Save empty list if none found
+            }
+        } else {
+            overallSuccess = false
+            errorMessage += "Failed to backup scene data. "
+            Log.e(TAG, "Failed to fetch user scenes for backup", allUserScenesResult.exceptionOrNull())
+        }
+
+        // 3. Backup Custom Position Data (non-asset positions for the user)
+        val allUserPositionsResult = positionsRepository.getAllUserPositionsOnce(currentUserId)
+        if (allUserPositionsResult.isSuccess) {
+            val userPositions = allUserPositionsResult.getOrNull()
+            if (!userPositions.isNullOrEmpty()) {
+                val customPositions = userPositions.filter { !it.isAsset }
+                localFavoritesRepository.saveLocalCustomPositions(customPositions)
+                Log.d(TAG, "Successfully backed up ${customPositions.size} custom positions to local.")
+            } else {
+                Log.d(TAG, "No positions found for user $currentUserId to back up (for custom positions).")
+                localFavoritesRepository.saveLocalCustomPositions(emptyList()) // Save empty list
+            }
+        } else {
+            overallSuccess = false
+            errorMessage += "Failed to backup custom position data. "
+            Log.e(TAG, "Failed to fetch user positions for backup", allUserPositionsResult.exceptionOrNull())
+        }
+
+        return if (overallSuccess) {
+            Log.d(TAG, "Cloud data backup to local completed successfully.")
+            Result.success(Unit)
+        } else {
+            Log.e(TAG, "Cloud data backup to local failed: $errorMessage")
+            Result.failure(Exception("Backup failed: $errorMessage"))
         }
     }
 

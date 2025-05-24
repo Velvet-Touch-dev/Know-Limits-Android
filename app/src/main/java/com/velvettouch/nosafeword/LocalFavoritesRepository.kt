@@ -2,17 +2,25 @@ package com.velvettouch.nosafeword
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class LocalFavoritesRepository(private val context: Context) {
 
+    private val gson = Gson()
+
     companion object {
-        private const val FAVORITES_PREFS_NAME = "FavoritesPrefs" // Consistent with existing
-        private const val FAVORITE_SCENE_IDS_KEY = "favoriteSceneIds" // Consistent with existing
-        private const val FAVORITE_POSITION_IDS_KEY = "favoritePositionIds" // New key for positions
+        private const val FAVORITES_PREFS_NAME = "FavoritesPrefs"
+        private const val FAVORITE_SCENE_IDS_KEY = "favoriteSceneIds"
+        private const val FAVORITE_POSITION_IDS_KEY = "favoritePositionIds"
+        private const val LOCAL_SCENES_KEY = "localScenesData" // Key for storing List<Scene>
+        private const val LOCAL_CUSTOM_POSITIONS_KEY = "localCustomPositionsData" // Key for storing List<PositionItem>
         private const val TAG = "LocalFavoritesRepo"
     }
 
     private val sharedPreferences = context.getSharedPreferences(FAVORITES_PREFS_NAME, Context.MODE_PRIVATE)
+
+    // --- Favorite IDs Management ---
 
     fun getLocalFavoriteSceneIds(): Set<String> {
         val ids = sharedPreferences.getStringSet(FAVORITE_SCENE_IDS_KEY, emptySet()) ?: emptySet()
@@ -95,7 +103,51 @@ class LocalFavoritesRepository(private val context: Context) {
         sharedPreferences.edit()
             .remove(FAVORITE_SCENE_IDS_KEY)
             .remove(FAVORITE_POSITION_IDS_KEY)
+            .remove(LOCAL_SCENES_KEY) // Clear scenes data
+            .remove(LOCAL_CUSTOM_POSITIONS_KEY) // Clear custom positions data
             .apply()
-        Log.d(TAG, "Cleared all local favorite scene and position IDs.")
+        Log.d(TAG, "Cleared all local favorite IDs, scenes data, and custom positions data.")
+    }
+
+    // --- Scene Data Management ---
+
+    fun saveLocalScenes(scenes: List<Scene>) {
+        val json = gson.toJson(scenes)
+        sharedPreferences.edit().putString(LOCAL_SCENES_KEY, json).apply()
+        Log.d(TAG, "Saved ${scenes.size} scenes to local SharedPreferences.")
+    }
+
+    fun getLocalScenes(): List<Scene> {
+        val json = sharedPreferences.getString(LOCAL_SCENES_KEY, null)
+        val scenesList: List<Scene> = if (json != null) {
+            val type = object : TypeToken<List<Scene>>() {}.type
+            gson.fromJson<List<Scene>>(json, type) ?: emptyList()
+        } else {
+            emptyList()
+        }
+        Log.d(TAG, "Loaded ${scenesList.size} scenes from local SharedPreferences.")
+        return scenesList
+    }
+
+    // --- Custom Position Data Management ---
+
+    fun saveLocalCustomPositions(positions: List<PositionItem>) {
+        // Filter for non-asset positions before saving, as this method is for custom ones
+        val customPositions = positions.filter { !it.isAsset }
+        val json = gson.toJson(customPositions)
+        sharedPreferences.edit().putString(LOCAL_CUSTOM_POSITIONS_KEY, json).apply()
+        Log.d(TAG, "Saved ${customPositions.size} custom positions to local SharedPreferences.")
+    }
+
+    fun getLocalCustomPositions(): List<PositionItem> {
+        val json = sharedPreferences.getString(LOCAL_CUSTOM_POSITIONS_KEY, null)
+        val positionsList: List<PositionItem> = if (json != null) {
+            val type = object : TypeToken<List<PositionItem>>() {}.type
+            gson.fromJson<List<PositionItem>>(json, type) ?: emptyList()
+        } else {
+            emptyList()
+        }
+        Log.d(TAG, "Loaded ${positionsList.size} custom positions from local SharedPreferences.")
+        return positionsList
     }
 }

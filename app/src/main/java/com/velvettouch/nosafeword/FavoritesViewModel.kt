@@ -10,10 +10,12 @@ import com.google.firebase.firestore.ktx.toObject // Added import, though might 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest // Added
+import kotlinx.coroutines.flow.catch // Added
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await // Added import
 
-class FavoritesViewModel(application: Application) : AndroidViewModel(application) { // Changed to AndroidViewModel for context
+class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
 
     private val cloudRepository = FavoritesRepository()
     private val localFavoritesRepository = LocalFavoritesRepository(application.applicationContext)
@@ -34,85 +36,101 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var hasMergedThisSession = false
     private var currentUserIdForMerge: String? = null
+    private val auth = FirebaseAuth.getInstance()
+    private var firebaseAuthListener: FirebaseAuth.AuthStateListener? = null
+    private val _firebaseUser = MutableStateFlow(auth.currentUser)
 
 
     init {
-        // Listen to auth changes to reset merge flag if user logs out and back in
-        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            val newUser = auth.currentUser
-            if (newUser == null) {
-                // User logged out, reset merge flag for next login
-                if (currentUserIdForMerge != null) { // Only reset if there was a logged-in user
-                    Log.d("FavoritesViewModel", "User logged out. Resetting merge flag.")
-                    hasMergedThisSession = false
-                    currentUserIdForMerge = null
-                }
-            } else {
-                // User logged in or changed
-                if (currentUserIdForMerge != newUser.uid) {
-                    Log.d("FavoritesViewModel", "User changed or logged in (${newUser.uid}). Resetting merge flag.")
-                    hasMergedThisSession = false
-                    currentUserIdForMerge = newUser.uid
+        firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            _firebaseUser.value = firebaseAuth.currentUser
+        }
+        auth.addAuthStateListener(firebaseAuthListener!!)
+
+        viewModelScope.launch {
+            _firebaseUser.collectLatest { user ->
+                Log.d("FavoritesViewModel", "Auth state changed. User: ${user?.uid}")
+                if (user != null) {
+                    // User is logged in
+                    if (currentUserIdForMerge != user.uid) {
+                        Log.d("FavoritesViewModel", "User changed or logged in (${user.uid}). Resetting merge flag.")
+                        hasMergedThisSession = false
+                        currentUserIdForMerge = user.uid
+                    }
+                    // Automatically perform merge if not done this session
+                    if (!hasMergedThisSession && !_isMerging.value) {
+                         Log.d("FavoritesViewModel", "User logged in, attempting merge then loading favorites.")
+                        mergeLocalFavoritesWithCloud() // This is suspend
+                    }
+                    // Always load/listen to favorites when user is present
+                    loadAndListenToCloudFavorites()
+                } else {
+                    // User logged out
+                    Log.d("FavoritesViewModel", "User logged out. Clearing favorites list and resetting merge flag.")
+                    _favorites.value = emptyList()
+                    _isLoading.value = false
+                    if (currentUserIdForMerge != null) {
+                        hasMergedThisSession = false
+                        currentUserIdForMerge = null
+                    }
                 }
             }
         }
     }
 
-    fun loadCloudFavorites(performMerge: Boolean = false) {
+    // Renamed from loadCloudFavorites and adapted for continuous listening
+    private fun loadAndListenToCloudFavorites() {
+        val currentUser = _firebaseUser.value ?: return // Should be logged in if this is called
+
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            if (currentUser == null) {
-                Log.d("FavoritesViewModel", "loadCloudFavorites: User not logged in. Emitting empty list.")
-                _favorites.value = emptyList()
-                _isLoading.value = false
-                hasMergedThisSession = false // Reset merge flag if user becomes null
-                currentUserIdForMerge = null
-                return@launch
-            }
+            Log.d("FavoritesViewModel", "loadAndListenToCloudFavorites: User ${currentUser.uid}. Collecting from cloud repository.")
 
-            // Update currentUserIdForMerge if it's different (e.g., first load after login)
-            if (currentUserIdForMerge != currentUser.uid) {
-                Log.d("FavoritesViewModel", "User ID changed to ${currentUser.uid}. Resetting merge flag.")
-                hasMergedThisSession = false
-                currentUserIdForMerge = currentUser.uid
-            }
-
-            if (performMerge) {
-                if (!hasMergedThisSession) {
-                    if (!_isMerging.value) { // Check if another merge is already in progress
-                        Log.d("FavoritesViewModel", "performMerge is true, not merged this session, and not currently merging. Calling mergeLocalFavoritesWithCloud.")
-                        mergeLocalFavoritesWithCloud() // This is a suspend function
-                    } else {
-                        Log.d("FavoritesViewModel", "performMerge is true, not merged this session, but a merge is already in progress. Skipping new merge call.")
-                    }
-                } else {
-                    Log.d("FavoritesViewModel", "performMerge is true but hasMergedThisSession is true. Skipping merge.")
+            cloudRepository.getFavorites()
+                .catch { e ->
+                    Log.e("FavoritesViewModel", "Error in getFavorites flow for user ${currentUser.uid}", e)
+                    _error.value = "Failed to load favorites: ${e.message}"
+                    _favorites.value = emptyList() // Clear favorites on error
+                    _isLoading.value = false
                 }
-            }
-
-            // Proceed to load cloud favorites regardless of merge status (merge might be ongoing or skipped)
-            // The collection of getFavorites() will pick up changes once the merge (if any) is done and data propagates.
-            _favorites.value = emptyList() // Clear before collecting from cloud
-            Log.d("FavoritesViewModel", "loadCloudFavorites: User ${currentUser.uid} logged in. Cleared _favorites, fetching from cloud repository.")
-            try {
-                cloudRepository.getFavorites().collect { favoriteList ->
-                    Log.d("FavoritesViewModel", "loadCloudFavorites collected: favoriteList.size = ${favoriteList.size}")
+                .collectLatest { favoriteList -> // Use collectLatest here as well if getFavorites itself can be re-triggered by params
+                    Log.d("FavoritesViewModel", "Collected favorites for user ${currentUser.uid}. Count: ${favoriteList.size}")
                     _favorites.value = favoriteList
+                    _isLoading.value = false // Set to false after each emission
                 }
-            } catch (e: Exception) {
-                // This catch block will now primarily handle actual exceptions from the repository
-                // if the user was logged in but something else went wrong (e.g., network issue).
-                Log.e("FavoritesViewModel", "Error loading cloud favorites from repository", e)
-                _error.value = "Failed to load cloud favorites: ${e.message}"
-                _favorites.value = emptyList()
-            } finally {
-                _isLoading.value = false
-                Log.d("FavoritesViewModel", "loadCloudFavorites: finally block. isLoading set to false. Current cloud favorites count: ${_favorites.value.size}")
-            }
+            // Note: If the flow completes or is cancelled (e.g., user logs out), this coroutine will end.
+            // If it ends and isLoading was true, ensure it's set to false.
+            // However, collectLatest handles cancellation well. If user logs out, _firebaseUser changes,
+            // the outer collectLatest cancels this launch, and the "else" branch for logged-out user handles UI state.
         }
     }
+    
+    // Public function to trigger initial load or refresh, respecting merge logic
+    fun refreshCloudFavorites(performMergeIfNeeded: Boolean = true) {
+        val currentUser = _firebaseUser.value
+        if (currentUser == null) {
+            Log.d("FavoritesViewModel", "refreshCloudFavorites: User not logged in. No action.")
+            _favorites.value = emptyList() // Ensure UI reflects logged-out state
+            return
+        }
+
+        viewModelScope.launch {
+            if (performMergeIfNeeded && !hasMergedThisSession && !_isMerging.value) {
+                Log.d("FavoritesViewModel", "refreshCloudFavorites: Merge needed. Calling mergeLocalFavoritesWithCloud.")
+                mergeLocalFavoritesWithCloud() // Suspend call
+            }
+            // loadAndListenToCloudFavorites will be called by the _firebaseUser collector if user is still logged in
+            // or if it wasn't called yet. If already listening, this call might be redundant
+            // unless it's meant to force a re-fetch separate from the auth state trigger.
+            // For now, relying on the auth state collector to call loadAndListenToCloudFavorites.
+            // If a manual refresh button calls this, it might need to directly call loadAndListenToCloudFavorites
+            // if the auth state hasn't changed but a refresh is desired.
+            // However, the current structure with _firebaseUser.collectLatest should handle re-subscription.
+            Log.d("FavoritesViewModel", "refreshCloudFavorites: Triggered. Merge status: hasMerged=$hasMergedThisSession, isMerging=${_isMerging.value}. Relying on auth state collector.")
+        }
+    }
+
 
     private suspend fun mergeLocalFavoritesWithCloud() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Should not be null due to check in loadCloudFavorites
@@ -264,8 +282,8 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             Log.e("FavoritesViewModel", "Exception during mergeLocalFavoritesWithCloud", e)
             // Do not set hasMergedThisSession to true on general exception
         } finally {
-            _isMerging.value = false
-            Log.d("FavoritesViewModel", "Merge process finished. hasMergedThisSession = $hasMergedThisSession")
+            _isMerging.value = false // Ensure merging flag is reset
+            Log.d("FavoritesViewModel", "Merge process finished. hasMergedThisSession = $hasMergedThisSession, isMerging=${_isMerging.value}")
         }
     }
 
@@ -323,5 +341,11 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun clearError() {
         _error.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        firebaseAuthListener?.let { auth.removeAuthStateListener(it) }
+        Log.d("FavoritesViewModel", "FavoritesViewModel onCleared, auth listener removed.")
     }
 }

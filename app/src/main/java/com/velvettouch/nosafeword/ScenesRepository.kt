@@ -86,48 +86,85 @@ class ScenesRepository(private val applicationContext: Context) { // Added conte
     }
 
     fun getUserScenesFlow(): Flow<List<Scene>> = callbackFlow {
-        val userId = getCurrentUserId()
-        Log.d(TAG, "getUserScenesFlow called. UserID: $userId")
+        val initialUserId = getCurrentUserId()
+        Log.d(TAG, "getUserScenesFlow called. Initial UserID: $initialUserId")
 
-        if (userId == null) {
-            Log.w(TAG, "User not logged in. Emitting empty list and closing flow.")
+        if (initialUserId == null) {
+            Log.w(TAG, "User not logged in at flow collection. Emitting empty list and closing flow.")
             trySend(emptyList())
-            close(Exception("User not logged in"))
+            channel.close() // Close without error for "not logged in"
             return@callbackFlow
         }
 
-        Log.d(TAG, "Setting up Firestore listener for userId: $userId")
+        Log.d(TAG, "User $initialUserId. Setting up listener and auth monitor for scenes.")
+
+        val authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            if (firebaseAuth.currentUser?.uid != initialUserId) {
+                Log.w(TAG, "User changed or logged out ($initialUserId -> ${firebaseAuth.currentUser?.uid}). Closing scenes flow for $initialUserId.")
+                if (!channel.isClosedForSend) {
+                    channel.close() // This will trigger awaitClose
+                }
+            }
+        }
+        auth.addAuthStateListener(authListener)
+        
+        // Priming read (optional, but good for immediate UI update)
+        // For simplicity, we'll rely on the listener for the first data emission.
+        // If a priming read is desired, it would go here, similar to FavoritesRepository.
+
+        if (channel.isClosedForSend) {
+            Log.d(TAG, "getUserScenesFlow: Channel closed by auth listener for $initialUserId before listener registration.")
+            auth.removeAuthStateListener(authListener) // Clean up immediately
+            return@callbackFlow
+        }
+
+        Log.d(TAG, "Setting up Firestore listener for scenes, userId: $initialUserId")
         val listenerRegistration = getScenesCollection()
-            .whereEqualTo("userId", userId)
+            .whereEqualTo("userId", initialUserId)
             .addSnapshotListener { snapshot, error ->
+                if (channel.isClosedForSend) {
+                    Log.d(TAG, "Scenes SnapshotListener for $initialUserId: Channel already closed. Ignoring event.")
+                    return@addSnapshotListener
+                }
+
+                if (auth.currentUser?.uid != initialUserId) {
+                    Log.w(TAG, "Scenes SnapshotListener for $initialUserId received event, but user is now ${auth.currentUser?.uid}. Closing channel.")
+                    if (!channel.isClosedForSend) channel.close()
+                    return@addSnapshotListener
+                }
+
                 if (error != null) {
-                    Log.e(TAG, "Error in Firestore listener: ", error)
-                    close(error)
+                    Log.e(TAG, "Error in Firestore scenes listener for $initialUserId: ", error)
+                    if (!channel.isClosedForSend) channel.close(error)
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    Log.d(TAG, "Snapshot received. Document count: ${snapshot.size()}")
+                    Log.d(TAG, "Scenes snapshot received for $initialUserId. Document count: ${snapshot.size()}")
                     val scenes = snapshot.documents.mapNotNull { document ->
                         val scene = document.toObject<Scene>()
                         scene?.apply {
                             firestoreId = document.id
-                            Log.d(TAG, "Mapping scene: '${title}', id: $firestoreId, originalId: ${this.id}, isCustom: ${this.isCustom}, userId: ${this.userId}")
+                            // Log.d(TAG, "Mapping scene: '${title}', id: $firestoreId, originalId: ${this.id}, isCustom: ${this.isCustom}, userId: ${this.userId}")
                         }
-                        scene // return the scene or null
+                        scene
                     }
-                    Log.d(TAG, "Successfully mapped ${scenes.size} scenes. Trying to send to flow.")
-                    val sendResult = trySend(scenes)
-                    Log.d(TAG, "trySend result: ${sendResult.isSuccess}, isClosedForSend: ${isClosedForSend}")
-                    if (!sendResult.isSuccess) {
-                        Log.w(TAG, "Failed to send scenes to flow. Channel may be closed.")
+                    // Log.d(TAG, "Successfully mapped ${scenes.size} scenes. Trying to send to flow for $initialUserId.")
+                    if (!channel.isClosedForSend) {
+                        val sendResult = trySend(scenes)
+                        if (!sendResult.isSuccess) {
+                            Log.w(TAG, "Failed to send scenes to flow for $initialUserId. Channel may be closed. isClosedForSend: ${channel.isClosedForSend}")
+                        }
                     }
                 } else {
-                    Log.d(TAG, "Snapshot was null, no error.")
+                    Log.d(TAG, "Scenes snapshot was null for $initialUserId, no error.")
+                    if (!channel.isClosedForSend) trySend(emptyList())
                 }
             }
+
         awaitClose {
-            Log.d(TAG, "Flow cancelled, removing listener registration.")
+            Log.d(TAG, "Scenes flow for $initialUserId cancelled/closed, removing listener registration and auth monitor.")
             listenerRegistration.remove()
+            auth.removeAuthStateListener(authListener)
         }
     }
 

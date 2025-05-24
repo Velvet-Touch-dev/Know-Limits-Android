@@ -476,32 +476,79 @@ class PositionsRepository(private val context: Context) {
     }
 
     // Get all positions for the current user (real-time updates from Firestore or local)
-    fun getUserPositions(): Flow<List<PositionItem>> = flow {
-        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
-        if (currentUid == null) { // User is anonymous
-            emit(loadLocalPositions())
-        } else {
-            // For logged-in users, fetch from Firestore
-            val firestoreFlow: Flow<List<PositionItem>> = callbackFlow {
-                val listenerRegistration = db.collection(POSITIONS_COLLECTION)
-                    .whereEqualTo("userId", currentUid) // Use the actual UID
-                    .addSnapshotListener { snapshot, error ->
-                        if (error != null) {
-                            close(error)
-                            return@addSnapshotListener
-                        }
-                        if (snapshot != null) {
-                            val positions = snapshot.documents.mapNotNull { document ->
-                                document.toObject(PositionItem::class.java)?.copy(id = document.id)
-                            }
-                            trySend(positions).isSuccess
+    fun getUserPositions(): Flow<List<PositionItem>> = callbackFlow<List<PositionItem>> {
+        val initialUserId = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("PositionsRepository", "getUserPositions called. Initial UserID: $initialUserId")
+
+        if (initialUserId == null) { // User is anonymous
+            Log.d("PositionsRepository", "User is anonymous. Emitting local positions and closing flow.")
+            trySend(loadLocalPositions())
+            channel.close() // Close as there's no listener to maintain for anonymous
+            return@callbackFlow
+        }
+
+        // For logged-in users, fetch from Firestore and listen for changes
+        Log.d("PositionsRepository", "User $initialUserId. Setting up listener and auth monitor for positions.")
+
+        val authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            if (firebaseAuth.currentUser?.uid != initialUserId) {
+                Log.w("PositionsRepository", "User changed or logged out ($initialUserId -> ${firebaseAuth.currentUser?.uid}). Closing positions flow for $initialUserId.")
+                if (!channel.isClosedForSend) {
+                    channel.close() // This will trigger awaitClose
+                }
+            }
+        }
+        FirebaseAuth.getInstance().addAuthStateListener(authListener)
+
+        if (channel.isClosedForSend) {
+            Log.d("PositionsRepository", "getUserPositions: Channel closed by auth listener for $initialUserId before Firestore listener registration.")
+            FirebaseAuth.getInstance().removeAuthStateListener(authListener)
+            return@callbackFlow
+        }
+        
+        Log.d("PositionsRepository", "Setting up Firestore listener for positions, userId: $initialUserId")
+        val listenerRegistration = db.collection(POSITIONS_COLLECTION)
+            .whereEqualTo("userId", initialUserId)
+            .addSnapshotListener { snapshot, error ->
+                if (channel.isClosedForSend) {
+                    Log.d("PositionsRepository", "Positions SnapshotListener for $initialUserId: Channel already closed. Ignoring event.")
+                    return@addSnapshotListener
+                }
+
+                if (FirebaseAuth.getInstance().currentUser?.uid != initialUserId) {
+                     Log.w("PositionsRepository", "Positions SnapshotListener for $initialUserId received event, but user is now ${FirebaseAuth.getInstance().currentUser?.uid}. Closing channel.")
+                    if (!channel.isClosedForSend) channel.close()
+                    return@addSnapshotListener
+                }
+
+                if (error != null) {
+                    Log.e("PositionsRepository", "Error in Firestore positions listener for $initialUserId: ", error)
+                    if (!channel.isClosedForSend) channel.close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    Log.d("PositionsRepository", "Positions snapshot received for $initialUserId. Document count: ${snapshot.size()}.")
+                    val positions = snapshot.documents.mapNotNull { document ->
+                        document.toObject(PositionItem::class.java)?.copy(id = document.id)
+                    }
+                    if (!channel.isClosedForSend) {
+                        val sendResult = trySend(positions)
+                        if (!sendResult.isSuccess) {
+                             Log.w("PositionsRepository", "Failed to send positions to flow for $initialUserId. Channel may be closed. isClosedForSend: ${channel.isClosedForSend}")
                         }
                     }
-                awaitClose { listenerRegistration.remove() }
+                } else {
+                    Log.d("PositionsRepository", "Positions snapshot was null for $initialUserId, no error.")
+                     if (!channel.isClosedForSend) trySend(emptyList())
+                }
             }
-            firestoreFlow.collect { emit(it) }
+
+        awaitClose {
+            Log.d("PositionsRepository", "Positions flow for $initialUserId cancelled/closed, removing Firestore listener and auth monitor.")
+            listenerRegistration.remove()
+            FirebaseAuth.getInstance().removeAuthStateListener(authListener)
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO) // Keep flowOn(Dispatchers.IO) if appropriate for loadLocalPositions or Firestore SDK work
 
 
     // Renamed and modified to accept a list of specific items to sync.
@@ -868,4 +915,32 @@ class PositionsRepository(private val context: Context) {
     }
     // getAllPositionsIncludingDefaults is removed as ViewModel will handle combining asset and user positions.
     // The repository will focus on user-specific data (local or Firestore).
+
+    suspend fun getAllUserPositionsOnce(userId: String): Result<List<PositionItem>> {
+        return try {
+            if (userId.isBlank()) {
+                Log.w("PositionsRepository", "getAllUserPositionsOnce called with empty userId.")
+                return Result.failure(IllegalArgumentException("User ID cannot be empty"))
+            }
+            Log.d("PositionsRepository", "Fetching all positions once for userId: $userId")
+            val snapshot = db.collection(POSITIONS_COLLECTION)
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            
+            val positions = snapshot.documents.mapNotNull { document ->
+                try {
+                    document.toObject(PositionItem::class.java)?.copy(id = document.id)
+                } catch (e: Exception) {
+                    Log.e("PositionsRepository", "Error converting document ${document.id} to PositionItem", e)
+                    null // Skip problematic document
+                }
+            }
+            Log.d("PositionsRepository", "Successfully fetched ${positions.size} positions once for userId: $userId")
+            Result.success(positions)
+        } catch (e: Exception) {
+            Log.e("PositionsRepository", "Error in getAllUserPositionsOnce for userId $userId", e)
+            Result.failure(e)
+        }
+    }
 }

@@ -51,79 +51,101 @@ class FavoritesRepository {
     }
 
     fun getFavorites(): Flow<List<Favorite>> = callbackFlow {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            Log.d("FavoritesRepository", "getFavorites: User not logged in. Sending empty list and closing channel.")
+        val initialUserId = auth.currentUser?.uid // Capture initial user ID
+
+        if (initialUserId == null) {
+            Log.d("FavoritesRepository", "getFavorites: User not logged in at flow collection. Sending empty list and closing.")
             trySend(emptyList())
-            channel.close() // Close successfully without an error
+            channel.close()
             return@callbackFlow
         }
 
-        Log.d("FavoritesRepository", "getFavorites: User $userId logged in. Performing priming read from server.")
+        Log.d("FavoritesRepository", "getFavorites: User $initialUserId. Setting up listener and auth monitor.")
+
+        // Auth listener specific to this flow instance
+        val authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            if (firebaseAuth.currentUser?.uid != initialUserId) {
+                Log.w("FavoritesRepository", "User changed or logged out ($initialUserId -> ${firebaseAuth.currentUser?.uid}). Closing favorites flow for $initialUserId.")
+                if (!channel.isClosedForSend) { // Prevent closing if already closed
+                    channel.close() // This will trigger awaitClose
+                }
+            }
+        }
+        auth.addAuthStateListener(authListener)
 
         // Perform a priming read from the server first
         try {
+            // Ensure we don't proceed if channel was closed by authListener already
+            if (channel.isClosedForSend) {
+                 Log.d("FavoritesRepository", "getFavorites priming read: Channel closed by auth listener for $initialUserId before priming read.")
+                 // awaitClose will handle cleanup, so just return
+                 return@callbackFlow
+            }
             val initialSnapshot = getFavoritesCollection()
-                .whereEqualTo("user_id", userId)
+                .whereEqualTo("user_id", initialUserId)
                 .orderBy("timestamp")
                 .get(Source.SERVER) // Force fetch from server for priming read
                 .await()
-            // Using toObjects KTX for cleaner mapping, though individual mapping with ID setting is also fine.
-            // If 'id' field is critical and not directly part of Firestore doc, manual map is better.
-            // For now, assuming Favorite data class matches Firestore structure or 'id' is handled.
             val initialFavorites = initialSnapshot.toObjects<Favorite>().mapNotNull { fav ->
-                // If doc.id needs to be mapped to fav.id, we'd iterate documents:
-                // initialSnapshot.documents.mapNotNull { doc -> doc.toObject<Favorite>()?.apply { id = doc.id } }
-                fav // Assuming Favorite class is directly mappable or ID is handled elsewhere/not needed here
+                fav
             }
-            Log.d("FavoritesRepository", "getFavorites priming read for user $userId. Documents: ${initialFavorites.size}")
-            trySend(initialFavorites) // Send initial server data
+            Log.d("FavoritesRepository", "getFavorites priming read for user $initialUserId. Documents: ${initialFavorites.size}")
+            if (!channel.isClosedForSend) { // Check before sending
+                trySend(initialFavorites)
+            }
         } catch (e: Exception) {
-            Log.e("FavoritesRepository", "getFavorites priming read error for user $userId", e)
-            // Don't close the channel on priming read failure, listener might still work or recover.
-            // Or, if priming read is critical, you might choose to channel.close(e)
-            // For now, we'll let the listener try.
+            Log.e("FavoritesRepository", "getFavorites priming read error for user $initialUserId", e)
+            if (!channel.isClosedForSend) {
+                 // If priming read fails, and channel is still open, decide whether to close or let listener attempt.
+                 // For now, logging error and letting listener attempt. If critical, channel.close(e)
+            }
         }
 
-        Log.d("FavoritesRepository", "getFavorites: User $userId. Setting up Firestore listener for subsequent updates.")
+        // Ensure we don't set up listener if channel was closed by authListener or priming read issue
+        if (channel.isClosedForSend) {
+            Log.d("FavoritesRepository", "getFavorites listener setup: Channel closed for $initialUserId before listener registration.")
+            // awaitClose will handle cleanup
+            return@callbackFlow
+        }
+        
+        Log.d("FavoritesRepository", "getFavorites: User $initialUserId. Setting up Firestore listener for subsequent updates.")
         val listenerRegistration = getFavoritesCollection()
-            .whereEqualTo("user_id", userId)
+            .whereEqualTo("user_id", initialUserId)
             .orderBy("timestamp")
             .addSnapshotListener { snapshot, error ->
+                if (channel.isClosedForSend) { // If authListener closed it, just return
+                    Log.d("FavoritesRepository", "SnapshotListener for $initialUserId: Channel already closed. Ignoring event.")
+                    return@addSnapshotListener
+                }
+                
+                // This explicit check might be redundant if authListener is quick, but adds safety.
+                if (auth.currentUser?.uid != initialUserId) {
+                    Log.w("FavoritesRepository", "SnapshotListener for $initialUserId received event, but user is now ${auth.currentUser?.uid}. Closing channel.")
+                    channel.close() // This will trigger awaitClose
+                    return@addSnapshotListener
+                }
+
                 if (error != null) {
-                    Log.e("FavoritesRepository", "getFavorites listener error for user $userId", error)
-                    channel.close(error) // Close with actual Firestore error
+                    Log.e("FavoritesRepository", "getFavorites listener error for user $initialUserId", error)
+                    channel.close(error) 
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
-                    // Only process if metadata indicates it's not from cache,
-                    // or if you want all updates including local cache changes.
-                    // For simplicity here, we process all snapshots after the initial priming read.
-                    // if (!snapshot.metadata.hasPendingWrites() && !snapshot.metadata.isFromCache) {
-                    Log.d("FavoritesRepository", "getFavorites listener update for user $userId. Documents: ${snapshot.size()}. FromCache: ${snapshot.metadata.isFromCache}")
+                    Log.d("FavoritesRepository", "getFavorites listener update for user $initialUserId. Documents: ${snapshot.size()}. FromCache: ${snapshot.metadata.isFromCache}")
                     val favorites = snapshot.toObjects<Favorite>().mapNotNull { fav ->
-                        // fav.id = find corresponding document id if necessary, or ensure Favorite has @DocumentId
                         fav
                     }
-                    // If you need to set the document ID on your Favorite objects:
-                    // val favorites = snapshot.documents.mapNotNull { doc ->
-                    //    doc.toObject<Favorite>()?.apply { id = doc.id }
-                    // }
                     trySend(favorites)
-                    // } else {
-                    //    Log.d("FavoritesRepository", "getFavorites listener update for user $userId skipped (pending writes or from cache).")
-                    // }
                 } else {
-                    Log.d("FavoritesRepository", "getFavorites listener snapshot for user $userId was null.")
-                    // Consider if sending emptyList() here is appropriate if snapshot is null post-priming.
-                    // It might mean data was deleted.
+                    Log.d("FavoritesRepository", "getFavorites listener snapshot for user $initialUserId was null.")
                     trySend(emptyList())
                 }
             }
 
         awaitClose {
-            Log.d("FavoritesRepository", "getFavorites: awaitClose for user $userId, removing listener.")
+            Log.d("FavoritesRepository", "getFavorites: awaitClose for user $initialUserId, removing listener and auth monitor.")
             listenerRegistration.remove()
+            auth.removeAuthStateListener(authListener) // Clean up the auth listener
         }
     }
 

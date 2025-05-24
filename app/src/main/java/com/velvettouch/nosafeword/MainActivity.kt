@@ -982,7 +982,7 @@ class MainActivity : BaseActivity() {
     private fun handleAuthStateChange(user: com.google.firebase.auth.FirebaseUser?, isInitialCheck: Boolean) {
         if (user != null) {
             Log.d(TAG, "handleAuthStateChange: User is SIGNED IN (${user.uid}). Initial: $isInitialCheck")
-            cloudFavoritesViewModel.loadCloudFavorites(performMerge = true)
+            cloudFavoritesViewModel.refreshCloudFavorites(performMergeIfNeeded = true)
         } else {
             Log.d(TAG, "handleAuthStateChange: User is SIGNED OUT. Initial: $isInitialCheck")
             if (allUserScenes.isNotEmpty() || !isInitialCheck) { // Avoid refreshing if scenes aren't loaded yet on initial cold start

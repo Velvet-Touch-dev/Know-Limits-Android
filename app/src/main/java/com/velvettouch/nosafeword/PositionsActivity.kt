@@ -548,7 +548,7 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         }
          // Initial load of cloud favorites if user is logged in
         if (FirebaseAuth.getInstance().currentUser != null) {
-            favoritesViewModel.loadCloudFavorites(performMerge = true)
+            favoritesViewModel.refreshCloudFavorites(performMergeIfNeeded = true)
         }
     }
 
