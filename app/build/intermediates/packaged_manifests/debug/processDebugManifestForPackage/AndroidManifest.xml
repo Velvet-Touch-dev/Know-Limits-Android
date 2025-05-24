@@ -47,15 +47,20 @@
         android:testOnly="true"
         android:theme="@style/Theme.RandomSceneApp" >
         <activity
-            android:name="com.velvettouch.nosafeword.MainActivity"
+            android:name="com.velvettouch.nosafeword.WelcomeActivity"
             android:exported="true"
-            android:launchMode="singleTop" >
+            android:label="@string/app_name"
+            android:theme="@style/Theme.RandomSceneApp.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.velvettouch.nosafeword.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop" />
         <activity
             android:name="com.velvettouch.nosafeword.SettingsActivity"
             android:exported="false"

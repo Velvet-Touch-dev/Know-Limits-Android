@@ -72,4 +72,12 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
+    <!-- Theme for WelcomeActivity with no action bar -->
+    <style name="Theme.RandomSceneApp.NoActionBar" parent="Theme.RandomSceneApp">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- Optional: if you want a specific status bar color for this screen -->
+        <!-- <item name="android:statusBarColor">@color/your_welcome_status_bar_color</item> -->
+    </style>
+
 </resources>

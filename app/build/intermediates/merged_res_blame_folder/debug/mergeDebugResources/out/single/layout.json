@@ -24,10 +24,6 @@
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/layout/dialog_add_task.xml"
     },
     {
-        "merged": "com.velvettouch.nosafeword.app-mergeDebugResources-47:/layout/item_position_library.xml",
-        "source": "com.velvettouch.nosafeword.app-main-50:/layout/item_position_library.xml"
-    },
-    {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-mergeDebugResources-47:/layout/item_favorite_position.xml",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/layout/item_favorite_position.xml"
     },
@@ -66,6 +62,14 @@
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-mergeDebugResources-47:/layout/item_position_library.xml",
         "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/layout/item_position_library.xml"
+    },
+    {
+        "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-mergeDebugResources-47:/layout/activity_welcome.xml",
+        "source": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-main-50:/layout/activity_welcome.xml"
+    },
+    {
+        "merged": "com.velvettouch.nosafeword.app-mergeDebugResources-47:/layout/activity_welcome.xml",
+        "source": "com.velvettouch.nosafeword.app-main-50:/layout/activity_welcome.xml"
     },
     {
         "merged": "/home/aditya/.gradle/daemon/8.12/com.velvettouch.nosafeword.app-mergeDebugResources-47:/layout/item_search_result.xml",

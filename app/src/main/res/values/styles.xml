@@ -14,6 +14,26 @@
         <!-- Optional: Adjust corner radius if needed -->
         <!-- <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.Chip</item> -->
     </style>
+    <!-- Custom Welcome Button Styles -->
+    <style name="Widget.App.Button.Welcome.Primary" parent="Widget.Material3.Button.TonalButton">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:elevation">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.Button.Rounded</item>
+    </style>
+
+    <style name="Widget.App.Button.Welcome.Secondary" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:alpha">0.7</item>
+        <item name="rippleColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Button.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
     <!-- Optional: Define ShapeAppearance.App.Chip if you want custom corners -->
     <!--
     <style name="ShapeAppearance.App.Chip" parent="">
