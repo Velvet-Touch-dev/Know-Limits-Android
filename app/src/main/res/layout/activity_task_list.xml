@@ -65,10 +65,9 @@
                         android:id="@+id/rules_header_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:focusable="true">
-                        <!-- Background removed, will inherit from MaterialCardView -->
+                        android:padding="16dp">
+                        <!-- Background removed, clickable and focusable removed -->
+                        <!-- Click listener is now only on rules_edit_mode_icon -->
 
                         <TextView
                             android:id="@+id/rules_header_title"
@@ -139,6 +138,19 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <!-- End Rules Card Section -->
+
+            <!-- Tasks Header -->
+            <TextView
+                android:id="@+id/tasks_section_header_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tasks"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:layout_marginTop="8dp"/>
 
             <!-- Removed rules_tasks_divider View -->
 

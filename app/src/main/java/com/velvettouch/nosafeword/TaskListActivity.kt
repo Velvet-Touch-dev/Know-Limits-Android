@@ -313,12 +313,15 @@ class TaskListActivity : BaseActivity() {
     }
 
     private fun setupRulesHeader() {
-        rulesHeaderLayout.setOnClickListener {
+        // rulesHeaderLayout.setOnClickListener removed - click on whole header no longer toggles edit mode
+
+        rulesEditModeIcon.setOnClickListener { // Click listener moved to the icon itself
             if (isUserDom()) {
                 toggleRulesEditMode()
             }
-            // For Sub, header click does nothing
+            // For Sub, this icon is GONE, so no click possible
         }
+
         addRuleButtonHeader.setOnClickListener {
             // This button is only visible if Dom and in Edit Mode
             showAddEditRuleDialog(null)

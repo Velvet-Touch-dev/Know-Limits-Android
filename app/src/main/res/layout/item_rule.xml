@@ -30,6 +30,8 @@
         android:textAppearance="?attr/textAppearanceListItem"
         android:textStyle="bold"
         tools:text="1."
+        android:minEms="2" 
+        android:gravity="start"
         app:layout_constraintStart_toEndOf="@id/drag_handle_rule"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
