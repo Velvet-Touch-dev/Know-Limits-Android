@@ -255,17 +255,32 @@ exports.sendTaskNotification = onValueCreated("shared_task_lists/{pairingId}/tas
 
         // Fetch creator's profile (for role)
         const creatorProfileDoc = await firestore.collection('users').doc(createdByUid).get();
-        let creatorName = "Your Partner"; // Default name
+        let notificationTitle;
+        let notificationBody;
+
         if (creatorProfileDoc.exists) {
             const creatorProfile = creatorProfileDoc.data();
-            // Use displayName if available, otherwise fallback to a generic term or role
-            creatorName = creatorProfile.displayName || creatorProfile.role || "Your Partner";
+            const creatorRole = creatorProfile.role; // Get the role
+
+            if (creatorRole && creatorRole.toLowerCase() === "sub") {
+                // Specific message if Sub creates the task for Dom (recipient is Dom)
+                notificationTitle = "A new way to serve you!";
+                notificationBody = `Your Sub wants to serve you by doing: "${taskTitle}"`;
+            } else if (creatorRole && creatorRole.toLowerCase() === "dom") {
+                // Specific message if Dom creates the task for Sub (recipient is Sub)
+                notificationTitle = "New Task from Your Dom";
+                notificationBody = `Your Dom has assigned you a new task: "${taskTitle}"`;
+            } else {
+                // Fallback if role is something else or not set, but profile exists
+                const creatorName = creatorProfile.displayName || "Your Partner";
+                notificationTitle = `New Task from ${creatorName}`;
+                notificationBody = `${creatorName} has assigned you a new task: "${taskTitle}"`;
+            }
         } else {
-            logger.warn(`Creator profile not found for UID: ${createdByUid}`);
+            logger.warn(`Creator profile not found for UID: ${createdByUid}. Using generic notification.`);
+            notificationTitle = "New Task Assigned";
+            notificationBody = `A new task has been assigned to you: "${taskTitle}"`;
         }
-        
-        const notificationTitle = `New Task from ${creatorName}`;
-        const notificationBody = `${creatorName} has assigned you a new task: "${taskTitle}"`;
         
         const payload = {
             notification: {
@@ -299,15 +314,9 @@ exports.sendTaskCompletionNotification = onValueWritten("shared_task_lists/{pair
 
     // If task was deleted, or didn't exist before (it's a new task, handled by sendTaskNotification)
     if (!event.data.after.exists() || !event.data.before.exists()) {
-        logger.log("Task completion: No data after write or no data before write (likely creation/deletion). Exiting.", 
-                   {afterExists: event.data.after.exists(), beforeExists: event.data.before.exists()});
+        logger.log("Task completion: No data after write or no data before write (likely creation/deletion). Exiting.");
         return null;
     }
-
-    // Log the full before and after data for debugging
-    logger.log("Task completion check. TaskId:", params.taskId, "PairingId:", params.pairingId);
-    logger.log("Before data:", JSON.stringify(beforeData));
-    logger.log("After data:", JSON.stringify(afterData));
     
     // Check if 'completed' changed to true from a different state
     if (afterData.completed === true && beforeData.completed !== true) {
@@ -322,33 +331,55 @@ exports.sendTaskCompletionNotification = onValueWritten("shared_task_lists/{pair
             return null;
         }
 
-        // The recipient of this notification is the Dom (createdByUid)
-        const domUid = createdByUid;
+        // The recipient of this notification is the one who created the task.
+        const taskCreatorUid = createdByUid; 
 
         try {
-            // Fetch Dom's profile for FCM token
-            const domProfileDoc = await firestore.collection('users').doc(domUid).get();
-            if (!domProfileDoc.exists) {
-                logger.warn(`Dom profile not found for UID: ${domUid} for task completion.`);
+            // Fetch task creator's profile for FCM token
+            const taskCreatorProfileDoc = await firestore.collection('users').doc(taskCreatorUid).get();
+            if (!taskCreatorProfileDoc.exists) {
+                logger.warn(`Task creator profile not found for UID: ${taskCreatorUid} for task completion.`);
                 return null;
             }
-            const domProfile = domProfileDoc.data();
-            const domFcmToken = domProfile.fcmToken;
+            const taskCreatorProfile = taskCreatorProfileDoc.data();
+            const taskCreatorFcmToken = taskCreatorProfile.fcmToken;
 
-            if (!domFcmToken) {
-                logger.warn(`Dom ${domUid} does not have an FCM token for task completion.`);
+            if (!taskCreatorFcmToken) {
+                logger.warn(`Task creator ${taskCreatorUid} does not have an FCM token for task completion.`);
                 return null;
+            }
+
+            // Determine who completed the task to tailor the message
+            // The completer is the other person in the pair.
+            const uidsInPair = params.pairingId.split('_');
+            const completerUid = uidsInPair.find(uid => uid !== taskCreatorUid);
+            let completerRoleString = "Your partner"; // Default
+
+            if (completerUid) {
+                const completerProfileDoc = await firestore.collection('users').doc(completerUid).get();
+                if (completerProfileDoc.exists) {
+                    const completerProfile = completerProfileDoc.data();
+                    if (completerProfile.role && completerProfile.role.toLowerCase() === "sub") {
+                        completerRoleString = "Your Sub";
+                    } else if (completerProfile.role && completerProfile.role.toLowerCase() === "dom") {
+                        completerRoleString = "Your Dom";
+                    }
+                } else {
+                    logger.warn(`Completer profile not found for UID: ${completerUid}. Using generic role string.`);
+                }
+            } else {
+                 logger.warn(`Could not determine completer UID from pairingId ${params.pairingId} and creator ${taskCreatorUid}. Using generic role string.`);
             }
 
             const notificationTitle = `Task Completed!`;
-            const notificationBody = `Your Sub has completed the task: "${taskTitle}"`;
+            const notificationBody = `${completerRoleString} has completed the task: "${taskTitle}"`;
 
             const payload = {
                 notification: {
                     title: notificationTitle,
                     body: notificationBody,
                 },
-                token: domFcmToken,
+                token: taskCreatorFcmToken,
                 data: { // Optional: send data payload for client-side handling
                     taskId: params.taskId,
                     pairingId: params.pairingId,
@@ -356,9 +387,9 @@ exports.sendTaskCompletionNotification = onValueWritten("shared_task_lists/{pair
                 }
             };
 
-            logger.log(`Sending task completion notification to Dom ${domUid} (token: ${domFcmToken.substring(0,10)}...) for task: "${taskTitle}"`);
+            logger.log(`Sending task completion notification to ${taskCreatorUid} (token: ${taskCreatorFcmToken.substring(0,10)}...) for task: "${taskTitle}"`);
             await messaging.send(payload);
-            logger.log("Successfully sent task completion message to Dom:", domUid);
+            logger.log("Successfully sent task completion message to:", taskCreatorUid);
             return null;
 
         } catch (error) {
@@ -366,7 +397,8 @@ exports.sendTaskCompletionNotification = onValueWritten("shared_task_lists/{pair
             return null;
         }
     } else {
-        logger.log(`Task ${params.taskId} in pairing ${params.pairingId} was updated, but condition for completion notification not met. afterData.completed: ${afterData.completed}, beforeData.completed: ${beforeData.completed}. No completion notification sent.`);
+        // Minimal log if condition not met, as it's now working.
+        // logger.log(`Task ${params.taskId} update did not meet completion notification criteria. after: ${afterData.completed}, before: ${beforeData.completed}`);
         return null;
     }
 });
