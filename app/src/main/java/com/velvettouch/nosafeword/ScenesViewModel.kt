@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.withContext // Added import
+import kotlinx.coroutines.Dispatchers // Added import
 // import kotlinx.coroutines.flow.first // Not used anymore
 import java.io.IOException
 
@@ -34,6 +36,7 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         private const val PREFS_APP_NAME = "NoSafeWordAppPrefs" // General app prefs
         private const val KEY_DELETED_LOGGED_OUT_SCENE_IDS = "deleted_logged_out_scene_ids" // Tracks default scenes deleted locally
         private const val KEY_LOGGED_OUT_LOCAL_SCENES_JSON = "logged_out_local_scenes_json" // Stores the full list of local scenes
+        private const val KEY_LAST_LOGGED_OUT_USER_ID = "last_logged_out_user_id" // Stores the UID of the user who last logged out
     }
 
     private val gson = Gson() // For JSON serialization
@@ -113,118 +116,140 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
     private var firebaseAuthListener: FirebaseAuth.AuthStateListener? = null // Store the listener
 
     init {
-        // Listener to update _firebaseUser StateFlow
         firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            _firebaseUser.value = firebaseAuth.currentUser
-        }
-        auth.addAuthStateListener(firebaseAuthListener!!) // Add the stored listener
+            val previousUser = _firebaseUser.value // Capture before update
+            val newUser = firebaseAuth.currentUser
+            _firebaseUser.value = newUser
 
-        // Collect the user StateFlow to handle auth changes
+            if (previousUser != null && newUser == null) { // User just logged out
+                val appPrefs = appContext.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
+                appPrefs.edit().putString(KEY_LAST_LOGGED_OUT_USER_ID, previousUser.uid).apply()
+                Log.d(TAG, "User ${previousUser.uid} logged out (detected in AuthStateListener). Stored as $KEY_LAST_LOGGED_OUT_USER_ID.")
+            }
+        }
+        auth.addAuthStateListener(firebaseAuthListener!!)
+
         viewModelScope.launch {
-            _firebaseUser.collectLatest { user -> // Use collectLatest to cancel previous handleAuthState if user changes rapidly
+            _firebaseUser.collectLatest { user ->
                 Log.d(TAG, "Auth state collected via StateFlow. User: ${user?.uid}")
                 handleAuthState(user)
             }
         }
     }
 
-    // authListener variable is no longer needed
-
     private suspend fun handleAuthState(currentUser: com.google.firebase.auth.FirebaseUser?) {
         if (currentUser != null) {
             Log.d(TAG, "User is logged in: ${currentUser.uid}.")
-            // Critical section: Ensure only one sync/load operation runs at a time for a logged-in user state.
-            // isSyncingLocalScenes should protect the sync part.
-            // isSeedingInProgress protects the seeding part within loadScenesFromFirestore.
+            _isLoading.value = true // Set loading true at the beginning of logged-in handling
 
-            if (localScenesWhenLoggedOut.isNotEmpty()) {
-                if (!isSyncingLocalScenes) {
-                    isSyncingLocalScenes = true // Set flag before starting operations
-                    try {
-                        Log.d(TAG, "Attempting to sync ${localScenesWhenLoggedOut.size} locally added scenes.")
-                        syncLocalScenesToFirestore(currentUser.uid) // This is a suspend function
-                        // After sync, always reload from Firestore to get the latest state.
-                        Log.d(TAG, "Sync of local scenes complete. Loading from Firestore.")
-                        loadScenesFromFirestore() // This is a suspend function
-                    } finally {
-                        isSyncingLocalScenes = false // Reset flag in finally block
+            val appPrefs = appContext.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
+            val lastLoggedOutUserId = appPrefs.getString(KEY_LAST_LOGGED_OUT_USER_ID, null)
+            val deviceOfflineScenes = loadLocalScenesFromPrefs(appContext) // From NoSafeWordAppPrefs (primary offline store)
+
+            var didAttemptSync = false
+            if (deviceOfflineScenes != null && deviceOfflineScenes.isNotEmpty()) {
+                if (currentUser.uid == lastLoggedOutUserId) {
+                    Log.d(TAG, "Current user ${currentUser.uid} matches last logged out user. Processing ${deviceOfflineScenes.size} device offline scenes.")
+                    val customOrNewDeviceOfflineScenes = deviceOfflineScenes.filter { it.isCustom || it.id == 0 }
+                    if (customOrNewDeviceOfflineScenes.isNotEmpty()) {
+                        if (!isSyncingLocalScenes) {
+                            isSyncingLocalScenes = true
+                            didAttemptSync = true
+                            try {
+                                Log.d(TAG, "Attempting to sync ${customOrNewDeviceOfflineScenes.size} custom/new scenes from device offline storage for user ${currentUser.uid}.")
+                                syncLocalScenesToFirestore(currentUser.uid, customOrNewDeviceOfflineScenes)
+                            } finally {
+                                isSyncingLocalScenes = false
+                            }
+                        } else {
+                             Log.d(TAG, "Sync already in progress for custom/new device offline scenes. Skipping additional attempt.")
+                        }
+                    } else {
+                        Log.d(TAG, "No custom/new scenes found in device offline storage (NoSafeWordAppPrefs) to sync for user ${currentUser.uid}.")
                     }
                 } else {
-                    Log.d(TAG, "Sync already in progress. Will not start another sync or load from Firestore yet.")
+                    Log.w(TAG, "Current user ${currentUser.uid} does not match last logged out user ($lastLoggedOutUserId). Discarding ${deviceOfflineScenes.size} device offline scenes from NoSafeWordAppPrefs.")
                 }
-            } else { // No local scenes to sync
-                Log.d(TAG, "No local scenes to sync. Proceeding to load from Firestore.")
-                // This path also handles initial seeding if necessary via loadScenesFromFirestore.
-                loadScenesFromFirestore() // This is a suspend function
+                // Clear device-specific offline storage and last user ID after processing or discarding.
+                saveLocalScenesToPrefs(appContext, emptyList()) // Clears NoSafeWordAppPrefs
+                appPrefs.edit().remove(KEY_LAST_LOGGED_OUT_USER_ID).apply()
+                Log.d(TAG, "Cleared device offline scene storage (NoSafeWordAppPrefs) and $KEY_LAST_LOGGED_OUT_USER_ID.")
+            } else {
+                Log.d(TAG, "No device offline scenes found in NoSafeWordAppPrefs to process for user ${currentUser.uid}.")
+                // Also ensure last logged out user ID is cleared if there were no scenes to process,
+                // as its relevance is tied to the presence of offline scenes.
+                if (lastLoggedOutUserId != null) {
+                    appPrefs.edit().remove(KEY_LAST_LOGGED_OUT_USER_ID).apply()
+                    Log.d(TAG, "Cleared $KEY_LAST_LOGGED_OUT_USER_ID as there were no offline scenes.")
+                }
             }
+
+            // Ensure ViewModel's immediate cache `localScenesWhenLoggedOut` is clear before loading fresh for the current user.
+            // This cache is primarily for edits made while the app is in a logged-out state.
+            if (localScenesWhenLoggedOut.isNotEmpty()) {
+                Log.d(TAG, "Clearing ViewModel's localScenesWhenLoggedOut cache (had ${localScenesWhenLoggedOut.size} scenes) before loading fresh for ${currentUser.uid}.")
+                localScenesWhenLoggedOut.clear()
+            }
+
+            // If a sync was attempted, it might have already updated isLoading.
+            // loadScenesFromFirestore will manage isLoading for its own operations.
+            // If no sync was attempted, loadScenesFromFirestore is responsible for setting isLoading.
+            loadScenesFromFirestore() // Load scenes for the current user. This will also handle isLoading.
+
         } else { // User is logged out
             Log.d(TAG, "Auth state: User is logged out.")
             _isLoading.value = true
-            var scenesToDisplay = localFavoritesRepository.getLocalScenes()
-            Log.d(TAG, "Initially loaded ${scenesToDisplay.size} scenes from LocalFavoritesRepository for logged-out state.")
 
-            if (scenesToDisplay.isEmpty()) {
-                Log.d(TAG, "LocalFavoritesRepository is empty for scenes. Loading from assets for logged-out user.")
-                val assetScenes = loadScenesFromAssets(appContext)
-                val deletedDefaultIds = getDeletedLoggedOutSceneIds(appContext)
-                Log.d(TAG, "Found ${deletedDefaultIds.size} locally deleted default scene IDs: $deletedDefaultIds")
+            // Prioritize loading from NoSafeWordAppPrefs (primary offline storage)
+            var scenesToDisplay = loadLocalScenesFromPrefs(appContext)?.toMutableList()
 
-                val filteredAssetScenes = assetScenes.filter { assetScene ->
-                    val persistentId = "default_${assetScene.id}"
-                    !deletedDefaultIds.contains(persistentId)
-                }.map {
-                    // Ensure pristine state for scenes loaded from assets
-                    it.copy(userId = "", isCustom = false, firestoreId = "")
+            if (scenesToDisplay == null || scenesToDisplay.isEmpty()) {
+                Log.d(TAG, "No scenes in NoSafeWordAppPrefs or empty. Trying LocalFavoritesRepository for logged-out state.")
+                // Fallback to LocalFavoritesRepository (which might contain backed-up cloud data from a previous user or assets)
+                // Note: After sign-out, LocalFavoritesRepository should be empty due to clearing in SettingsActivity.
+                scenesToDisplay = localFavoritesRepository.getLocalScenes().toMutableList()
+                Log.d(TAG, "Loaded ${scenesToDisplay.size} scenes from LocalFavoritesRepository for logged-out state.")
+
+                if (scenesToDisplay.isEmpty()) {
+                    Log.d(TAG, "LocalFavoritesRepository is also empty. Loading from assets for logged-out user.")
+                    val assetScenes = loadScenesFromAssets(appContext)
+                    val deletedDefaultIds = getDeletedLoggedOutSceneIds(appContext) // From NoSafeWordAppPrefs
+                    Log.d(TAG, "Found ${deletedDefaultIds.size} locally deleted default scene IDs: $deletedDefaultIds")
+
+                    val filteredAssetScenes = assetScenes.filter { assetScene ->
+                        val persistentId = "default_${assetScene.id}"
+                        !deletedDefaultIds.contains(persistentId)
+                    }.map {
+                        it.copy(userId = "", isCustom = false, firestoreId = "") // Ensure pristine state
+                    }
+                    scenesToDisplay = filteredAssetScenes.toMutableList()
+                    Log.d(TAG, "Loaded ${scenesToDisplay.size} scenes from assets after filtering deleted ones.")
                 }
-
-                Log.d(TAG, "Loaded ${filteredAssetScenes.size} scenes from assets after filtering deleted ones.")
-                localFavoritesRepository.saveLocalScenes(filteredAssetScenes) // Save to SharedPreferences
-                Log.d(TAG, "Saved initial asset scenes to LocalFavoritesRepository.")
-                scenesToDisplay = filteredAssetScenes
+                // Save the determined scenes (from LocalFavoritesRepo or assets) to NoSafeWordAppPrefs
+                // This makes NoSafeWordAppPrefs the source of truth for the current logged-out session.
+                saveLocalScenesToPrefs(appContext, scenesToDisplay ?: emptyList())
+                Log.d(TAG, "Saved initial/fallback scenes for logged-out state to NoSafeWordAppPrefs.")
+            } else {
+                 Log.d(TAG, "Loaded ${scenesToDisplay.size} scenes directly from NoSafeWordAppPrefs for logged-out state.")
             }
 
             localScenesWhenLoggedOut.clear()
-            localScenesWhenLoggedOut.addAll(scenesToDisplay)
+            localScenesWhenLoggedOut.addAll(scenesToDisplay ?: emptyList())
 
-            _scenes.value = ArrayList(scenesToDisplay)
+            _scenes.value = ArrayList(localScenesWhenLoggedOut)
             _isLoading.value = false
-            Log.d(TAG, "Final scenes for logged-out state (count: ${scenesToDisplay.size}): ${scenesToDisplay.map { it.title }}")
+            Log.d(TAG, "Final scenes for logged-out state (count: ${(_scenes.value).size}): ${(_scenes.value).map { it.title }}")
         }
     }
 
-    private suspend fun syncLocalScenesToFirestore(userId: String) {
-        // This function syncs scenes that were potentially added/edited while offline
-        // and are stored in `localScenesWhenLoggedOut`.
-        // The `localScenesWhenLoggedOut` list is populated from `LocalFavoritesRepository`
-        // when the user logs in after being offline.
-
-        // The scenes in `localScenesWhenLoggedOut` at this point are those that were
-        // present locally when the user was last logged out (backed up from cloud or edited/added offline).
-        // We need to compare them with what's in the cloud for this user.
-        // This sync logic can be complex (detecting new, edited, deleted).
-        // For now, let's assume `FavoritesViewModel` handles the primary merge of *favorites*.
-        // This ViewModel should ensure that scene *data* (custom/edited) is in Firestore.
-
-        // A simpler approach for now: if `localScenesWhenLoggedOut` has items,
-        // assume they might need to be pushed to Firestore if they are custom or edited.
-        // The `backupCloudDataToLocal` in SettingsActivity ensures `LocalFavoritesRepository`
-        // has the cloud state upon logout. When logging back in, `localScenesWhenLoggedOut`
-        // gets this state. If the user made further offline changes, those would need more complex diffing.
-
-        // Given the current setup, `localScenesWhenLoggedOut` is populated from `LocalFavoritesRepository`
-        // which should reflect the last cloud state. If the user *then* makes offline edits
-        // to `localScenesWhenLoggedOut` (which current `addScene`/`updateScene` for logged-out state does),
-        // then those are the ones to sync.
-
-        val scenesToPotentiallySync = ArrayList(localScenesWhenLoggedOut) // Work with a copy
-
-        if (scenesToPotentiallySync.isEmpty()) {
-            Log.d(TAG, "No local scenes in localScenesWhenLoggedOut to consider for sync for user $userId.")
+    private suspend fun syncLocalScenesToFirestore(userId: String, scenesToConsiderForSync: List<Scene>) {
+        if (scenesToConsiderForSync.isEmpty()) {
+            Log.d(TAG, "No scenes provided to syncLocalScenesToFirestore for user $userId.")
             return
         }
 
-        _isLoading.value = true
-        Log.d(TAG, "Starting sync of ${scenesToPotentiallySync.size} scenes from localScenesWhenLoggedOut for user $userId.")
+        // _isLoading.value = true; // isLoading is managed by the caller (handleAuthState)
+        Log.d(TAG, "Starting sync of ${scenesToConsiderForSync.size} provided scenes for user $userId.")
         var scenesSyncedOrUpdatedCount = 0
         var syncFailedCount = 0
 
@@ -233,13 +258,12 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         if (cloudScenesResult.isFailure) {
             Log.e(TAG, "Failed to fetch cloud scenes for sync comparison: ${cloudScenesResult.exceptionOrNull()?.message}")
             _error.value = "Sync failed: Could not get cloud scenes."
-            _isLoading.value = false
+            // _isLoading.value = false; // Caller manages isLoading
             return
         }
         val cloudScenesMap = cloudScenesResult.getOrNull()?.associateBy { it.firestoreId.ifEmpty { "orig_${it.id}" } } ?: emptyMap()
 
-
-        for (localScene in scenesToPotentiallySync) {
+        for (localScene in scenesToConsiderForSync) { // Use the passed parameter
             var sceneToUpload = localScene.copy(userId = userId) // Ensure correct userId
 
             // Determine if this localScene corresponds to an existing cloud scene
@@ -255,39 +279,88 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
             val existingCloudScene = if (matchKey != null) cloudScenesMap[matchKey] else null
 
             if (existingCloudScene != null) {
-                // Scene exists in cloud. Check if local version is different (needs update).
-                // Simple check: if content or title differs, or if local isCustom but cloud is not.
-                // More robust diffing might be needed for complex scenarios.
-                if (localScene.title != existingCloudScene.title ||
-                    localScene.content != existingCloudScene.content ||
-                    (localScene.isCustom && !existingCloudScene.isCustom)) {
-                    Log.d(TAG, "Sync: Updating scene '${localScene.title}' (ID: ${existingCloudScene.firestoreId}) in Firestore.")
-                    sceneToUpload = sceneToUpload.copy(firestoreId = existingCloudScene.firestoreId, isCustom = true) // Ensure isCustom if edited
+                // Scene exists in cloud.
+                // A scene becomes custom if its title/content changes from the original asset,
+                // or if it was already custom.
+                var shouldBeCustom = existingCloudScene.isCustom // Start with cloud's custom status
+                var needsUpdate = false
+
+                if (localScene.id != 0 && !existingCloudScene.isCustom) { // It's a default scene in the cloud
+                    // Compare local version to original asset to see if it was modified
+                    val assetVersion = withContext(Dispatchers.IO) { repository.getAssetSceneDetailsByOriginalId(localScene.id) }
+                    if (assetVersion != null) {
+                        if (localScene.title != assetVersion.title || localScene.content != assetVersion.content) {
+                            shouldBeCustom = true // Modified from original asset
+                            needsUpdate = true
+                            Log.d(TAG, "Sync: Default scene '${localScene.title}' (OriginalID: ${localScene.id}) was modified locally. Marking as custom.")
+                        }
+                    } else {
+                        // Asset version not found, this is strange. Treat local as custom if it differs from cloud.
+                        if (localScene.title != existingCloudScene.title || localScene.content != existingCloudScene.content) {
+                           shouldBeCustom = true; needsUpdate = true;
+                           Log.w(TAG, "Sync: Asset for default scene '${localScene.title}' (OriginalID: ${localScene.id}) not found. Treating diff as custom.")
+                        }
+                    }
+                } else if (existingCloudScene.isCustom) { // It was already custom in the cloud
+                     if (localScene.title != existingCloudScene.title || localScene.content != existingCloudScene.content) {
+                        needsUpdate = true
+                     }
+                }
+                // If not a default scene originally (localScene.id == 0), it's inherently custom if new or being updated.
+                // This case is handled by the `else` block below if `existingCloudScene` is null.
+                // If `existingCloudScene` is not null and `localScene.id == 0`, it means it's a custom scene that was already synced.
+                // We just check if title/content changed.
+                else if (localScene.id == 0 && existingCloudScene != null) { // existing custom scene
+                    if (localScene.title != existingCloudScene.title || localScene.content != existingCloudScene.content) {
+                        needsUpdate = true;
+                        // shouldBeCustom = true; // It's already custom, this doesn't change
+                    }
+                }
+
+
+                if (needsUpdate || (shouldBeCustom && !existingCloudScene.isCustom) || (!shouldBeCustom && existingCloudScene.isCustom) ) {
+                    Log.d(TAG, "Sync: Updating scene '${localScene.title}' (ID: ${existingCloudScene.firestoreId}) in Firestore. New custom status: $shouldBeCustom")
+                    sceneToUpload = sceneToUpload.copy(firestoreId = existingCloudScene.firestoreId, isCustom = shouldBeCustom)
                     val result = repository.updateScene(sceneToUpload)
                     if (result.isSuccess) scenesSyncedOrUpdatedCount++ else syncFailedCount++
                 } else {
-                    Log.d(TAG, "Sync: Scene '${localScene.title}' (ID: ${existingCloudScene.firestoreId}) is same as cloud. No update needed.")
+                    Log.d(TAG, "Sync: Scene '${localScene.title}' (ID: ${existingCloudScene.firestoreId}) is same as cloud or no change in custom status needed. No update.")
                 }
-            } else {
-                // Scene does not exist in cloud or is a new local custom scene. Add it.
-                Log.d(TAG, "Sync: Adding new scene '${localScene.title}' to Firestore.")
-                sceneToUpload = sceneToUpload.copy(firestoreId = "", isCustom = true) // Ensure new ID and isCustom
+            } else { // existingCloudScene is null - Scene does not exist in cloud.
+                // This localScene is either a new custom scene, or a default scene not yet in user's cloud.
+                var isNewSceneCustom = localScene.isCustom // Trust isCustom flag from localScene if set
+                if (localScene.id != 0 && !localScene.isCustom) { // It's a default scene from assets (or was intended to be)
+                    // Compare to asset version to see if it was modified while offline
+                    val assetVersion = withContext(Dispatchers.IO) { repository.getAssetSceneDetailsByOriginalId(localScene.id) }
+                    if (assetVersion != null) {
+                        if (localScene.title == assetVersion.title && localScene.content == assetVersion.content) {
+                            isNewSceneCustom = false // It's identical to asset, so it's a default scene
+                            Log.d(TAG, "Sync: Adding default scene '${localScene.title}' (OriginalID: ${localScene.id}) to Firestore as isCustom=false.")
+                        } else {
+                            isNewSceneCustom = true // Modified from asset, so it's custom
+                            Log.d(TAG, "Sync: Adding modified default scene '${localScene.title}' (OriginalID: ${localScene.id}) to Firestore as isCustom=true.")
+                        }
+                    } else {
+                         Log.w(TAG, "Sync: Asset for default scene '${localScene.title}' (OriginalID: ${localScene.id}) not found. Adding as custom (isCustom was ${localScene.isCustom}).")
+                         isNewSceneCustom = true; // Fallback to custom if asset not found
+                    }
+                } else { // localScene.id == 0 (new custom) or localScene.isCustom is true
+                    Log.d(TAG, "Sync: Adding new custom scene '${localScene.title}' to Firestore (isCustom=${localScene.isCustom}).")
+                    isNewSceneCustom = true; // Ensure it's marked custom if new or already was
+                }
+                
+                sceneToUpload = sceneToUpload.copy(firestoreId = "", isCustom = isNewSceneCustom) // Ensure firestoreId is blank for add
                 val result = repository.addScene(sceneToUpload)
                 if (result.isSuccess) scenesSyncedOrUpdatedCount++ else syncFailedCount++
             }
         }
-
-        // After sync, `localScenesWhenLoggedOut` should ideally be cleared or re-synced from cloud.
-        // The subsequent call to `loadScenesFromFirestore` will handle getting the true state.
-        localScenesWhenLoggedOut.clear() // Clear as their state is now pushed or was identical.
-
-        Log.i(TAG, "Sync of scenes from localScenesWhenLoggedOut complete for user $userId. Synced/Updated: $scenesSyncedOrUpdatedCount, Failed: $syncFailedCount.")
+        // Do not clear localScenesWhenLoggedOut here, it's managed by the caller or other logic.
+        Log.i(TAG, "Sync of provided scenes complete for user $userId. Synced/Updated: $scenesSyncedOrUpdatedCount, Failed: $syncFailedCount.")
         if (syncFailedCount > 0) {
             _error.value = "$syncFailedCount scenes failed to sync from local cache."
         }
-        // isLoading will be managed by the calling context (handleAuthState -> loadScenesFromFirestore)
+        // isLoading is managed by the caller (handleAuthState)
     }
-
 
     private fun loadScenesFromFirestore() {
         viewModelScope.launch {

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.velvettouch.nosafeword.data.repository.UserRepository // Added for the factory
 
 class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
 
@@ -145,11 +146,14 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
 }
 
 // ViewModel Factory to inject the repository
-class TasksViewModelFactory(private val repository: TasksRepository) : ViewModelProvider.Factory {
+class TasksViewModelFactory(
+    private val userRepository: UserRepository // Changed to accept UserRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TasksViewModel::class.java)) {
+            // TasksRepository is now created here, injecting UserRepository
             @Suppress("UNCHECKED_CAST")
-            return TasksViewModel(repository) as T
+            return TasksViewModel(TasksRepository(userRepository)) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

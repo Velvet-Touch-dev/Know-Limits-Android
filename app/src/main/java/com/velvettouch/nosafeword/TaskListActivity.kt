@@ -31,6 +31,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.velvettouch.nosafeword.data.model.TaskItem // Updated import
 import com.velvettouch.nosafeword.data.repository.TasksRepository
+import com.velvettouch.nosafeword.data.repository.UserRepository // Added
 import com.velvettouch.nosafeword.ui.tasks.TasksViewModel
 import com.velvettouch.nosafeword.ui.tasks.TasksViewModelFactory
 import kotlinx.coroutines.launch
@@ -60,7 +61,8 @@ class TaskListActivity : BaseActivity() {
     // ViewModel initialization
     private val tasksViewModel: TasksViewModel by viewModels {
         // In a real app, use Hilt or another DI framework to provide the repository
-        TasksViewModelFactory(TasksRepository())
+        val userRepository = UserRepository() // Instantiate UserRepository
+        TasksViewModelFactory(userRepository) // Pass UserRepository to the factory
     }
 
     // Removed PREFS_NAME and TASKS_KEY companion object

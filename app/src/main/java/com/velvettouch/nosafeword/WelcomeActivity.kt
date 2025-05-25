@@ -18,10 +18,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.velvettouch.nosafeword.data.repository.UserRepository // Added
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber // Added
 
 class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private val userRepository = UserRepository() // Added
     private lateinit var googleSignInClient: GoogleSignInClient
 
     companion object {
@@ -115,8 +122,27 @@ class WelcomeActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "Firebase Auth successful. User: ${auth.currentUser?.email}")
-                    // Sign-in success, mark welcome as completed and navigate
-                    navigateToMainActivity()
+                    auth.currentUser?.let { firebaseUser ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val profileResult = userRepository.createUserProfileIfNotExists(firebaseUser)
+                            if (profileResult.isFailure) {
+                                Timber.tag(TAG).e(profileResult.exceptionOrNull(), "Failed to ensure user profile exists.")
+                                // Optionally show a non-blocking error to user on main thread
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(this@WelcomeActivity, "Profile sync issue.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            // Proceed with navigation regardless of profile sync outcome for now
+                            // to not block the user, but log error.
+                            withContext(Dispatchers.Main) {
+                                navigateToMainActivity()
+                            }
+                        }
+                    } ?: run {
+                        // Should not happen if task.isSuccessful and currentUser is null
+                        Log.w(TAG, "Firebase Auth successful but currentUser is null.")
+                        navigateToMainActivity() // Navigate anyway
+                    }
                 } else {
                     Log.w(TAG, "Firebase Auth failed.", task.exception)
                     Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (Firebase Auth)", Toast.LENGTH_LONG).show()
@@ -125,7 +151,7 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainActivity(setWelcomeCompletedFlag: Boolean = true) {
-        if (setWelcomeCompletedFlag) {
+        if (setWelcomeCompletedFlag && auth.currentUser != null) { // Only set flag if user is signed in
             val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             with(sharedPreferences.edit()) {
                 putBoolean(KEY_WELCOME_COMPLETED, true)

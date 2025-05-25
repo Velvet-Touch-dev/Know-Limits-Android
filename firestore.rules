@@ -3,6 +3,56 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // User documents
+    match /users/{userId} {
+      // Rule 1: Allow a user to read (get/list), create, and update their own document.
+      // 'list' here refers to listening to changes on their own single document.
+      allow get, list, create: if request.auth != null && request.auth.uid == userId;
+      
+      // Rule 2: Allow a user to update their own document OR allow a Sub to update a Dom's document during pairing.
+      allow update: if request.auth != null &&
+                       ( (request.auth.uid == userId) || // Case A: Updating own document
+                         ( userId != request.auth.uid && // Case B: Sub updating Dom's document
+                           request.resource.data.pairedWith == request.auth.uid && // Dom's pairedWith is being set to Sub's UID
+                           request.resource.data.role == "Dom" && // Dom's role is being set to "Dom"
+                           request.resource.data.pairingCode == null && // Dom's pairingCode is being cleared
+                           request.resource.data.pairingCodeTimestamp == null // Dom's pairingCodeTimestamp is being cleared
+                         )
+                       );
+      // Rule 3: Allow any authenticated user to get any user document.
+      // This is needed for the Sub to read the Dom's profile after finding it via pairing code.
+      // This is broader than ideal; a Cloud Function would be more secure for mediating this.
+      // This rule must be placed after the more specific get rule for self, or combined carefully.
+      // Let's combine it: a user can get their own doc, OR any auth user can get any doc.
+      // The first part is redundant if the second part is true. So, just:
+      // allow get: if request.auth != null; // This was present in a previous version and is needed for pairing.
+      // Let's refine:
+      // A user can get their own document (covered by the first `allow get` above).
+      // A user can get another user's document if they are paired with them, or if they are querying by pairing code.
+      // This is hard to express directly for the `get` after a query.
+      // The simplest rule that allows the pairing `get` to work is:
+      // allow get: if request.auth != null;
+      // Let's ensure this is the effective get rule.
+      // The `allow get, list, create` above already covers `get` for self.
+      // We need an additional `get` for reading the other user's profile during pairing.
+      // So, the effective get rule should be:
+      // (request.auth.uid == userId) || (request.auth != null && /* condition for pairing read */)
+      // For now, to ensure pairing works, let's make `get` generally available to authenticated users.
+      // This means the `allow get` in `allow get, list, create` for self is overridden by a broader `get`.
+      allow get: if request.auth != null; // Overrides the more specific get for self, allows any auth user to get any user doc.
+    }
+
+    // Rule for querying the 'users' collection by 'pairingCode'.
+    // This must be on the collection path.
+    match /users/{document=**} {
+      // Allow an authenticated user to list (query) the users collection if:
+      // 1. The query is on the 'pairingCode' field.
+      // 2. The query is limited to 1 result (as findUserByPairingCode expects one user).
+      allow list: if request.auth != null &&
+                     request.query.resource.data.pairingCode is string && // Check if query is on pairingCode
+                     request.query.limit == 1; // Ensure query is specific enough
+    }
+
     // Scenes: Users can only read, create, update, and delete their own scenes.
     match /scenes/{sceneId} {
       allow read: if request.auth != null && resource.data.userId == request.auth.uid;

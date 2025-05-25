@@ -17,11 +17,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.android.material.button.MaterialButton
 import android.view.MenuItem
-import android.widget.Button
+// import android.widget.Button // No longer needed if MaterialButton is used everywhere
+import android.widget.EditText // Added for pairing code input
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible // Added for easy visibility toggling
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -29,6 +31,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import android.widget.FrameLayout // Added for loading overlay
 import com.google.android.material.navigation.NavigationView
 import java.util.Locale
 import androidx.lifecycle.lifecycleScope
@@ -38,10 +41,18 @@ import com.velvettouch.nosafeword.FavoritesRepository
 import com.velvettouch.nosafeword.Favorite
 import com.velvettouch.nosafeword.ScenesRepository // Added
 import com.velvettouch.nosafeword.PositionsRepository // Added
+import com.velvettouch.nosafeword.data.repository.UserRepository // Added
+import com.velvettouch.nosafeword.data.model.UserProfile // Added
+import com.google.android.material.textfield.TextInputLayout // Added
+import kotlinx.coroutines.flow.collectLatest // Added
+import timber.log.Timber // Added
+import kotlinx.coroutines.withContext // Added for coroutine context switching
+import kotlinx.coroutines.Dispatchers // Added for coroutine dispatchers
 // Assuming Scene and PositionItem data classes are in com.velvettouch.nosafeword or imported
 
 class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
+    private val userRepository by lazy { UserRepository() }
     private val localFavoritesRepository by lazy { LocalFavoritesRepository(applicationContext) }
     private val cloudFavoritesRepository by lazy { FavoritesRepository() }
     private val scenesRepository by lazy { ScenesRepository(applicationContext) } // Added
@@ -51,6 +62,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var navigationView: NavigationView
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var settingsChanged = false // Flag to track if theme/color settings changed
+    // private var pendingNavigationRunnable: Runnable? = null // No longer needed
 
     // TTS for previewing voice
     private lateinit var textToSpeech: TextToSpeech
@@ -60,6 +72,19 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var googleSignInButton: MaterialButton
+
+    // Pairing UI Elements
+    private lateinit var pairingSettingsCard: MaterialCardView
+    private lateinit var pairingStatusText: TextView
+    private lateinit var generatePairingCodeButton: MaterialButton
+    private lateinit var pairingCodeInputLayout: TextInputLayout
+    private lateinit var pairingCodeEditText: EditText
+    private lateinit var connectAsSubButton: MaterialButton
+    private lateinit var unpairButton: MaterialButton
+    private lateinit var loadingOverlay: FrameLayout // Added for loading overlay
+
+    private var currentUserProfile: UserProfile? = null
+
 
     companion object {
         private const val RC_SIGN_IN_SETTINGS = 9002 // Differentiate from MainActivity's RC_SIGN_IN
@@ -95,6 +120,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         // Set up toolbar with navigation icon
         val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.settings) // Set toolbar title
 
         // Set up drawer components
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -108,6 +134,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             R.string.drawer_open,
             R.string.drawer_close
         )
+        // No longer need to override onDrawerClosed for pendingNavigationRunnable
         drawerToggle.isDrawerIndicatorEnabled = true
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
@@ -116,60 +143,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         navigationView.removeHeaderView(navigationView.getHeaderView(0))
 
         // Set up navigation view listener
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_scenes -> {
-                    // Go back to main activity
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent)
-                    true
-                }
-                R.id.nav_positions -> {
-                    // Go to positions activity
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    val intent = Intent(this, PositionsActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                R.id.nav_body_worship -> {
-                    // Go to body worship activity
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    val intent = Intent(this, BodyWorshipActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                R.id.nav_favorites -> {
-                    // Go to favorites activity
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    val intent = Intent(this, FavoritesActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                R.id.nav_task_list -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    val intent = Intent(this, TaskListActivity::class.java)
-                    // intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Optional
-                    startActivity(intent)
-                    // finish() // Optional, settings might not need to be finished
-                    true
-                }
-                R.id.nav_plan_night -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    val intent = Intent(this, PlanNightActivity::class.java)
-                    // intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // Optional
-                    startActivity(intent)
-                    // finish() // Optional
-                    true
-                }
-                R.id.nav_settings -> {
-                    // Already on settings page, just close drawer
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                else -> false
-            }
-        }
+        setupNavigationListener() // Call a separate function to set up the listener
 
         // Set up theme selection
         setupThemeSelector()
@@ -206,8 +180,29 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
         // Setup Google Sign-In Button
         googleSignInButton = findViewById(R.id.google_sign_in_button_settings)
-        // Initial UI update for the button will be handled in onResume or by updateAuthButtonUI directly
         updateAuthButtonUI() // Set initial state of the button
+
+        // Initialize Pairing UI Elements
+        pairingSettingsCard = findViewById(R.id.pairing_settings_card)
+        pairingStatusText = findViewById(R.id.pairing_status_text)
+        generatePairingCodeButton = findViewById(R.id.generate_pairing_code_button)
+        pairingCodeInputLayout = findViewById(R.id.pairing_code_input_layout)
+        pairingCodeEditText = findViewById(R.id.pairing_code_edit_text)
+        connectAsSubButton = findViewById(R.id.connect_as_sub_button)
+        unpairButton = findViewById(R.id.unpair_button)
+
+        setupPairingClickListeners()
+        observeUserProfile()
+
+
+        pairingCodeEditText = findViewById(R.id.pairing_code_edit_text)
+        connectAsSubButton = findViewById(R.id.connect_as_sub_button)
+        unpairButton = findViewById(R.id.unpair_button)
+        loadingOverlay = findViewById(R.id.loading_overlay) // Initialize loading overlay
+
+        setupPairingClickListeners()
+        observeUserProfile()
+
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -227,6 +222,96 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 }
             }
         })
+    }
+
+    private fun showLoadingOverlay() {
+        // loadingOverlay.visibility = FrameLayout.VISIBLE // Overlay removed
+        googleSignInButton.isEnabled = false
+        // Potentially disable other interactive elements here if needed
+    }
+
+    private fun hideLoadingOverlay() {
+        runOnUiThread { // Ensure UI operations are on the main thread
+            // loadingOverlay.visibility = FrameLayout.GONE // Overlay removed
+            googleSignInButton.isEnabled = true
+            
+            // Ensure drawer and navigation view are enabled
+            drawerLayout.isEnabled = true
+            navigationView.isEnabled = true
+            
+            // Re-sync the drawer toggle state
+            drawerToggle.syncState()
+            
+            // Re-initialize navigation listener to ensure it's responsive
+            setupNavigationListener()
+            Log.d(TAG, "Navigation listener re-initialized in hideLoadingOverlay on UI thread.")
+        }
+    }
+
+    private fun setupNavigationListener() {
+        // Clear any existing listener first to prevent potential conflicts or stale references
+        navigationView.setNavigationItemSelectedListener(null)
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            Log.d(TAG, "Navigation item selected: ${menuItem.title}")
+            drawerLayout.closeDrawer(GravityCompat.START) // Close drawer first
+
+            // Perform navigation immediately or after a very short delay if drawer closing is an issue
+            // Using a small delay with post can sometimes help if direct action is problematic
+            // For now, let's try direct action first.
+            
+            val intent: Intent? = when (menuItem.itemId) {
+                R.id.nav_scenes -> {
+                    Log.d(TAG, "Navigating to MainActivity (Scenes).")
+                    Intent(this, MainActivity::class.java)
+                }
+                R.id.nav_positions -> {
+                    Log.d(TAG, "Navigating to PositionsActivity.")
+                    Intent(this, PositionsActivity::class.java)
+                }
+                R.id.nav_body_worship -> {
+                    Log.d(TAG, "Navigating to BodyWorshipActivity.")
+                    Intent(this, BodyWorshipActivity::class.java)
+                }
+                R.id.nav_favorites -> {
+                    Log.d(TAG, "Navigating to FavoritesActivity.")
+                    Intent(this, FavoritesActivity::class.java)
+                }
+                R.id.nav_task_list -> {
+                    Log.d(TAG, "Navigating to TaskListActivity.")
+                    Intent(this, TaskListActivity::class.java)
+                }
+                R.id.nav_plan_night -> {
+                    Log.d(TAG, "Navigating to PlanNightActivity.")
+                    Intent(this, PlanNightActivity::class.java)
+                }
+                R.id.nav_settings -> {
+                    Log.d(TAG, "Already on SettingsActivity.")
+                    null // No intent needed, just close drawer (already done)
+                }
+                else -> null
+            }
+
+            if (intent != null) {
+                // Optional: Add a slight delay if direct navigation still feels abrupt or causes issues
+                // drawerLayout.postDelayed({
+                startActivity(intent)
+                if (menuItem.itemId != R.id.nav_settings) {
+                    if (intent.component?.className != this@SettingsActivity::class.java.name) {
+                        if (menuItem.itemId == R.id.nav_scenes ||
+                            menuItem.itemId == R.id.nav_positions ||
+                            menuItem.itemId == R.id.nav_body_worship ||
+                            menuItem.itemId == R.id.nav_favorites ||
+                            menuItem.itemId == R.id.nav_task_list ||
+                            menuItem.itemId == R.id.nav_plan_night) {
+                            finish()
+                        }
+                    }
+                }
+                // }, 50) // Example delay of 50ms
+            }
+            // If menuItem.itemId == R.id.nav_settings, drawer is already closed, nothing more to do.
+            return@setNavigationItemSelectedListener true
+        }
     }
     
     override fun onDestroy() {
@@ -315,6 +400,149 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         }
         // Update Auth button UI state in onResume as well
         updateAuthButtonUI()
+        // Re-check user profile on resume in case of external changes, though flow should cover it.
+        // observeUserProfile() // Might be redundant if flow is robust
+    }
+
+    private fun observeUserProfile() {
+        lifecycleScope.launch {
+            auth.currentUser?.uid?.let { uid ->
+                userRepository.getUserProfileFlow(uid).collectLatest { userProfile ->
+                    currentUserProfile = userProfile
+                    updatePairingUI()
+                }
+            } ?: run {
+                // No user logged in, ensure pairing UI is hidden/disabled
+                currentUserProfile = null
+                updatePairingUI()
+            }
+        }
+        // Also listen to auth state changes to re-trigger profile observation
+        auth.addAuthStateListener { firebaseAuth ->
+            if (firebaseAuth.currentUser == null) {
+                currentUserProfile = null
+                updatePairingUI()
+            } else {
+                // User logged in or changed, re-observe
+                lifecycleScope.launch {
+                    firebaseAuth.currentUser?.uid?.let { uid ->
+                        userRepository.getUserProfileFlow(uid).collectLatest { userProfile ->
+                            currentUserProfile = userProfile
+                            updatePairingUI()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updatePairingUI() {
+        val isSignedIn = auth.currentUser != null
+        pairingSettingsCard.isVisible = isSignedIn
+
+        if (!isSignedIn) {
+            pairingStatusText.text = "Sign in to manage pairing."
+            return
+        }
+
+        currentUserProfile?.let { profile ->
+            if (profile.pairedWith != null) {
+                // User is paired
+                pairingStatusText.text = "Paired with: ${profile.pairedWith}\nYour Role: ${profile.role ?: "N/A"}" // Consider fetching partner's display name
+                generatePairingCodeButton.isVisible = false
+                pairingCodeInputLayout.isVisible = false
+                connectAsSubButton.isVisible = false
+                unpairButton.isVisible = true
+            } else if (profile.pairingCode != null) {
+                // User has an active pairing code (is Dom waiting for Sub)
+                pairingStatusText.text = "Your Pairing Code: ${profile.pairingCode}\nShare this with your Sub. Waiting for connection..."
+                generatePairingCodeButton.isVisible = false // Or make it "Cancel Pairing Code"
+                pairingCodeInputLayout.isVisible = false
+                connectAsSubButton.isVisible = false
+                unpairButton.isVisible = true // Allow cancelling the pairing process/code
+            } else {
+                // User is not paired and has no active code
+                pairingStatusText.text = "Status: Not Paired"
+                generatePairingCodeButton.isVisible = true
+                pairingCodeInputLayout.isVisible = true
+                connectAsSubButton.isVisible = true
+                unpairButton.isVisible = false
+            }
+        } ?: run {
+            // Profile not loaded yet or user just signed out
+            pairingStatusText.text = "Loading pairing status..."
+            generatePairingCodeButton.isVisible = false
+            pairingCodeInputLayout.isVisible = false
+            connectAsSubButton.isVisible = false
+            unpairButton.isVisible = false
+        }
+    }
+
+    private fun setupPairingClickListeners() {
+        generatePairingCodeButton.setOnClickListener {
+            auth.currentUser?.uid?.let { uid ->
+                lifecycleScope.launch {
+                    val result = userRepository.generatePairingCode(uid)
+                    if (result.isSuccess) {
+                        Toast.makeText(this@SettingsActivity, "Pairing code generated!", Toast.LENGTH_SHORT).show()
+                        // UI will update via observer
+                    } else {
+                        Toast.makeText(this@SettingsActivity, "Failed to generate code: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+
+        connectAsSubButton.setOnClickListener {
+            val code = pairingCodeEditText.text.toString().trim()
+            if (code.isEmpty()) {
+                pairingCodeInputLayout.error = "Code cannot be empty"
+                return@setOnClickListener
+            }
+            pairingCodeInputLayout.error = null
+            auth.currentUser?.uid?.let { subUid ->
+                lifecycleScope.launch {
+                    val domProfile = userRepository.findUserByPairingCode(code)
+                    if (domProfile == null) {
+                        Toast.makeText(this@SettingsActivity, "Invalid or expired pairing code, or Dom already paired.", Toast.LENGTH_LONG).show()
+                    } else if (domProfile.uid == subUid) {
+                        Toast.makeText(this@SettingsActivity, "You cannot pair with yourself.", Toast.LENGTH_LONG).show()
+                    }
+                    else {
+                        val pairResult = userRepository.setPairingStatus(domProfile.uid, subUid)
+                        if (pairResult.isSuccess) {
+                            Toast.makeText(this@SettingsActivity, "Successfully paired with ${domProfile.displayName ?: domProfile.email ?: "Dom"}!", Toast.LENGTH_LONG).show()
+                            pairingCodeEditText.text?.clear()
+                            // UI will update via observer
+                        } else {
+                            Toast.makeText(this@SettingsActivity, "Pairing failed: ${pairResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        }
+
+        unpairButton.setOnClickListener {
+            currentUserProfile?.let { profile ->
+                val partnerUid = profile.pairedWith
+                lifecycleScope.launch {
+                    val unpairResult = userRepository.clearPairingStatus(profile.uid, partnerUid)
+                    if (unpairResult.isSuccess) {
+                        Toast.makeText(this@SettingsActivity, "Successfully unpaired.", Toast.LENGTH_SHORT).show()
+                        // UI will update via observer
+                    } else {
+                        Toast.makeText(this@SettingsActivity, "Unpairing failed: ${unpairResult.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } ?: run { // Also handles cancelling a generated pairing code if not yet paired
+                 auth.currentUser?.uid?.let { uid ->
+                     lifecycleScope.launch {
+                         userRepository.clearPairingCode(uid) // Clears only pairingCode and timestamp
+                         Toast.makeText(this@SettingsActivity, "Pairing code cancelled.", Toast.LENGTH_SHORT).show()
+                     }
+                 }
+            }
+        }
     }
  
     // Removed deprecated override fun onBackPressed()
@@ -625,6 +853,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
     private fun signIn() {
         Log.d(TAG, "signIn: Attempting to launch Google Sign-In flow from Settings.")
+        showLoadingOverlay() // Show loading overlay
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN_SETTINGS)
     }
@@ -639,22 +868,25 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 try {
                     val account = task.getResult(ApiException::class.java)!!
                     Log.d(TAG, "onActivityResult: Google Sign-In successful from Settings, token: ${account.idToken?.take(10)}...")
+                    // firebaseAuthWithGoogle will handle hiding the overlay on completion
                     firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
                     Log.w(TAG, "Google sign in failed from Settings despite RESULT_OK", e)
                     Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (API Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
-                    // Optionally, update UI to reflect sign-in failure
+                    hideLoadingOverlay() // Hide overlay on failure
                 }
             } else {
                 // Handle cancellation (resultCode != Activity.RESULT_OK, e.g., Activity.RESULT_CANCELED)
                 Log.d(TAG, "Google Sign-In cancelled by user from Settings. ResultCode: $resultCode")
                 Toast.makeText(this, getString(R.string.sign_in_cancelled_toast), Toast.LENGTH_SHORT).show()
+                hideLoadingOverlay() // Hide overlay on cancellation
             }
         }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         Log.d(TAG, "firebaseAuthWithGoogle: Attempting Firebase auth with Google token from Settings.")
+        // Loading overlay is already shown by signIn() -> onActivityResult()
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
@@ -662,17 +894,45 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                     val user = auth.currentUser
                     Log.d(TAG, "firebaseAuthWithGoogle: Firebase Authentication successful from Settings. User: ${user?.email}")
                     Toast.makeText(this, "Sign-In Successful: ${user?.displayName ?: user?.email}", Toast.LENGTH_LONG).show()
-                    updateAuthButtonUI() // Update button to "Sign Out"
+
+                    user?.let { firebaseUser ->
+                        // The hideLoadingOverlay and updateAuthButtonUI will be called within this scope
+                        // to ensure they run after profile creation/check.
+                        lifecycleScope.launch { 
+                            val profileResult = userRepository.createUserProfileIfNotExists(firebaseUser)
+                            if (profileResult.isFailure) {
+                                Timber.tag(TAG).e(profileResult.exceptionOrNull(), "Failed to ensure user profile exists from Settings.")
+                                Toast.makeText(this@SettingsActivity, "Profile sync issue.", Toast.LENGTH_SHORT).show()
+                            }
+                            // Ensure these UI updates run on the main thread after coroutine work
+                            withContext(Dispatchers.Main) {
+                                hideLoadingOverlay()
+                                updateAuthButtonUI() // Update button to "Sign Out"
+                            }
+                        }
+                    } ?: run {
+                        // User is null even after successful task, should not happen but handle defensively
+                        // Ensure UI updates run on the main thread
+                        runOnUiThread {
+                            hideLoadingOverlay()
+                            updateAuthButtonUI()
+                        }
+                    }
                 } else {
                     Log.w(TAG, "firebaseAuthWithGoogle: Firebase Authentication failed from Settings.", task.exception)
                     Toast.makeText(this, "Firebase Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                    updateAuthButtonUI() // Ensure button is "Sign In"
+                    // Ensure UI updates run on the main thread
+                    runOnUiThread {
+                        hideLoadingOverlay() // Hide overlay on failure
+                        updateAuthButtonUI() // Ensure button is "Sign In"
+                    }
                 }
             }
     }
 
     private fun signOut() {
         Log.d(TAG, "signOut: Attempting to sign out.")
+        showLoadingOverlay() // Show loading overlay
         lifecycleScope.launch {
             val user = auth.currentUser
             if (user != null) {
@@ -691,15 +951,28 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 localFavoritesRepository.clearAllLocalFavorites()
             }
 
-            // Firebase sign out
+            // Clear local data BEFORE Firebase sign out, so ViewModel sees clean state when auth changes.
+            LocalFavoritesRepository(applicationContext).clearAllLocalFavorites()
+            Log.i(TAG, "Cleared all local favorites and scenes data from SharedPreferences before sign-out.")
+            
+            val appPrefs = applicationContext.getSharedPreferences("NoSafeWordAppPrefs", Context.MODE_PRIVATE)
+            appPrefs.edit().remove("deleted_logged_out_scene_ids").apply()
+            Log.i(TAG, "Cleared locally deleted default scene IDs from SharedPreferences before sign-out.")
+
+            // Firebase sign out - this will trigger auth state listeners
             auth.signOut()
 
             // Google sign out
-            googleSignInClient.signOut().addOnCompleteListener(this@SettingsActivity) {
-                Log.d(TAG, "signOut: Google Sign-Out complete.")
-                Toast.makeText(this@SettingsActivity, "Signed Out", Toast.LENGTH_SHORT).show()
-                updateAuthButtonUI() // Update button to "Sign In"
-                // Consider if a broadcast or event is needed to tell other parts of the app to refresh local data.
+            googleSignInClient.signOut().addOnCompleteListener(this@SettingsActivity) { googleSignOutTask ->
+                Log.d(TAG, "signOut: Google Sign-Out complete. Success: ${googleSignOutTask.isSuccessful}")
+                // Firebase sign out is already done.
+                // Toast and UI update are handled after both.
+                // Ensure UI updates run on the main thread
+                runOnUiThread {
+                    Toast.makeText(this@SettingsActivity, "Signed Out", Toast.LENGTH_SHORT).show()
+                    hideLoadingOverlay() // Hide overlay after all sign out operations
+                    updateAuthButtonUI() // Update button to "Sign In"
+                }
             }
         }
     }
