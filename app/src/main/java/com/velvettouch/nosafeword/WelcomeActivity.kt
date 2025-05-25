@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import android.app.Activity // Added for Activity.RESULT_CANCELED
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+// CommonStatusCodes import removed if only SIGN_IN_CANCELLED was used and now replaced by its value
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -84,18 +86,25 @@ class WelcomeActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-            try {
-                val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
-                if (account?.idToken != null) {
-                    Log.d(TAG, "Google Sign-In successful, token received.")
-                    firebaseAuthWithGoogle(account.idToken!!)
-                } else {
-                    Log.w(TAG, "Google Sign-In successful but idToken is null.")
-                    Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (No ID Token)", Toast.LENGTH_LONG).show()
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
+                    if (account?.idToken != null) {
+                        Log.d(TAG, "Google Sign-In successful, token received.")
+                        firebaseAuthWithGoogle(account.idToken!!)
+                    } else {
+                        Log.w(TAG, "Google Sign-In successful but idToken is null.")
+                        Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (No ID Token)", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: ApiException) {
+                    // This catch block is now for unexpected errors when resultCode was OK
+                    Log.w(TAG, "Google sign in failed despite RESULT_OK: ${e.statusCode}", e)
+                    Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (API Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
                 }
-            } catch (e: ApiException) {
-                Log.w(TAG, "Google sign in failed: ${e.statusCode}", e)
-                Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (API Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
+            } else {
+                // Handle cancellation (resultCode != Activity.RESULT_OK, e.g., Activity.RESULT_CANCELED)
+                Log.d(TAG, "Google Sign-In cancelled by user. ResultCode: $resultCode")
+                Toast.makeText(this, getString(R.string.sign_in_cancelled_toast), Toast.LENGTH_SHORT).show()
             }
         }
     }

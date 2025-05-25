@@ -143,5 +143,6 @@
     <string name="sign_in_with_google">Connect with Google</string>
     <string name="skip_for_now">Continue Without Signing In</string>
     <string name="sign_in_failed_toast">Sign-in failed. Please try again.</string>
+    <string name="sign_in_cancelled_toast">Sign-in cancelled.</string>
 
 </resources>

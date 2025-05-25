@@ -1,5 +1,6 @@
 package com.velvettouch.nosafeword
 
+import android.app.Activity // Added for Activity.RESULT_CANCELED
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -633,15 +634,21 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
 
         if (requestCode == RC_SIGN_IN_SETTINGS) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "onActivityResult: Google Sign-In successful from Settings, token: ${account.idToken?.take(10)}...")
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                Log.w(TAG, "Google sign in failed from Settings", e)
-                Toast.makeText(this, "Google Sign-In failed: ${e.message} (Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
-                // Optionally, update UI to reflect sign-in failure
+            if (resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                try {
+                    val account = task.getResult(ApiException::class.java)!!
+                    Log.d(TAG, "onActivityResult: Google Sign-In successful from Settings, token: ${account.idToken?.take(10)}...")
+                    firebaseAuthWithGoogle(account.idToken!!)
+                } catch (e: ApiException) {
+                    Log.w(TAG, "Google sign in failed from Settings despite RESULT_OK", e)
+                    Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (API Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
+                    // Optionally, update UI to reflect sign-in failure
+                }
+            } else {
+                // Handle cancellation (resultCode != Activity.RESULT_OK, e.g., Activity.RESULT_CANCELED)
+                Log.d(TAG, "Google Sign-In cancelled by user from Settings. ResultCode: $resultCode")
+                Toast.makeText(this, getString(R.string.sign_in_cancelled_toast), Toast.LENGTH_SHORT).show()
             }
         }
     }
