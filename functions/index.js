@@ -1,6 +1,6 @@
 // functions/index.js
 const { onObjectFinalized } = require("firebase-functions/v2/storage"); // Import v2 storage trigger
-const { onValueCreated } = require("firebase-functions/v2/database"); // For RTDB v2 triggers
+const { onValueCreated, onValueWritten } = require("firebase-functions/v2/database"); // For RTDB v2 triggers
 const { logger } = require("firebase-functions"); // Import v2 logger
 const admin = require('firebase-admin');
 const { onDocumentDeleted } = require("firebase-functions/v2/firestore"); // For Firestore v2 triggers
@@ -255,23 +255,17 @@ exports.sendTaskNotification = onValueCreated("shared_task_lists/{pairingId}/tas
 
         // Fetch creator's profile (for role)
         const creatorProfileDoc = await firestore.collection('users').doc(createdByUid).get();
-        if (!creatorProfileDoc.exists) {
-            logger.warn(`Creator profile not found for UID: ${createdByUid}`);
-            // We can still send a generic notification or default role
-        }
-        const creatorProfile = creatorProfileDoc.data();
-        const creatorRole = creatorProfile.role || "Partner"; // Default role if not set
-
-        let notificationTitle = `New Task from Your ${creatorRole}`;
-        let notificationBody;
-
-        if (creatorRole.toLowerCase() === "dom") {
-            notificationBody = `Your Dom has a task for you: "${taskTitle}"`;
-        } else if (creatorRole.toLowerCase() === "sub") {
-            notificationBody = `Your Sub has a new way to serve you: "${taskTitle}"`;
+        let creatorName = "Your Partner"; // Default name
+        if (creatorProfileDoc.exists) {
+            const creatorProfile = creatorProfileDoc.data();
+            // Use displayName if available, otherwise fallback to a generic term or role
+            creatorName = creatorProfile.displayName || creatorProfile.role || "Your Partner";
         } else {
-            notificationBody = `Your ${creatorRole} has a new task for you: "${taskTitle}"`;
+            logger.warn(`Creator profile not found for UID: ${createdByUid}`);
         }
+        
+        const notificationTitle = `New Task from ${creatorName}`;
+        const notificationBody = `${creatorName} has assigned you a new task: "${taskTitle}"`;
         
         const payload = {
             notification: {
@@ -279,15 +273,100 @@ exports.sendTaskNotification = onValueCreated("shared_task_lists/{pairingId}/tas
                 body: notificationBody,
             },
             token: recipientFcmToken,
+            data: { // Optional: send data payload for client-side handling
+                taskId: params.taskId,
+                pairingId: pairingId,
+                type: "NEW_TASK"
+            }
         };
 
-        logger.log(`Sending notification to ${recipientUid} (token: ${recipientFcmToken.substring(0,10)}...) for task: "${taskTitle}"`);
+        logger.log(`Sending new task notification to ${recipientUid} (token: ${recipientFcmToken.substring(0,10)}...) for task: "${taskTitle}"`);
         await messaging.send(payload);
-        logger.log("Successfully sent message to:", recipientUid);
+        logger.log("Successfully sent new task message to:", recipientUid);
         return null;
 
     } catch (error) {
-        logger.error("Error sending task notification:", error);
+        logger.error("Error sending new task notification:", error);
+        return null;
+    }
+});
+
+// Function to send notification when a task is marked as completed
+exports.sendTaskCompletionNotification = onValueWritten("shared_task_lists/{pairingId}/tasks/{taskId}", async (event) => {
+    const beforeData = event.data.before.val();
+    const afterData = event.data.after.val();
+    const params = event.params;
+
+    // If task was deleted, or didn't exist before (it's a new task, handled by sendTaskNotification)
+    if (!event.data.after.exists() || !event.data.before.exists()) {
+        logger.log("Task completion: No data after write or no data before write (likely creation/deletion). Exiting.", 
+                   {afterExists: event.data.after.exists(), beforeExists: event.data.before.exists()});
+        return null;
+    }
+
+    // Log the full before and after data for debugging
+    logger.log("Task completion check. TaskId:", params.taskId, "PairingId:", params.pairingId);
+    logger.log("Before data:", JSON.stringify(beforeData));
+    logger.log("After data:", JSON.stringify(afterData));
+    
+    // Check if 'completed' changed to true from a different state
+    if (afterData.completed === true && beforeData.completed !== true) {
+        logger.log(`Task ${params.taskId} in pairing ${params.pairingId} marked as complete (changed from ${beforeData.completed} to ${afterData.completed}).`);
+
+        const taskTitle = afterData.title || "A task";
+        const createdByUid = afterData.createdByUid; // This is the Dom
+        const completedByUid = afterData.completedByUid; // This should be the Sub, if you add this field
+
+        if (!createdByUid) {
+            logger.error(`Task ${params.taskId} is missing createdByUid. Cannot notify.`);
+            return null;
+        }
+
+        // The recipient of this notification is the Dom (createdByUid)
+        const domUid = createdByUid;
+
+        try {
+            // Fetch Dom's profile for FCM token
+            const domProfileDoc = await firestore.collection('users').doc(domUid).get();
+            if (!domProfileDoc.exists) {
+                logger.warn(`Dom profile not found for UID: ${domUid} for task completion.`);
+                return null;
+            }
+            const domProfile = domProfileDoc.data();
+            const domFcmToken = domProfile.fcmToken;
+
+            if (!domFcmToken) {
+                logger.warn(`Dom ${domUid} does not have an FCM token for task completion.`);
+                return null;
+            }
+
+            const notificationTitle = `Task Completed!`;
+            const notificationBody = `Your Sub has completed the task: "${taskTitle}"`;
+
+            const payload = {
+                notification: {
+                    title: notificationTitle,
+                    body: notificationBody,
+                },
+                token: domFcmToken,
+                data: { // Optional: send data payload for client-side handling
+                    taskId: params.taskId,
+                    pairingId: params.pairingId,
+                    type: "TASK_COMPLETED"
+                }
+            };
+
+            logger.log(`Sending task completion notification to Dom ${domUid} (token: ${domFcmToken.substring(0,10)}...) for task: "${taskTitle}"`);
+            await messaging.send(payload);
+            logger.log("Successfully sent task completion message to Dom:", domUid);
+            return null;
+
+        } catch (error) {
+            logger.error("Error sending task completion notification:", error);
+            return null;
+        }
+    } else {
+        logger.log(`Task ${params.taskId} in pairing ${params.pairingId} was updated, but condition for completion notification not met. afterData.completed: ${afterData.completed}, beforeData.completed: ${beforeData.completed}. No completion notification sent.`);
         return null;
     }
 });
