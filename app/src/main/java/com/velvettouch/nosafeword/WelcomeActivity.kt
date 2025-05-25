@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging // Added for FCM Token
 import com.velvettouch.nosafeword.data.repository.UserRepository // Added
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,13 +46,19 @@ class WelcomeActivity : AppCompatActivity() {
         // Check if welcome has already been completed
         val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (sharedPreferences.getBoolean(KEY_WELCOME_COMPLETED, false)) {
+            // User has completed welcome and is likely signed in.
+            // Ensure FCM token is updated if user is signed in.
+            auth.currentUser?.let {
+                updateFcmTokenForCurrentUser(it.uid)
+            }
             navigateToMainActivity(false) // Don't set the flag again if already set
             return
         }
 
         // Check if user is already signed in (Firebase Auth)
         if (auth.currentUser != null) {
-            // If user is signed in, mark welcome as completed and navigate
+            // If user is signed in, update FCM token, mark welcome as completed and navigate
+            updateFcmTokenForCurrentUser(auth.currentUser!!.uid) // Update FCM token
             navigateToMainActivity()
             return // Finish onCreate early
         }
@@ -125,15 +132,18 @@ class WelcomeActivity : AppCompatActivity() {
                     auth.currentUser?.let { firebaseUser ->
                         CoroutineScope(Dispatchers.IO).launch {
                             val profileResult = userRepository.createUserProfileIfNotExists(firebaseUser)
-                            if (profileResult.isFailure) {
+                            if (profileResult.isSuccess) {
+                                // Profile created or already exists, now update FCM token
+                                updateFcmTokenForCurrentUser(firebaseUser.uid)
+                            } else {
                                 Timber.tag(TAG).e(profileResult.exceptionOrNull(), "Failed to ensure user profile exists.")
                                 // Optionally show a non-blocking error to user on main thread
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(this@WelcomeActivity, "Profile sync issue.", Toast.LENGTH_SHORT).show()
                                 }
                             }
-                            // Proceed with navigation regardless of profile sync outcome for now
-                            // to not block the user, but log error.
+                            // Proceed with navigation regardless of profile/FCM sync outcome for now
+                            // to not block the user, but log errors.
                             withContext(Dispatchers.Main) {
                                 navigateToMainActivity()
                             }
@@ -161,5 +171,28 @@ class WelcomeActivity : AppCompatActivity() {
         }
         startActivity(Intent(this, MainActivity::class.java))
         finish() // Finish WelcomeActivity so user can't navigate back to it
+    }
+
+    private fun updateFcmTokenForCurrentUser(uid: String) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.tag(TAG).w(task.exception, "Fetching FCM registration token failed")
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            Timber.tag(TAG).d("Current FCM Token: $token")
+
+            // Update in Firestore
+            CoroutineScope(Dispatchers.IO).launch {
+                val updateResult = userRepository.updateFcmToken(uid, token)
+                if (updateResult.isSuccess) {
+                    Timber.tag(TAG).d("FCM token updated successfully in WelcomeActivity for user $uid")
+                } else {
+                    Timber.tag(TAG).e(updateResult.exceptionOrNull(), "Failed to update FCM token in WelcomeActivity for user $uid")
+                }
+            }
+        }
     }
 }

@@ -5,77 +5,84 @@ service cloud.firestore {
 
     // User documents
     match /users/{userId} {
-      // Rule 1: Allow a user to read (get/list), create, and update their own document.
-      // 'list' here refers to listening to changes on their own single document.
-      allow get, list, create: if request.auth != null && request.auth.uid == userId;
-      
-      // Rule 2: Allow a user to update their own document OR allow a Sub to update a Dom's document during pairing.
-      allow update: if request.auth != null &&
-                       ( (request.auth.uid == userId) || // Case A: Updating own document
-                         ( userId != request.auth.uid && // Case B: Sub updating Dom's document
-                           request.resource.data.pairedWith == request.auth.uid && // Dom's pairedWith is being set to Sub's UID
-                           request.resource.data.role == "Dom" && // Dom's role is being set to "Dom"
-                           request.resource.data.pairingCode == null && // Dom's pairingCode is being cleared
-                           request.resource.data.pairingCodeTimestamp == null // Dom's pairingCodeTimestamp is being cleared
-                         )
-                       );
-      // Rule 3: Allow any authenticated user to get any user document.
-      // This is needed for the Sub to read the Dom's profile after finding it via pairing code.
-      // This is broader than ideal; a Cloud Function would be more secure for mediating this.
-      // This rule must be placed after the more specific get rule for self, or combined carefully.
-      // Let's combine it: a user can get their own doc, OR any auth user can get any doc.
-      // The first part is redundant if the second part is true. So, just:
-      // allow get: if request.auth != null; // This was present in a previous version and is needed for pairing.
-      // Let's refine:
-      // A user can get their own document (covered by the first `allow get` above).
-      // A user can get another user's document if they are paired with them, or if they are querying by pairing code.
-      // This is hard to express directly for the `get` after a query.
-      // The simplest rule that allows the pairing `get` to work is:
-      // allow get: if request.auth != null;
-      // Let's ensure this is the effective get rule.
-      // The `allow get, list, create` above already covers `get` for self.
-      // We need an additional `get` for reading the other user's profile during pairing.
-      // So, the effective get rule should be:
-      // (request.auth.uid == userId) || (request.auth != null && /* condition for pairing read */)
-      // For now, to ensure pairing works, let's make `get` generally available to authenticated users.
-      // This means the `allow get` in `allow get, list, create` for self is overridden by a broader `get`.
-      allow get: if request.auth != null; // Overrides the more specific get for self, allows any auth user to get any user doc.
+      // Allow a user to read (get/list for self), create their own document.
+      allow list, create: if request.auth != null && request.auth.uid == userId;
+
+      // Allow any authenticated user to get any user document.
+      allow get: if request.auth != null;
+
+      // Update rules for user documents
+      allow update: if request.auth != null && (
+                      // Case A: User is updating their OWN document.
+                      // This covers self-updates during pairing, unpairing, FCM token, role changes, etc.
+                      (request.auth.uid == userId) ||
+
+                      // Case B: Sub (request.auth.uid) completing pairing with Dom (userId).
+                      // Sub updates Dom's document.
+                      (
+                        userId != request.auth.uid && // Document owner (Dom) is not the requester (Sub)
+                        request.resource.data.role == "Dom" && // Dom's role is being set/confirmed
+                        request.resource.data.pairedWith == request.auth.uid && // Dom's pairedWith is being set to Sub's UID
+                        request.resource.data.pairingCode == null &&
+                        request.resource.data.pairingCodeTimestamp == null &&
+                        // Sub is allowed to change these specific fields on Dom's document:
+                        request.resource.data.diff(resource.data).affectedKeys().hasAny([
+                          'pairedWith', 'role', 'pairingCode', 'pairingCodeTimestamp'
+                        ]) &&
+                        request.resource.data.diff(resource.data).affectedKeys().size() <= 4 // Max 4 fields
+                      ) ||
+
+                      // Case C: User (request.auth.uid) unpairing from Partner (userId).
+                      // User updates Partner's document.
+                      (
+                        userId != request.auth.uid && // Document owner (Partner) is not the requester
+                        resource.data.pairedWith == request.auth.uid && // Partner's doc currently IS paired with the requester
+                        // Requester is setting Partner's fields to null:
+                        request.resource.data.pairedWith == null &&
+                        request.resource.data.role == null &&
+                        request.resource.data.pairingCode == null &&
+                        request.resource.data.pairingCodeTimestamp == null &&
+                        // User is allowed to change these specific fields on Partner's document:
+                        request.resource.data.diff(resource.data).affectedKeys().hasAny([
+                          'pairedWith', 'role', 'pairingCode', 'pairingCodeTimestamp'
+                        ]) &&
+                        request.resource.data.diff(resource.data).affectedKeys().size() <= 4 // Max 4 fields
+                      )
+                    );
     }
 
     // Rule for querying the 'users' collection by 'pairingCode'.
-    // This must be on the collection path.
     match /users/{document=**} {
-      // Allow an authenticated user to list (query) the users collection if:
-      // 1. The query is on the 'pairingCode' field.
-      // 2. The query is limited to 1 result (as findUserByPairingCode expects one user).
       allow list: if request.auth != null &&
-                     request.query.resource.data.pairingCode is string && // Check if query is on pairingCode
-                     request.query.limit == 1; // Ensure query is specific enough
+                     request.query.limit == 1;
     }
 
-    // Scenes: Users can only read, create, update, and delete their own scenes.
+    // Scenes
     match /scenes/{sceneId} {
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
 
-    // Positions: Users can only read, create, update, and delete their own positions.
-    // Asset positions are not stored in Firestore, so these rules apply to user-created positions.
+    // Positions
     match /positions/{positionId} {
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
 
-    // Favorites: Users can only read, create, and delete their own favorites.
-    // Favorites are typically not updated, only created or deleted.
-    // Note: The field name in the repository queries is "user_id".
+    // Favorites
     match /favorites/{favoriteId} {
-      allow read: if request.auth != null && resource.data.user_id == request.auth.uid;
+      allow read, delete: if request.auth != null && resource.data.user_id == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.user_id == request.auth.uid;
-      // No update rule, as favorites are usually added/removed, not modified in place.
-      allow delete: if request.auth != null && resource.data.user_id == request.auth.uid;
+    }
+
+    // Shared Task Lists
+    match /shared_task_lists/{pairingId}/tasks/{taskId} {
+      allow get, list: if request.auth != null && request.auth.uid in pairingId.split('_');
+      allow create: if request.auth != null &&
+                       request.auth.uid in pairingId.split('_') &&
+                       request.resource.data.createdByUid == request.auth.uid;
+      allow update: if request.auth != null && request.auth.uid in pairingId.split('_');
+      allow delete: if request.auth != null && request.auth.uid in pairingId.split('_');
     }
   }
 }

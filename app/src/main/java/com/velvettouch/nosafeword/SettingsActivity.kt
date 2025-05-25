@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging // Added for FCM Token
 import com.google.android.material.button.MaterialButton
 import android.view.MenuItem
 // import android.widget.Button // No longer needed if MaterialButton is used everywhere
@@ -900,7 +901,10 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                         // to ensure they run after profile creation/check.
                         lifecycleScope.launch { 
                             val profileResult = userRepository.createUserProfileIfNotExists(firebaseUser)
-                            if (profileResult.isFailure) {
+                            if (profileResult.isSuccess) {
+                                // Profile created or already exists, now update FCM token
+                                updateFcmTokenForCurrentUser(firebaseUser.uid)
+                            } else {
                                 Timber.tag(TAG).e(profileResult.exceptionOrNull(), "Failed to ensure user profile exists from Settings.")
                                 Toast.makeText(this@SettingsActivity, "Profile sync issue.", Toast.LENGTH_SHORT).show()
                             }
@@ -1082,6 +1086,29 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             }
             // Optionally change icon back for sign in
             googleSignInButton.setIconResource(R.drawable.googleg_standard_color_18) // Assuming this is your sign-in icon
+        }
+    }
+
+    private fun updateFcmTokenForCurrentUser(uid: String) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.tag(TAG).w(task.exception, "Fetching FCM registration token failed in SettingsActivity")
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            Timber.tag(TAG).d("Current FCM Token (SettingsActivity): $token")
+
+            // Update in Firestore
+            lifecycleScope.launch(Dispatchers.IO) { // Use lifecycleScope for coroutines in Activity
+                val updateResult = userRepository.updateFcmToken(uid, token)
+                if (updateResult.isSuccess) {
+                    Timber.tag(TAG).d("FCM token updated successfully in SettingsActivity for user $uid")
+                } else {
+                    Timber.tag(TAG).e(updateResult.exceptionOrNull(), "Failed to update FCM token in SettingsActivity for user $uid")
+                }
+            }
         }
     }
 }
