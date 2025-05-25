@@ -46,7 +46,109 @@
                     app:indicatorColor="?attr/colorPrimary"
                     app:trackColor="?attr/colorSurfaceContainerHighest" />
 
-                <androidx.recyclerview.widget.RecyclerView
+            <!-- Rules Card Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/rules_card_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/rules_header_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <!-- Background removed, will inherit from MaterialCardView -->
+
+                        <TextView
+                            android:id="@+id/rules_header_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rules"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentStart="true"/>
+
+                        <ImageButton
+                            android:id="@+id/add_rule_button_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_add"
+                            app:tint="?attr/colorOnSurfaceVariant"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Add New Rule"
+                            android:layout_toStartOf="@id/rules_edit_mode_icon"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:visibility="gone"
+                            tools:visibility="visible"/>
+
+                        <ImageView
+                            android:id="@+id/rules_edit_mode_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_edit"
+                            app:tint="?attr/colorOnSurfaceVariant"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:contentDescription="Edit Rules"
+                            android:visibility="gone"
+                            tools:visibility="visible"/>
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rules_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="8dp"
+                        tools:listitem="@layout/item_rule"
+                        tools:itemCount="3"
+                        android:nestedScrollingEnabled="false"/>
+                        <!-- nestedScrollingEnabled might be needed if inside another scroll view -->
+
+
+                    <LinearLayout
+                        android:id="@+id/empty_rules_list_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone"
+                        tools:visibility="gone">
+                        <TextView
+                            android:id="@+id/empty_rules_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="No rules defined yet. Tap '+' in header to add (Dom only)."
+                            android:textAppearance="?attr/textAppearanceBodyMedium" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <!-- End Rules Card Section -->
+
+            <!-- Removed rules_tasks_divider View -->
+
+            <!-- Add Rule FAB - Placed within the main content LinearLayout, after tasks -->
+            <!-- This is a sibling to the CoordinatorLayout's main FAB, so positioning needs care -->
+            <!-- For better control, it might be better to place it inside a FrameLayout that wraps the rules RecyclerView -->
+            <!-- For now, let's try adding it here and adjust TaskListActivity to manage its visibility and anchor. -->
+            <!-- A better approach would be to put rules section (header, RV, empty view, FAB) in its own CoordinatorLayout or FrameLayout -->
+
+            <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/task_list_recycler_view"
                     android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -99,6 +201,8 @@
             app:tint="?attr/colorOnPrimary"
             app:elevation="6dp"/>
 
+        <!-- fab_add_rule removed -->
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- Navigation Drawer -->
@@ -109,4 +213,5 @@
         android:layout_gravity="start"
         android:paddingTop="24dp"
         app:menu="@menu/drawer_menu" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -7,6 +7,14 @@
           ".write": "$uid === auth.uid",
           ".indexOn": ["order"]
         },
+        "rules": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          ".indexOn": ["order"],
+          "$ruleId": {
+            ".validate": "newData.hasChildren(['id', 'description', 'createdByUid', 'order', 'lastUpdatedTimestamp']) && newData.child('id').isString() && newData.child('description').isString() && newData.child('createdByUid').isString() && newData.child('order').isNumber() && newData.child('lastUpdatedTimestamp').isNumber()"
+          }
+        },
         "role": {
           ".read": "auth != null"
         }
@@ -20,6 +28,14 @@
           ".indexOn": ["order"],
           "$taskId": {
             ".validate": "newData.hasChildren(['id', 'title', 'createdByUid', 'order']) && newData.child('id').isString() && newData.child('title').isString() && newData.child('createdByUid').isString() && newData.child('order').isNumber()"
+          }
+        },
+        "rules": {
+          ".read": "auth != null && $pairingId.contains(auth.uid)",
+          ".write": "auth != null && $pairingId.contains(auth.uid)",
+          ".indexOn": ["order"],
+          "$ruleId": {
+            ".validate": "newData.hasChildren(['id', 'description', 'createdByUid', 'order', 'lastUpdatedTimestamp']) && newData.child('id').isString() && newData.child('description').isString() && newData.child('createdByUid').isString() && newData.child('order').isNumber() && newData.child('lastUpdatedTimestamp').isNumber()"
           }
         }
       }

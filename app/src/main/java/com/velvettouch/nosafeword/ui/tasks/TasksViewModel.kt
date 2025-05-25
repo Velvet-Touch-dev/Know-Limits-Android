@@ -3,7 +3,9 @@ package com.velvettouch.nosafeword.ui.tasks
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.velvettouch.nosafeword.data.model.RuleItem // Added for rules
 import com.velvettouch.nosafeword.data.model.TaskItem
+import com.velvettouch.nosafeword.data.repository.RulesRepository // Added for rules
 import com.velvettouch.nosafeword.data.repository.TasksRepository
 import com.velvettouch.nosafeword.data.repository.UserNotLoggedInException // Import the custom exception
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,14 +25,25 @@ import com.google.firebase.auth.FirebaseAuth // Added for current user UID
 
 class TasksViewModel(
     private val tasksRepository: TasksRepository,
+    private val rulesRepository: RulesRepository, // Added RulesRepository
     private val userRepository: UserRepository // Added UserRepository
 ) : ViewModel() {
 
     private val _tasks = MutableStateFlow<List<TaskItem>>(emptyList())
     val tasks: StateFlow<List<TaskItem>> = _tasks.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val _rules = MutableStateFlow<List<RuleItem>>(emptyList()) // Added for rules
+    val rules: StateFlow<List<RuleItem>> = _rules.asStateFlow() // Added for rules
+
+    // Separate loading states
+    private val _isLoadingTasks = MutableStateFlow(false)
+    private val _isLoadingRules = MutableStateFlow(false)
+
+    // Combined loading state for the UI
+    val isLoading: StateFlow<Boolean> = kotlinx.coroutines.flow.combine(_isLoadingTasks, _isLoadingRules) { tasksLoading, rulesLoading ->
+        tasksLoading || rulesLoading
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
@@ -44,23 +57,43 @@ class TasksViewModel(
 
     init {
         loadTasks()
+        loadRules() // Added call to load rules
     }
 
     fun loadTasks() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null // Clear previous errors
+            _isLoadingTasks.value = true
+            _error.value = null // Clear previous errors for this specific load if needed or handle globally
             tasksRepository.getAllTasks()
                 .catch { e ->
                     Timber.e(e, "Error loading tasks")
                     _error.value = "Failed to load tasks: ${e.localizedMessage}"
-                    _tasks.value = emptyList() // Clear tasks on error or show cached if available
-                    _isLoading.value = false
+                    _tasks.value = emptyList()
+                    _isLoadingTasks.value = false
                 }
                 .collect { taskList ->
                     _tasks.value = taskList
-                    _isLoading.value = false
+                    _isLoadingTasks.value = false
                     Timber.d("Tasks loaded in ViewModel: ${taskList.size}")
+                }
+        }
+    }
+
+    fun loadRules() { // Added method to load rules
+        viewModelScope.launch {
+            _isLoadingRules.value = true
+            _error.value = null // Clear previous errors for this specific load
+            rulesRepository.getAllRules()
+                .catch { e ->
+                    Timber.e(e, "Error loading rules")
+                    _error.value = "Failed to load rules: ${e.localizedMessage}"
+                    _rules.value = emptyList()
+                    _isLoadingRules.value = false
+                }
+                .collect { ruleList ->
+                    _rules.value = ruleList
+                    _isLoadingRules.value = false
+                    Timber.d("Rules loaded in ViewModel: ${ruleList.size}")
                 }
         }
     }
@@ -171,17 +204,105 @@ class TasksViewModel(
     fun clearError() {
         _error.value = null
     }
+
+    // --- Rules Management ---
+    fun addRule(description: String) {
+        if (description.isBlank()) {
+            _error.value = "Rule description cannot be empty."
+            return
+        }
+        viewModelScope.launch {
+            val newRule = RuleItem(description = description, order = _rules.value.size)
+            // createdByUid will be set by RulesRepository
+            val result = rulesRepository.addRule(newRule)
+            result.fold(
+                onSuccess = {
+                    Timber.d("Rule add request successful for: $description")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error adding rule")
+                    if (e is UserNotLoggedInException) {
+                        _error.value = "You must be logged in to add rules."
+                    } else {
+                        _error.value = "Failed to add rule: ${e.localizedMessage}"
+                    }
+                }
+            )
+        }
+    }
+
+    fun updateRule(rule: RuleItem) {
+        viewModelScope.launch {
+            val result = rulesRepository.updateRule(rule)
+            result.fold(
+                onSuccess = {
+                    Timber.d("Rule update request successful for: ${rule.id}")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error updating rule")
+                    if (e is UserNotLoggedInException) {
+                        _error.value = "You must be logged in to update rules."
+                    } else {
+                        _error.value = "Failed to update rule: ${e.localizedMessage}"
+                    }
+                }
+            )
+        }
+    }
+
+    fun deleteRule(ruleId: String) {
+        viewModelScope.launch {
+            val result = rulesRepository.deleteRule(ruleId)
+            result.fold(
+                onSuccess = {
+                    Timber.d("Rule delete request successful for: $ruleId")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error deleting rule")
+                    if (e is UserNotLoggedInException) {
+                        _error.value = "You must be logged in to delete rules."
+                    } else {
+                        _error.value = "Failed to delete rule: ${e.localizedMessage}"
+                    }
+                }
+            )
+        }
+    }
+
+    fun updateRuleOrder(orderedRules: List<RuleItem>) {
+        viewModelScope.launch {
+            val rulesWithNewOrder = orderedRules.mapIndexed { index, ruleItem ->
+                ruleItem.copy(order = index)
+            }
+            val result = rulesRepository.updateRuleOrder(rulesWithNewOrder)
+            result.fold(
+                onSuccess = {
+                    Timber.d("Rule order update request successful.")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error updating rule order")
+                    if (e is UserNotLoggedInException) {
+                        _error.value = "You must be logged in to update rule order."
+                    } else {
+                        _error.value = "Failed to update rule order: ${e.localizedMessage}"
+                    }
+                }
+            )
+        }
+    }
 }
 
 // ViewModel Factory to inject the repository
 class TasksViewModelFactory(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository // Keep this, as both repositories might need it or be constructed here
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TasksViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            // Pass both repositories to TasksViewModel
-            return TasksViewModel(TasksRepository(userRepository), userRepository) as T
+            // Instantiate TasksRepository and RulesRepository here
+            val tasksRepo = TasksRepository(userRepository)
+            val rulesRepo = RulesRepository(userRepository) // RulesRepository also needs UserRepository
+            return TasksViewModel(tasksRepo, rulesRepo, userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

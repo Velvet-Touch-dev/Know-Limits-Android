@@ -158,4 +158,6 @@
     <string name="connect_as_sub">Connect as Submissive</string>
     <string name="unpair_button_text">Unpair</string>
 
+    <string name="drag_to_reorder_rule">Drag to reorder rule</string>
+    <string name="delete_rule">Delete rule</string>
 </resources>

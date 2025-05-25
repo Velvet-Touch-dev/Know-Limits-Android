@@ -7,7 +7,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -29,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.velvettouch.nosafeword.data.model.RuleItem
 import com.velvettouch.nosafeword.data.model.TaskItem // Updated import
 import com.velvettouch.nosafeword.data.repository.TasksRepository
 import com.velvettouch.nosafeword.data.repository.UserRepository // Added
@@ -52,11 +55,20 @@ class TaskListActivity : BaseActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var taskListAdapter: TaskListAdapter
     private lateinit var fabAddTask: FloatingActionButton
-    // private val taskItems = mutableListOf<TaskItem>() // Removed: ViewModel will manage this
-    private var itemTouchHelper: ItemTouchHelper? = null
+    private var taskItemTouchHelper: ItemTouchHelper? = null // Renamed for clarity
     private lateinit var emptyTaskListView: View
     private lateinit var taskListProgressIndicator: LinearProgressIndicator
-    // private lateinit var swipeRefreshLayout: SwipeRefreshLayout // Added SwipeRefreshLayout
+
+    // Rules UI Elements
+    private lateinit var rulesCardView: com.google.android.material.card.MaterialCardView // Added CardView
+    private lateinit var rulesHeaderLayout: RelativeLayout
+    private lateinit var rulesRecyclerView: RecyclerView
+    private lateinit var rulesAdapter: RulesAdapter
+    private lateinit var rulesEditModeIcon: ImageView // Changed from rulesExpandIcon
+    private lateinit var addRuleButtonHeader: ImageButton
+    private lateinit var emptyRulesListView: View
+    private var rulesItemTouchHelper: ItemTouchHelper? = null
+    private var isRulesInEditMode = false // Changed from isRulesSectionExpanded
 
     // ViewModel initialization
     private val tasksViewModel: TasksViewModel by viewModels {
@@ -98,14 +110,23 @@ class TaskListActivity : BaseActivity() {
         fabAddTask = findViewById(R.id.fab_add_task)
         emptyTaskListView = findViewById(R.id.empty_task_list_view)
         taskListProgressIndicator = findViewById(R.id.task_list_linear_progress_indicator)
-        // swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh_layout_tasks) // Explicit type for findViewById
+
+        // Initialize Rules UI
+        rulesCardView = findViewById(R.id.rules_card_view) // Added CardView
+        rulesHeaderLayout = findViewById(R.id.rules_header_layout)
+        rulesRecyclerView = findViewById(R.id.rules_recycler_view)
+        rulesEditModeIcon = findViewById(R.id.rules_edit_mode_icon) // Changed from rulesExpandIcon
+        addRuleButtonHeader = findViewById(R.id.add_rule_button_header)
+        emptyRulesListView = findViewById(R.id.empty_rules_list_view)
+
+        // Rules RecyclerView is always visible, no more expand/collapse for the list itself
+        rulesRecyclerView.visibility = View.VISIBLE
 
         setupRecyclerView()
+        setupRulesRecyclerView() // New setup for rules
         setupFab()
-        // setupSwipeRefresh() // Call new setup method
+        setupRulesHeader() // New setup for rules header actions
         observeViewModel()
-
-        // loadTasks() and updateEmptyViewVisibility() will be handled by ViewModel observation
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -154,13 +175,13 @@ class TaskListActivity : BaseActivity() {
                 }
             },
             onDragStarted = { viewHolder ->
-                itemTouchHelper?.startDrag(viewHolder)
+                taskItemTouchHelper?.startDrag(viewHolder)
             }
         )
         recyclerView.adapter = taskListAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val callback = object : ItemTouchHelper.SimpleCallback(
+        val taskCallback = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN, // Drag directions
             0 // Swipe directions (none for now)
         ) {
@@ -191,7 +212,7 @@ class TaskListActivity : BaseActivity() {
                 // DiffUtil will handle animations. notifyItemMoved is not strictly needed here
                 // but can be kept if it provides a smoother immediate visual cue before submitList processes.
                 // For simplicity and to rely on DiffUtil, we can remove notifyItemMoved if submitList is efficient.
-                // taskListAdapter.notifyItemMoved(fromPosition, toPosition) 
+                // taskListAdapter.notifyItemMoved(fromPosition, toPosition)
                 taskListAdapter.submitList(newList)
                 return true
             }
@@ -202,14 +223,87 @@ class TaskListActivity : BaseActivity() {
 
             override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
-                // This is called when a drag is finished (item dropped or drag cancelled).
-                // taskListAdapter.currentList now reflects the final visual order
-                // because submitList was called in onMove.
                 tasksViewModel.updateTaskOrder(taskListAdapter.currentList.toList())
             }
         }
-        itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper?.attachToRecyclerView(recyclerView)
+        taskItemTouchHelper = ItemTouchHelper(taskCallback)
+        taskItemTouchHelper?.attachToRecyclerView(recyclerView)
+    }
+
+    private fun setupRulesRecyclerView() {
+        rulesAdapter = RulesAdapter(
+            onDeleteClicked = { rule ->
+                // The ViewHolder's click listener already ensures isUserDom() and isRulesInEditMode.
+                // So, we can directly call the ViewModel method.
+                tasksViewModel.deleteRule(rule.id)
+            },
+            onDragStarted = { viewHolder ->
+                rulesItemTouchHelper?.startDrag(viewHolder)
+            },
+            onRuleClicked = { rule ->
+                // Click on item to edit is only possible if isUserDom() and isRulesInEditMode
+                if (isUserDom() && isRulesInEditMode) {
+                    showAddEditRuleDialog(rule)
+                }
+                // Otherwise, click does nothing on the item itself for now
+            },
+            isUserDomProvider = { isUserDom() } // Provide lambda to check Dom status
+        )
+        rulesRecyclerView.adapter = rulesAdapter
+        rulesRecyclerView.layoutManager = LinearLayoutManager(this)
+        // Prevent nested scrolling issues if the card view itself is in a scrollable container
+        // rulesRecyclerView.isNestedScrollingEnabled = false; // Already set in XML by tools, but good to be aware
+
+        val rulesCallback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                // Disable drag unless user is Dom and in edit mode
+                return if (isUserDom() && isRulesInEditMode) {
+                    super.getMovementFlags(recyclerView, viewHolder)
+                } else {
+                    makeMovementFlags(0, 0) // No drag, no swipe
+                }
+            }
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                if (!isUserDom()) return false // Only Dom can reorder
+
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+                val currentList = rulesAdapter.currentList.toMutableList()
+                if (fromPosition < toPosition) {
+                    for (i in fromPosition until toPosition) {
+                        Collections.swap(currentList, i, i + 1)
+                    }
+                } else {
+                    for (i in fromPosition downTo toPosition + 1) {
+                        Collections.swap(currentList, i, i - 1)
+                    }
+                }
+                rulesAdapter.submitList(currentList)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                if (isUserDom()) {
+                    tasksViewModel.updateRuleOrder(rulesAdapter.currentList.toList())
+                }
+            }
+
+            override fun isLongPressDragEnabled(): Boolean {
+                // Drag is initiated by onTouchListener in ViewHolder, which already checks Dom and EditMode
+                return false // Let the touch listener handle it
+            }
+        }
+        rulesItemTouchHelper = ItemTouchHelper(rulesCallback)
+        rulesItemTouchHelper?.attachToRecyclerView(rulesRecyclerView)
     }
 
     private fun setupFab() {
@@ -217,6 +311,41 @@ class TaskListActivity : BaseActivity() {
             showAddTaskDialog()
         }
     }
+
+    private fun setupRulesHeader() {
+        rulesHeaderLayout.setOnClickListener {
+            if (isUserDom()) {
+                toggleRulesEditMode()
+            }
+            // For Sub, header click does nothing
+        }
+        addRuleButtonHeader.setOnClickListener {
+            // This button is only visible if Dom and in Edit Mode
+            showAddEditRuleDialog(null)
+        }
+        updateRulesHeaderIcons() // Initial setup of icons
+    }
+
+    private fun toggleRulesEditMode() {
+        if (!isUserDom()) return // Should not happen if UI controls are correctly hidden
+
+        isRulesInEditMode = !isRulesInEditMode
+        rulesAdapter.setEditMode(isRulesInEditMode) // This will trigger notifyItemRangeChanged with payload
+        updateRulesHeaderIcons()
+        updateEmptyRuleViewVisibility(rulesAdapter.currentList.isEmpty()) // Refresh empty view based on new mode
+    }
+
+    private fun updateRulesHeaderIcons() {
+        if (isUserDom()) {
+            rulesEditModeIcon.visibility = View.VISIBLE
+            rulesEditModeIcon.setImageResource(if (isRulesInEditMode) R.drawable.ic_check_24 else R.drawable.ic_edit) // Need ic_check_24
+            addRuleButtonHeader.visibility = if (isRulesInEditMode) View.VISIBLE else View.GONE
+        } else {
+            rulesEditModeIcon.visibility = View.GONE
+            addRuleButtonHeader.visibility = View.GONE
+        }
+    }
+
 
     private fun showAddTaskDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_task, null)
@@ -291,24 +420,53 @@ class TaskListActivity : BaseActivity() {
     // Removed saveTasksToPreferences(), loadTasks(), loadSampleTasks()
     // updateEmptyViewVisibility() will be called from ViewModel observer
 
+    private fun showAddEditRuleDialog(ruleToEdit: RuleItem?) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_edit_rule, null)
+        val descriptionEditText = dialogView.findViewById<TextInputEditText>(R.id.rule_description_edittext)
+
+        ruleToEdit?.let {
+            descriptionEditText.setText(it.description)
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(if (ruleToEdit == null) "Add New Rule" else "Edit Rule")
+            .setView(dialogView)
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val description = descriptionEditText.text.toString().trim()
+                if (description.isNotEmpty()) {
+                    if (ruleToEdit == null) {
+                        tasksViewModel.addRule(description)
+                    } else {
+                        tasksViewModel.updateRule(ruleToEdit.copy(description = description))
+                    }
+                } else {
+                    Toast.makeText(this, "Rule description cannot be empty", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .show()
+    }
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             tasksViewModel.tasks.collect { tasks ->
                 taskListAdapter.submitList(tasks)
-                updateEmptyViewVisibility(tasks.isEmpty())
-                // If a new task was added, we might want to scroll to it.
-                // This requires more complex logic to detect new item vs. general update.
-                // For now, manual scroll or no scroll on general updates.
+                updateEmptyTaskViewVisibility(tasks.isEmpty())
+            }
+        }
+
+        lifecycleScope.launch {
+            tasksViewModel.rules.collect { rules ->
+                rulesAdapter.submitList(rules) {
+                    // After list is submitted, re-evaluate empty view visibility
+                    updateEmptyRuleViewVisibility(rules.isEmpty())
+                }
             }
         }
 
         lifecycleScope.launch {
             tasksViewModel.isLoading.collect { isLoading ->
-                // Control LinearProgressIndicator visibility
                 taskListProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
-                
-                // ViewModel drives SwipeRefreshLayout's animation, but only show linear progress if not swipe refreshing
-                // swipeRefreshLayout.isRefreshing = isLoading // Removed
             }
         }
 
@@ -316,21 +474,58 @@ class TaskListActivity : BaseActivity() {
             tasksViewModel.error.collect { errorMessage ->
                 errorMessage?.let {
                     Toast.makeText(this@TaskListActivity, it, Toast.LENGTH_LONG).show()
-                    tasksViewModel.clearError() // Clear error after showing
+                    tasksViewModel.clearError()
                 }
+            }
+        }
+
+        // Observe user profile to update UI based on role (e.g., show/hide add rule button)
+        lifecycleScope.launch {
+            tasksViewModel.currentUserProfile.collect { userProfile ->
+                // This will trigger when the profile loads or changes.
+                val wasDom = isUserDom() // Capture state before profile update if needed for complex logic
+                // Re-evaluate visibility of Dom-only controls and edit mode status
+                if (!isUserDom() && isRulesInEditMode) {
+                    // If user role changed from Dom to Sub while in edit mode, exit edit mode
+                    isRulesInEditMode = false
+                    rulesAdapter.setEditMode(false)
+                }
+                updateRulesHeaderIcons()
+                updateEmptyRuleViewVisibility(rulesAdapter.currentList.isEmpty())
+                // If adapter needs full refresh due to role change affecting item views:
+                // rulesAdapter.notifyDataSetChanged() // Or more specific updates
             }
         }
     }
 
-    private fun updateEmptyViewVisibility(isEmpty: Boolean) {
-        if (isEmpty) {
-            emptyTaskListView.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
-        } else {
-            emptyTaskListView.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-        }
+    private fun updateEmptyTaskViewVisibility(isEmpty: Boolean) {
+        emptyTaskListView.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
+
+    private fun updateEmptyRuleViewVisibility(isEmpty: Boolean) {
+        val isDom = isUserDom()
+        val emptyRulesTextView = emptyRulesListView.findViewById<TextView>(R.id.empty_rules_text_view)
+
+        if (isEmpty) {
+            rulesRecyclerView.visibility = View.GONE
+            emptyRulesListView.visibility = View.VISIBLE
+            if (isDom) {
+                emptyRulesTextView?.text = "No rules defined yet. Tap '+' in header to add."
+            } else {
+                emptyRulesTextView?.text = "Your dom hasn’t set the rules...yet"
+            }
+        } else {
+            rulesRecyclerView.visibility = View.VISIBLE
+            emptyRulesListView.visibility = View.GONE
+        }
+        // Visibility of add/edit icons in header is handled by updateRulesHeaderIcons()
+    }
+
+    private fun isUserDom(): Boolean {
+        return tasksViewModel.currentUserProfile.value?.role.equals("Dom", ignoreCase = true)
+    }
+
 
     // private fun setupSwipeRefresh() {
     //     swipeRefreshLayout.setOnRefreshListener {
