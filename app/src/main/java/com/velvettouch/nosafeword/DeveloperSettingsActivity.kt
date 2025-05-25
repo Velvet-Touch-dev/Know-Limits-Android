@@ -9,6 +9,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar // Added for Toolbar
+import android.view.MenuItem // Added for MenuItem
 import com.velvettouch.nosafeword.BaseActivity
 import java.util.Locale
 
@@ -46,6 +48,12 @@ class DeveloperSettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_developer_settings)
+
+        // Setup Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar_developer_settings)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Voice Customization" // Or use R.string.voice_settings_title
         
         // Initialize TextToSpeech
         textToSpeech = TextToSpeech(this, this)
@@ -231,5 +239,15 @@ class DeveloperSettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             .putFloat(Settings.PREF_VOICE_PITCH, currentPitch)
             .putFloat(Settings.PREF_VOICE_SPEED, currentSpeed)
             .apply()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

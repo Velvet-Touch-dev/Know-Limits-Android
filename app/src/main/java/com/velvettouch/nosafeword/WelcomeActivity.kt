@@ -19,6 +19,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging // Added for FCM Token
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen // Added for Splash Screen
 import com.velvettouch.nosafeword.data.repository.UserRepository // Added
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,10 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Handle the splash screen transition.
+        // Must be called before super.onCreate() or setContentView()
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
 

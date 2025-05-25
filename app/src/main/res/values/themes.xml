@@ -80,4 +80,14 @@
         <!-- <item name="android:statusBarColor">@color/your_welcome_status_bar_color</item> -->
     </style>
 
+    <!-- Splash Screen Theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen's background color to the app's window background -->
+        <item name="windowSplashScreenBackground">?android:attr/windowBackground</item>
+        <!-- Set the splash screen's icon -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <!-- Set the theme of the Activity that follows your splash screen -->
+        <item name="postSplashScreenTheme">@style/Theme.RandomSceneApp.NoActionBar</item>
+    </style>
+
 </resources>

@@ -8,8 +8,8 @@
     
     <color name="just_black_dark_secondary">#9C27B0</color>
     <color name="just_black_dark_onSecondary">#000000</color>
-    <color name="just_black_dark_secondaryContainer">#7B1FA2</color>
-    <color name="just_black_dark_onSecondaryContainer">#F3E5F5</color>
+    <color name="just_black_dark_secondaryContainer">#7e5ba8</color>
+    <color name="just_black_dark_onSecondaryContainer">#d9ccdb</color>
     
     <color name="just_black_dark_tertiary">#CF6679</color>
     <color name="just_black_dark_onTertiary">#000000</color>
@@ -18,7 +18,7 @@
     
     <color name="just_black_dark_background">#000000</color>
     <color name="just_black_dark_onBackground">#FFFFFF</color>
-    <color name="just_black_dark_surface">#000000</color>
+    <color name="just_black_dark_surface">#120c17</color> 
     <color name="just_black_dark_onSurface">#FFFFFF</color>
     <color name="just_black_dark_surfaceVariant">#202020</color>
     <color name="just_black_dark_onSurfaceVariant">#CCCCCC</color>

@@ -23,6 +23,10 @@ import android.widget.EditText // Added for pairing code input
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ImageButton
+import android.content.ClipboardManager
+import android.content.ClipData
+import android.view.View // Added for View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible // Added for easy visibility toggling
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -82,6 +86,10 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var pairingCodeEditText: EditText
     private lateinit var connectAsSubButton: MaterialButton
     private lateinit var unpairButton: MaterialButton
+    private lateinit var copyPairingCodeButton: ImageButton // Added for copy button
+    private lateinit var domSectionTitle: TextView // Added for Dom section title
+    private lateinit var subSectionTitle: TextView // Added for Sub section title
+    private lateinit var pairingDivider: View      // Added for divider
     private lateinit var loadingOverlay: FrameLayout // Added for loading overlay
 
     private var currentUserProfile: UserProfile? = null
@@ -191,19 +199,14 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         pairingCodeEditText = findViewById(R.id.pairing_code_edit_text)
         connectAsSubButton = findViewById(R.id.connect_as_sub_button)
         unpairButton = findViewById(R.id.unpair_button)
+        copyPairingCodeButton = findViewById(R.id.copy_pairing_code_button) 
+        domSectionTitle = findViewById(R.id.dom_section_title)         // Initialize Dom title
+        subSectionTitle = findViewById(R.id.sub_section_title)         // Initialize Sub title
+        pairingDivider = findViewById(R.id.pairing_divider)             // Initialize divider
+        loadingOverlay = findViewById(R.id.loading_overlay) 
 
         setupPairingClickListeners()
         observeUserProfile()
-
-
-        pairingCodeEditText = findViewById(R.id.pairing_code_edit_text)
-        connectAsSubButton = findViewById(R.id.connect_as_sub_button)
-        unpairButton = findViewById(R.id.unpair_button)
-        loadingOverlay = findViewById(R.id.loading_overlay) // Initialize loading overlay
-
-        setupPairingClickListeners()
-        observeUserProfile()
-
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -449,11 +452,19 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         currentUserProfile?.let { profile ->
             if (profile.pairedWith != null) {
                 // User is paired
-                pairingStatusText.text = "Paired with: ${profile.pairedWith}\nYour Role: ${profile.role ?: "N/A"}" // Consider fetching partner's display name
+                lifecycleScope.launch {
+                    val partnerProfile = userRepository.getUserProfile(profile.pairedWith!!)
+                    val partnerName = partnerProfile?.displayName ?: partnerProfile?.email ?: profile.pairedWith
+                    pairingStatusText.text = "Paired with: ${partnerName}\nYour Role: ${profile.role ?: "N/A"}"
+                }
                 generatePairingCodeButton.isVisible = false
                 pairingCodeInputLayout.isVisible = false
                 connectAsSubButton.isVisible = false
                 unpairButton.isVisible = true
+                copyPairingCodeButton.isVisible = false
+                domSectionTitle.isVisible = false
+                subSectionTitle.isVisible = false
+                pairingDivider.isVisible = false
             } else if (profile.pairingCode != null) {
                 // User has an active pairing code (is Dom waiting for Sub)
                 pairingStatusText.text = "Your Pairing Code: ${profile.pairingCode}\nShare this with your Sub. Waiting for connection..."
@@ -461,13 +472,21 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 pairingCodeInputLayout.isVisible = false
                 connectAsSubButton.isVisible = false
                 unpairButton.isVisible = true // Allow cancelling the pairing process/code
+                copyPairingCodeButton.isVisible = true
+                domSectionTitle.isVisible = true // Show Dom title as generate button is conceptually there (though hidden for "Cancel")
+                subSectionTitle.isVisible = false
+                pairingDivider.isVisible = false // No Sub section visible
             } else {
-                // User is not paired and has no active code
+                // User is not paired and has no active code - Show both sections
                 pairingStatusText.text = "Status: Not Paired"
                 generatePairingCodeButton.isVisible = true
                 pairingCodeInputLayout.isVisible = true
                 connectAsSubButton.isVisible = true
                 unpairButton.isVisible = false
+                copyPairingCodeButton.isVisible = false
+                domSectionTitle.isVisible = true
+                subSectionTitle.isVisible = true
+                pairingDivider.isVisible = true
             }
         } ?: run {
             // Profile not loaded yet or user just signed out
@@ -476,6 +495,10 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             pairingCodeInputLayout.isVisible = false
             connectAsSubButton.isVisible = false
             unpairButton.isVisible = false
+            copyPairingCodeButton.isVisible = false
+            domSectionTitle.isVisible = false
+            subSectionTitle.isVisible = false
+            pairingDivider.isVisible = false
         }
     }
 
@@ -542,6 +565,15 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                          Toast.makeText(this@SettingsActivity, "Pairing code cancelled.", Toast.LENGTH_SHORT).show()
                      }
                  }
+            }
+        }
+
+        copyPairingCodeButton.setOnClickListener {
+            currentUserProfile?.pairingCode?.let { codeToCopy ->
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("Pairing Code", codeToCopy)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this, "Pairing code copied to clipboard", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -64,6 +64,7 @@ configurations.all {
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-splashscreen:1.0.1' // Splash screen API
     implementation 'androidx.appcompat:appcompat:1.6.1'
     
     // MultiDex support library

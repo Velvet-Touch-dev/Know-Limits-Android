@@ -43,28 +43,48 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:cardElevation="4dp"
-                    app:cardCornerRadius="8dp">
+                    app:cardCornerRadius="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toStartOf="@+id/theme_arrow_icon">
+
+                            <TextView
+                                android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/theme_settings"
                             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-                        <TextView
-                            android:id="@+id/theme_value"
+                            <TextView
+                                android:id="@+id/theme_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/theme_system"
+                                android:textAppearance="?attr/textAppearanceBodyMedium"
+                                android:textColor="?android:attr/textColorSecondary" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/theme_arrow_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/theme_system"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="?android:attr/textColorSecondary" />
-                    </LinearLayout>
+                            android:src="@drawable/ic_arrow_forward"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:contentDescription="@null"/>
+                    </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Voice Settings Card -->
@@ -74,28 +94,48 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:cardElevation="4dp"
-                    app:cardCornerRadius="8dp">
+                    app:cardCornerRadius="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toStartOf="@+id/voice_settings_arrow_icon">
+
+                            <TextView
+                                android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/voice_settings_title"
                             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-                        <TextView
-                            android:id="@+id/voice_settings_value"
+                            <TextView
+                                android:id="@+id/voice_settings_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pitch: 1.0, Speed: 1.0"
+                                android:textAppearance="?attr/textAppearanceBodyMedium"
+                                android:textColor="?android:attr/textColorSecondary" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/voice_settings_arrow_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pitch: 1.0, Speed: 1.0"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="?android:attr/textColorSecondary" />
-                    </LinearLayout>
+                            android:src="@drawable/ic_arrow_forward"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:contentDescription="@null"/>
+                    </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Voice Instructions Toggle Card -->
@@ -189,13 +229,42 @@
                             android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:layout_marginBottom="8dp"/>
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <TextView
+                                android:id="@+id/pairing_status_text"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Status: Not Paired"
+                                android:textAppearance="?attr/textAppearanceBodyMedium"/>
+
+                            <ImageButton
+                                android:id="@+id/copy_pairing_code_button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_content_copy_24"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="@string/copy_pairing_code"
+                                android:visibility="gone"
+                                tools:visibility="visible"
+                                android:padding="8dp"/>
+                        </LinearLayout>
+
+                        <!-- Dominant Section -->
                         <TextView
-                            android:id="@+id/pairing_status_text"
+                            android:id="@+id/dom_section_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Status: Not Paired"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:layout_marginBottom="16dp"/>
+                            android:text="@string/dom_pairing_section_title"
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="4dp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/generate_pairing_code_button"
@@ -204,6 +273,23 @@
                             android:text="@string/generate_pairing_code"
                             android:layout_marginBottom="8dp"
                             style="?attr/materialButtonStyle"/>
+
+                        <View
+                            android:id="@+id/pairing_divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="?android:attr/listDivider"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"/>
+
+                        <!-- Submissive Section -->
+                        <TextView
+                            android:id="@+id/sub_section_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sub_pairing_section_title"
+                            android:textAppearance="?attr/textAppearanceLabelLarge"
+                            android:layout_marginBottom="4dp"/>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/pairing_code_input_layout"
