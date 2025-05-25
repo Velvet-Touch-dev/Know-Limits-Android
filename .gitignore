@@ -54,6 +54,7 @@ captures/
 # Gradle files
 .gradle/
 build/
+app/build/tmp/
 local.properties
 
 # Local configuration files (sensitive information)
