@@ -6,6 +6,9 @@
           ".read": "$uid === auth.uid",
           ".write": "$uid === auth.uid",
           ".indexOn": ["order"]
+        },
+        "role": {
+          ".read": "auth != null"
         }
       }
     },
@@ -13,7 +16,7 @@
       "$pairingId": {
         "tasks": {
           ".read": "auth != null && $pairingId.contains(auth.uid)",
-          ".write": "auth != null && $pairingId.contains(auth.uid)",
+          ".write": "auth != null && $pairingId.contains(auth.uid)", 
           ".indexOn": ["order"],
           "$taskId": {
             ".validate": "newData.hasChildren(['id', 'title', 'createdByUid', 'order']) && newData.child('id').isString() && newData.child('title').isString() && newData.child('createdByUid').isString() && newData.child('order').isNumber()"

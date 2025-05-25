@@ -10,7 +10,8 @@ data class TaskItem(
     var order: Int = 0, // For custom ordering, can be updated with drag-drop
     var createdByUid: String = "", // UID of the user who created the task
     var createdByName: String? = null, // Display name of the creator (optional, for convenience)
-    var createdByRole: String? = null // "Dom" or "Sub" (optional, for convenience)
+    var createdByRole: String? = null, // "Dom" or "Sub" (optional, for convenience)
+    var completedByUid: String? = null // UID of the user who completed the task
 ) {
     // No-argument constructor for Firebase deserialization
     constructor() : this(
@@ -21,6 +22,7 @@ data class TaskItem(
         order = 0,
         createdByUid = "",
         createdByName = null,
-        createdByRole = null
+        createdByRole = null,
+        completedByUid = null
     )
 }

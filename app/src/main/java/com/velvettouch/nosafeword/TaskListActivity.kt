@@ -126,9 +126,32 @@ class TaskListActivity : BaseActivity() {
                 tasksViewModel.toggleTaskCompletion(task)
             },
             onDeleteClicked = { task ->
-                tasksViewModel.deleteTask(task.id)
-                Toast.makeText(this, "Task '${task.title}' deleted", Toast.LENGTH_SHORT).show()
-                // saveTasksToPreferences() and updateEmptyViewVisibility() handled by ViewModel
+                val currentUserRole = tasksViewModel.currentUserProfile.value?.role
+                val currentUserId = tasksViewModel.currentUserId
+
+                if (currentUserId == null || currentUserRole == null) {
+                    Toast.makeText(this, "Cannot determine user role. Please try again.", Toast.LENGTH_SHORT).show()
+                    return@TaskListAdapter
+                }
+
+                val canDelete = if (currentUserRole.equals("Dom", ignoreCase = true)) {
+                    true // Dom can delete any task
+                } else if (currentUserRole.equals("Sub", ignoreCase = true)) {
+                    task.createdByUid == currentUserId // Sub can only delete their own tasks
+                } else {
+                    false // Unknown role cannot delete
+                }
+
+                if (canDelete) {
+                    tasksViewModel.deleteTask(task.id)
+                    // Toast.makeText(this, "Task '${task.title}' deleted", Toast.LENGTH_SHORT).show() // ViewModel might show its own toast or handle UI update
+                } else {
+                    if (currentUserRole.equals("Sub", ignoreCase = true)) {
+                        Toast.makeText(this, "Subs can only delete tasks they created.", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this, "You do not have permission to delete this task.", Toast.LENGTH_LONG).show()
+                    }
+                }
             },
             onDragStarted = { viewHolder ->
                 itemTouchHelper?.startDrag(viewHolder)
@@ -159,16 +182,30 @@ class TaskListActivity : BaseActivity() {
                         Collections.swap(currentList, i, i - 1)
                     }
                 }
-                // Update order property for persistence by notifying ViewModel
-                // The adapter will be updated when the ViewModel's flow emits the new list
-                taskListAdapter.notifyItemMoved(fromPosition, toPosition) // For immediate visual feedback
-                tasksViewModel.updateTaskOrder(currentList)
-                // saveTasksToPreferences() handled by ViewModel
+                // Create a new list with the moved item
+                val newList = taskListAdapter.currentList.toMutableList().apply {
+                    val item = removeAt(fromPosition)
+                    add(toPosition, item)
+                }
+                // Submit the new list to the adapter. This updates currentList.
+                // DiffUtil will handle animations. notifyItemMoved is not strictly needed here
+                // but can be kept if it provides a smoother immediate visual cue before submitList processes.
+                // For simplicity and to rely on DiffUtil, we can remove notifyItemMoved if submitList is efficient.
+                // taskListAdapter.notifyItemMoved(fromPosition, toPosition) 
+                taskListAdapter.submitList(newList)
                 return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 // Not used for now
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                // This is called when a drag is finished (item dropped or drag cancelled).
+                // taskListAdapter.currentList now reflects the final visual order
+                // because submitList was called in onMove.
+                tasksViewModel.updateTaskOrder(taskListAdapter.currentList.toList())
             }
         }
         itemTouchHelper = ItemTouchHelper(callback)

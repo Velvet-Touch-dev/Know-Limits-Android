@@ -7,14 +7,24 @@ import com.velvettouch.nosafeword.data.model.TaskItem
 import com.velvettouch.nosafeword.data.repository.TasksRepository
 import com.velvettouch.nosafeword.data.repository.UserNotLoggedInException // Import the custom exception
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.StateFlow // Keep only one import for StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.SharingStarted
+// Removed redundant StateFlow import here
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.Flow // Added import for Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import com.velvettouch.nosafeword.data.repository.UserRepository // Added for the factory
+import com.velvettouch.nosafeword.data.model.UserProfile // Added for user profile
+import com.velvettouch.nosafeword.data.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuth // Added for current user UID
 
-class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
+class TasksViewModel(
+    private val tasksRepository: TasksRepository,
+    private val userRepository: UserRepository // Added UserRepository
+) : ViewModel() {
 
     private val _tasks = MutableStateFlow<List<TaskItem>>(emptyList())
     val tasks: StateFlow<List<TaskItem>> = _tasks.asStateFlow()
@@ -25,6 +35,13 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    val currentUserProfile: StateFlow<UserProfile?> = userRepository.getCurrentUserProfileFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null) // Changed to Eagerly
+    
+    // Expose current user's UID for convenience
+    val currentUserId: String?
+        get() = FirebaseAuth.getInstance().currentUser?.uid
+
     init {
         loadTasks()
     }
@@ -33,7 +50,7 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null // Clear previous errors
-            repository.getAllTasks()
+            tasksRepository.getAllTasks()
                 .catch { e ->
                     Timber.e(e, "Error loading tasks")
                     _error.value = "Failed to load tasks: ${e.localizedMessage}"
@@ -55,7 +72,8 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
         }
         viewModelScope.launch {
             val newTask = TaskItem(title = title, deadline = deadline, order = _tasks.value.size)
-            val result = repository.addTask(newTask)
+            // createdByUid will be set by TasksRepository using FirebaseAuth.getInstance().currentUser.uid
+            val result = tasksRepository.addTask(newTask)
             result.fold(
                 onSuccess = {
                     Timber.d("Task add request successful for: $title")
@@ -75,7 +93,17 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
 
     fun updateTask(task: TaskItem) {
         viewModelScope.launch {
-            val result = repository.updateTask(task)
+            // Ensure completedByUid is set if task is completed by current user
+            val taskToUpdate = if (task.isCompleted && task.completedByUid == null && currentUserId != null) {
+                task.copy(completedByUid = currentUserId)
+            } else if (!task.isCompleted && task.completedByUid != null) {
+                // Clear completedByUid if task is marked incomplete
+                task.copy(completedByUid = null)
+            }
+            else {
+                task
+            }
+            val result = tasksRepository.updateTask(taskToUpdate)
             result.fold(
                 onSuccess = {
                     Timber.d("Task update request successful for: ${task.id}")
@@ -99,7 +127,7 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
 
     fun deleteTask(taskId: String) {
         viewModelScope.launch {
-            val result = repository.deleteTask(taskId)
+            val result = tasksRepository.deleteTask(taskId)
             result.fold(
                 onSuccess = {
                     Timber.d("Task delete request successful for: $taskId")
@@ -121,7 +149,7 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
             val tasksWithNewOrder = orderedTasks.mapIndexed { index, taskItem ->
                 taskItem.copy(order = index)
             }
-            val result = repository.updateTaskOrder(tasksWithNewOrder)
+            val result = tasksRepository.updateTaskOrder(tasksWithNewOrder)
             result.fold(
                 onSuccess = {
                     Timber.d("Task order update request successful.")
@@ -147,14 +175,21 @@ class TasksViewModel(private val repository: TasksRepository) : ViewModel() {
 
 // ViewModel Factory to inject the repository
 class TasksViewModelFactory(
-    private val userRepository: UserRepository // Changed to accept UserRepository
+    private val userRepository: UserRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TasksViewModel::class.java)) {
-            // TasksRepository is now created here, injecting UserRepository
             @Suppress("UNCHECKED_CAST")
-            return TasksViewModel(TasksRepository(userRepository)) as T
+            // Pass both repositories to TasksViewModel
+            return TasksViewModel(TasksRepository(userRepository), userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+}
+
+// Helper extension in UserRepository to get a flow of the current user's profile
+fun UserRepository.getCurrentUserProfileFlow(): Flow<UserProfile?> {
+    return FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+        this.getUserProfileFlow(uid)
+    } ?: kotlinx.coroutines.flow.flowOf(null) // Emit null if no user logged in
 }
