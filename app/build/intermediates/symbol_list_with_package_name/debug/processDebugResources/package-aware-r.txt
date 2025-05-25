@@ -3202,6 +3202,7 @@ drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable ic_other_sign_in
+drawable ic_outline_visibility_24
 drawable ic_passkey
 drawable ic_password
 drawable ic_pause_24
