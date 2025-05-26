@@ -118,20 +118,31 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val previousUser = _firebaseUser.value // Capture before update
             val newUser = firebaseAuth.currentUser
-            _firebaseUser.value = newUser
+            _firebaseUser.value = newUser // This will trigger the collectLatest in viewModelScope
+
+            // The logic for handling state change (loading defaults, syncing, etc.)
+            // is now primarily driven by the _firebaseUser.collectLatest block.
+            // The main role of this direct listener is to react to the logout event
+            // for any immediate cleanup that isn't covered by the flow collection,
+            // or for actions that *must* happen synchronously with the logout detection.
 
             if (previousUser != null && newUser == null) { // User just logged out
-                Log.d(TAG, "User ${previousUser.uid} logged out. Clearing session-specific data.")
-                val appPrefs = appContext.getSharedPreferences(PREFS_APP_NAME, Context.MODE_PRIVATE)
-                
-                // Clear cached scenes from SharedPreferences.
-                // handleAuthState(null) will load defaults and save them as the new baseline for the logged-out state.
-                appPrefs.edit().remove(KEY_LOGGED_OUT_LOCAL_SCENES_JSON).apply()
-                
-                // Clear the ViewModel's immediate cache for logged-out scenes.
-                localScenesWhenLoggedOut.clear() 
-                Log.d(TAG, "Cleared KEY_LOGGED_OUT_LOCAL_SCENES_JSON and ViewModel's localScenesWhenLoggedOut.")
-                // The change of _firebaseUser.value to null will trigger handleAuthState(null).
+                Log.d(TAG, "User ${previousUser.uid} logged out. AuthStateListener detected logout.")
+                // localScenesWhenLoggedOut is an in-memory cache. It should be cleared
+                // so that handleAuthState(null) (triggered by _firebaseUser update)
+                // correctly loads from SharedPreferences or assets.
+                localScenesWhenLoggedOut.clear()
+                Log.d(TAG, "Cleared ViewModel's in-memory localScenesWhenLoggedOut cache due to logout.")
+
+                // IMPORTANT: We DO NOT clear KEY_LOGGED_OUT_LOCAL_SCENES_JSON here anymore.
+                // handleAuthState(null) will load from it if it exists, or initialize with defaults if not.
+                // KEY_LOGGED_OUT_LOCAL_SCENES_JSON is cleared when the user LOGS IN and scenes are synced.
+            } else if (previousUser == null && newUser != null) { // User just logged in
+                Log.d(TAG, "User ${newUser.uid} logged in. AuthStateListener detected login.")
+                // Most login logic is handled by _firebaseUser.collectLatest -> handleAuthState(newUser).
+                // This spot is for anything specific that needs to happen immediately on login detection
+                // *before* or *in addition to* what handleAuthState(newUser) does.
+                // For now, handleAuthState(newUser) seems to cover the necessary scene loading/syncing.
             }
         }
         auth.addAuthStateListener(firebaseAuthListener!!)
@@ -205,38 +216,42 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
             loadScenesFromFirestore() // Load scenes for the current user. This will also handle isLoading.
 
         } else { // User is logged out
-            Log.d(TAG, "Auth state: User is logged out. Resetting to default asset scenes.")
+            Log.d(TAG, "Auth state: User is logged out.")
             _isLoading.value = true
-            
-            // Since SharedPreferences for scenes are cleared on logout now,
-            // we always start by loading default assets for the logged-out state.
-            val assetScenes = loadScenesFromAssets(appContext)
-            // KEY_DELETED_LOGGED_OUT_SCENE_IDS might still exist if user deleted defaults in a previous logged-out session
-            // and didn't log in. This is fine to respect for the current logged-out session.
-            // This preference is cleared when a user *logs in*.
-            val deletedDefaultIds = getDeletedLoggedOutSceneIds(appContext) 
-            Log.d(TAG, "Found ${deletedDefaultIds.size} locally deleted default asset scene IDs to filter: $deletedDefaultIds")
 
-            val scenesToDisplay = assetScenes.filter { assetScene ->
-                val persistentId = "default_${assetScene.id}"
-                !deletedDefaultIds.contains(persistentId)
-            }.map {
-                it.copy(userId = "", isCustom = false, firestoreId = "") // Ensure pristine state
-            }
-            
-            // localScenesWhenLoggedOut should have been cleared by the AuthStateListener on logout.
-            // If not, clear it again to be safe, before populating with defaults.
-            if (localScenesWhenLoggedOut.isNotEmpty()) {
-                Log.w(TAG, "handleAuthState(null): localScenesWhenLoggedOut was not empty. Clearing it before loading defaults.")
+            // Try to load existing local scenes first
+            val existingLocalScenes = loadLocalScenesFromPrefs(appContext)
+
+            if (existingLocalScenes != null && existingLocalScenes.isNotEmpty()) {
+                Log.d(TAG, "Found ${existingLocalScenes.size} existing local scenes in SharedPreferences. Using them.")
                 localScenesWhenLoggedOut.clear()
-            }
-            localScenesWhenLoggedOut.addAll(scenesToDisplay)
-            _scenes.value = ArrayList(localScenesWhenLoggedOut) // Update UI with defaults
+                localScenesWhenLoggedOut.addAll(existingLocalScenes)
+                _scenes.value = ArrayList(localScenesWhenLoggedOut)
+                // At this point, existingLocalScenes contains everything: defaults and custom scenes from the last logged-out session.
+                // If any default scenes were deleted during that session, they are already absent from existingLocalScenes.
+                // So, no further filtering against KEY_DELETED_LOGGED_OUT_SCENE_IDS is needed here if we load from prefs.
+            } else {
+                Log.d(TAG, "No existing local scenes in SharedPreferences, or list is empty. Initializing with defaults.")
+                // Load default asset scenes
+                val assetScenes = loadScenesFromAssets(appContext)
+                val deletedDefaultIds = getDeletedLoggedOutSceneIds(appContext)
+                Log.d(TAG, "Found ${deletedDefaultIds.size} locally deleted default asset scene IDs to filter: $deletedDefaultIds")
 
-            // Save this initial default state to SharedPreferences.
-            // Any new custom scenes added while logged out will be added to this list in Prefs.
-            saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut)
-            Log.d(TAG, "Loaded ${scenesToDisplay.size} default scenes from assets (after filtering). Saved this initial logged-out state to Prefs.")
+                val scenesToDisplay = assetScenes.filter { assetScene ->
+                    val persistentId = "default_${assetScene.id}"
+                    !deletedDefaultIds.contains(persistentId)
+                }.map {
+                    it.copy(userId = "", isCustom = false, firestoreId = "") // Ensure pristine state
+                }
+
+                localScenesWhenLoggedOut.clear()
+                localScenesWhenLoggedOut.addAll(scenesToDisplay)
+                _scenes.value = ArrayList(localScenesWhenLoggedOut)
+
+                // Save this initial default state (or empty if all defaults were deleted) to SharedPreferences.
+                saveLocalScenesToPrefs(appContext, localScenesWhenLoggedOut)
+                Log.d(TAG, "Initialized with ${scenesToDisplay.size} default scenes from assets (after filtering). Saved this initial logged-out state to Prefs.")
+            }
             _isLoading.value = false
             Log.d(TAG, "Final scenes for logged-out state (count: ${(_scenes.value).size}): ${(_scenes.value).map { it.title }}")
         }
