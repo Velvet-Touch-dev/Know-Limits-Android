@@ -208,12 +208,27 @@ class PositionsRepository(private val context: Context) {
                 // File does not exist, proceed with upload
                 Log.d("PositionsRepository", "uploadImage: File not found at $imageRef. Proceeding with upload.")
                 return try {
-                    imageRef.putFile(imageFileUriToUpload).await() // Use the passed file URI
-                    val downloadUrl = imageRef.downloadUrl.await().toString()
-                    Log.d("PositionsRepository", "uploadImage: File uploaded successfully to $imageRef. New URL: $downloadUrl")
+                    val sourceFileForSizeCheck = imageFileUriToUpload.path?.let { File(it) }
+                    val expectedSize = if (sourceFileForSizeCheck?.exists() == true) sourceFileForSizeCheck.length() else -1L
+
+                    val taskSnapshot = imageRef.putFile(imageFileUriToUpload).await() // Use the passed file URI
+
+                    if (expectedSize > 0 && taskSnapshot.bytesTransferred < expectedSize) {
+                        Log.w("PositionsRepository", "uploadImage: Upload completed for $imageRef, but bytesTransferred (${taskSnapshot.bytesTransferred}) is less than expected file size ($expectedSize). Treating as failure.")
+                        return null
+                    }
+                    if (taskSnapshot.bytesTransferred == 0L && expectedSize > 0L) {
+                         Log.w("PositionsRepository", "uploadImage: Upload completed for $imageRef, but bytesTransferred is 0 while expected size was $expectedSize. Treating as failure.")
+                        return null
+                    }
+
+                    // Try getting URL from the snapshot's reference
+                    val uploadedFileRef = taskSnapshot.storage 
+                    val downloadUrl = uploadedFileRef.downloadUrl.await().toString()
+                    Log.d("PositionsRepository", "uploadImage: File uploaded successfully to ${uploadedFileRef.path}. New URL: $downloadUrl. Bytes transferred: ${taskSnapshot.bytesTransferred}, Expected size: $expectedSize")
                     downloadUrl
                 } catch (uploadException: Exception) {
-                    Log.e("PositionsRepository", "uploadImage: Upload failed for $imageRef", uploadException)
+                    Log.e("PositionsRepository", "uploadImage: Upload failed for $imageRef (or its snapshot ref)", uploadException)
                     null // Upload failed
                 }
             } else {
@@ -393,21 +408,43 @@ class PositionsRepository(private val context: Context) {
             }
 
             if (imageUriToUpload != null && !positionForFirestore.isAsset) {
-                // New image provided via content URI (e.g., user picked a new image)
-                android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): imageUriToUpload ($imageUriToUpload) is present. Copying and uploading.")
-                val tempLocalPathForUpload = copyImageToInternalStorage(imageUriToUpload) // This creates a file with UUID name
-                if (tempLocalPathForUpload != null) {
-                    val tempLocalFile = File(tempLocalPathForUpload)
+                android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): imageUriToUpload ($imageUriToUpload) is present. Processing for upload.")
+                var fileToUploadUri: Uri? = null
+                var fileNameForStorage: String? = null
+
+                if ("file" == imageUriToUpload.scheme && imageUriToUpload.path != null) {
+                    val directFile = File(imageUriToUpload.path!!)
+                    if (directFile.exists()) {
+                        fileToUploadUri = imageUriToUpload // Use the URI directly
+                        fileNameForStorage = directFile.name // Use its existing name (which is UUID-based from DataImporter)
+                        android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Using direct file URI for upload: $fileToUploadUri, name: $fileNameForStorage")
+                    } else {
+                        android.util.Log.e("PositionsRepository", "addOrUpdatePosition (online): Direct file from URI path does not exist: ${imageUriToUpload.path!!}")
+                    }
+                } else { // Assume it's a content URI or other scheme that needs copying
+                    android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): imageUriToUpload is not a direct file URI (scheme: ${imageUriToUpload.scheme}). Copying to internal storage.")
+                    val tempLocalPathForUpload = copyImageToInternalStorage(imageUriToUpload)
+                    if (tempLocalPathForUpload != null) {
+                        val tempLocalFile = File(tempLocalPathForUpload)
+                        fileToUploadUri = Uri.fromFile(tempLocalFile)
+                        fileNameForStorage = tempLocalFile.name
+                        android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Content URI copied to $tempLocalPathForUpload. Uploading with name: $fileNameForStorage")
+                    } else {
+                        android.util.Log.e("PositionsRepository", "addOrUpdatePosition (online): Failed to copy URI $imageUriToUpload to internal storage.")
+                    }
+                }
+
+                if (fileToUploadUri != null && fileNameForStorage != null) {
                     val uploadedUrl = uploadImage(
-                        Uri.fromFile(tempLocalFile),
+                        fileToUploadUri,
                         currentProcessingUserId,
-                        tempLocalFile.name // Use the UUID-based name from the copied file
+                        fileNameForStorage
                     )
                     finalImageNameForFirestore = uploadedUrl ?: existingFirestorePosition?.imageName ?: ""
-                    android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Content URI copied to $tempLocalPathForUpload, then Uploaded. New imageName: $finalImageNameForFirestore")
+                    android.util.Log.d("PositionsRepository", "addOrUpdatePosition (online): Upload processed. New imageName: $finalImageNameForFirestore")
                 } else {
-                    android.util.Log.e("PositionsRepository", "addOrUpdatePosition (online): Failed to copy content URI $imageUriToUpload to internal storage.")
-                    finalImageNameForFirestore = existingFirestorePosition?.imageName ?: "" // Fallback to existing or blank
+                    android.util.Log.w("PositionsRepository", "addOrUpdatePosition (online): fileToUploadUri or fileNameForStorage was null. Using fallback imageName.")
+                    finalImageNameForFirestore = existingFirestorePosition?.imageName ?: "" // Fallback
                 }
             } else if (!positionForFirestore.isAsset &&
                        positionForFirestore.imageName.isNotBlank() &&

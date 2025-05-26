@@ -30,9 +30,10 @@ fun Scene.getPersistentExportId(): String {
     if (this.firestoreId.startsWith("local_")) {
         return this.firestoreId
     }
-    // If it's a default scene from assets (has an original 'id' and no Firestore/local ID yet)
-    if (this.id != 0) {
-        return "default_${this.id}"
+    // If it's an asset scene (not custom, has an original 'id', and no Firestore/local ID yet)
+    // These are typically loaded from assets/scenes.json and have isCustom = false.
+    if (!this.isCustom && this.id != 0) {
+        return "asset_${this.id}" // Changed from "default_" to "asset_" to match import format
     }
     // Fallback for a new custom scene not yet saved (should ideally get a local_ ID quickly)
     // Or if somehow an item has no identifiable ID.

@@ -99,36 +99,75 @@ class DataImporter(
         Log.d(TAG, "Importing ${positionsToImport.size} custom positions...")
 
         for (exportablePosition in positionsToImport) {
-            var tempImageFileUri: Uri? = null
+            var tempImageFileUri: Uri? = null // URI of the decoded image file
+            var localTempFileCreatedFromImageData: File? = null // Keep track of the file for manual deletion
+
             try {
                 if (exportablePosition.imageData.isNotBlank()) {
                     val imageBytes = Base64.decode(exportablePosition.imageData, Base64.NO_WRAP)
-                    val tempFile = File(tempImageDir, "${UUID.randomUUID()}.${getExtensionFromMimeType(exportablePosition.imageMimeType)}")
+                    // Use a unique name for the temp file to avoid conflicts if multiple imports happen quickly
+                    val tempFileName = "${UUID.randomUUID()}.${getExtensionFromMimeType(exportablePosition.imageMimeType)}"
+                    val tempFile = File(tempImageDir, tempFileName)
                     FileOutputStream(tempFile).use { it.write(imageBytes) }
                     tempImageFileUri = Uri.fromFile(tempFile)
+                    localTempFileCreatedFromImageData = tempFile
+                    Log.d(TAG, "Decoded image for ${exportablePosition.name} to temp file: ${tempFile.absolutePath}")
                 }
 
-                val newPositionItem = PositionItem(
-                    // id will be handled by addOrUpdatePosition (checks by name if new, or uses existing)
-                    name = exportablePosition.name,
-                    isFavorite = exportablePosition.isFavorite,
-                    isAsset = false, // Imported positions are custom
-                    imageName = "", // Will be set by addOrUpdatePosition from the tempImageFileUri
-                    userId = userId // Null if logged out, set if logged in
-                )
-                // The addOrUpdatePosition in PositionsRepository handles:
-                // - Copying image from temp URI to internal storage (logged out)
-                // - Uploading image from temp URI to Firebase Storage (logged in)
-                // - Setting the final imageName
-                // - Saving PositionItem to SharedPreferences or Firestore
-                // - De-duplication by name (for logged-in) or ID (for local)
-                positionsRepository.addOrUpdatePosition(newPositionItem, tempImageFileUri)
+                if (userId != null) { // Logged-in user
+                    if (tempImageFileUri != null) {
+                        // Logged in, and there's a new image to upload. Use the Cloud Function path.
+                        Log.d(TAG, "Importing position '${exportablePosition.name}' for user $userId with new image. Using metadata upload path.")
+                        val uploadSuccess = positionsRepository.uploadPositionImageWithMetadata(
+                            imageUriToUpload = tempImageFileUri, // This will be copied internally by the method
+                            positionName = exportablePosition.name,
+                            isFavorite = exportablePosition.isFavorite,
+                            forUserId = userId
+                        )
+                        if (uploadSuccess) {
+                            Log.i(TAG, "Successfully initiated image upload with metadata for '${exportablePosition.name}'. Cloud Function will handle Firestore entry.")
+                        } else {
+                            Log.e(TAG, "Failed to upload image with metadata for '${exportablePosition.name}'. Position might not be created/updated by Cloud Function.")
+                        }
+                        // The temp file created from imageData should be deleted as uploadPositionImageWithMetadata makes its own copy if needed.
+                        localTempFileCreatedFromImageData?.delete()
+                        Log.d(TAG, "Deleted temp image file after metadata upload attempt: ${localTempFileCreatedFromImageData?.name}")
+                    } else {
+                        // Logged in, but no new image data.
+                        // This could be an update to an existing position's metadata or creating a new one without an image.
+                        Log.d(TAG, "Importing position '${exportablePosition.name}' for user $userId without a new image. Using addOrUpdatePosition.")
+                        val positionItem = PositionItem(
+                            name = exportablePosition.name,
+                            isFavorite = exportablePosition.isFavorite,
+                            isAsset = false,
+                            imageName = "", // Let addOrUpdatePosition handle existing imageName if found, or keep blank if new & no image
+                            userId = userId
+                        )
+                        positionsRepository.addOrUpdatePosition(positionItem, null) // null for imageUriToUpload
+                    }
+                } else { // Logged out user
+                    Log.d(TAG, "Importing position '${exportablePosition.name}' for logged-out user.")
+                    val newPositionItem = PositionItem(
+                        name = exportablePosition.name,
+                        isFavorite = exportablePosition.isFavorite,
+                        isAsset = false,
+                        imageName = "", // Will be set by addOrUpdatePosition from tempImageFileUri (local path)
+                        userId = null // Explicitly null for local items
+                    )
+                    positionsRepository.addOrUpdatePosition(newPositionItem, tempImageFileUri)
+                    // For logged-out users, addOrUpdatePosition copies the image to internal storage.
+                    // The original temp file from imageData should be deleted.
+                    localTempFileCreatedFromImageData?.delete()
+                    Log.d(TAG, "Deleted temp image file after local import: ${localTempFileCreatedFromImageData?.name}")
+                }
 
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to import position ${exportablePosition.name}", e)
+                localTempFileCreatedFromImageData?.delete() // Clean up on error
+                Log.d(TAG, "Deleted temp image file due to exception: ${localTempFileCreatedFromImageData?.name}")
             } finally {
-                // Temp image file for this specific position is handled by addOrUpdatePosition or should be deleted if addOrUpdatePosition fails before copying.
-                // The main tempImageDir is deleted at the end.
+                // localTempFileCreatedFromImageData is handled in try/catch.
+                // The main tempImageDir is deleted at the end of importDataFromJson.
             }
         }
     }
