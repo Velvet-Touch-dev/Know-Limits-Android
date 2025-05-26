@@ -88,6 +88,51 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private var settingsChanged = false // Flag to track if theme/color settings changed
     // private var pendingNavigationRunnable: Runnable? = null // No longer needed
 
+    // Extracted NavigationItemSelectedListener
+    private val navItemSelectedListener = NavigationView.OnNavigationItemSelectedListener { menuItem ->
+        Log.i(TAG, "NavigationView.OnNavigationItemSelectedListener: Item selected: ${menuItem.title}, ID: ${menuItem.itemId}") // Log item selection
+
+        val intent: Intent? = when (menuItem.itemId) {
+            R.id.nav_scenes -> Intent(this, MainActivity::class.java)
+            R.id.nav_positions -> Intent(this, PositionsActivity::class.java)
+            R.id.nav_body_worship -> Intent(this, BodyWorshipActivity::class.java)
+            R.id.nav_favorites -> Intent(this, FavoritesActivity::class.java)
+            R.id.nav_task_list -> Intent(this, TaskListActivity::class.java)
+            R.id.nav_plan_night -> Intent(this, PlanNightActivity::class.java)
+            R.id.nav_settings -> {
+                Log.d(TAG, "Navigation: Already on SettingsActivity or re-selected.")
+                null // No intent needed, just close drawer
+            }
+            else -> {
+                Log.w(TAG, "Navigation: Unknown item ID: ${menuItem.itemId}")
+                null
+            }
+        }
+
+        var shouldFinishActivity = false
+        if (intent != null) {
+            Log.d(TAG, "Navigation: Preparing to start activity for ${intent.component?.shortClassName}")
+            startActivity(intent)
+            // Determine if SettingsActivity should be finished
+            if (menuItem.itemId != R.id.nav_settings && intent.component?.className != this@SettingsActivity::class.java.name) {
+                // Only finish if it's a distinct main section
+                val mainSections = setOf(R.id.nav_scenes, R.id.nav_positions, R.id.nav_body_worship, R.id.nav_favorites, R.id.nav_task_list, R.id.nav_plan_night)
+                if (mainSections.contains(menuItem.itemId)) {
+                    shouldFinishActivity = true
+                }
+            }
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START) // Close drawer
+
+        if (shouldFinishActivity) {
+            Log.d(TAG, "Navigation: Finishing SettingsActivity.")
+            finish()
+        }
+        
+        true // Indicate the event was handled
+    }
+
     // TTS for previewing voice
     private lateinit var textToSpeech: TextToSpeech
     private var isTtsReady = false
@@ -265,97 +310,72 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun showLoadingOverlay() {
-        loadingOverlay.visibility = View.VISIBLE // Re-enable overlay
-        googleSignInButton.isEnabled = false
-        if (::exportDataButton.isInitialized) exportDataButton.isEnabled = false
-        if (::importDataButton.isInitialized) importDataButton.isEnabled = false
-        // Potentially disable other interactive elements here if needed
+        runOnUiThread {
+            Log.d(TAG, "Showing loading overlay.") // Log updated
+            // loadingOverlay.visibility = View.VISIBLE // Overlay visibility change removed
+            // loadingOverlay.isClickable = true  // Kept commented as per previous steps
+            // loadingOverlay.isFocusable = true // Kept commented as per previous steps
+
+            // Disable export/import buttons when overlay is shown for them
+            if (::exportDataButton.isInitialized) exportDataButton.isEnabled = false
+            if (::importDataButton.isInitialized) importDataButton.isEnabled = false
+        }
     }
 
     private fun hideLoadingOverlay() {
-        runOnUiThread { // Ensure UI operations are on the main thread
-            loadingOverlay.visibility = View.GONE // Re-enable overlay
-            googleSignInButton.isEnabled = true
+        runOnUiThread { 
+            Log.d(TAG, "Hiding loading overlay.") // Log updated
+            // loadingOverlay.visibility = View.GONE // Overlay visibility change removed
+            // loadingOverlay.isClickable = false // Kept commented
+            // loadingOverlay.isFocusable = false // Kept commented
+
+            // Re-enable export/import buttons when overlay is hidden
             if (::exportDataButton.isInitialized) exportDataButton.isEnabled = true
             if (::importDataButton.isInitialized) importDataButton.isEnabled = true
-            
-            // Ensure drawer and navigation view are enabled
-            drawerLayout.isEnabled = true
-            navigationView.isEnabled = true
-            
-            // Re-sync the drawer toggle state
-            drawerToggle.syncState()
-            
-            // Re-initialize navigation listener to ensure it's responsive
-            setupNavigationListener()
-            Log.d(TAG, "Navigation listener re-initialized in hideLoadingOverlay on UI thread.")
+
+            // Removed all explicit re-enabling/unlocking/listener re-application logic
+            // as the primary approach is now to not disable UI elements in the first place.
+            // if (::navigationView.isInitialized) {
+            //     navigationView.isEnabled = true
+            //     Log.d(TAG, "NavigationView explicitly re-enabled.")
+            // }
+            // if (::drawerLayout.isInitialized) {
+            //     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            //     Log.d(TAG, "DrawerLayout explicitly unlocked.")
+            // }
+            // if (::navigationView.isInitialized) {
+            //     navigationView.setNavigationItemSelectedListener(null) 
+            //     navigationView.setNavigationItemSelectedListener(navItemSelectedListener) 
+            //     Log.d(TAG, "NavigationView listener re-applied.")
+            // }
+
+            Log.d(TAG, "Loading overlay hidden. No UI elements were explicitly disabled/re-enabled by this overlay logic.")
         }
     }
 
     private fun setupNavigationListener() {
-        // Clear any existing listener first to prevent potential conflicts or stale references
-        navigationView.setNavigationItemSelectedListener(null)
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            Log.d(TAG, "Navigation item selected: ${menuItem.title}")
-            drawerLayout.closeDrawer(GravityCompat.START) // Close drawer first
-
-            // Perform navigation immediately or after a very short delay if drawer closing is an issue
-            // Using a small delay with post can sometimes help if direct action is problematic
-            // For now, let's try direct action first.
-            
-            val intent: Intent? = when (menuItem.itemId) {
-                R.id.nav_scenes -> {
-                    Log.d(TAG, "Navigating to MainActivity (Scenes).")
-                    Intent(this, MainActivity::class.java)
-                }
-                R.id.nav_positions -> {
-                    Log.d(TAG, "Navigating to PositionsActivity.")
-                    Intent(this, PositionsActivity::class.java)
-                }
-                R.id.nav_body_worship -> {
-                    Log.d(TAG, "Navigating to BodyWorshipActivity.")
-                    Intent(this, BodyWorshipActivity::class.java)
-                }
-                R.id.nav_favorites -> {
-                    Log.d(TAG, "Navigating to FavoritesActivity.")
-                    Intent(this, FavoritesActivity::class.java)
-                }
-                R.id.nav_task_list -> {
-                    Log.d(TAG, "Navigating to TaskListActivity.")
-                    Intent(this, TaskListActivity::class.java)
-                }
-                R.id.nav_plan_night -> {
-                    Log.d(TAG, "Navigating to PlanNightActivity.")
-                    Intent(this, PlanNightActivity::class.java)
-                }
-                R.id.nav_settings -> {
-                    Log.d(TAG, "Already on SettingsActivity.")
-                    null // No intent needed, just close drawer (already done)
-                }
-                else -> null
-            }
-
-            if (intent != null) {
-                // Optional: Add a slight delay if direct navigation still feels abrupt or causes issues
-                // drawerLayout.postDelayed({
-                startActivity(intent)
-                if (menuItem.itemId != R.id.nav_settings) {
-                    if (intent.component?.className != this@SettingsActivity::class.java.name) {
-                        if (menuItem.itemId == R.id.nav_scenes ||
-                            menuItem.itemId == R.id.nav_positions ||
-                            menuItem.itemId == R.id.nav_body_worship ||
-                            menuItem.itemId == R.id.nav_favorites ||
-                            menuItem.itemId == R.id.nav_task_list ||
-                            menuItem.itemId == R.id.nav_plan_night) {
-                            finish()
+        Log.d(TAG, "setupNavigationListener: Attempting to set NavigationItemSelectedListener.")
+        
+        // Log state of menu items before setting listener
+        if (::navigationView.isInitialized) {
+            Log.d(TAG, "setupNavigationListener: Checking menu item states before setting listener.")
+            for (i in 0 until navigationView.menu.size()) {
+                val item = navigationView.menu.getItem(i)
+                Log.d(TAG, "Menu item '${item.title}': isEnabled=${item.isEnabled}, isVisible=${item.isVisible}")
+                if (item.hasSubMenu()) {
+                    item.subMenu?.let { subMenu -> // Safe call for subMenu
+                        for (j in 0 until subMenu.size()) {
+                            val subItem = subMenu.getItem(j)
+                            Log.d(TAG, "  SubMenu item '${subItem.title}': isEnabled=${subItem.isEnabled}, isVisible=${subItem.isVisible}")
                         }
                     }
                 }
-                // }, 50) // Example delay of 50ms
             }
-            // If menuItem.itemId == R.id.nav_settings, drawer is already closed, nothing more to do.
-            return@setNavigationItemSelectedListener true
         }
+
+        navigationView.setNavigationItemSelectedListener(null) // Clear existing
+        navigationView.setNavigationItemSelectedListener(navItemSelectedListener) // Use the extracted listener
+        Log.d(TAG, "setupNavigationListener: NavigationItemSelectedListener SET successfully.")
     }
     
     override fun onDestroy() {
@@ -424,9 +444,21 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     }
     
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (drawerToggle.onOptionsItemSelected(item)) {
+        Log.d(TAG, "onOptionsItemSelected called with item: ${item.title}, id: ${item.itemId}")
+        // Check if the item is the action bar home/up button (hamburger icon)
+        // Note: For ActionBarDrawerToggle, item.itemId might not be android.R.id.home if the toggle handles it.
+        // The drawerToggle.onOptionsItemSelected(item) is the primary check.
+        if (item.itemId == android.R.id.home && (::drawerToggle.isInitialized && !drawerToggle.isDrawerIndicatorEnabled)) {
+             Log.d(TAG, "Standard home button selected in onOptionsItemSelected (drawer indicator disabled).");
+        } else if (::drawerToggle.isInitialized && drawerToggle.isDrawerIndicatorEnabled) {
+            Log.d(TAG, "Processing potential drawer toggle click in onOptionsItemSelected.");
+        }
+
+        if (::drawerToggle.isInitialized && drawerToggle.onOptionsItemSelected(item)) {
+            Log.d(TAG, "DrawerToggle handled onOptionsItemSelected.")
             return true
         }
+        Log.d(TAG, "DrawerToggle DID NOT handle onOptionsItemSelected or was not initialized. Passing to super.")
         return super.onOptionsItemSelected(item)
     }
 
@@ -927,6 +959,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private fun signIn() {
         Log.d(TAG, "signIn: Attempting to launch Google Sign-In flow from Settings.")
         showLoadingOverlay() // Show loading overlay
+        if (::googleSignInButton.isInitialized) googleSignInButton.isEnabled = false // Disable button
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN_SETTINGS)
     }
@@ -941,25 +974,27 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 try {
                     val account = task.getResult(ApiException::class.java)!!
                     Log.d(TAG, "onActivityResult: Google Sign-In successful from Settings, token: ${account.idToken?.take(10)}...")
-                    // firebaseAuthWithGoogle will handle hiding the overlay on completion
+                    // firebaseAuthWithGoogle will handle hiding the overlay and re-enabling button on completion
                     firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
                     Log.w(TAG, "Google sign in failed from Settings despite RESULT_OK", e)
                     Toast.makeText(this, getString(R.string.sign_in_failed_toast) + " (API Code: ${e.statusCode})", Toast.LENGTH_LONG).show()
                     hideLoadingOverlay() // Hide overlay on failure
+                    if (::googleSignInButton.isInitialized) googleSignInButton.isEnabled = true // Re-enable button
                 }
             } else {
                 // Handle cancellation (resultCode != Activity.RESULT_OK, e.g., Activity.RESULT_CANCELED)
                 Log.d(TAG, "Google Sign-In cancelled by user from Settings. ResultCode: $resultCode")
                 Toast.makeText(this, getString(R.string.sign_in_cancelled_toast), Toast.LENGTH_SHORT).show()
                 hideLoadingOverlay() // Hide overlay on cancellation
+                if (::googleSignInButton.isInitialized) googleSignInButton.isEnabled = true // Re-enable button
             }
         }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         Log.d(TAG, "firebaseAuthWithGoogle: Attempting Firebase auth with Google token from Settings.")
-        // Loading overlay is already shown by signIn() -> onActivityResult()
+        // Loading overlay is already shown by signIn(). Button is already disabled.
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
@@ -980,38 +1015,39 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                                 Timber.tag(TAG).e(profileResult.exceptionOrNull(), "Failed to ensure user profile exists from Settings.")
                                 Toast.makeText(this@SettingsActivity, "Profile sync issue.", Toast.LENGTH_SHORT).show()
                             }
-                            // Ensure these UI updates run on the main thread after coroutine work
-                            withContext(Dispatchers.Main) {
-                                hideLoadingOverlay()
-                                updateAuthButtonUI() // Update button to "Sign Out"
-                            }
-                        }
-                    } ?: run {
-                        // User is null even after successful task, should not happen but handle defensively
-                        // Ensure UI updates run on the main thread
-                        runOnUiThread {
-                            hideLoadingOverlay()
-                            updateAuthButtonUI()
-                        }
-                    }
-                } else {
-                    Log.w(TAG, "firebaseAuthWithGoogle: Firebase Authentication failed from Settings.", task.exception)
-                    Toast.makeText(this, "Firebase Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                    // Ensure UI updates run on the main thread
-                    runOnUiThread {
-                        hideLoadingOverlay() // Hide overlay on failure
-                        updateAuthButtonUI() // Ensure button is "Sign In"
+                    // Ensure these UI updates run on the main thread after coroutine work
+                    withContext(Dispatchers.Main) {
+                        hideLoadingOverlay()
+                        updateAuthButtonUI() // Update button to "Sign Out" and re-enables it
                     }
                 }
+            } ?: run {
+                // User is null even after successful task, should not happen but handle defensively
+                // Ensure UI updates run on the main thread
+                runOnUiThread {
+                    hideLoadingOverlay()
+                    updateAuthButtonUI() // Re-enables button
+                }
             }
+        } else {
+            Log.w(TAG, "firebaseAuthWithGoogle: Firebase Authentication failed from Settings.", task.exception)
+            Toast.makeText(this, "Firebase Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+            // Ensure UI updates run on the main thread
+            runOnUiThread {
+                hideLoadingOverlay() // Hide overlay on failure
+                updateAuthButtonUI() // Ensure button is "Sign In" and re-enables it
+            }
+        }
     }
+}
 
-    private fun signOut() {
-        Log.d(TAG, "signOut: Attempting to sign out.")
-        showLoadingOverlay() // Show loading overlay
-        lifecycleScope.launch {
-            val user = auth.currentUser
-            if (user != null) {
+private fun signOut() {
+    Log.d(TAG, "signOut: Attempting to sign out.")
+    showLoadingOverlay() // Show loading overlay
+    if (::googleSignInButton.isInitialized) googleSignInButton.isEnabled = false // Disable button
+    lifecycleScope.launch {
+        val user = auth.currentUser
+        if (user != null) {
                 Log.d(TAG, "Backing up cloud favorites to local before sign-out for user ${user.uid}")
                 val backupResult = backupCloudDataToLocal()
                 if (backupResult.isSuccess) {
@@ -1043,15 +1079,15 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 Log.d(TAG, "signOut: Google Sign-Out complete. Success: ${googleSignOutTask.isSuccessful}")
                 // Firebase sign out is already done.
                 // Toast and UI update are handled after both.
-                // Ensure UI updates run on the main thread
-                runOnUiThread {
-                    Toast.makeText(this@SettingsActivity, "Signed Out", Toast.LENGTH_SHORT).show()
-                    hideLoadingOverlay() // Hide overlay after all sign out operations
-                    updateAuthButtonUI() // Update button to "Sign In"
-                }
+            // Ensure UI updates run on the main thread
+            runOnUiThread {
+                Toast.makeText(this@SettingsActivity, "Signed Out", Toast.LENGTH_SHORT).show()
+                hideLoadingOverlay() // Hide overlay after all sign out operations
+                updateAuthButtonUI() // Update button to "Sign In" and re-enables it
             }
         }
     }
+}
 
     // New suspend function in SettingsActivity
     private suspend fun backupCloudDataToLocal(): Result<Unit> {
@@ -1159,6 +1195,7 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             // Optionally change icon back for sign in
             googleSignInButton.setIconResource(R.drawable.googleg_standard_color_18) // Assuming this is your sign-in icon
         }
+        if (::googleSignInButton.isInitialized) googleSignInButton.isEnabled = true // Ensure button is enabled when UI updates
     }
 
     private fun updateFcmTokenForCurrentUser(uid: String) {

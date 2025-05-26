@@ -375,8 +375,6 @@
         android:layout_height="match_parent"
         android:background="#80000000"
         android:visibility="gone"
-        android:clickable="true"
-        android:focusable="true"
         tools:visibility="gone">
         <!-- Semi-transparent black -->
         <ProgressBar

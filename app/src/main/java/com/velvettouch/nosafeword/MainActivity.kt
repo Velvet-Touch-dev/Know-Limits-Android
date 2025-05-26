@@ -101,6 +101,8 @@ class MainActivity : BaseActivity() {
     private var pendingSceneTitleNavigation: String? = null
     private var pendingSceneIdNavigation: String? = null
 
+    private var activeSceneIdentifier: String? = null // Added to track the current scene by ID
+
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private var authStateListener: FirebaseAuth.AuthStateListener? = null
@@ -142,6 +144,7 @@ class MainActivity : BaseActivity() {
         titleTextView.text = getString(R.string.no_scenes_available_title)
         contentTextView.text = getString(R.string.no_scenes_available_content)
         currentSceneIndex = -1
+        activeSceneIdentifier = null // Clear active scene ID
         sceneCardView.visibility = View.INVISIBLE
         editButton.visibility = View.GONE
         shareButton.visibility = View.GONE
@@ -320,11 +323,23 @@ class MainActivity : BaseActivity() {
                 Log.d(TAG, "All scenes updated. Count: ${scenesList.size}")
                 allUserScenes = scenesList
                 val currentSearchQuery = (topAppBar.menu.findItem(R.id.action_search)?.actionView as? SearchView)?.query?.toString()
-                filterScenes(currentSearchQuery) // This updates displayedScenes
+                
+                // Crucial check: If the activeSceneIdentifier (for MODE_RANDOM) points to a scene
+                // that no longer exists in the updated allUserScenes (e.g., deleted in MODE_EDIT),
+                // then clear activeSceneIdentifier.
+                if (activeSceneIdentifier != null && allUserScenes.none { getSceneIdentifier(it) == activeSceneIdentifier }) {
+                    Log.d(TAG, "collectLatest: Active scene (ID: $activeSceneIdentifier) from MODE_RANDOM no longer exists in allUserScenes. Clearing activeSceneIdentifier.")
+                    activeSceneIdentifier = null
+                    // currentSceneIndex should also be reset if it was tied to this scene,
+                    // though filterScenes and updateUI should handle re-evaluation.
+                    // If in MODE_RANDOM, this might trigger a re-display.
+                }
+
+                filterScenes(currentSearchQuery) // This updates displayedScenes and handles display logic within current mode
 
                 processPendingNavigation()
 
-                val sceneAfterPendingNav = getCurrentScene()
+                val sceneAfterPendingNav = getCurrentScene() // Re-evaluate current scene after potential changes
                 if (currentMode == MODE_RANDOM) {
                     if (sceneAfterPendingNav == null && displayedScenes.isNotEmpty()) {
                         displayRandomScene()
@@ -583,32 +598,62 @@ class MainActivity : BaseActivity() {
     }
 
     private fun filterScenes(query: String?) {
-        val showDefault = chipDefaultScenes.isChecked
-        val showCustom = chipCustomScenes.isChecked
+        val showDefaultInEditMode = chipDefaultScenes.isChecked
+        val showCustomInEditMode = chipCustomScenes.isChecked
 
         displayedScenes = allUserScenes.filter { scene ->
-            val matchesType = (showDefault && !scene.isCustom) || (showCustom && scene.isCustom)
+            val matchesType = if (currentMode == MODE_EDIT) {
+                // In MODE_EDIT, respect the chip states
+                (showDefaultInEditMode && !scene.isCustom) || (showCustomInEditMode && scene.isCustom)
+            } else {
+                // In MODE_RANDOM (and any other mode without these specific chips), consider all types
+                true 
+            }
+            
             val matchesQuery = query.isNullOrBlank() ||
                                scene.title.contains(query, ignoreCase = true) ||
                                scene.content.contains(query, ignoreCase = true)
             matchesType && matchesQuery
         }
-        Log.d(TAG, "filterScenes: Query='$query', showDefault=$showDefault, showCustom=$showCustom. Displayed count: ${displayedScenes.size}")
+        Log.d(TAG, "filterScenes: Mode=$currentMode, Query='$query', Chips(EditOnly): showDefault=$showDefaultInEditMode, showCustom=$showCustomInEditMode. Displayed count: ${displayedScenes.size}")
 
         if (currentMode == MODE_RANDOM) {
             if (displayedScenes.isNotEmpty()) {
                 // If current scene is no longer in filtered list, or no scene is displayed, pick a new random one
-                val currentDisplayed = getCurrentScene()
-                if (currentDisplayed == null || !displayedScenes.contains(currentDisplayed)) {
-                    displayRandomScene()
-                } else {
-                    // Current scene is still valid, just update UI elements like chip counts
-                    updateUI()
+                // val currentDisplayed = getCurrentScene() // Old logic
+                // if (currentDisplayed == null || !displayedScenes.contains(currentDisplayed)) { // Old logic
+
+                var sceneToDisplayAfterFilter: Scene? = null
+                if (activeSceneIdentifier != null) {
+                    val stillPresentScene = displayedScenes.find { getSceneIdentifier(it) == activeSceneIdentifier }
+                    if (stillPresentScene != null) {
+                        // Active scene is still valid under new filters. Keep it.
+                        currentSceneIndex = displayedScenes.indexOf(stillPresentScene)
+                        sceneToDisplayAfterFilter = stillPresentScene
+                    }
                 }
-            } else {
-                clearSceneDisplay() // No scenes match filter
-                titleTextView.text = getString(R.string.no_scenes_match_filter_title)
-                contentTextView.text = getString(R.string.no_scenes_match_filter_content)
+
+                if (sceneToDisplayAfterFilter != null) {
+                    displayScene(sceneToDisplayAfterFilter) // Explicitly display the scene to keep
+                } else {
+                    // Active scene is gone, or there was no active scene identifier.
+                    if (displayedScenes.isNotEmpty()) {
+                        displayRandomScene() // This calls displayScene internally, setting new activeSceneIdentifier
+                    } else {
+                        clearSceneDisplay() // This nulls activeSceneIdentifier
+                        // Set message for no scenes match filter (if allUserScenes is not empty)
+                        if (allUserScenes.isNotEmpty()) {
+                             titleTextView.text = getString(R.string.no_scenes_match_filter_title)
+                             contentTextView.text = getString(R.string.no_scenes_match_filter_content)
+                        }
+                    }
+                }
+            } else { // displayedScenes became empty after filtering
+                 clearSceneDisplay()
+                 if (allUserScenes.isNotEmpty()) { // Check if it was due to filter or empty main list
+                    titleTextView.text = getString(R.string.no_scenes_match_filter_title)
+                    contentTextView.text = getString(R.string.no_scenes_match_filter_content)
+                 }
             }
         } else if (currentMode == MODE_EDIT) {
             updateEditList() // Refresh edit list based on new displayedScenes
@@ -630,16 +675,28 @@ class MainActivity : BaseActivity() {
                 addSceneButton.visibility = View.GONE
                 resetScenesButton.visibility = View.GONE
                 sceneFilterChipGroup.visibility = View.GONE
-                val sceneToDisplay = getCurrentScene()
-                if (sceneToDisplay != null) displayScene(sceneToDisplay)
-                else if (displayedScenes.isNotEmpty()) displayRandomScene()
-                else {
-                    clearSceneDisplay()
-                    if (allUserScenes.isNotEmpty()) { // Filter resulted in no displayed scenes
-                        titleTextView.text = getString(R.string.no_scenes_match_filter_title)
-                        contentTextView.text = getString(R.string.no_scenes_match_filter_content)
+
+                if (activeSceneIdentifier == null && displayedScenes.isNotEmpty()) {
+                    // If no specific scene is "active" (e.g., after deletion and switch),
+                    // reset index and pick a new random one.
+                    currentSceneIndex = -1 // Ensure a fresh random pick
+                    displayRandomScene()
+                } else {
+                    val sceneToDisplay = getCurrentScene() // This might still point to an old index if not reset
+                    if (sceneToDisplay != null && displayedScenes.contains(sceneToDisplay)) {
+                        displayScene(sceneToDisplay)
+                    } else if (displayedScenes.isNotEmpty()) {
+                        // Fallback: current scene is invalid or null, but there are scenes to display.
+                        currentSceneIndex = -1 // Ensure a fresh random pick
+                        displayRandomScene()
+                    } else {
+                        clearSceneDisplay()
+                        if (allUserScenes.isNotEmpty()) { // Filter resulted in no displayed scenes
+                            titleTextView.text = getString(R.string.no_scenes_match_filter_title)
+                            contentTextView.text = getString(R.string.no_scenes_match_filter_content)
+                        }
+                        // If allUserScenes is also empty, clearSceneDisplay already set appropriate text
                     }
-                    // If allUserScenes is also empty, clearSceneDisplay already set appropriate text
                 }
                 randomizeButton.visibility = View.VISIBLE
                 previousButton.visibility = View.VISIBLE
@@ -809,9 +866,12 @@ class MainActivity : BaseActivity() {
         titleTextView.text = HtmlCompat.fromHtml(formatMarkdownText(scene.title), HtmlCompat.FROM_HTML_MODE_LEGACY)
         contentTextView.text = HtmlCompat.fromHtml(formatMarkdownText(scene.content), HtmlCompat.FROM_HTML_MODE_LEGACY)
         sceneCardView.visibility = View.VISIBLE
-        val isInRandomModeAndSceneSelected = currentMode == MODE_RANDOM && getCurrentScene() != null
+        val isInRandomModeAndSceneSelected = currentMode == MODE_RANDOM // getCurrentScene() might not be updated yet
         editButton.visibility = if (isInRandomModeAndSceneSelected) View.VISIBLE else View.GONE
         shareButton.visibility = if (isInRandomModeAndSceneSelected) View.VISIBLE else View.GONE
+        
+        activeSceneIdentifier = getSceneIdentifier(scene) // Store identifier of displayed scene
+
         updateFavoriteIcon()
         updatePreviousButtonState()
     }
