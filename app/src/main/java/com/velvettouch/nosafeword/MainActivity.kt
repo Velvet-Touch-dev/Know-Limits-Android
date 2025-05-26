@@ -432,7 +432,7 @@ class MainActivity : BaseActivity() {
             sceneCardView.startAnimation(slideOut)
             slideOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
                 override fun onAnimationStart(animation: android.view.animation.Animation?) {}
-                override fun onAnimationEnd(animation: android.view.animation.Animation?) { displayNextScene(); sceneCardView.startAnimation(slideIn) }
+                override fun onAnimationEnd(animation: android.view.animation.Animation?) { displayRandomScene(); sceneCardView.startAnimation(slideIn) }
                 override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
             })
         }
@@ -617,47 +617,11 @@ class MainActivity : BaseActivity() {
         }
         Log.d(TAG, "filterScenes: Mode=$currentMode, Query='$query', Chips(EditOnly): showDefault=$showDefaultInEditMode, showCustom=$showCustomInEditMode. Displayed count: ${displayedScenes.size}")
 
-        if (currentMode == MODE_RANDOM) {
-            if (displayedScenes.isNotEmpty()) {
-                // If current scene is no longer in filtered list, or no scene is displayed, pick a new random one
-                // val currentDisplayed = getCurrentScene() // Old logic
-                // if (currentDisplayed == null || !displayedScenes.contains(currentDisplayed)) { // Old logic
-
-                var sceneToDisplayAfterFilter: Scene? = null
-                if (activeSceneIdentifier != null) {
-                    val stillPresentScene = displayedScenes.find { getSceneIdentifier(it) == activeSceneIdentifier }
-                    if (stillPresentScene != null) {
-                        // Active scene is still valid under new filters. Keep it.
-                        currentSceneIndex = displayedScenes.indexOf(stillPresentScene)
-                        sceneToDisplayAfterFilter = stillPresentScene
-                    }
-                }
-
-                if (sceneToDisplayAfterFilter != null) {
-                    displayScene(sceneToDisplayAfterFilter) // Explicitly display the scene to keep
-                } else {
-                    // Active scene is gone, or there was no active scene identifier.
-                    if (displayedScenes.isNotEmpty()) {
-                        displayRandomScene() // This calls displayScene internally, setting new activeSceneIdentifier
-                    } else {
-                        clearSceneDisplay() // This nulls activeSceneIdentifier
-                        // Set message for no scenes match filter (if allUserScenes is not empty)
-                        if (allUserScenes.isNotEmpty()) {
-                             titleTextView.text = getString(R.string.no_scenes_match_filter_title)
-                             contentTextView.text = getString(R.string.no_scenes_match_filter_content)
-                        }
-                    }
-                }
-            } else { // displayedScenes became empty after filtering
-                 clearSceneDisplay()
-                 if (allUserScenes.isNotEmpty()) { // Check if it was due to filter or empty main list
-                    titleTextView.text = getString(R.string.no_scenes_match_filter_title)
-                    contentTextView.text = getString(R.string.no_scenes_match_filter_content)
-                 }
-            }
-        } else if (currentMode == MODE_EDIT) {
+        if (currentMode == MODE_EDIT) {
             updateEditList() // Refresh edit list based on new displayedScenes
         }
+        // Note: The logic for MODE_RANDOM display updates is now handled in updateUI after filterScenes is called.
+
         // Update chip counts regardless of mode
         // Counts should reflect the total number of default/custom scenes available in allUserScenes
         val totalCustomCount = allUserScenes.count { it.isCustom }
@@ -667,28 +631,36 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateUI() {
+        // Get current search query *before* potential modification by filterScenes if it had search logic
+        val currentSearchQuery = (topAppBar.menu.findItem(R.id.action_search)?.actionView as? SearchView)?.query?.toString()
+
         when (currentMode) {
             MODE_RANDOM -> {
+                // Ensure displayedScenes is up-to-date for MODE_RANDOM (chips ignored)
+                filterScenes(currentSearchQuery)
+
                 randomContent.visibility = View.VISIBLE
                 favoritesContainer.visibility = View.GONE
                 editContainer.visibility = View.GONE
                 addSceneButton.visibility = View.GONE
                 resetScenesButton.visibility = View.GONE
-                sceneFilterChipGroup.visibility = View.GONE
+                sceneFilterChipGroup.visibility = View.GONE // Chips are hidden in random mode
 
-                if (activeSceneIdentifier == null && displayedScenes.isNotEmpty()) {
-                    // If no specific scene is "active" (e.g., after deletion and switch),
-                    // reset index and pick a new random one.
-                    currentSceneIndex = -1 // Ensure a fresh random pick
-                    displayRandomScene()
+                // Logic to decide what to display from the (potentially newly filtered) displayedScenes
+                var sceneToActuallyDisplay: Scene? = null
+                if (activeSceneIdentifier != null) {
+                    sceneToActuallyDisplay = displayedScenes.find { getSceneIdentifier(it) == activeSceneIdentifier }
+                }
+
+                if (sceneToActuallyDisplay != null) {
+                    // Active scene is still valid and present in displayedScenes, keep it.
+                    currentSceneIndex = displayedScenes.indexOf(sceneToActuallyDisplay)
+                    displayScene(sceneToActuallyDisplay)
                 } else {
-                    val sceneToDisplay = getCurrentScene() // This might still point to an old index if not reset
-                    if (sceneToDisplay != null && displayedScenes.contains(sceneToDisplay)) {
-                        displayScene(sceneToDisplay)
-                    } else if (displayedScenes.isNotEmpty()) {
-                        // Fallback: current scene is invalid or null, but there are scenes to display.
+                    // Active scene is no longer valid (e.g. filtered out, deleted) or was never set.
+                    if (displayedScenes.isNotEmpty()) {
                         currentSceneIndex = -1 // Ensure a fresh random pick
-                        displayRandomScene()
+                        displayRandomScene() // This will pick from the current displayedScenes
                     } else {
                         clearSceneDisplay()
                         if (allUserScenes.isNotEmpty()) { // Filter resulted in no displayed scenes
