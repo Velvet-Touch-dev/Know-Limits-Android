@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
  */
 abstract class BaseActivity : AppCompatActivity() {
 
+    private var appliedThemeId: Int = 0
+
     companion object {
         // Theme resource map
         private val THEME_MAP = mapOf(
@@ -18,7 +20,7 @@ abstract class BaseActivity : AppCompatActivity() {
             Pair(Pair(SettingsActivity.THEME_LIGHT, SettingsActivity.COLOR_DEFAULT), R.style.Theme_RandomSceneApp_Pink),
             Pair(Pair(SettingsActivity.THEME_LIGHT, SettingsActivity.COLOR_PURPLE), R.style.Theme_RandomSceneApp_Purple),
             // Just Black is only for dark mode
-            
+
             // Dark mode themes
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_DEFAULT), R.style.Theme_RandomSceneApp_AppColors),
             Pair(Pair(SettingsActivity.THEME_DARK, SettingsActivity.COLOR_PURPLE), R.style.Theme_RandomSceneApp_Purple),
@@ -32,34 +34,59 @@ abstract class BaseActivity : AppCompatActivity() {
         applyTheme()
         super.onCreate(savedInstanceState)
     }
+
+    override fun onResume() {
+        super.onResume()
+        val prefs = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        val expectedThemeModePref = prefs.getInt("theme_mode", SettingsActivity.THEME_SYSTEM)
+        val expectedColorModePref = prefs.getInt("color_mode", SettingsActivity.COLOR_DEFAULT)
+
+        // Determine the actual current theme mode based on system settings if THEME_SYSTEM is chosen
+        val systemNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val currentActualThemeMode = when (expectedThemeModePref) {
+            SettingsActivity.THEME_LIGHT -> SettingsActivity.THEME_LIGHT
+            SettingsActivity.THEME_DARK -> SettingsActivity.THEME_DARK
+            else -> if (systemNightMode == Configuration.UI_MODE_NIGHT_YES) SettingsActivity.THEME_DARK else SettingsActivity.THEME_LIGHT
+        }
+
+        // Adjust color mode if "Just Black" or "Pitch Black" is selected with light theme
+        val actualExpectedColorMode = if ((expectedColorModePref == SettingsActivity.COLOR_JUST_BLACK || expectedColorModePref == SettingsActivity.COLOR_PITCH_BLACK) && currentActualThemeMode != SettingsActivity.THEME_DARK) {
+            SettingsActivity.COLOR_DEFAULT
+        } else {
+            expectedColorModePref
+        }
+
+        val expectedThemeId = THEME_MAP[Pair(currentActualThemeMode, actualExpectedColorMode)] ?: R.style.Theme_RandomSceneApp_AppColors
+
+        if (appliedThemeId != 0 && appliedThemeId != expectedThemeId) {
+            recreate()
+        }
+    }
     
     private fun applyTheme() {
         val prefs = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
-        val themeMode = prefs.getInt("theme_mode", SettingsActivity.THEME_SYSTEM)
-        val colorMode = prefs.getInt("color_mode", SettingsActivity.COLOR_DEFAULT)
+        val themeModePref = prefs.getInt("theme_mode", SettingsActivity.THEME_SYSTEM)
+        val colorModePref = prefs.getInt("color_mode", SettingsActivity.COLOR_DEFAULT)
         
-        // Determine the current theme mode (light/dark)
-        val currentThemeMode = when (themeMode) {
+        // Determine the actual current theme mode based on system settings if THEME_SYSTEM is chosen
+        val systemNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val currentActualThemeMode = when (themeModePref) {
             SettingsActivity.THEME_LIGHT -> SettingsActivity.THEME_LIGHT
             SettingsActivity.THEME_DARK -> SettingsActivity.THEME_DARK
-            else -> {
-                // For THEME_SYSTEM, determine the current system mode
-                when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                    Configuration.UI_MODE_NIGHT_YES -> SettingsActivity.THEME_DARK
-                    else -> SettingsActivity.THEME_LIGHT
-                }
-            }
+            else -> if (systemNightMode == Configuration.UI_MODE_NIGHT_YES) SettingsActivity.THEME_DARK else SettingsActivity.THEME_LIGHT
         }
         
-        // Check if "Just Black" theme is selected but not in dark mode
-        val actualColorMode = if (colorMode == SettingsActivity.COLOR_JUST_BLACK && currentThemeMode != SettingsActivity.THEME_DARK) {
+        // Adjust color mode if "Just Black" or "Pitch Black" is selected with light theme
+        // This ensures that if a black theme is chosen with light mode, it defaults to a compatible light color.
+        val actualColorMode = if ((colorModePref == SettingsActivity.COLOR_JUST_BLACK || colorModePref == SettingsActivity.COLOR_PITCH_BLACK) && currentActualThemeMode != SettingsActivity.THEME_DARK) {
             SettingsActivity.COLOR_DEFAULT
         } else {
-            colorMode
+            colorModePref
         }
         
         // Set theme resource
-        val themeId = THEME_MAP[Pair(currentThemeMode, actualColorMode)] ?: R.style.Theme_RandomSceneApp_AppColors
+        val themeId = THEME_MAP[Pair(currentActualThemeMode, actualColorMode)] ?: R.style.Theme_RandomSceneApp_AppColors
         setTheme(themeId)
+        appliedThemeId = themeId // Store the applied theme ID
     }
 }

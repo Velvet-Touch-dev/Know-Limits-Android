@@ -742,9 +742,9 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                             updateThemeSelection(selectedTheme, selectedColor)
                             
                             // Show toast if color palette changed
-                            if (colorChanged) {
-                                Toast.makeText(this, R.string.color_palette_changed, Toast.LENGTH_SHORT).show()
-                            }
+                            // if (colorChanged) {
+                            //     Toast.makeText(this, R.string.color_palette_changed, Toast.LENGTH_SHORT).show()
+                            // }
                         }
                     }
                     .setNegativeButton(R.string.cancel, null)
