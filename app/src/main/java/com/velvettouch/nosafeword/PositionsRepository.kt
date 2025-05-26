@@ -618,6 +618,7 @@ class PositionsRepository(private val context: Context) {
         val allCurrentLocalPositionsMap = loadLocalPositions().associateBy { it.id }.toMutableMap()
 
         val imageUploadCache = mutableMapOf<String, String>() // Cache for this sync operation
+        val itemsForDirectFirestoreBatch = mutableListOf<PositionItem>() // Declare the list
 
         distinctItemsToSync.forEach { localPositionToSync ->
             Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Processing item ID ${localPositionToSync.id}, Name: ${localPositionToSync.name}, Original ImageName: ${localPositionToSync.imageName}")
@@ -642,67 +643,125 @@ class PositionsRepository(private val context: Context) {
                     if (uploadWithMetadataSuccess) {
                         Log.d("PositionsRepository", "Sync: Successfully uploaded image for '${localPositionToSync.name}' with metadata. Removing local version ID '${localPositionToSync.id}' from map, as Cloud Function will create it.")
                         allCurrentLocalPositionsMap.remove(localPositionToSync.id)
-                        saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
+                        // REMOVED: saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
                         if (localPositionToSync.id.startsWith("local_")) {
                             localIdsMarkedAsPotentiallyProcessedInThisRun.add(localPositionToSync.id)
                         }
-                        Log.d("PositionsRepository", "Sync: Saved SharedPreferences mid-loop after removing item handed to CF: '${localPositionToSync.name}'. Marked ${localPositionToSync.id} as potentially processed.")
+                        Log.d("PositionsRepository", "Sync: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}) processed via CF path. Updated in-memory map. Marked ${localPositionToSync.id} as potentially processed.")
                     } else {
-                        Log.e("PositionsRepository", "Sync: Failed to upload image with metadata for '${localPositionToSync.name}'. Local item will remain for next sync.")
-                        // Item remains in allCurrentLocalPositionsMap, will be saved back as is.
+                        Log.e("PositionsRepository", "Sync: Failed to upload image with metadata for '${localPositionToSync.name}'. Local item will remain in map for now.")
                     }
-                } else {
-                    Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Local image file NOT FOUND at '${localPositionToSync.imageName}'. Attempting addOrUpdatePosition with cleared imageName.")
-                    // No image to upload, proceed to sync other data if necessary (or treat as error)
-                    // For now, we'll let it fall through to the generic addOrUpdatePosition if needed,
-                    // which will likely result in an item without an image or with the old (broken) path.
-                    // This case might need more specific handling if an image was expected.
-                    // Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Local image file NOT FOUND. Attempting addOrUpdatePosition with cleared imageName.") // This was a duplicate/old log, removed.
-                    val syncedPosition = addOrUpdatePosition(
-                        position = localPositionToSync.copy(imageName = ""), // Clear broken image path
-                        imageUriToUpload = null,
-                        uploadedImageCache = imageUploadCache
-                    )
-                    if (syncedPosition != null) {
-                        if (localPositionToSync.id != syncedPosition.id && localPositionToSync.id.startsWith("local_")) {
-                            allCurrentLocalPositionsMap.remove(localPositionToSync.id)
-                        }
-                        allCurrentLocalPositionsMap[syncedPosition.id] = syncedPosition
-                        saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
-                        if (localPositionToSync.id.startsWith("local_")) { // If it was originally local and now synced
-                            localIdsMarkedAsPotentiallyProcessedInThisRun.add(localPositionToSync.id)
-                        }
-                        Log.i("PositionsRepository", "SYNC_LOOP: Item '${syncedPosition.name}' (ID: ${syncedPosition.id}) updated via addOrUpdatePosition after local image not found. SP Saved. Marked ${localPositionToSync.id} as potentially processed.")
-                    } else {
-                        Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}) FAILED update via addOrUpdatePosition after local image not found.")
-                    }
+                } else { // Local image file for local_ ID item not found.
+                    Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Local image file NOT FOUND at '${localPositionToSync.imageName}'. Will attempt to sync data without image or with existing URL if any.")
+                    // Mark for direct Firestore processing, potentially with cleared imageName
+                    itemsForDirectFirestoreBatch.add(localPositionToSync.copy(imageName = "")) // Or decide to keep existing imageName if it might be a URL
                 }
-            } else {
-                Log.i("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Path: Direct addOrUpdatePosition. isLocalImagePresent=${isLocalImagePresent}, idStartsWithLocal=${localPositionToSync.id.startsWith("local_")}")
-                val syncedPosition = addOrUpdatePosition(
-                    position = localPositionToSync,
-                    imageUriToUpload = null, // No new URI from picker during sync
-                    uploadedImageCache = imageUploadCache
-                )
-
-                if (syncedPosition != null) {
-                    if (localPositionToSync.id != syncedPosition.id && localPositionToSync.id.startsWith("local_")) {
-                        allCurrentLocalPositionsMap.remove(localPositionToSync.id)
-                    }
-                    allCurrentLocalPositionsMap[syncedPosition.id] = syncedPosition
-                    saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
-                    Log.i("PositionsRepository", "SYNC_LOOP: Item '${syncedPosition.name}' (ID: ${syncedPosition.id}) updated/added via direct addOrUpdatePosition. Saved SharedPreferences.")
-                } else {
-                    Log.w("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}) FAILED update/add via direct addOrUpdatePosition. Original local record preserved.")
-                }
+            } else { // Item does not have a local_ ID and a local image path, or is not local_ ID at all.
+                Log.i("PositionsRepository", "SYNC_LOOP: Item '${localPositionToSync.name}' (ID: ${localPositionToSync.id}). Queuing for direct Firestore batch. isLocalImagePresent=${isLocalImagePresent}, idStartsWithLocal=${localPositionToSync.id.startsWith("local_")}")
+                itemsForDirectFirestoreBatch.add(localPositionToSync)
             }
         }
 
-        // Final save after the loop, though individual saves happen within.
-        saveLocalPositions(allCurrentLocalPositionsMap.values.toList()) // Final save for the batch
-        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Batch processing loop finished. Saved ${allCurrentLocalPositionsMap.values.size} total items to SharedPreferences via allCurrentLocalPositionsMap.")
+        // Now process itemsForDirectFirestoreBatch
+        if (itemsForDirectFirestoreBatch.isNotEmpty()) {
+            Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Processing ${itemsForDirectFirestoreBatch.size} items via Firestore batch.")
+            val batch = db.batch()
+            val positionsCollection = db.collection(POSITIONS_COLLECTION)
 
-        // Verification step: Re-load SharedPreferences and confirm removal of processed local_ IDs
+            for (itemToBatchProcess in itemsForDirectFirestoreBatch) {
+                var positionForFirestore = itemToBatchProcess.copy(userId = currentSyncingUserId)
+                var finalImageNameForFirestore = positionForFirestore.imageName
+                var existingFirestoreDocId: String? = null
+
+                // 1. Determine existing Firestore document ID (if any)
+                if (!positionForFirestore.id.isBlank() && !positionForFirestore.id.startsWith("local_")) {
+                    // Assume itemToBatchProcess.id is a Firestore ID, check if it exists and belongs to user
+                    try {
+                        val doc = positionsCollection.document(positionForFirestore.id).get().await()
+                        if (doc.exists() && doc.getString("userId") == currentSyncingUserId) {
+                            existingFirestoreDocId = doc.id
+                            finalImageNameForFirestore = doc.getString("imageName") ?: positionForFirestore.imageName // Prefer existing cloud URL
+                        }
+                    } catch (e: Exception) { Log.e("PositionsRepository", "Error checking existing by ID ${positionForFirestore.id}", e) }
+                } else { // Local ID or new item, search by name for existing Firestore doc
+                    try {
+                        val query = positionsCollection
+                            .whereEqualTo("userId", currentSyncingUserId)
+                            .whereEqualTo("name", positionForFirestore.name)
+                            .limit(1).get().await()
+                        if (!query.isEmpty) {
+                            val doc = query.documents.first()
+                            existingFirestoreDocId = doc.id
+                            finalImageNameForFirestore = doc.getString("imageName") ?: positionForFirestore.imageName // Prefer existing cloud URL
+                        }
+                    } catch (e: Exception) { Log.e("PositionsRepository", "Error checking existing by name ${positionForFirestore.name}", e) }
+                }
+
+                // 2. Handle image upload if imageName is a local path (and not an asset)
+                if (!positionForFirestore.isAsset &&
+                    positionForFirestore.imageName.isNotBlank() &&
+                    !positionForFirestore.imageName.startsWith("http") &&
+                    !positionForFirestore.imageName.startsWith("content://")) {
+                    
+                    val internalFile = File(positionForFirestore.imageName)
+                    if (internalFile.exists()) {
+                        val localPathKey = internalFile.absolutePath
+                        if (imageUploadCache.containsKey(localPathKey)) {
+                            finalImageNameForFirestore = imageUploadCache[localPathKey] ?: ""
+                        } else {
+                            val uploadedUrl = uploadImage(Uri.fromFile(internalFile), currentSyncingUserId, internalFile.name)
+                            finalImageNameForFirestore = uploadedUrl ?: existingFirestoreDocId?.let { positionsCollection.document(it).get().await().getString("imageName") } ?: "" // Fallback
+                            if (uploadedUrl != null) imageUploadCache[localPathKey] = uploadedUrl
+                        }
+                    } else {
+                        Log.w("PositionsRepository", "SYNC_BATCH: Local image file not found: ${positionForFirestore.imageName} for item ${positionForFirestore.name}. Will use current/empty imageName.")
+                        finalImageNameForFirestore = existingFirestoreDocId?.let { positionsCollection.document(it).get().await().getString("imageName") } ?: "" // Fallback to existing cloud URL or empty
+                    }
+                }
+                positionForFirestore = positionForFirestore.copy(imageName = finalImageNameForFirestore)
+
+                // 3. Add to batch
+                val docRef = if (existingFirestoreDocId != null) {
+                    positionsCollection.document(existingFirestoreDocId)
+                } else {
+                    // It's a new item for Firestore (original ID might have been local_ or blank, or name didn't match existing)
+                    // Or, it was a local_ ID item whose image went to CF, but data part still needs sync here if CF path was skipped.
+                    // This path should primarily handle items that were NOT local_ with local images (those go to CF).
+                    // If itemToBatchProcess.id starts with "local_", it means it's a local item whose image was NOT uploaded to CF.
+                    // We need to ensure it gets a new Firestore ID.
+                    positionsCollection.document() 
+                }
+                batch.set(docRef, positionForFirestore.copy(id = docRef.id)) // Ensure the object in batch has the correct Firestore ID.
+                
+                // Update local cache map
+                if (itemToBatchProcess.id != docRef.id && itemToBatchProcess.id.startsWith("local_")) {
+                    allCurrentLocalPositionsMap.remove(itemToBatchProcess.id)
+                }
+                allCurrentLocalPositionsMap[docRef.id] = positionForFirestore.copy(id = docRef.id)
+                if (itemToBatchProcess.id.startsWith("local_")) {
+                     localIdsMarkedAsPotentiallyProcessedInThisRun.add(itemToBatchProcess.id)
+                }
+                Log.i("PositionsRepository", "SYNC_BATCH: Queued set for ${positionForFirestore.name} (Firestore ID: ${docRef.id})")
+            }
+
+            try {
+                batch.commit().await()
+                Log.i("PositionsRepository", "syncListOfLocalPositionsToFirestore: Successfully committed batch of ${itemsForDirectFirestoreBatch.size} items.")
+            } catch (e: Exception) {
+                Log.e("PositionsRepository", "syncListOfLocalPositionsToFirestore: Error committing batch.", e)
+                // If batch fails, items remain in allCurrentLocalPositionsMap as they were.
+                // localIdsMarkedAsPotentiallyProcessedInThisRun should probably be cleared or handled if batch fails.
+                // For now, they will be re-evaluated in verification step.
+            }
+        } else {
+            Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: No items for direct Firestore batch.")
+        }
+        
+        // Final save of SharedPreferences after all processing (both CF path and direct batch path) for this sync run.
+        saveLocalPositions(allCurrentLocalPositionsMap.values.toList())
+        Log.d("PositionsRepository", "syncListOfLocalPositionsToFirestore: Final save to SharedPreferences. Map size: ${allCurrentLocalPositionsMap.values.size}")
+
+        // Verification step (remains the same)
         val finalLocalStateAfterSync = loadLocalPositions()
         val finalLocalIdsSet = finalLocalStateAfterSync.map { it.id }.toSet()
 

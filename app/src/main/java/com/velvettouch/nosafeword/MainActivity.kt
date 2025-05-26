@@ -703,19 +703,19 @@ class MainActivity : BaseActivity() {
             isCurrentlyFavorite = cloudFavoritesViewModel.favorites.value.any { it.itemId == sceneIdentifier && it.itemType == "scene" }
             if (isCurrentlyFavorite) {
                 cloudFavoritesViewModel.removeCloudFavorite(sceneIdentifier, "scene")
-                Toast.makeText(applicationContext, "💔 '${currentScene.title}' removed from cloud favorites", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "💔 '${currentScene.title}' removed from favorites", Toast.LENGTH_SHORT).show()
             } else {
                 cloudFavoritesViewModel.addCloudFavorite(sceneIdentifier, "scene")
-                Toast.makeText(applicationContext, "❤️ '${currentScene.title}' added to cloud favorites", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "❤️ '${currentScene.title}' added to favorites", Toast.LENGTH_SHORT).show()
             }
         } else {
             isCurrentlyFavorite = localFavoritesViewModel.localFavoriteScenes.value.any { getSceneIdentifier(it) == sceneIdentifier }
             if (isCurrentlyFavorite) {
                 localFavoritesViewModel.removeLocalFavoriteScene(sceneIdentifier, allUserScenes)
-                Toast.makeText(applicationContext, "💔 '${currentScene.title}' removed from local favorites", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "💔 '${currentScene.title}' removed from favorites", Toast.LENGTH_SHORT).show()
             } else {
                 localFavoritesViewModel.addLocalFavoriteScene(sceneIdentifier, allUserScenes)
-                Toast.makeText(applicationContext, "❤️ '${currentScene.title}' added to local favorites", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "❤️ '${currentScene.title}' added to favorites", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -248,30 +248,34 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
             return
         }
         Log.d(TAG, "Uploading ${scenesToUpload.size} new/modified local custom scenes for user $userId.")
-        var successCount = 0
-        var failureCount = 0
-
-        for (localScene in scenesToUpload) {
-            // Prepare the scene for Firestore: ensure correct userId, isCustom=true, and blank firestoreId for new doc.
-            // The localScene should already have isCustom=true if it's in scenesToUpload.
-            // Its originalId (localScene.id) is preserved if it was a modified default scene.
-            val sceneForFirestore = localScene.copy(
+        // scenesToUpload are local custom scenes, or defaults edited offline.
+        // They need to be added to Firestore under the current user.
+        // The new repository.addOrUpdateScenesBatch will handle assigning new Firestore IDs.
+        val scenesForBatch = scenesToUpload.map { localScene ->
+            localScene.copy(
                 userId = userId,
-                isCustom = true, // Enforce, though it should be true from filter
-                firestoreId = "" // Let Firestore generate the ID for this new cloud entry.
+                isCustom = true, // Ensure they are marked as custom for the user
+                // firestoreId will be handled by addOrUpdateScenesBatch (generated if blank/local_, used if existing)
+                // If localScene.firestoreId was like "local_...", the repo batch method will treat it as new.
+                // If localScene.firestoreId was a valid Firestore ID (e.g. an edited default that was previously synced),
+                // the repo batch method would update it. However, syncLocalScenesToFirestore is for scenes
+                // that are effectively "new" to this user's cloud store from an offline session.
+                // So, we should ensure firestoreId is blank to force new document creation in the cloud for these.
+                firestoreId = "" 
             )
-            Log.d(TAG, "Uploading to Firestore: '${sceneForFirestore.title}' (Original asset ID if any: ${sceneForFirestore.id}, Original local temp ID was: ${localScene.firestoreId})")
-            val result = repository.addScene(sceneForFirestore)
-            if (result.isSuccess) {
-                successCount++
-            } else {
-                failureCount++
-                Log.e(TAG, "Failed to upload scene '${sceneForFirestore.title}': ${result.exceptionOrNull()?.message}")
-            }
         }
-        Log.i(TAG, "Upload of local custom scenes complete for user $userId. Success: $successCount, Failed: $failureCount.")
-        if (failureCount > 0) {
-            _error.value = "$failureCount local scenes failed to upload."
+
+        if (scenesForBatch.isNotEmpty()) {
+            Log.d(TAG, "Calling addOrUpdateScenesBatch for ${scenesForBatch.size} scenes for user $userId.")
+            val batchResult = repository.addOrUpdateScenesBatch(scenesForBatch)
+            if (batchResult.isSuccess) {
+                Log.i(TAG, "Successfully batched ${scenesForBatch.size} local scenes to Firestore for user $userId.")
+            } else {
+                _error.value = "${scenesForBatch.size} local scenes failed to upload in batch."
+                Log.e(TAG, "Error batch uploading local scenes for user $userId", batchResult.exceptionOrNull())
+            }
+        } else {
+            Log.d(TAG, "No scenes in scenesForBatch to upload for user $userId.")
         }
         // isLoading is managed by the caller (handleAuthState) which calls loadScenesFromFirestore next.
     }
@@ -615,11 +619,9 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                 .filter { !it.isCustom && it.id != 0 } // Consider only scenes that were originally default
                 .associateBy { it.id }
 
-            var scenesAdded = 0
-            var scenesUpdated = 0
-            var scenesFailed = 0
+            val scenesToProcessInBatch = mutableListOf<Scene>()
 
-            // 3. Compare and update/add
+            // 3. Compare and prepare for batch
             for (assetScene in assetScenes) {
                 val firestoreMatch = firestoreScenesMapByOriginalId[assetScene.id]
 
@@ -628,11 +630,10 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                     val sceneToAdd = assetScene.copy(
                         userId = userId,
                         isCustom = false, // Ensure it's marked as not custom
-                        firestoreId = "" // Let Firestore generate ID
+                        firestoreId = "" // Let Firestore generate ID via addOrUpdateScenesBatch
                     )
-                    Log.d(TAG, "Reset: Adding missing default scene '${sceneToAdd.title}' (Original ID: ${sceneToAdd.id})")
-                    val addResult = repository.addScene(sceneToAdd)
-                    if (addResult.isSuccess) scenesAdded++ else scenesFailed++
+                    scenesToProcessInBatch.add(sceneToAdd)
+                    Log.d(TAG, "Reset: Queued for batch add: missing default scene '${sceneToAdd.title}' (Original ID: ${sceneToAdd.id})")
                 } else {
                     // Default scene exists in Firestore. Check if it was modified.
                     val needsUpdate = firestoreMatch.title != assetScene.title ||
@@ -645,32 +646,31 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
                             userId = userId,
                             isCustom = false // Ensure it's marked as not custom
                         )
-                        Log.d(TAG, "Reset: Updating modified default scene '${sceneToUpdate.title}' (Original ID: ${sceneToUpdate.id})")
-                        val updateResult = repository.updateScene(sceneToUpdate)
-                        if (updateResult.isSuccess) scenesUpdated++ else scenesFailed++
+                        scenesToProcessInBatch.add(sceneToUpdate)
+                        Log.d(TAG, "Reset: Queued for batch update: modified default scene '${sceneToUpdate.title}' (Original ID: ${sceneToUpdate.id})")
                     }
                 }
             }
 
-            // 4. Handle scenes in Firestore that were originally default but are not in assets (should not happen if assets are source of truth)
-            // This part is more about cleanup if Firestore has orphaned "default" scenes.
-            // For now, the request is to restore asset defaults.
-
+            var batchSuccess = true
+            if (scenesToProcessInBatch.isNotEmpty()) {
+                Log.d(TAG, "Reset: Calling addOrUpdateScenesBatch for ${scenesToProcessInBatch.size} scenes.")
+                val batchResult = repository.addOrUpdateScenesBatch(scenesToProcessInBatch)
+                if (batchResult.isFailure) {
+                    batchSuccess = false
+                    _error.value = "Failed to batch reset default scenes: ${batchResult.exceptionOrNull()?.message}"
+                    Log.e(TAG, "Error batch resetting default scenes", batchResult.exceptionOrNull())
+                }
+            } else {
+                Log.d(TAG, "Reset: No scenes needed to be added or updated.")
+            }
+            
             _isLoading.value = false
-            val summary = "Reset complete. Added: $scenesAdded, Updated: $scenesUpdated, Failed: $scenesFailed."
-            Log.i(TAG, summary)
-            // Optionally, set a success message or rely on the flow to update the UI.
-            // Forcing a refresh of the scenes list:
-            if (scenesAdded > 0 || scenesUpdated > 0 || scenesFailed > 0) {
-                 // The existing flow collection in loadScenesFromFirestore should pick up changes.
-                 // If not, a manual trigger might be needed, but Firestore listeners usually handle this.
-                 // Forcing a re-evaluation by the flow if it's not immediate:
-                 // loadScenesFromFirestore() // This might be redundant if listeners are quick.
+            if (batchSuccess) {
+                Log.i(TAG, "Reset default scenes for user $userId complete. Processed ${scenesToProcessInBatch.size} scenes in batch (if any).")
+                // Firestore listener in loadScenesFromFirestore should pick up changes.
             }
-            if (scenesFailed > 0) {
-                _error.value = "$scenesFailed operations failed during reset."
-            }
-            // The ViewModel's `scenes` StateFlow should automatically update due to Firestore listener in `loadScenesFromFirestore`.
+            // Error already set if batchSuccess is false.
         }
     }
 
