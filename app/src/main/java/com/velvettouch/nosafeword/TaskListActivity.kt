@@ -378,20 +378,39 @@ class TaskListActivity : BaseActivity() {
                 .build()
 
             datePicker.addOnPositiveButtonClickListener { dateSelection ->
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = dateSelection
+                // dateSelection is a Long representing milliseconds since epoch in UTC for the selected date at 00:00 UTC.
+                val utcCalendarForSelectedDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                utcCalendarForSelectedDate.timeInMillis = dateSelection
+
+                // Default to 12:00 AM for the time picker on the selected date
+                val initialHour = 0
+                val initialMinute = 0
 
                 val timePicker = MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_12H)
-                    .setHour(calendar.get(Calendar.HOUR_OF_DAY))
-                    .setMinute(calendar.get(Calendar.MINUTE))
+                    .setHour(initialHour)
+                    .setMinute(initialMinute)
                     .setTitleText("Select deadline time")
                     .build()
 
                 timePicker.addOnPositiveButtonClickListener {
-                    calendar.set(Calendar.HOUR_OF_DAY, timePicker.hour)
-                    calendar.set(Calendar.MINUTE, timePicker.minute)
-                    selectedDeadlineMillis = calendar.timeInMillis
+                    // User has picked a time (timePicker.hour, timePicker.minute).
+                    // This time is intended for the date they previously picked, interpreted in their local timezone.
+
+                    val localCalendar = Calendar.getInstance() // Uses device's default/local timezone
+
+                    // Set the date part on the localCalendar from the UTC date selection
+                    localCalendar.set(Calendar.YEAR, utcCalendarForSelectedDate.get(Calendar.YEAR))
+                    localCalendar.set(Calendar.MONTH, utcCalendarForSelectedDate.get(Calendar.MONTH))
+                    localCalendar.set(Calendar.DAY_OF_MONTH, utcCalendarForSelectedDate.get(Calendar.DAY_OF_MONTH))
+
+                    // Now set the time picked by the user onto this localCalendar
+                    localCalendar.set(Calendar.HOUR_OF_DAY, timePicker.hour)
+                    localCalendar.set(Calendar.MINUTE, timePicker.minute)
+                    localCalendar.set(Calendar.SECOND, 0)
+                    localCalendar.set(Calendar.MILLISECOND, 0)
+
+                    selectedDeadlineMillis = localCalendar.timeInMillis // Get the UTC timestamp for this local date/time
                     updateDeadlineDisplay()
                 }
                 timePicker.show(supportFragmentManager, "MaterialTimePicker")

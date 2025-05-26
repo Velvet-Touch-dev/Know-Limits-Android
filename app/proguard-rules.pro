@@ -14,14 +14,22 @@
 -keep public class com.velvettouch.nosafeword.PositionsActivity
 -keep public class com.velvettouch.nosafeword.BodyWorshipActivity
 
-# Keep model classes (if any) - Note: TaskItem, PlannedItem, Scene are not in a 'model' subpackage.
+# Keep model classes (if any)
 # -keep class com.velvettouch.nosafeword.model.** { *; } # This rule might be unused or for other models
 
-# Keep specific model classes used with Gson and TypeToken
--keep class com.velvettouch.nosafeword.TaskItem { *; }
--keep class com.velvettouch.nosafeword.PlannedItem { *; }
--keep class com.velvettouch.nosafeword.Scene { *; }
+# Keep specific model classes used with Gson and TypeToken or Firebase
+# Note: TaskItem is in com.velvettouch.nosafeword.data.model
+# -keep class com.velvettouch.nosafeword.TaskItem { *; } # Incorrect path, removed/commented
+-keep class com.velvettouch.nosafeword.PlannedItem { *; } # Assuming this is at root package
+-keep class com.velvettouch.nosafeword.Scene { *; }       # Assuming this is at root package
 # Add other models used with Gson here if needed
+
+# Keep TaskItem class for Firebase (Realtime Database / Firestore)
+-keepclassmembers class com.velvettouch.nosafeword.data.model.TaskItem {
+    public <init>();
+    public *;
+}
+-keep class com.velvettouch.nosafeword.data.model.TaskItem { *; }
 
 # Keep UserProfile class for Firebase Firestore
 -keepclassmembers class com.velvettouch.nosafeword.data.model.UserProfile {

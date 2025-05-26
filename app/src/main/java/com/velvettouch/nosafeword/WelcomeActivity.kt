@@ -1,8 +1,11 @@
 package com.velvettouch.nosafeword
 
+import android.Manifest
 import android.app.Activity // Added for Activity.RESULT_CANCELED
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -19,6 +22,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging // Added for FCM Token
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen // Added for Splash Screen
 import com.velvettouch.nosafeword.data.repository.UserRepository // Added
 import kotlinx.coroutines.CoroutineScope
@@ -40,32 +45,70 @@ class WelcomeActivity : AppCompatActivity() {
         private const val KEY_WELCOME_COMPLETED = "welcomeCompleted"
     }
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.d(TAG, "POST_NOTIFICATIONS permission granted.")
+            } else {
+                Log.d(TAG, "POST_NOTIFICATIONS permission denied.")
+                // Optionally show a toast or a subtle message if notifications are crucial
+                // Toast.makeText(this, "Notifications permission denied.", Toast.LENGTH_SHORT).show()
+            }
+            // Proceed with app startup regardless of permission result
+            proceedWithAppStartupLogic()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Handle the splash screen transition.
-        // Must be called before super.onCreate() or setContentView()
         val splashScreen = installSplashScreen()
-
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
 
+        // Ask for notification permission first.
+        // The actual app startup logic will be called from proceedWithAppStartupLogic()
+        askNotificationPermission()
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "POST_NOTIFICATIONS permission already granted.")
+                proceedWithAppStartupLogic()
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // Consider showing an educational UI here before requesting.
+                // For this implementation, we'll request directly.
+                Log.d(TAG, "Showing rationale for POST_NOTIFICATIONS (or requesting directly).")
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                // Directly ask for the permission.
+                Log.d(TAG, "Requesting POST_NOTIFICATIONS permission.")
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            // Notification permission is not required for API level < 33
+            Log.d(TAG, "POST_NOTIFICATIONS permission not required for this API level.")
+            proceedWithAppStartupLogic()
+        }
+    }
+
+    private fun proceedWithAppStartupLogic() {
         // Check if welcome has already been completed
         val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (sharedPreferences.getBoolean(KEY_WELCOME_COMPLETED, false)) {
-            // User has completed welcome and is likely signed in.
-            // Ensure FCM token is updated if user is signed in.
             auth.currentUser?.let {
                 updateFcmTokenForCurrentUser(it.uid)
             }
-            navigateToMainActivity(false) // Don't set the flag again if already set
+            navigateToMainActivity(false)
             return
         }
 
         // Check if user is already signed in (Firebase Auth)
         if (auth.currentUser != null) {
-            // If user is signed in, update FCM token, mark welcome as completed and navigate
-            updateFcmTokenForCurrentUser(auth.currentUser!!.uid) // Update FCM token
+            updateFcmTokenForCurrentUser(auth.currentUser!!.uid)
             navigateToMainActivity()
-            return // Finish onCreate early
+            return
         }
 
         setContentView(R.layout.activity_welcome)
