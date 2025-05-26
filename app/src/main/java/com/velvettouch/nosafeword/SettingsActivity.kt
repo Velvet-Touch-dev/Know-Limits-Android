@@ -54,6 +54,17 @@ import timber.log.Timber // Added
 import kotlinx.coroutines.withContext // Added for coroutine context switching
 import kotlinx.coroutines.Dispatchers // Added for coroutine dispatchers
 // Assuming Scene and PositionItem data classes are in com.velvettouch.nosafeword or imported
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.ViewModelProvider
+import com.google.gson.Gson // Added for JSON
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.text.SimpleDateFormat // Added for date formatting
+import java.util.Date // Added for date
+import android.net.Uri // Added for Uri
+
 
 class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
@@ -62,6 +73,14 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private val cloudFavoritesRepository by lazy { FavoritesRepository() }
     private val scenesRepository by lazy { ScenesRepository(applicationContext) } // Added
     private val positionsRepository by lazy { PositionsRepository(applicationContext) } // Added
+    private lateinit var scenesViewModel: ScenesViewModel // Added
+
+    // Data Export/Import
+    private lateinit var exportDataButton: MaterialButton // Assuming R.id.export_data_button
+    private lateinit var importDataButton: MaterialButton // Assuming R.id.import_data_button
+    private lateinit var exportDataLauncher: ActivityResultLauncher<Intent>
+    private lateinit var importDataLauncher: ActivityResultLauncher<Intent>
+    private val gson = Gson() // For JSON operations
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -122,6 +141,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         savedInstanceState?.let {
             settingsChanged = it.getBoolean(KEY_SETTINGS_CHANGED, false)
         }
+
+        scenesViewModel = ViewModelProvider(this).get(ScenesViewModel::class.java) // Initialize ViewModel
         
         // Initialize TextToSpeech for voice preview
         textToSpeech = TextToSpeech(this, this)
@@ -208,6 +229,21 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
         setupPairingClickListeners()
         observeUserProfile()
 
+        // Setup Data Export/Import
+        // These buttons (R.id.export_data_button, R.id.import_data_button) need to be added to activity_settings.xml
+        // For now, we'll assume they exist and proceed with setup.
+        // If they don't exist, findViewById will return null and cause a crash later.
+        // This will be addressed when UI elements are confirmed/added to XML.
+        try {
+            exportDataButton = findViewById(R.id.export_data_button)
+            importDataButton = findViewById(R.id.import_data_button)
+            setupDataManagementSection()
+        } catch (e: Exception) {
+            Log.e(TAG, "Export/Import buttons not found in layout. Ensure they are added to R.layout.activity_settings.", e)
+            // Optionally disable functionality or show a message if buttons are critical
+        }
+        initializeActivityLaunchers()
+
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -229,15 +265,19 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun showLoadingOverlay() {
-        // loadingOverlay.visibility = FrameLayout.VISIBLE // Overlay removed
+        loadingOverlay.visibility = View.VISIBLE // Re-enable overlay
         googleSignInButton.isEnabled = false
+        if (::exportDataButton.isInitialized) exportDataButton.isEnabled = false
+        if (::importDataButton.isInitialized) importDataButton.isEnabled = false
         // Potentially disable other interactive elements here if needed
     }
 
     private fun hideLoadingOverlay() {
         runOnUiThread { // Ensure UI operations are on the main thread
-            // loadingOverlay.visibility = FrameLayout.GONE // Overlay removed
+            loadingOverlay.visibility = View.GONE // Re-enable overlay
             googleSignInButton.isEnabled = true
+            if (::exportDataButton.isInitialized) exportDataButton.isEnabled = true
+            if (::importDataButton.isInitialized) importDataButton.isEnabled = true
             
             // Ensure drawer and navigation view are enabled
             drawerLayout.isEnabled = true
@@ -1141,6 +1181,135 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
                     Timber.tag(TAG).e(updateResult.exceptionOrNull(), "Failed to update FCM token in SettingsActivity for user $uid")
                 }
             }
+        }
+    }
+
+    // --- Data Export/Import Methods ---
+
+    private fun setupDataManagementSection() {
+        // These IDs R.id.export_data_button and R.id.import_data_button must exist in R.layout.activity_settings
+        // If they were not found in onCreate, these lines will also fail or do nothing.
+        if (::exportDataButton.isInitialized) {
+            exportDataButton.setOnClickListener {
+                handleExportData()
+            }
+        }
+        if (::importDataButton.isInitialized) {
+            importDataButton.setOnClickListener {
+                handleImportData()
+            }
+        }
+    }
+
+    private fun initializeActivityLaunchers() {
+        exportDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.also { uri ->
+                    performFileExport(uri)
+                }
+            }
+        }
+
+        importDataLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.also { uri ->
+                    performFileImport(uri)
+                }
+            }
+        }
+    }
+
+    private fun handleExportData() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+            // Suggest a filename
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            putExtra(Intent.EXTRA_TITLE, "NoSafeWord_Export_$timeStamp.json")
+        }
+        try {
+            exportDataLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error launching file picker for export.", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "Error launching exportDataLauncher", e)
+        }
+    }
+
+    private fun handleImportData() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json" // Or */* if you want to allow any file type and validate later
+        }
+        try {
+            importDataLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error launching file picker for import.", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "Error launching importDataLauncher", e)
+        }
+    }
+
+    private fun performFileExport(uri: Uri) {
+        lifecycleScope.launch {
+            showLoadingOverlay() // Show some progress indicator
+            val exporter = DataExporter(applicationContext, scenesViewModel, positionsRepository, localFavoritesRepository, cloudFavoritesRepository, auth)
+            val exportData = exporter.generateExportData()
+
+            if (exportData == null) {
+                hideLoadingOverlay()
+                Toast.makeText(this@SettingsActivity, "Failed to generate export data.", Toast.LENGTH_LONG).show()
+                return@launch
+            }
+
+            val jsonString = gson.toJson(exportData)
+
+            try {
+                contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    outputStream.write(jsonString.toByteArray())
+                }
+                Toast.makeText(this@SettingsActivity, "Data exported successfully.", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error writing export file", e)
+                Toast.makeText(this@SettingsActivity, "Error saving export file.", Toast.LENGTH_LONG).show()
+            } finally {
+                hideLoadingOverlay()
+            }
+        }
+    }
+
+    private fun performFileImport(uri: Uri) {
+        lifecycleScope.launch {
+            showLoadingOverlay()
+            var jsonString: String? = null
+            try {
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    jsonString = inputStream.bufferedReader().use(BufferedReader::readText)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error reading import file", e)
+                Toast.makeText(this@SettingsActivity, "Error reading import file.", Toast.LENGTH_LONG).show()
+                hideLoadingOverlay()
+                return@launch
+            }
+
+            if (jsonString == null) {
+                Toast.makeText(this@SettingsActivity, "Failed to read data from file.", Toast.LENGTH_LONG).show()
+                hideLoadingOverlay()
+                return@launch
+            }
+
+            val importer = DataImporter(applicationContext, scenesViewModel, positionsRepository, localFavoritesRepository, cloudFavoritesRepository, auth)
+            val success = importer.importDataFromJson(jsonString!!)
+
+            if (success) {
+                Toast.makeText(this@SettingsActivity, "Data imported successfully. Please restart the app if changes are not immediately visible.", Toast.LENGTH_LONG).show()
+                // Data might be stale in ViewModels, ideally they should be refreshed or observe changes.
+                // Forcing a refresh or relying on LiveData/Flow updates is key.
+                // A simple way is to re-fetch or re-trigger observers if ViewModels support it.
+                // For now, a toast message is a placeholder.
+            } else {
+                Toast.makeText(this@SettingsActivity, "Failed to import data.", Toast.LENGTH_LONG).show()
+            }
+            hideLoadingOverlay()
         }
     }
 }

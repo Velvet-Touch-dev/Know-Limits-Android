@@ -170,6 +170,37 @@
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardElevation="2dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Data Management"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:layout_marginBottom="8dp"/>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/export_data_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Export My Data"
+                            style="?attr/materialButtonOutlinedStyle"/>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/import_data_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Import My Data"
+                            style="?attr/materialButtonOutlinedStyle"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Account/Sign-In Card -->
                 <com.google.android.material.card.MaterialCardView

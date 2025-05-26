@@ -779,4 +779,16 @@ class ScenesViewModel(application: Application) : AndroidViewModel(application) 
         firebaseAuthListener?.let { auth.removeAuthStateListener(it) } // Clean up the stored listener
         Log.d(TAG, "ScenesViewModel onCleared, auth listener removed.")
     }
+
+    // Method to get current scenes for export purposes
+    fun getCurrentScenesForExport(): List<Scene> {
+        return if (auth.currentUser != null) {
+            _scenes.value // For logged-in users, reflects Firestore data + any ongoing updates
+        } else {
+            // For logged-out users, reflects scenes from SharedPreferences or assets
+            // Ensure this list is up-to-date if it's lazily loaded or modified.
+            // The handleAuthState should keep localScenesWhenLoggedOut current.
+            ArrayList(localScenesWhenLoggedOut)
+        }
+    }
 }

@@ -130,7 +130,7 @@ class PositionsRepository(private val context: Context) {
         Log.d("PositionsRepository", "saveLocalPositions: Saved ${trulyFinalPositions.size} positions to SharedPreferences. Original: ${positions.size}, DistinctById: ${distinctById.size}")
     }
 
-    private fun loadLocalPositions(): MutableList<PositionItem> {
+    internal fun loadLocalPositions(): MutableList<PositionItem> { // Changed to internal
         val json = getLocalPositionsPrefs().getString(LOCAL_POSITIONS_KEY, null)
         return if (json != null) {
             val type = object : TypeToken<MutableList<PositionItem>>() {}.type
