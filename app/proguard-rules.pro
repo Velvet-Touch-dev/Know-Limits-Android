@@ -23,6 +23,13 @@
 -keep class com.velvettouch.nosafeword.Scene { *; }
 # Add other models used with Gson here if needed
 
+# Keep UserProfile class for Firebase Firestore
+-keepclassmembers class com.velvettouch.nosafeword.data.model.UserProfile {
+    public <init>();
+    public *;
+}
+-keep class com.velvettouch.nosafeword.data.model.UserProfile { *; }
+
 # Keep TypeToken and its subclasses for Gson
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken

@@ -90,7 +90,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
                     val currentUser = firebaseAuth.currentUser
                     if (currentUser != null && !currentUser.isAnonymous) {
                         Log.d("PositionsViewModel", "loadPositions: User is logged in. Persisting ${firestoreFetchedPositions.size} Firestore positions to SharedPreferences.")
-                        repository.mergeAndSaveFirestorePositionsToLocal(firestoreFetchedPositions)
+                        // repository.mergeAndSaveFirestorePositionsToLocal(firestoreFetchedPositions) // Cline: Commented out to prevent Firestore -> Local sync
                     }
                 }
         }

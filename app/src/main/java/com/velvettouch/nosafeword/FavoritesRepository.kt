@@ -170,18 +170,40 @@ class FavoritesRepository {
         if (favoritesToAdd.isEmpty()) return Result.success(Unit)
 
         return try {
-            val batch = firestore.batch()
             val favoritesCollection = getFavoritesCollection()
+            val itemsToActuallyWrite = mutableListOf<Favorite>()
 
-            for (favorite in favoritesToAdd) {
-                // Ensure the favorite has the correct userId, though it should be set by the caller
-                val docRef = favoritesCollection.document() // Create new document for each favorite
-                batch.set(docRef, favorite.copy(userId = userId))
+            // Check each candidate favorite for existence before adding to batch
+            for (favCandidate in favoritesToAdd) {
+                val existingQuery = favoritesCollection
+                    .whereEqualTo("user_id", userId)
+                    .whereEqualTo("item_id", favCandidate.itemId)
+                    .whereEqualTo("item_type", favCandidate.itemType)
+                    .limit(1)
+                    .get() // Using default source, server preferred if critical but adds latency
+                    .await()
+                
+                if (existingQuery.isEmpty) {
+                    itemsToActuallyWrite.add(favCandidate.copy(userId = userId)) // Ensure userId is set
+                } else {
+                    Log.d("FavoritesRepository", "Favorite already exists, skipping: ${favCandidate.itemId} (${favCandidate.itemType}) for user $userId")
+                }
             }
-            batch.commit().await()
+
+            if (itemsToActuallyWrite.isNotEmpty()) {
+                val batch = firestore.batch()
+                itemsToActuallyWrite.forEach { favToWrite ->
+                    val docRef = favoritesCollection.document() // Generate new unique document ID
+                    batch.set(docRef, favToWrite) // favToWrite already has userId
+                }
+                batch.commit().await()
+                Log.d("FavoritesRepository", "Successfully batched ${itemsToActuallyWrite.size} new favorites for user $userId.")
+            } else {
+                Log.d("FavoritesRepository", "No new favorites to batch-add for user $userId (all candidates already exist).")
+            }
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e("FavoritesRepository", "Error adding favorites in batch for user $userId", e)
+            Log.e("FavoritesRepository", "Error adding/checking favorites in batch for user $userId", e)
             Result.failure(e)
         }
     }
