@@ -88,6 +88,7 @@ class PositionsActivity : BaseActivity(), TextToSpeech.OnInitListener, AddPositi
     private lateinit var positionsProgressIndicator: LinearProgressIndicator
     private lateinit var swipeTipTextView: TextView // Added for the swipe tip
 
+    private var isImageLoadingViaGlide: Boolean = false // Added to track Glide loading state
     private lateinit var positionsViewModel: PositionsViewModel
     private lateinit var favoritesViewModel: FavoritesViewModel // Added
     private lateinit var localFavoritesRepository: LocalFavoritesRepository // Added
@@ -643,12 +644,11 @@ private var pendingPositionNavigationName: String? = null // For navigating from
     }
 
     private fun updateProgressIndicatorVisibility() {
-        val isLoading = positionsViewModel.isLoading.value
-        val isSyncing = positionsViewModel.isSyncing.value
+        val isLoadingFromViewModel = positionsViewModel.isLoading.value
+        val isSyncingFromViewModel = positionsViewModel.isSyncing.value
         // Ensure positionsProgressIndicator is initialized before accessing it.
-        // It should be initialized in onCreate.
         if (::positionsProgressIndicator.isInitialized) {
-            positionsProgressIndicator.visibility = if (isLoading || isSyncing) View.VISIBLE else View.GONE
+            positionsProgressIndicator.visibility = if (isLoadingFromViewModel || isSyncingFromViewModel || isImageLoadingViaGlide) View.VISIBLE else View.GONE
         }
     }
 
@@ -689,16 +689,20 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
             try {
                 if (targetPositionItem.isAsset) {
+                    isImageLoadingViaGlide = false // Asset, not using Glide
                     val inputStream = assets.open("positions/${targetPositionItem.imageName}")
                     val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
                     positionImageView.setImageDrawable(drawable)
                     inputStream.close()
                     speakPositionName(targetPositionItem.name)
                     invalidateOptionsMenu()
+                    updateProgressIndicatorVisibility() // Update progress bar state
                 } else { // Custom position (local or Firestore)
                     if (targetPositionItem.imageName.isNotBlank()) {
                         val imagePath = targetPositionItem.imageName
-                        
+                        isImageLoadingViaGlide = true // Will use Glide
+                        updateProgressIndicatorVisibility() // Show progress bar
+
                         if (imagePath.startsWith("content://") || imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
                             val imageUriToLoad = Uri.parse(imagePath)
                             Log.d("PositionsActivity", "navigateToPositionInRandomizeView: Attempting to load URI: $imageUriToLoad, Scheme: ${imageUriToLoad.scheme}")
@@ -709,10 +713,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                 .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                     override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                         Log.e("PositionsActivity", "navigateToPositionInRandomizeView (URI): Glide load failed for $imageUriToLoad", e)
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                     override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                         Log.d("PositionsActivity", "navigateToPositionInRandomizeView (URI): Glide load success for $imageUriToLoad")
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                 })
@@ -728,10 +736,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                     .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                         override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                             Log.e("PositionsActivity", "navigateToPositionInRandomizeView (File): Glide load failed for ${localFile.absolutePath}", e)
+                                            isImageLoadingViaGlide = false
+                                            updateProgressIndicatorVisibility()
                                             return false
                                         }
                                         override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                             Log.d("PositionsActivity", "navigateToPositionInRandomizeView (File): Glide load success for ${localFile.absolutePath}")
+                                            isImageLoadingViaGlide = false
+                                            updateProgressIndicatorVisibility()
                                             return false
                                         }
                                     })
@@ -739,13 +751,19 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                             } else {
                                 Log.e("PositionsActivity", "navigateToPositionInRandomizeView: Local file does not exist: $imagePath")
                                 positionImageView.setImageResource(R.drawable.ic_image_24)
+                                isImageLoadingViaGlide = false
+                                updateProgressIndicatorVisibility()
                             }
                         } else {
                             Log.w("PositionsActivity", "navigateToPositionInRandomizeView: Unknown image path format: $imagePath")
                             positionImageView.setImageResource(R.drawable.ic_image_24)
+                            isImageLoadingViaGlide = false
+                            updateProgressIndicatorVisibility()
                         }
                     } else {
                         positionImageView.setImageResource(R.drawable.ic_image_24)
+                        isImageLoadingViaGlide = false // No image path, not using Glide
+                        updateProgressIndicatorVisibility()
                     }
                     speakPositionName(targetPositionItem.name)
                     invalidateOptionsMenu()
@@ -753,6 +771,8 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             } catch (e: Exception) { // Catch IOException, SecurityException, etc.
                 android.util.Log.e("PositionsActivity", "Error loading image for ${targetPositionItem.name}: ${e.message}")
                 positionImageView.setImageResource(R.drawable.ic_image_24)
+                isImageLoadingViaGlide = false // Error, not using Glide
+                updateProgressIndicatorVisibility()
                 invalidateOptionsMenu()
                 if (e is SecurityException) {
                     Toast.makeText(this, "Permission denied to load image.", Toast.LENGTH_SHORT).show()
@@ -1258,11 +1278,22 @@ private var pendingPositionNavigationName: String? = null // For navigating from
 
             try {
                 if (positionItem.isAsset) {
-                    displayCurrentPosition() // Handles image loading, TTS, and invalidateOptionsMenu
+                    isImageLoadingViaGlide = false // Asset, not using Glide
+                    // displayCurrentPosition() // This was recursive or incorrect. Call the actual asset loading logic.
+                    val inputStream = assets.open("positions/${positionItem.imageName}")
+                    val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
+                    positionImageView.setImageDrawable(drawable)
+                    inputStream.close()
+                    speakPositionName(positionItem.name)
+                    invalidateOptionsMenu()
+                    updateProgressIndicatorVisibility()
                 } else {
                     // Custom position (not an asset)
                     val imagePath = positionItem.imageName
-                     if (imagePath.isNotBlank()) {
+                    if (imagePath.isNotBlank()) {
+                        isImageLoadingViaGlide = true // Will use Glide
+                        updateProgressIndicatorVisibility()
+
                         if (imagePath.startsWith("content://") || imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
                             val imageUriToLoad = Uri.parse(imagePath)
                             Log.d("PositionsActivity", "displayPositionByName: Attempting to load URI: $imageUriToLoad, Scheme: ${imageUriToLoad.scheme}")
@@ -1271,10 +1302,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                 .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                     override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                         Log.e("PositionsActivity", "displayPositionByName (URI): Glide load failed for $imageUriToLoad", e)
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                     override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                         Log.d("PositionsActivity", "displayPositionByName (URI): Glide load success for $imageUriToLoad")
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                 })
@@ -1288,10 +1323,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                     .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                         override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                             Log.e("PositionsActivity", "displayPositionByName (File): Glide load failed for ${localFile.absolutePath}", e)
+                                            isImageLoadingViaGlide = false
+                                            updateProgressIndicatorVisibility()
                                             return false
                                         }
                                         override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                             Log.d("PositionsActivity", "displayPositionByName (File): Glide load success for ${localFile.absolutePath}")
+                                            isImageLoadingViaGlide = false
+                                            updateProgressIndicatorVisibility()
                                             return false
                                         }
                                     })
@@ -1299,13 +1338,19 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                             } else {
                                 Log.e("PositionsActivity", "displayPositionByName: Local file does not exist: $imagePath")
                                 positionImageView.setImageResource(R.drawable.ic_image_24)
+                                isImageLoadingViaGlide = false
+                                updateProgressIndicatorVisibility()
                             }
                         } else {
                             Log.w("PositionsActivity", "displayPositionByName: Unknown image path format: $imagePath")
                             positionImageView.setImageResource(R.drawable.ic_image_24)
+                            isImageLoadingViaGlide = false
+                            updateProgressIndicatorVisibility()
                         }
                     } else {
                         positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                        isImageLoadingViaGlide = false // No image path, not using Glide
+                        updateProgressIndicatorVisibility()
                     }
                     speakPositionName(positionItem.name)
                     invalidateOptionsMenu() // Update favorite icon status
@@ -1313,6 +1358,8 @@ private var pendingPositionNavigationName: String? = null // For navigating from
             } catch (e: IOException) {
                 e.printStackTrace()
                 positionImageView.setImageResource(R.drawable.ic_image_24) // Placeholder
+                isImageLoadingViaGlide = false // Error, not using Glide
+                updateProgressIndicatorVisibility()
                 Toast.makeText(this, "Error loading image for ${positionItem.name}", Toast.LENGTH_SHORT).show()
                 invalidateOptionsMenu()
             }
@@ -1410,12 +1457,16 @@ private var pendingPositionNavigationName: String? = null // For navigating from
         try {
             if (positionItem.imageName.isNotBlank()) {
                 if (positionItem.isAsset) {
+                    isImageLoadingViaGlide = false // Asset, not using Glide
                     val inputStream = assets.open("positions/${positionItem.imageName}")
                     val drawable = android.graphics.drawable.Drawable.createFromStream(inputStream, null)
                     positionImageView.setImageDrawable(drawable)
                     inputStream.close()
+                    updateProgressIndicatorVisibility()
                 } else { // Not an asset, could be URL, content URI, or file path
                     val imagePath = positionItem.imageName
+                    isImageLoadingViaGlide = true // Will use Glide
+                    updateProgressIndicatorVisibility()
                     when {
                         imagePath.startsWith("http://") || imagePath.startsWith("https://") -> {
                             Log.d("PositionsActivity", "displayCurrentPosition: Attempting to load URL: $imagePath")
@@ -1424,10 +1475,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                 .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                     override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                         Log.e("PositionsActivity", "displayCurrentPosition (URL): Glide load failed for $imagePath", e)
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                     override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                         Log.d("PositionsActivity", "displayCurrentPosition (URL): Glide load success for $imagePath")
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                 })
@@ -1441,10 +1496,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                 .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                     override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                         Log.e("PositionsActivity", "displayCurrentPosition (Content URI): Glide load failed for $contentUri", e)
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                     override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                         Log.d("PositionsActivity", "displayCurrentPosition (Content URI): Glide load success for $contentUri")
+                                        isImageLoadingViaGlide = false
+                                        updateProgressIndicatorVisibility()
                                         return false
                                     }
                                 })
@@ -1459,10 +1518,14 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                                     .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                                         override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
                                             Log.e("PositionsActivity", "displayCurrentPosition (File): Glide load failed for ${localFile.absolutePath}", e)
+                                            isImageLoadingViaGlide = false
+                                            updateProgressIndicatorVisibility()
                                             return false
                                         }
                                         override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
                                             Log.d("PositionsActivity", "displayCurrentPosition (File): Glide load success for ${localFile.absolutePath}")
+                                            isImageLoadingViaGlide = false
+                                            updateProgressIndicatorVisibility()
                                             return false
                                         }
                                     })
@@ -1470,21 +1533,29 @@ private var pendingPositionNavigationName: String? = null // For navigating from
                             } else {
                                 Log.e("PositionsActivity", "displayCurrentPosition: Local file does not exist: $imagePath")
                                 positionImageView.setImageResource(R.drawable.ic_image_24)
+                                isImageLoadingViaGlide = false
+                                updateProgressIndicatorVisibility()
                             }
                         }
                         else -> {
                             Log.w("PositionsActivity", "Randomize tab: Unknown non-asset imageName format: $imagePath")
                             positionImageView.setImageResource(R.drawable.ic_image_24)
+                            isImageLoadingViaGlide = false
+                            updateProgressIndicatorVisibility()
                         }
                     }
                 }
             } else {
                 Log.w("PositionsActivity", "Randomize tab: ImageName is blank for ${positionItem.name}")
-                 positionImageView.setImageResource(R.drawable.ic_image_24)
+                positionImageView.setImageResource(R.drawable.ic_image_24)
+                isImageLoadingViaGlide = false // No image path, not using Glide
+                updateProgressIndicatorVisibility()
             }
         } catch (e: Exception) {
             Log.e("PositionsActivity", "Error loading image for ${positionItem.name} (${positionItem.imageName}) on Randomize tab", e)
             positionImageView.setImageResource(R.drawable.ic_image_24)
+            isImageLoadingViaGlide = false // Error, not using Glide
+            updateProgressIndicatorVisibility()
         }
 
         speakPositionName(positionItem.name)

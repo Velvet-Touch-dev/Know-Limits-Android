@@ -721,28 +721,51 @@ class PositionsRepository(private val context: Context) {
                 positionForFirestore = positionForFirestore.copy(imageName = finalImageNameForFirestore)
 
                 // 3. Add to batch
-                val docRef = if (existingFirestoreDocId != null) {
-                    positionsCollection.document(existingFirestoreDocId)
+                val docRefToUse: com.google.firebase.firestore.DocumentReference
+                if (existingFirestoreDocId != null) {
+                    docRefToUse = positionsCollection.document(existingFirestoreDocId)
                 } else {
-                    // It's a new item for Firestore (original ID might have been local_ or blank, or name didn't match existing)
-                    // Or, it was a local_ ID item whose image went to CF, but data part still needs sync here if CF path was skipped.
-                    // This path should primarily handle items that were NOT local_ with local images (those go to CF).
-                    // If itemToBatchProcess.id starts with "local_", it means it's a local item whose image was NOT uploaded to CF.
-                    // We need to ensure it gets a new Firestore ID.
-                    positionsCollection.document() 
+                    // No existing doc found by initial ID or name query.
+                    // Perform a final check by name before creating a new document.
+                    // This helps prevent duplicates if the initial name query missed an existing item
+                    // or if an item was created by a Cloud Function in the meantime.
+                    Log.d("PositionsRepository", "SYNC_BATCH: existingFirestoreDocId is null for '${positionForFirestore.name}'. Performing final name check.")
+                    val finalCheckQuery = positionsCollection
+                        .whereEqualTo("userId", currentSyncingUserId)
+                        .whereEqualTo("name", positionForFirestore.name) // Use the name of the item being processed
+                        .limit(1)
+                        .get()
+                        .await()
+                    if (!finalCheckQuery.isEmpty) {
+                        val foundDoc = finalCheckQuery.documents.first()
+                        docRefToUse = positionsCollection.document(foundDoc.id)
+                        Log.i("PositionsRepository", "SYNC_BATCH: Final name check found existing document (ID: ${foundDoc.id}) for '${positionForFirestore.name}'. Using this ID.")
+                        // If found by name, ensure the imageName is updated if the current item has a newer/better one
+                        // (though finalImageNameForFirestore should already have handled this)
+                        positionForFirestore = positionForFirestore.copy(imageName = finalImageNameForFirestore)
+                    } else {
+                        Log.i("PositionsRepository", "SYNC_BATCH: Final name check found no existing document for '${positionForFirestore.name}'. Creating new document.")
+                        docRefToUse = positionsCollection.document() // Create new document ID
+                    }
                 }
-                batch.set(docRef, positionForFirestore.copy(id = docRef.id)) // Ensure the object in batch has the correct Firestore ID.
+                
+                batch.set(docRefToUse, positionForFirestore.copy(id = docRefToUse.id)) // Ensure the object in batch has the correct Firestore ID.
+                Log.i("PositionsRepository", "SYNC_BATCH: Queued set for ${positionForFirestore.name} (Firestore ID: ${docRefToUse.id})")
                 
                 // Update local cache map
-                if (itemToBatchProcess.id != docRef.id && itemToBatchProcess.id.startsWith("local_")) {
+                val itemToBatchProcess = itemsForDirectFirestoreBatch.find { it.name == positionForFirestore.name } // Find the original item for its ID
+                if (itemToBatchProcess != null && itemToBatchProcess.id != docRefToUse.id && itemToBatchProcess.id.startsWith("local_")) {
                     allCurrentLocalPositionsMap.remove(itemToBatchProcess.id)
                 }
-                allCurrentLocalPositionsMap[docRef.id] = positionForFirestore.copy(id = docRef.id)
-                if (itemToBatchProcess.id.startsWith("local_")) {
+                allCurrentLocalPositionsMap[docRefToUse.id] = positionForFirestore.copy(id = docRefToUse.id)
+                if (itemToBatchProcess != null && itemToBatchProcess.id.startsWith("local_")) {
                      localIdsMarkedAsPotentiallyProcessedInThisRun.add(itemToBatchProcess.id)
                 }
-                Log.i("PositionsRepository", "SYNC_BATCH: Queued set for ${positionForFirestore.name} (Firestore ID: ${docRef.id})")
             }
+
+            // The following try block was an erroneous duplication and has been removed.
+            // The logic for updating allCurrentLocalPositionsMap and localIdsMarkedAsPotentiallyProcessedInThisRun
+            // is correctly handled within the for loop above.
 
             try {
                 batch.commit().await()
