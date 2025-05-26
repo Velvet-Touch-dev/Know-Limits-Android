@@ -180,7 +180,7 @@ class FavoritesRepository {
                     .whereEqualTo("item_id", favCandidate.itemId)
                     .whereEqualTo("item_type", favCandidate.itemType)
                     .limit(1)
-                    .get() // Using default source, server preferred if critical but adds latency
+                    .get(Source.SERVER) // Force fetch from server
                     .await()
                 
                 if (existingQuery.isEmpty) {
