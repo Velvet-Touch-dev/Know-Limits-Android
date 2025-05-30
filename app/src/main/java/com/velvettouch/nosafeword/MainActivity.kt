@@ -54,6 +54,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.velvettouch.nosafeword.util.UpdateManager // Added for UpdateManager
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -595,6 +596,10 @@ class MainActivity : BaseActivity() {
         // if the listener hasn't fired yet or if there are subtle timing issues.
         // However, to avoid redundant calls, primarily rely on the listener.
         // handleAuthStateChange(auth.currentUser, isInitialCheck = false) // Re-evaluate if this is needed or causes issues
+
+        // Check for updates when MainActivity resumes
+        // Consider adding a time-based check here to avoid checking too frequently
+        UpdateManager.checkForUpdates(this, showNoUpdateToast = false, onLaunch = true)
     }
 
     private fun filterScenes(query: String?) {

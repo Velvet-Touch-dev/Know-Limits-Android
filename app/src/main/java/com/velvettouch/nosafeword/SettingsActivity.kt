@@ -64,6 +64,10 @@ import java.io.InputStreamReader
 import java.text.SimpleDateFormat // Added for date formatting
 import java.util.Date // Added for date
 import android.net.Uri // Added for Uri
+import android.os.Build // Added for Build version check
+import com.velvettouch.nosafeword.util.UpdateManager // Added for UpdateManager
+import com.velvettouch.nosafeword.util.UpdateChecker // Added for UpdateChecker
+import android.content.pm.PackageManager // Added for PackageManager
 
 
 class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
@@ -155,6 +159,8 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private lateinit var subSectionTitle: TextView // Added for Sub section title
     private lateinit var pairingDivider: View      // Added for divider
     private lateinit var loadingOverlay: FrameLayout // Added for loading overlay
+    private lateinit var checkForUpdatesCard: MaterialCardView // Added for Check for Updates
+    private lateinit var appVersionText: TextView // Added for App Version Text
 
     private var currentUserProfile: UserProfile? = null
 
@@ -288,6 +294,9 @@ class SettingsActivity : BaseActivity(), TextToSpeech.OnInitListener {
             // Optionally disable functionality or show a message if buttons are critical
         }
         initializeActivityLaunchers()
+
+        // Setup Check for Updates
+        setupCheckForUpdates()
 
         // Setup custom back press handling
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -1347,6 +1356,39 @@ private fun signOut() {
                 Toast.makeText(this@SettingsActivity, "Failed to import data.", Toast.LENGTH_LONG).show()
             }
             hideLoadingOverlay()
+        }
+    }
+
+    private fun setupCheckForUpdates() {
+        try {
+            checkForUpdatesCard = findViewById(R.id.check_for_updates_card)
+            appVersionText = findViewById(R.id.app_version_text)
+
+            // Display current app version
+            displayCurrentAppVersion()
+
+            checkForUpdatesCard.setOnClickListener {
+                UpdateManager.checkForUpdates(this, showNoUpdateToast = true)
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error setting up Check for Updates card")
+        }
+    }
+
+    private fun displayCurrentAppVersion() {
+        try {
+            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.getPackageInfo(packageName, 0)
+            }
+            val versionName = packageInfo.versionName
+            val versionCode = UpdateChecker.getCurrentVersionCode(this) // Use our utility
+            appVersionText.text = "Version $versionName ($versionCode)"
+        } catch (e: PackageManager.NameNotFoundException) {
+            Timber.e(e, "Could not get package info for version display")
+            appVersionText.text = "Version N/A"
         }
     }
 }

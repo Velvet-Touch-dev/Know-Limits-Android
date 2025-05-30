@@ -38,6 +38,13 @@
 }
 -keep class com.velvettouch.nosafeword.data.model.UserProfile { *; }
 
+# Keep RuleItem class for Firebase (Realtime Database / Firestore)
+-keepclassmembers class com.velvettouch.nosafeword.data.model.RuleItem {
+    public <init>();
+    public *;
+}
+-keep class com.velvettouch.nosafeword.data.model.RuleItem { *; }
+
 # Keep TypeToken and its subclasses for Gson
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
@@ -85,4 +92,11 @@
 -keep class **.R
 -keep class **.R$* {
     <fields>;
+}
+
+# Keep UpdateInfo model class for Gson
+-keep class com.velvettouch.nosafeword.model.UpdateInfo { *; }
+-keepclassmembers class com.velvettouch.nosafeword.model.UpdateInfo {
+    public <init>();
+    public *;
 }

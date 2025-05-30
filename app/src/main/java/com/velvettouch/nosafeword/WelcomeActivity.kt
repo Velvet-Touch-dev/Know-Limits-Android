@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber // Added
+import com.velvettouch.nosafeword.util.UpdateManager // Added for UpdateManager
 
 class WelcomeActivity : AppCompatActivity() {
 
