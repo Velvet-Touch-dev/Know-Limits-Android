@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.Settings // Added for install permission
 import android.view.LayoutInflater
+import android.view.View // Added for View.GONE
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -155,9 +156,10 @@ object UpdateManager {
                 }
             }
             // Corrected: Removed extra brace that was here
+            // Reverting to RECEIVER_EXPORTED for API 33+ as a pragmatic step since installation was reported working with it.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                activity.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED)
-                Timber.d("BroadcastReceiver registered with RECEIVER_NOT_EXPORTED for API 33+.")
+                activity.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_EXPORTED)
+                Timber.d("BroadcastReceiver registered with RECEIVER_EXPORTED for API 33+.")
             } else {
                 activity.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
                 Timber.d("BroadcastReceiver registered without specific export flag for pre-API 33.")
@@ -174,7 +176,10 @@ object UpdateManager {
         val progressBar = dialogView.findViewById<ProgressBar>(R.id.pbDownload)
         val progressText = dialogView.findViewById<TextView>(R.id.tvProgressPercentage)
         val titleText = dialogView.findViewById<TextView>(R.id.tvProgressTitle)
+
         titleText.text = "Downloading ${activity.getString(R.string.app_name)} v${fileName.substringAfterLast("v").substringBefore(".apk")}"
+        progressBar.isIndeterminate = true
+        progressText.visibility = View.GONE // Hide percentage text
 
 
         progressDialog = MaterialAlertDialogBuilder(activity)
@@ -210,22 +215,16 @@ object UpdateManager {
                             break // Exit loop if download finished or failed
                         }
 
+                        // No longer setting determinate progress, bar is indeterminate until completion.
+                        // We still log the actual byte progress for debugging if needed.
                         if (bytesTotal > 0) {
-                            progressBar.isIndeterminate = false
-                            // Calculate progress as float first for precision
                             val progressPercentage = (bytesDownloaded.toFloat() / bytesTotal.toFloat()) * 100f
-                            val progress = progressPercentage.roundToInt()
-                            Timber.d("Download Progress: $bytesDownloaded / $bytesTotal | float: $progressPercentage% | int: $progress%")
-                            progressBar.progress = progress
-                            progressText.text = "$progress%"
+                            Timber.d("Download Progress (raw): $bytesDownloaded / $bytesTotal (${progressPercentage.roundToInt()}%)")
                         } else {
-                            // If total size is unknown or 0, keep progress bar indeterminate
-                            progressBar.isIndeterminate = true
-                            progressText.text = "Downloading..." // Or show bytes downloaded: "$bytesDownloaded B"
-                            Timber.d("Download Progress: $bytesDownloaded / unknown total size")
+                            Timber.d("Download Progress (raw): $bytesDownloaded / unknown total size")
                         }
                     } else {
-                        Timber.w("Download Progress: Necessary columns not found in cursor.")
+                        Timber.w("Download Progress: Necessary columns not found in cursor for status check.")
                     }
                     cursor.close()
                 } else {
