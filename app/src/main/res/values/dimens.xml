@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="button_margin">8dp</dimen>
+
+    <dimen name="welcome_headline_marginTop">45dp</dimen>
+    <dimen name="welcome_benefit_intro_marginTop">14dp</dimen>
+    <dimen name="benefits_card_marginTop">26dp</dimen>
+    <dimen name="benefits_card_padding">18dp</dimen>
+    <dimen name="benefit_item_marginBottom">16dp</dimen>
+    <dimen name="sign_in_button_marginTop">32dp</dimen>
+    <dimen name="sign_in_button_marginBottom">14dp</dimen>
+    <dimen name="skip_button_marginBottom">28dp</dimen>
 </resources>

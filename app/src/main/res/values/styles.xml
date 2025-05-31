@@ -24,8 +24,8 @@
     </style>
 
     <style name="Widget.App.Button.Welcome.Secondary" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:alpha">0.7</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:alpha">1.0</item>
         <item name="rippleColor">?attr/colorPrimary</item>
     </style>
 
