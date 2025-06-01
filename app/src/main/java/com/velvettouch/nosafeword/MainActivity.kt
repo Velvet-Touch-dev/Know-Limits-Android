@@ -85,6 +85,7 @@ class MainActivity : BaseActivity() {
     private lateinit var chipCustomScenes: Chip
     private lateinit var baseTextChipDefaultScenes: String
     private lateinit var baseTextChipCustomScenes: String
+    private lateinit var randomSceneTagsChipGroup: ChipGroup // Added for random scene tags
 
     private val scenesViewModel: ScenesViewModel by viewModels()
     private val cloudFavoritesViewModel: FavoritesViewModel by viewModels()
@@ -146,6 +147,7 @@ class MainActivity : BaseActivity() {
         contentTextView.text = getString(R.string.no_scenes_available_content)
         currentSceneIndex = -1
         activeSceneIdentifier = null // Clear active scene ID
+        randomSceneTagsChipGroup.visibility = View.GONE // Hide tags
         sceneCardView.visibility = View.INVISIBLE
         editButton.visibility = View.GONE
         shareButton.visibility = View.GONE
@@ -227,6 +229,7 @@ class MainActivity : BaseActivity() {
         chipCustomScenes = findViewById(R.id.chip_custom_scenes)
         baseTextChipDefaultScenes = chipDefaultScenes.text.toString()
         baseTextChipCustomScenes = chipCustomScenes.text.toString()
+        randomSceneTagsChipGroup = findViewById(R.id.random_scene_tags_chip_group) // Initialize
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         titleTextView.movementMethod = LinkMovementMethod.getInstance()
@@ -849,6 +852,20 @@ class MainActivity : BaseActivity() {
         
         activeSceneIdentifier = getSceneIdentifier(scene) // Store identifier of displayed scene
 
+        // Populate tags for the random scene view
+        randomSceneTagsChipGroup.removeAllViews()
+        if (scene.tags.isNotEmpty()) {
+            scene.tags.forEach { tagText ->
+                val chip = Chip(this, null, R.style.Widget_App_Chip_Tag).apply {
+                    text = tagText
+                }
+                randomSceneTagsChipGroup.addView(chip)
+            }
+            randomSceneTagsChipGroup.visibility = View.VISIBLE
+        } else {
+            randomSceneTagsChipGroup.visibility = View.GONE
+        }
+
         updateFavoriteIcon()
         updatePreviousButtonState()
     }
@@ -904,7 +921,25 @@ class MainActivity : BaseActivity() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_scene, null)
         val titleEditText = dialogView.findViewById<TextInputEditText>(R.id.edit_title_input)
         val contentEditText = dialogView.findViewById<TextInputEditText>(R.id.edit_content_input)
-        scene?.let { titleEditText.setText(it.title); contentEditText.setText(it.content) }
+        val tagsChipGroup = dialogView.findViewById<ChipGroup>(R.id.edit_dialog_tags_chip_group)
+
+        scene?.let {
+            titleEditText.setText(it.title)
+            contentEditText.setText(it.content)
+            // Populate tags
+            tagsChipGroup.removeAllViews()
+            it.tags.forEach { tagText -> // it.tags is not nullable here due to scene?.let
+                val chip = Chip(this, null, R.style.Widget_App_Chip_Tag).apply {
+                    text = tagText
+                }
+                tagsChipGroup.addView(chip)
+            }
+            tagsChipGroup.visibility = if (it.tags.isEmpty()) View.GONE else View.VISIBLE
+        } ?: run {
+            // New scene, tagsChipGroup is initially empty or hidden
+            tagsChipGroup.visibility = View.GONE
+        }
+
 
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(if (scene == null) getString(R.string.new_scene) else getString(R.string.edit_scene))
@@ -921,15 +956,25 @@ class MainActivity : BaseActivity() {
                 if (content.isEmpty()) { contentEditText.error = "Content cannot be empty"; valid = false }
                 if (valid) {
                     val currentUid = auth.currentUser?.uid ?: ""
+                    // TODO: Handle saving tags if/when tag editing is implemented in the dialog
+                    // For now, tags are read-only from scenes.json via the Scene object
+                    val existingTags = scene?.tags ?: emptyList() // Preserve existing tags, ensure non-null for copy
+
                     if (scene == null) {
-                        scenesViewModel.addScene(Scene(title = title, content = content, isCustom = true, userId = currentUid))
+                        // For a new scene, tags would typically be empty or managed via a new UI element
+                        scenesViewModel.addScene(Scene(title = title, content = content, isCustom = true, userId = currentUid, tags = emptyList())) // New scenes start with no tags unless UI allows adding
                         showMaterialToast("Adding scene: $title", false)
                     } else {
                         val updatedScene = scene.copy(
                             title = title,
                             content = content,
-                            isCustom = true,
-                            userId = scene.userId.ifBlank { currentUid }
+                            // isCustom should ideally be preserved from the original scene or be editable.
+                            // For now, assuming custom scenes remain custom. If default scenes can be edited,
+                            // this logic might need adjustment to set isCustom = true upon edit.
+                            // Let's assume editing a scene makes it (or keeps it) custom.
+                            isCustom = true, 
+                            userId = scene.userId.ifBlank { currentUid },
+                            tags = existingTags // Preserve original tags for now
                         )
                         if (updatedScene.firestoreId.isBlank() && updatedScene.id == 0 && updatedScene.isCustom) {
                              showMaterialToast("Error: Scene ID missing for custom scene.", false)

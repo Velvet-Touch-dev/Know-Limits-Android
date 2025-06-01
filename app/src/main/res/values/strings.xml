@@ -84,6 +84,7 @@
     <string name="plan_your_night">Plan your Night</string>
     <string name="cd_drag_to_reorder">Drag to reorder item</string>
     <string name="cd_delete_item">Delete item</string>
+    <string name="tags">Tags</string>
     <string name="add_planned_item">Add Item to Plan</string>
     <string name="search_items_hint">Search positions or scenes...</string>
     <string name="add">Add</string>

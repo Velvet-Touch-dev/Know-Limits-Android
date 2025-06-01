@@ -75,10 +75,18 @@
                                 android:id="@+id/titleTextView"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="16dp"
                                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
                                 android:textColor="?attr/colorPrimary"
                                 tools:text="Scene Title" />
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/random_scene_tags_chip_group"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="16dp"
+                                app:chipSpacingHorizontal="4dp"
+                                app:chipSpacingVertical="4dp" />
 
                             <TextView
                                 android:id="@+id/contentTextView"

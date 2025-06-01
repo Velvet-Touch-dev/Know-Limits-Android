@@ -34,6 +34,19 @@
         <item name="cornerSize">28dp</item>
     </style>
 
+    <style name="Widget.App.Chip.Tag" parent="Widget.MaterialComponents.Chip.Action">
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textSize">12sp</item>
+        <item name="chipMinHeight">28dp</item> <!-- Adjusted for typical small chip -->
+        <item name="chipCornerRadius">14dp</item> <!-- Half of minHeight for fully rounded ends -->
+        <item name="chipStartPadding">8dp</item>
+        <item name="chipEndPadding">8dp</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
+
     <!-- Optional: Define ShapeAppearance.App.Chip if you want custom corners -->
     <!--
     <style name="ShapeAppearance.App.Chip" parent="">

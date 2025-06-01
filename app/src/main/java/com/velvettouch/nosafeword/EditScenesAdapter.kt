@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +36,7 @@ class EditScenesAdapter(
         private val titleTextView: TextView = itemView.findViewById(R.id.edit_title)
         private val previewTextView: TextView = itemView.findViewById(R.id.edit_preview)
         private val deleteButton: ImageButton = itemView.findViewById(R.id.delete_button)
+        private val tagsChipGroup: ChipGroup = itemView.findViewById(R.id.tags_chip_group) // Added ChipGroup
         private lateinit var currentScene: Scene
 
         init {
@@ -61,6 +65,23 @@ class EditScenesAdapter(
                 .let { if (it.length >= 100) "$it..." else it } // Add ellipsis
                 
             previewTextView.text = preview
+
+            // Populate tags
+            tagsChipGroup.removeAllViews() // Clear old chips
+            if (scene.tags.isNotEmpty()) {
+                scene.tags.forEach { tagText ->
+                    val chip = Chip(itemView.context, null, R.style.Widget_App_Chip_Tag).apply {
+                        text = tagText
+                        // Style is now applied from R.style.Widget_App_Chip_Tag
+                        // No need to set individual properties like chipBackgroundColor, textColor, chipCornerRadius here
+                        // unless you want to override parts of the style for specific chips.
+                    }
+                    tagsChipGroup.addView(chip)
+                }
+                tagsChipGroup.visibility = View.VISIBLE
+            } else {
+                tagsChipGroup.visibility = View.GONE
+            }
         }
     }
 
