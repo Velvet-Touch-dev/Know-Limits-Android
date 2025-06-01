@@ -5,9 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
+// import androidx.core.content.ContextCompat // No longer needed for direct color setting
+// import com.google.android.material.chip.Chip // No longer creating Material Chips directly
+import com.google.android.material.chip.ChipGroup // Still using ChipGroup as container
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -69,14 +69,11 @@ class EditScenesAdapter(
             // Populate tags
             tagsChipGroup.removeAllViews() // Clear old chips
             if (scene.tags.isNotEmpty()) {
+                val inflater = LayoutInflater.from(itemView.context)
                 scene.tags.forEach { tagText ->
-                    val chip = Chip(itemView.context, null, R.style.Widget_App_Chip_Tag).apply {
-                        text = tagText
-                        // Style is now applied from R.style.Widget_App_Chip_Tag
-                        // No need to set individual properties like chipBackgroundColor, textColor, chipCornerRadius here
-                        // unless you want to override parts of the style for specific chips.
-                    }
-                    tagsChipGroup.addView(chip)
+                    val chipTextView = inflater.inflate(R.layout.custom_tag_chip, tagsChipGroup, false) as TextView
+                    chipTextView.text = tagText
+                    tagsChipGroup.addView(chipTextView)
                 }
                 tagsChipGroup.visibility = View.VISIBLE
             } else {

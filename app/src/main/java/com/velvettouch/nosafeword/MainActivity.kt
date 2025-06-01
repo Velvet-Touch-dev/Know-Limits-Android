@@ -37,8 +37,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
+import com.google.android.material.chip.Chip // Restoring for chipDefaultScenes and chipCustomScenes
+import com.google.android.material.chip.ChipGroup // Still using ChipGroup as container
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -855,11 +855,11 @@ class MainActivity : BaseActivity() {
         // Populate tags for the random scene view
         randomSceneTagsChipGroup.removeAllViews()
         if (scene.tags.isNotEmpty()) {
-            scene.tags.forEach { tagText ->
-                val chip = Chip(this, null, R.style.Widget_App_Chip_Tag).apply {
-                    text = tagText
-                }
-                randomSceneTagsChipGroup.addView(chip)
+            val inflater = LayoutInflater.from(this)
+            scene.tags.forEach { tagText: String -> // Explicitly typing tagText
+                val chipTextView = inflater.inflate(R.layout.custom_tag_chip, randomSceneTagsChipGroup, false) as TextView
+                chipTextView.text = tagText
+                randomSceneTagsChipGroup.addView(chipTextView)
             }
             randomSceneTagsChipGroup.visibility = View.VISIBLE
         } else {
@@ -928,13 +928,17 @@ class MainActivity : BaseActivity() {
             contentEditText.setText(it.content)
             // Populate tags
             tagsChipGroup.removeAllViews()
-            it.tags.forEach { tagText -> // it.tags is not nullable here due to scene?.let
-                val chip = Chip(this, null, R.style.Widget_App_Chip_Tag).apply {
-                    text = tagText
+            if (it.tags.isNotEmpty()) { // Check if tags list is not empty
+                val inflater = LayoutInflater.from(this)
+                it.tags.forEach { tagText: String -> // Explicitly typing tagText
+                    val chipTextView = inflater.inflate(R.layout.custom_tag_chip, tagsChipGroup, false) as TextView
+                    chipTextView.text = tagText
+                    tagsChipGroup.addView(chipTextView)
                 }
-                tagsChipGroup.addView(chip)
+                tagsChipGroup.visibility = View.VISIBLE
+            } else {
+                tagsChipGroup.visibility = View.GONE
             }
-            tagsChipGroup.visibility = if (it.tags.isEmpty()) View.GONE else View.VISIBLE
         } ?: run {
             // New scene, tagsChipGroup is initially empty or hidden
             tagsChipGroup.visibility = View.GONE

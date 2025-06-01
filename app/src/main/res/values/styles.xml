@@ -34,14 +34,21 @@
         <item name="cornerSize">28dp</item>
     </style>
 
+    <style name="TextAppearance.App.Chip.Tag" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textSize">6sp</item> <!-- Dangerously small text size -->
+        <!-- You can add other text attributes here if needed, like fontFamily -->
+    </style>
+
     <style name="Widget.App.Chip.Tag" parent="Widget.MaterialComponents.Chip.Action">
         <item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-        <item name="android:textSize">12sp</item>
-        <item name="chipMinHeight">28dp</item> <!-- Adjusted for typical small chip -->
-        <item name="chipCornerRadius">14dp</item> <!-- Half of minHeight for fully rounded ends -->
-        <item name="chipStartPadding">8dp</item>
-        <item name="chipEndPadding">8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.App.Chip.Tag</item>
+        <item name="chipMinHeight">16dp</item> <!-- Dangerously small height -->
+        <item name="chipCornerRadius">8dp</item> <!-- Half of minHeight -->
+        <item name="chipStartPadding">2dp</item> <!-- Very minimal padding -->
+        <item name="chipEndPadding">2dp</item> <!-- Very minimal padding -->
+        <item name="textStartPadding">0dp</item> <!-- Attempt to remove internal text padding -->
+        <item name="textEndPadding">0dp</item> <!-- Attempt to remove internal text padding -->
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="ensureMinTouchTargetSize">false</item>

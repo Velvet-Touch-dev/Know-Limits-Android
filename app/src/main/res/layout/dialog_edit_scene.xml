@@ -41,7 +41,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/tags"
         android:textAppearance="?attr/textAppearanceLabelLarge" />
 
@@ -49,7 +49,7 @@
         android:id="@+id/edit_dialog_tags_chip_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         app:chipSpacingHorizontal="4dp"
         app:chipSpacingVertical="4dp" />
 
