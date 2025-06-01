@@ -8,6 +8,12 @@
         android:title="Search" 
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item
+        android:id="@+id/action_filter_tags"
+        android:icon="@drawable/ic_filter_list"
+        android:title="Filter Tags"
+        app:showAsAction="ifRoom" />
     
     <!-- This will be the dedicated calendar button - now appearing first -->
     <item

@@ -10,4 +10,7 @@
     <dimen name="sign_in_button_marginTop">32dp</dimen>
     <dimen name="sign_in_button_marginBottom">14dp</dimen>
     <dimen name="skip_button_marginBottom">28dp</dimen>
+
+    <!-- Chip dimensions -->
+    <dimen name="chip_min_height_small">28dp</dimen>
 </resources>

@@ -94,6 +94,10 @@ class MainActivity : BaseActivity() {
     private var displayedScenes: List<Scene> = listOf()
     private var allUserScenes: List<Scene> = listOf()
 
+    // Variables for tag filtering
+    private var selectedIncludeTags: MutableSet<String> = mutableSetOf()
+    private var selectedExcludeTags: MutableSet<String> = mutableSetOf()
+
     private var currentSceneIndex: Int = -1
     private var sceneHistory: MutableList<Scene> = mutableListOf()
     private var historyPosition: Int = -1
@@ -611,19 +615,23 @@ class MainActivity : BaseActivity() {
 
         displayedScenes = allUserScenes.filter { scene ->
             val matchesType = if (currentMode == MODE_EDIT) {
-                // In MODE_EDIT, respect the chip states
                 (showDefaultInEditMode && !scene.isCustom) || (showCustomInEditMode && scene.isCustom)
             } else {
-                // In MODE_RANDOM (and any other mode without these specific chips), consider all types
-                true 
+                // In MODE_RANDOM, type filtering via these specific chips is not applicable.
+                // Tag filters and search query will apply to all scenes (default + custom).
+                true
             }
             
             val matchesQuery = query.isNullOrBlank() ||
                                scene.title.contains(query, ignoreCase = true) ||
                                scene.content.contains(query, ignoreCase = true)
-            matchesType && matchesQuery
+
+            val matchesIncludeTags = selectedIncludeTags.isEmpty() || scene.tags.any { it in selectedIncludeTags }
+            val matchesExcludeTags = selectedExcludeTags.isEmpty() || scene.tags.none { it in selectedExcludeTags }
+
+            matchesType && matchesQuery && matchesIncludeTags && matchesExcludeTags
         }
-        Log.d(TAG, "filterScenes: Mode=$currentMode, Query='$query', Chips(EditOnly): showDefault=$showDefaultInEditMode, showCustom=$showCustomInEditMode. Displayed count: ${displayedScenes.size}")
+        Log.d(TAG, "filterScenes: Mode=$currentMode, Query='$query', IncludeTags=${selectedIncludeTags.joinToString()}, ExcludeTags=${selectedExcludeTags.joinToString()}, Chips(EditOnly): showDefault=$showDefaultInEditMode, showCustom=$showCustomInEditMode. Displayed count: ${displayedScenes.size}")
 
         if (currentMode == MODE_EDIT) {
             updateEditList() // Refresh edit list based on new displayedScenes
@@ -1114,10 +1122,90 @@ class MainActivity : BaseActivity() {
 
     // Removed syncFavoritesOnLogin and updateLocalStoreWithFirestoreData
 
+    private fun showFilterTagsDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_filter_tags, null)
+        val includeTagsChipGroup = dialogView.findViewById<ChipGroup>(R.id.include_tags_chip_group)
+        val excludeTagsChipGroup = dialogView.findViewById<ChipGroup>(R.id.exclude_tags_chip_group)
+        val clearAllFiltersButton = dialogView.findViewById<MaterialButton>(R.id.clear_all_filters_button)
+        val doneButton = dialogView.findViewById<MaterialButton>(R.id.done_button)
+
+        val allTags = allUserScenes.flatMap { it.tags }.distinct().sorted()
+
+        val populateChips = {
+            includeTagsChipGroup.removeAllViews()
+            excludeTagsChipGroup.removeAllViews()
+            allTags.forEach { tag ->
+                val includeChip = Chip(this).apply {
+                    this.text = tag // Use this.text to avoid confusion
+                    isCheckable = true
+                    chipIcon = if (selectedIncludeTags.contains(tag)) ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_24) else null
+                    isChecked = selectedIncludeTags.contains(tag)
+                    chipMinHeight = resources.getDimensionPixelSize(R.dimen.chip_min_height_small).toFloat()
+                    // ensureMinTouchTargetSize = false // Removed as it's private
+                    // You might also want to set style="@style/Widget.MaterialComponents.Chip.Filter" or a custom style
+
+                    setOnCheckedChangeListener { chip, isChecked -> // chip is the CompoundButton
+                        if (isChecked) {
+                            selectedIncludeTags.add(tag)
+                            (chip as Chip).chipIcon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_24)
+                        } else {
+                            selectedIncludeTags.remove(tag)
+                            (chip as Chip).chipIcon = null
+                        }
+                    }
+                }
+                includeTagsChipGroup.addView(includeChip)
+
+                val excludeChip = Chip(this).apply {
+                    this.text = tag
+                    isCheckable = true
+                    chipIcon = if (selectedExcludeTags.contains(tag)) ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_24) else null
+                    isChecked = selectedExcludeTags.contains(tag)
+                    chipMinHeight = resources.getDimensionPixelSize(R.dimen.chip_min_height_small).toFloat()
+                    // ensureMinTouchTargetSize = false // Removed as it's private
+                    // You might also want to set style="@style/Widget.MaterialComponents.Chip.Filter" or a custom style
+
+                    setOnCheckedChangeListener { chip, isChecked -> // chip is the CompoundButton
+                        if (isChecked) {
+                            selectedExcludeTags.add(tag)
+                            (chip as Chip).chipIcon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_check_24)
+                        } else {
+                            selectedExcludeTags.remove(tag)
+                            (chip as Chip).chipIcon = null
+                        }
+                    }
+                }
+                excludeTagsChipGroup.addView(excludeChip)
+            }
+        }
+
+        populateChips()
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle("Filter Scenes by Tags")
+            .setView(dialogView)
+            .create() // Create dialog first to access buttons if needed for custom listeners outside setPositive/Negative
+
+        clearAllFiltersButton.setOnClickListener {
+            selectedIncludeTags.clear()
+            selectedExcludeTags.clear()
+            populateChips() // Re-populate to reflect cleared selections
+        }
+
+        doneButton.setOnClickListener {
+            // selectedIncludeTags and selectedExcludeTags are already updated by chip listeners
+            val currentSearchQuery = (topAppBar.menu.findItem(R.id.action_search)?.actionView as? SearchView)?.query?.toString()
+            filterScenes(currentSearchQuery)
+            updateUI() // Explicitly call updateUI to refresh the list based on new filters
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        try { 
-            menuInflater.inflate(R.menu.main_menu, menu) 
-            val searchItem = menu.findItem(R.id.action_search) 
+        try {
+            menuInflater.inflate(R.menu.main_menu, menu)
+            val searchItem = menu.findItem(R.id.action_search)
             (searchItem?.actionView as? SearchView)?.apply {
                 setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextSubmit(query: String?): Boolean { filterScenes(query); return true }
@@ -1136,6 +1224,7 @@ class MainActivity : BaseActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val searchItem = menu?.findItem(R.id.action_search)
+        val filterTagsItem = menu?.findItem(R.id.action_filter_tags)
         val favoriteItem = menu?.findItem(R.id.action_favorite)
         val addToPlanToolbarItem = menu?.findItem(R.id.action_add_to_plan_toolbar)
         val addToPlanOverflowItem = menu?.findItem(R.id.action_add_to_plan_overflow)
@@ -1144,6 +1233,7 @@ class MainActivity : BaseActivity() {
 
         if (currentMode == MODE_RANDOM) {
             searchItem?.isVisible = false
+            filterTagsItem?.isVisible = true
             favoriteItem?.isVisible = true
             addToPlanToolbarItem?.isVisible = true
             addToPlanOverflowItem?.isVisible = false // Hide overflow version
@@ -1155,16 +1245,18 @@ class MainActivity : BaseActivity() {
             }
         } else if (currentMode == MODE_EDIT) {
             searchItem?.isVisible = true
+            filterTagsItem?.isVisible = true
             favoriteItem?.isVisible = false
             addToPlanToolbarItem?.isVisible = false
             addToPlanOverflowItem?.isVisible = false
             settingsItem?.isVisible = false
             signInSignOutItem?.isVisible = false
-        } else { 
-            searchItem?.isVisible = true
+        } else { // Covers MODE_FAVORITES and any other potential modes
+            searchItem?.isVisible = true // Or false, depending on whether search is desired in favorites
+            filterTagsItem?.isVisible = false // Typically no tag filtering on favorites page itself
             favoriteItem?.isVisible = false
             addToPlanToolbarItem?.isVisible = false
-            addToPlanOverflowItem?.isVisible = true
+            addToPlanOverflowItem?.isVisible = true // Keep for overflow if scene context is available
             settingsItem?.isVisible = true
             signInSignOutItem?.isVisible = true
         }
@@ -1178,6 +1270,7 @@ class MainActivity : BaseActivity() {
 
         try {
             searchItem?.icon?.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_ATOP)
+            filterTagsItem?.icon?.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_ATOP)
             addToPlanToolbarItem?.icon?.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_ATOP)
         } catch (e: Exception) {
             Log.e(TAG, "Error applying color filter to menu icons", e)
@@ -1189,6 +1282,10 @@ class MainActivity : BaseActivity() {
         if (drawerToggle.onOptionsItemSelected(item)) return true
         try {
             return when (item.itemId) {
+                R.id.action_filter_tags -> {
+                    showFilterTagsDialog()
+                    true
+                }
                 R.id.action_favorite -> {
                     val itemView = findViewById<View>(R.id.action_favorite)
                     itemView?.animate()

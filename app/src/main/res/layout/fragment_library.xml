@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/scene_filter_chip_group"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        app:singleSelection="false"
-        app:selectionRequired="false">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_default_scenes"
-            style="@style/Widget.App.Chip.Filter"
-            android:layout_width="wrap_content"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/scene_filter_chip_group"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/default_scenes"
-            android:checked="true"/>
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            app:singleSelection="false"
+            app:selectionRequired="false">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_custom_scenes"
-            style="@style/Widget.App.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/custom_scenes"
-            android:checked="true"/>
-    </com.google.android.material.chip.ChipGroup>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_default_scenes"
+                style="@style/Widget.App.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_scenes"
+                android:checked="true"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/edit_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="108dp"
-        tools:listitem="@layout/item_edit_scene" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_custom_scenes"
+                style="@style/Widget.App.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_scenes"
+                android:checked="true"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/edit_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="80dp" 
+            tools:listitem="@layout/item_edit_scene" />
+            <!-- Reduced paddingBottom to allow items to scroll under floating buttons -->
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="30dp"
-        android:paddingHorizontal="16dp">
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp" 
+        android:paddingHorizontal="16dp"
+        android:background="@android:color/transparent">
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/reset_scenes_button"
@@ -59,7 +67,7 @@
             app:icon="@drawable/ic_restore"
             android:contentDescription="@string/reset_to_default"
             android:stateListAnimator="@animator/no_shadow"
-            app:elevation="0dp"
+            app:elevation="0dp" 
             app:backgroundTint="?attr/colorPrimary"
             app:iconTint="?attr/colorOnPrimary"
             android:textColor="?attr/colorOnPrimary" />
@@ -76,9 +84,9 @@
             android:contentDescription="@string/new_scene"
             app:srcCompat="@drawable/ic_add"
             app:compatShadowEnabled="false"
-            app:elevation="0dp"
+            app:elevation="0dp" 
             app:backgroundTint="?attr/colorPrimary"
             app:tint="?attr/colorOnPrimary" />
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
