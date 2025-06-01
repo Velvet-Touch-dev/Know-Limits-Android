@@ -291,6 +291,63 @@ class ScenesRepository(private val applicationContext: Context) { // Added conte
         }
     }
 
+    suspend fun migrateMissingTagsForUserDefaultScenes(userId: String): Result<Int> {
+        if (userId.isEmpty()) {
+            return Result.failure(IllegalArgumentException("User ID cannot be empty for tag migration."))
+        }
+        Log.d(TAG, "Starting tag migration for default scenes for user $userId.")
+        var updatedCount = 0
+        try {
+            val userDefaultScenesResult = getUserDefaultScenesOnce(userId)
+            if (userDefaultScenesResult.isFailure) {
+                Log.e(TAG, "Failed to fetch user's default scenes for tag migration.", userDefaultScenesResult.exceptionOrNull())
+                return Result.failure(userDefaultScenesResult.exceptionOrNull() ?: Exception("Failed to fetch user's default scenes"))
+            }
+
+            val firestoreDefaultScenes = userDefaultScenesResult.getOrNull() ?: emptyList()
+            if (firestoreDefaultScenes.isEmpty()) {
+                Log.d(TAG, "No default scenes found in Firestore for user $userId. No tag migration needed.")
+                return Result.success(0)
+            }
+
+            val scenesToUpdateInBatch = mutableListOf<Scene>()
+
+            withContext(Dispatchers.IO) { // Perform asset loading off the main thread
+                firestoreDefaultScenes.forEach { firestoreScene ->
+                    if (firestoreScene.tags.isNullOrEmpty()) { // Check if tags are missing or empty
+                        // 'firestoreScene.id' here is the original asset ID
+                        val assetScene = getAssetSceneDetailsByOriginalId(firestoreScene.id)
+                        if (assetScene != null && assetScene.tags.isNotEmpty()) {
+                            Log.d(TAG, "Scene '${firestoreScene.title}' (FirestoreId: ${firestoreScene.firestoreId}, OriginalId: ${firestoreScene.id}) needs tag update. Asset tags: ${assetScene.tags.joinToString()}.")
+                            scenesToUpdateInBatch.add(firestoreScene.copy(tags = assetScene.tags))
+                        } else {
+                            Log.d(TAG, "Scene '${firestoreScene.title}' (OriginalId: ${firestoreScene.id}) has no tags in Firestore, but corresponding asset scene also has no tags or asset scene not found.")
+                        }
+                    }
+                }
+            }
+
+            if (scenesToUpdateInBatch.isNotEmpty()) {
+                Log.d(TAG, "Attempting to batch update tags for ${scenesToUpdateInBatch.size} scenes for user $userId.")
+                val batch = firestore.batch()
+                scenesToUpdateInBatch.forEach { sceneToUpdate ->
+                    // sceneToUpdate already has its correct firestoreId from getUserDefaultScenesOnce
+                    val docRef = getScenesCollection().document(sceneToUpdate.firestoreId)
+                    batch.update(docRef, "tags", sceneToUpdate.tags) // Update only the tags field
+                }
+                batch.commit().await()
+                updatedCount = scenesToUpdateInBatch.size
+                Log.i(TAG, "Successfully batch updated tags for $updatedCount scenes for user $userId.")
+            } else {
+                Log.d(TAG, "No scenes required tag updates for user $userId.")
+            }
+            return Result.success(updatedCount)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during tag migration for user $userId", e)
+            return Result.failure(e)
+        }
+    }
+
     // Example of getting a single scene if needed
     suspend fun getSceneById(sceneId: String): Result<Scene?> {
         return try {

@@ -13,8 +13,8 @@ android {
         applicationId "com.velvettouch.nosafeword"
         minSdk 23
         targetSdk 33 // Target SDK can often remain for now, but compileSdk needs to be higher
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
         
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
